@@ -1,0 +1,36 @@
+<svg xmlns:xlink='http://www.w3.org/1999/xlink' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='xMinYMid meet'>
+    <defs>
+        <filter id='blur' x='-50' y='-50' width='200' height='200' color-interpolation-filters='sRGB'>
+            <feGaussianBlur stdDeviation='18'/>
+        </filter>
+        <linearGradient id='programmaticBackground' x1='-50' y1='-50' x2='150' y2='150' gradientUnits='userSpaceOnUse' gradientTransform='scale(1,1)'>n<stop stop-color='#eee' offset='10%'/>n<stop stop-color='#eee' offset='20%'/>n<stop
+                stop-color='#111' offset='30%'/>n<stop stop-color='#111' offset='40%'/>n<stop stop-color='#eee' offset='50%'/>n<stop stop-color='#eee' offset='60%'/>n<stop stop-color='#eee' offset='70%'/>n<stop stop-color='#eee'
+                                                                                                                                                                                                                   offset='80%'/>n
+            <stop stop-color='#eee' offset='90%'/>n
+            <stop stop-color='#eee' offset='100%'/>
+            <animate attributeName='x1' attributeType='XML' repeatCount='indefinite' values='-50; -50; -50' dur='8s'/>
+            <animate attributeName='y1' attributeType='XML' repeatCount='indefinite' values='-50; 150; -50' dur='9s'/>
+            <animate attributeName='x2' attributeType='XML' repeatCount='indefinite' values='150; 150; 150' dur='10s'/>
+            <animate attributeName='y2' attributeType='XML' repeatCount='indefinite' values='150; -50; 150' dur='11s'/>
+            <animateTransform attributeName='gradientTransform' attributeType='XML' repeatCount='indefinite' type='rotate' values='0 -50 -50; 360 150 150; 0 -50 -50' dur='12s'/>
+        </linearGradient>
+        <g id='composedProgrammaticBackground' filter='url(#blur)'>
+            <rect x='-50' y='-50' width='200' height='200' fill='url(#programmaticBackground)'/>
+            <rect x='-50' y='-50' width='200' height='200' fill='url(#programmaticBackground)' transform='rotate(45 -50 50)' fill-opacity='.5'/>
+        </g>
+        <text id='single-color-text' textLength='90%' text-anchor='start' alignment-baseline='central' transform='translate(0, 13)'
+              style='font-size: 9px;font-family:-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif; font-weight: 600;'>
+            <tspan x='7' opacity='1'>Yahoo + all others</tspan>
+        </text>
+        <g id='multi-color-text'>
+            <use xlink:href='#composedProgrammaticBackground' clip-path='url(#text-clip)'/>
+            <clipPath id='text-clip'>
+                <text id='single-color-text' textLength='90%' text-anchor='start' alignment-baseline='central' transform='translate(0, 13)'
+                      style='font-size: 9px;font-family:-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif; font-weight: 600;'>
+                    <tspan x='7' opacity='1'>Yahoo + all others</tspan>
+                </text>
+            </clipPath>
+        </g>
+    </defs>
+    <use xlink:href='#multi-color-text'/>
+</svg>
