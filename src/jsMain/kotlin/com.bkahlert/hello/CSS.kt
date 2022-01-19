@@ -1,12 +1,27 @@
 package com.bkahlert.hello
 
 import com.bkahlert.Color
+import com.bkahlert.kommons.SVGImage
+import org.jetbrains.compose.web.css.AlignContent
+import org.jetbrains.compose.web.css.AlignItems
+import org.jetbrains.compose.web.css.DisplayStyle
+import org.jetbrains.compose.web.css.FlexDirection
+import org.jetbrains.compose.web.css.FlexWrap
+import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.Position
 import org.jetbrains.compose.web.css.StyleBuilder
+import org.jetbrains.compose.web.css.alignContent
+import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.borderWidth
+import org.jetbrains.compose.web.css.display
+import org.jetbrains.compose.web.css.flexDirection
+import org.jetbrains.compose.web.css.flexWrap
+import org.jetbrains.compose.web.css.fontFamily
 import org.jetbrains.compose.web.css.height
+import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
+import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.position
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.whiteSpace
@@ -30,6 +45,37 @@ fun StyleBuilder.visuallyHidden() {
     overflow("hidden")
     whiteSpace("nowrap")
 }
+
+/**
+ * Centers affected elements horizontally and vertically.
+ */
+fun StyleBuilder.center() {
+    height(100.percent)
+    display(DisplayStyle.Flex)
+    alignContent(AlignContent.Center)
+    alignItems(AlignItems.Stretch)
+    flexDirection(FlexDirection.Column)
+    flexWrap(FlexWrap.Nowrap)
+    justifyContent(JustifyContent.SpaceAround)
+}
+
+class Spinner(
+    color: Color,
+    d: Int = 38,
+    s: Int = 2,
+    r: Double = (d - s) / 2.0,
+) : SVGImage("""
+      <svg width="${d}px" height="${d}px" viewBox="0 0 $d $d" xmlns="http://www.w3.org/2000/svg" stroke="$color" stroke-opacity=".5">
+        <g fill="none" fill-rule="evenodd">
+          <g transform="translate(${s / 2} ${s / 2})" stroke-width="$s">
+            <circle cx="$r" cy="$r" r="$r"/>
+            <path d="M${d - s} ${r}c0-9.94-8.06-$r-$r-$r">
+              <animateTransform attributeName="transform" type="rotate" from="0 $r $r" to="360 $r $r" dur="1s" repeatCount="indefinite"/>
+            </path>
+          </g>
+        </g>
+      </svg>
+  """.trimIndent())
 
 infix fun Int.fmod(other: Int): Int = ((this % other) + other) % other
 infix fun Double.fmod(other: Double): Double = ((this % other) + other) % other
@@ -55,3 +101,5 @@ fun metalicGradient(color: Color): String =
         color.transparentize(1.0),
         color.transparentize(0.9),
     )
+
+fun StyleBuilder.fontFamily(fonts: List<String>) = fontFamily(*fonts.toTypedArray())

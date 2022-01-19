@@ -1,9 +1,10 @@
-package com.bkahlert.hello
+package com.bkahlert.hello.search
 
 import com.bkahlert.Brand
 import com.bkahlert.Color
 import com.bkahlert.RGB
-import com.bkahlert.hello.Engine.Google
+import com.bkahlert.hello.fmod
+import com.bkahlert.hello.search.Engine.Google
 import com.bkahlert.kommons.Image
 import com.bkahlert.kommons.SVGImage
 import org.w3c.dom.url.URL
@@ -43,7 +44,7 @@ enum class Engine(
     /**
      * [start.me](https://start.me)
      */
-    StartMe("start.me", RGB("#0093D4"), {
+    StartMe("start.me", RGB("#4cb4e0"), { // #0093D4
         URL("https://start.me/search/google?q=$it")
     }),
 
