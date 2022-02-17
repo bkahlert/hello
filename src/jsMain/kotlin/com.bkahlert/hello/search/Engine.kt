@@ -212,10 +212,9 @@ enum class Engine(
         """
         <svg fill="none" xmlns="http://www.w3.org/2000/svg">
             <text dominant-baseline="middle" 
-                  dy="0.75em" 
+                  dy="0.67em" 
                   font-family="${Brand.fontFamily}" 
-                  font-weight="bold" 
-                  font-size="75vh" 
+                  font-size="90vh" 
                   fill="$color">$caption</text>
         </svg>
         """.trimIndent())

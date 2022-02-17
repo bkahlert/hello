@@ -59,6 +59,11 @@ fun StyleBuilder.center() {
     justifyContent(JustifyContent.SpaceAround)
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/CSS/grid-area
+fun <T : Enum<T>> StyleBuilder.gridArea(rowStart: T) {
+    property("grid-area", rowStart.name)
+}
+
 class Spinner(
     color: Color,
     d: Int = 38,

@@ -5,6 +5,7 @@ import com.bkahlert.Brand
 import com.bkahlert.hello.Dimensions.Screen
 import com.bkahlert.hello.links.Custom
 import com.bkahlert.hello.links.Header
+import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Engine.Google
@@ -33,7 +34,6 @@ import org.jetbrains.compose.web.css.flexDirection
 import org.jetbrains.compose.web.css.flexWrap
 import org.jetbrains.compose.web.css.fontSize
 import org.jetbrains.compose.web.css.gap
-import org.jetbrains.compose.web.css.gridArea
 import org.jetbrains.compose.web.css.gridTemplateAreas
 import org.jetbrains.compose.web.css.gridTemplateColumns
 import org.jetbrains.compose.web.css.gridTemplateRows
@@ -71,19 +71,25 @@ fun main() {
         Grid {
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Header.name)
+                    gridArea(AppStylesheet.Grid.Header)
                     backgroundColor(Brand.colors.primary)
                 }
             }) { Header("Hello") }
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Links.name)
+                    gridArea(AppStylesheet.Grid.Links)
                     backgroundColor(Brand.colors.primary)
+                    center()
                 }
-            }) { Links() }
+            }) {
+                Links {
+                    Link("https://start.me/p/4K6MOy/dashboard", "start.me", "web.svg")
+                    Link("https://home.bkahlert.com", "home", "home.svg")
+                }
+            }
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Search.name)
+                    gridArea(AppStylesheet.Grid.Search)
                     backgroundColor(Brand.colors.primary)
                 }
             }) {
@@ -95,13 +101,13 @@ fun main() {
             }
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Options.name)
+                    gridArea(AppStylesheet.Grid.Options)
                     backgroundColor(Brand.colors.primary)
                 }
             })
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.CustomGradient.name)
+                    gridArea(AppStylesheet.Grid.CustomGradient)
                     property("z-index", "1")
                     height(0.5.cssRem)
                     backgroundColor(transparent)
@@ -110,7 +116,7 @@ fun main() {
             }) { }
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Custom.name)
+                    gridArea(AppStylesheet.Grid.Custom)
                     backgroundColor(Engine.StartMe.color)
                 }
             }) { Custom(URL("https://start.me/p/jj2pPl/technology")) }
@@ -203,7 +209,7 @@ object AppStylesheet : StyleSheet() {
         media(mediaMinWidth(Screen.lg)) {
             self style {
                 gridTemplateColumns("1fr 1fr 1fr 1fr")
-                gridTemplateRows("1fr 10fr 0 60fr")
+                gridTemplateRows("100px 100px 0 1fr")
                 gridTemplateAreas(
                     "${Grid.Links} ${Grid.Links} ${Grid.Links} ${Grid.Links}",
                     "${Grid.Header} ${Grid.Search} ${Grid.Search} ${Grid.Options}",
