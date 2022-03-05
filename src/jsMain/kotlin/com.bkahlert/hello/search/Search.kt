@@ -5,11 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.bkahlert.Brand
 import com.bkahlert.RGB
+import com.bkahlert.hello.MagnifyingGlass
 import com.bkahlert.hello.center
+import com.bkahlert.hello.fontFamily
 import com.bkahlert.hello.visuallyHidden
-import com.bkahlert.kommons.SVGImage
 import com.bkahlert.kommons.backgroundImage
+import com.bkahlert.kommons.browser.openInNewTab
+import com.bkahlert.kommons.browser.openInSameTab
 import com.bkahlert.kommons.runtime.id
+import com.bkahlert.kommons.web.dom.Toggle
+import com.bkahlert.kommons.web.dom.toUrlOrNull
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.AutoComplete
@@ -21,6 +26,7 @@ import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.DisplayStyle
+import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.StyleBuilder
 import org.jetbrains.compose.web.css.alignItems
@@ -32,12 +38,13 @@ import org.jetbrains.compose.web.css.backgroundSize
 import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
 import org.jetbrains.compose.web.css.color
+import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex
-import org.jetbrains.compose.web.css.fontFamily
 import org.jetbrains.compose.web.css.fontSize
 import org.jetbrains.compose.web.css.height
+import org.jetbrains.compose.web.css.marginLeft
 import org.jetbrains.compose.web.css.marginTop
 import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.padding
@@ -52,39 +59,73 @@ import org.jetbrains.compose.web.dom.SearchInput
 import org.jetbrains.compose.web.dom.Span
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.url.URL
 
 @Composable
 fun Search(
-    initialEngine: Engine,
-    initialValue: String? = null,
-    initialAllEngines: Boolean = false,
+    engine: Engine,
+    query: String? = null,
+    fullSearch: Boolean = false,
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    onEngineChange: (Engine) -> Unit = {},
+    onFullSearchChange: (Boolean) -> Unit = {},
+    onFocusChange: (Boolean) -> Unit = {},
+    onSearch: (String, List<URL>) -> Unit = { _, urls ->
+        if (urls.size == 1) window.openInSameTab(urls.first())
+        else urls.forEach(window::openInNewTab)
+    },
+    onPaste: (String) -> Unit = { value ->
+        value.toUrlOrNull()
+            ?.takeIf { it.protocol.isNotEmpty() }
+            ?.let { window.openInSameTab(it) }
+    },
 ) {
     val color = RGB("#5f6368")
 
     val spacerInputId = id("spacer-input")
 
-    val inputState = remember { mutableStateOf(initialValue ?: "") }
-    val engineState = remember { mutableStateOf(initialEngine) }
+    val inputState = remember { mutableStateOf(query ?: "") }
+    val engineState = remember { mutableStateOf(engine) }
+    val onEngineChange: (Engine) -> Unit = {
+        engineState.value = it
+        onEngineChange(it)
+    }
 
-    val (allEngines, allEnginesChanged) = remember { mutableStateOf(initialAllEngines) }
+    val fullSearchState = remember { mutableStateOf(fullSearch) }
+    val onFullSearchChange: (Boolean) -> Unit = {
+        fullSearchState.value = it
+        onFullSearchChange(it)
+    }
+
+    val focusState = remember { mutableStateOf(false) }
+    val onFocusChange: (Boolean) -> Unit = {
+        focusState.value = it
+        onFocusChange(it)
+    }
+
+    val onSearch: () -> Unit = {
+        onSearch(inputState.value, Engine.values()
+            .filter { fullSearchState.value || it == engineState.value }
+            .map { it.url(inputState.value) })
+    }
+
     val (backgroundPosition, backgroundPositionChanged) = remember { mutableStateOf("0px") }
-    val (isFocused, focusChanged) = remember { mutableStateOf(false) }
 
     val isEmpty = inputState.value.isEmpty()
 
     Div({
         style {
-            center()
+            center(FlexDirection.Row)
             property("margin", "0 auto")
             width(638.px)
             property("width", "auto")
             maxWidth(584.px)
-            padding(2.em)
+            padding(0.em, 2.em)
         }
     }) {
         Div({
             style {
+                flex(1, 1)
                 borderRadius2()
                 backgroundSize("cover")
                 backgroundColor(Color.transparent)
@@ -104,30 +145,26 @@ fun Search(
                         "color .2s ease-in, background-color .2s ease-in, background-position .2s ease-in, background-size .2s ease-in")
                     borderRadius2()
                     backgroundRepeat("no-repeat")
-                    if (allEngines) {
-                        if (isFocused) {
+                    if (fullSearchState.value) {
+                        if (focusState.value) {
                             color(Color.black)
-                            backgroundColor(Brand.colors.white.transparentize(0.33))
+                            backgroundColor(Brand.colors.input.transparentize(0.33))
                             backgroundImage(engineState.value.coloredImage)
                         } else {
                             color(Color.white)
-                            backgroundColor(Brand.colors.white.transparentize(0.0))
-                            backgroundImage(engineState.value.greyscaleImage)
+                            backgroundColor(Brand.colors.input.transparentize(0.0))
+                            backgroundImage(engineState.value.grayscaleImage)
                         }
-                        if (isEmpty) {
-                            backgroundPosition("-15em 45%")
-                        } else {
-                            backgroundPosition("-15em 50%")
-                        }
+                        backgroundPosition("-15em ${if (isEmpty) "45%" else "50%"}")
                     } else {
-                        if (isFocused) {
+                        if (focusState.value) {
                             color(Color.black)
-                            backgroundColor(Brand.colors.white)
+                            backgroundColor(Brand.colors.input)
                             backgroundImage(engineState.value.coloredImage)
                         } else {
                             color(engineState.value.color.textColor)
                             backgroundColor(engineState.value.color)
-                            backgroundImage(engineState.value.greyscaleImage)
+                            if (isEmpty) backgroundImage(engineState.value.grayscaleImage)
                         }
                         if (isEmpty) {
                             backgroundPosition("$backgroundPosition 45%")
@@ -135,11 +172,7 @@ fun Search(
                             backgroundPosition("$backgroundPosition 50%")
                         }
                     }
-                    if (isEmpty) {
-                        backgroundSize("100% 67%")
-                    } else {
-                        backgroundSize("100% 50%")
-                    }
+                    backgroundSize("100% 45%")
 
                     display(DisplayStyle.Flex)
                     property("box-shadow", "none")
@@ -167,9 +200,8 @@ fun Search(
                         Em({
                             style {
                                 property("margin", "auto")
-                                backgroundImage(SVGImage("""
-                                <svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="$color"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
-                            """.trimIndent()))
+                                if (focusState.value) backgroundImage(MagnifyingGlass(color))
+                                else backgroundImage(MagnifyingGlass(engineState.value.color.textColor))
                                 width(20.px)
                                 height(20.px)
                             }
@@ -188,37 +220,23 @@ fun Search(
                         spellCheck(false)
                         tabIndex(1)
                         title("Press ↑ or ↓ to switch the search engine")
-                        onKeyDown {
-                            when (it.code) {
-                                "ArrowUp" -> engineState.value = engineState.value.prev
-                                "ArrowDown" -> engineState.value = engineState.value.next
-                                "OSLeft", "OSRight" -> allEnginesChanged(true)
-                                "Enter", "NumpadEnter" -> {
-                                    println("Search for ${inputState.value} with ${if (allEngines) "all" else engineState.value.name}")
-                                    println(engineState.value.url(inputState.value))
-                                    if (allEngines) {
-                                        Engine.values().forEach {
-                                            window.open(it.url(inputState.value).toString(), "_blank")
-                                        }
-                                    } else {
-                                        kotlin.runCatching {
-                                            window.open(engineState.value.url(inputState.value).toString(), "_top")
-                                        }.onFailure {
-                                            window.open(engineState.value.url(inputState.value).toString(), "_blank")
-                                        }
-                                        engineState.value
-                                    }
-                                }
-                                else -> println(it.code)
+                        onKeyDown { event ->
+                            when (event.code) {
+                                "ArrowUp" -> onEngineChange(engineState.value.prev)
+                                "ArrowDown" -> onEngineChange(engineState.value.next)
+                                "OSLeft", "OSRight" -> onFullSearchChange(true)
+                                "Enter", "NumpadEnter" -> onSearch()
                             }
                         }
                         onKeyUp {
                             when (it.code) {
-                                "OSLeft", "OSRight" -> allEnginesChanged(false)
+                                "OSLeft", "OSRight" -> onFullSearchChange(false)
                             }
                         }
                         onInput { event -> inputState.value = event.value }
+                        onPaste { event -> event.getData("text/plain")?.also(onPaste) }
                         style {
+                            if (!focusState.value) color(engineState.value.color.textColor)
                             backgroundColor(Color.transparent)
                             property("border", "none")
                             property("margin", "0")
@@ -229,12 +247,14 @@ fun Search(
                             property("display", "flex")
                             property("flex", "100%")
                             property("tap-highlight-color", "transparent")
+                            property("appearance", "none")
                         }
                         onFocus {
-                            focusChanged(true)
+                            onFocusChange(true)
                         }
                         onBlur {
-                            focusChanged(false)
+                            onFullSearchChange(false)
+                            onFocusChange(false)
                         }
                     }
 
@@ -242,22 +262,14 @@ fun Search(
                         Span({
                             id(spacerInputId)
                             style {
-                                fontFamily("system-uix",
-                                    "-apple-system",
-                                    "Segoe UI",
-                                    "Roboto",
-                                    "Helvetica",
-                                    "Arial",
-                                    "sans-serif",
-                                    "Apple Color Emoji",
-                                    "Segoe UI Emoji")
+                                fontFamily(Brand.fonts)
                             }
                         })
                     }
 
                     document.getElementById(spacerInputId)?.unsafeCast<HTMLElement>()?.apply {
                         textContent = inputState.value
-                        if (isEmpty && !isFocused) {
+                        if (isEmpty && !focusState.value) {
                             backgroundPositionChanged("${offsetWidth + 40}px")
                         } else {
                             backgroundPositionChanged("${offsetWidth + 65}px")
@@ -265,6 +277,19 @@ fun Search(
                     }
                 }
             }
+        }
+
+        Toggle(
+            label = "1",
+            checkedLabel = Engine.values().size.toString()
+        ) {
+            style {
+                property("flex", "0 auto")
+                marginLeft(1.cssRem)
+            }
+            title("If checked all search engines are opened in separate tabs")
+            checked(fullSearchState.value)
+            onChange { event -> onFullSearchChange(event.value) }
         }
     }
 }

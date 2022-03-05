@@ -15,7 +15,7 @@ import org.w3c.dom.HTMLHeadingElement
 
 @Composable
 fun Header(
-    text: String,
+    text: String? = null,
     attrs: AttrBuilderContext<HTMLHeadingElement>? = null,
 ) {
     Style(HeaderStyleSheet)
@@ -28,7 +28,7 @@ fun Header(
             classes(HeaderStyleSheet.header)
             attrs?.also { apply(it) }
         }) {
-            Text(text)
+            text?.let { Text(it) }
         }
     }
 }

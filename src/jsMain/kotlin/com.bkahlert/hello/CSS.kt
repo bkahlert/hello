@@ -4,6 +4,7 @@ import com.bkahlert.Color
 import com.bkahlert.kommons.SVGImage
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
+import org.jetbrains.compose.web.css.CSSColorValue
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.FlexWrap
@@ -19,6 +20,7 @@ import org.jetbrains.compose.web.css.flexWrap
 import org.jetbrains.compose.web.css.fontFamily
 import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.justifyContent
+import org.jetbrains.compose.web.css.name
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.percent
@@ -49,12 +51,17 @@ fun StyleBuilder.visuallyHidden() {
 /**
  * Centers affected elements horizontally and vertically.
  */
-fun StyleBuilder.center() {
+fun StyleBuilder.center(direction: FlexDirection = FlexDirection.Column) {
     height(100.percent)
     display(DisplayStyle.Flex)
-    alignContent(AlignContent.Center)
-    alignItems(AlignItems.Stretch)
-    flexDirection(FlexDirection.Column)
+    if (direction.name.startsWith("Column")) {
+        alignContent(AlignContent.Center)
+        alignItems(AlignItems.Stretch)
+    } else {
+        alignContent(AlignContent.Stretch)
+        alignItems(AlignItems.Center)
+    }
+    flexDirection(direction)
     flexWrap(FlexWrap.Nowrap)
     justifyContent(JustifyContent.SpaceAround)
 }
@@ -69,18 +76,30 @@ class Spinner(
     d: Int = 38,
     s: Int = 2,
     r: Double = (d - s) / 2.0,
-) : SVGImage("""
-      <svg width="${d}px" height="${d}px" viewBox="0 0 $d $d" xmlns="http://www.w3.org/2000/svg" stroke="$color" stroke-opacity=".5">
-        <g fill="none" fill-rule="evenodd">
-          <g transform="translate(${s / 2} ${s / 2})" stroke-width="$s">
-            <circle cx="$r" cy="$r" r="$r"/>
-            <path d="M${d - s} ${r}c0-9.94-8.06-$r-$r-$r">
-              <animateTransform attributeName="transform" type="rotate" from="0 $r $r" to="360 $r $r" dur="1s" repeatCount="indefinite"/>
-            </path>
-          </g>
+) : SVGImage(
+    // language=SVG
+    """
+    <svg width="${d}px" height="${d}px" viewBox="0 0 $d $d" xmlns="http://www.w3.org/2000/svg" stroke="$color" stroke-opacity=".5">
+      <g fill="none" fill-rule="evenodd">
+        <g transform="translate(${s / 2} ${s / 2})" stroke-width="$s">
+          <circle cx="$r" cy="$r" r="$r"/>
+          <path d="M${d - s} ${r}c0-9.94-8.06-$r-$r-$r">
+            <animateTransform attributeName="transform" type="rotate" from="0 $r $r" to="360 $r $r" dur="1s" repeatCount="indefinite"/>
+          </path>
         </g>
-      </svg>
-  """.trimIndent())
+      </g>
+    </svg>
+    """.trimIndent())
+
+class MagnifyingGlass(
+    color: Color,
+) : SVGImage(
+    // language=SVG
+    """
+    <svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="$color">
+      <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+    </svg>
+    """.trimIndent())
 
 infix fun Int.fmod(other: Int): Int = ((this % other) + other) % other
 infix fun Double.fmod(other: Double): Double = ((this % other) + other) % other
@@ -88,13 +107,13 @@ infix fun Double.fmod(other: Double): Double = ((this % other) + other) % other
 fun gradient(type: String, vararg args: String): String =
     args.joinToString(",", "$type-gradient(", ")")
 
-fun linearGradient(vararg colors: Color): String =
+fun linearGradient(vararg colors: CSSColorValue): String =
     gradient("linear", "180deg", *colors.map { it.toString() }.toTypedArray())
 
-fun radialGradient(vararg colors: Color): String =
+fun radialGradient(vararg colors: CSSColorValue): String =
     gradient("radial", "circle at 50% 50%", *colors.map { it.toString() }.toTypedArray())
 
-fun radialGradient(colors: List<Color>): String =
+fun radialGradient(colors: List<CSSColorValue>): String =
     radialGradient(*colors.toTypedArray())
 
 fun metalicGradient(color: Color): String =

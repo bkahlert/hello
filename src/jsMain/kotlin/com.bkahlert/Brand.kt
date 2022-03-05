@@ -40,6 +40,9 @@ object Brand {
 
         val primary: HSL = blue
         val secondary: HSL = magenta
+
+        val border: HSL = RGB("#5f6368").toHSL()
+        val input: HSL = HSL(0.deg, 100, 100)
     }
 
     val rainbow = listOf(

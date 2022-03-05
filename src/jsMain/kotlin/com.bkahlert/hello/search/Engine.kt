@@ -222,7 +222,7 @@ enum class Engine(
     /**
      * [Image] consisting of the [caption] with no colors.
      */
-    val greyscaleImage: Image = svg(color.textColor)
+    val grayscaleImage: Image = svg(color.textColor)
 
     /**
      * [Image] consisting of the [caption] colored with [color].

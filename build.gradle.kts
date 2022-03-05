@@ -35,7 +35,6 @@ kotlin {
             dependencies {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
-                implementation("org.jetbrains:annotations:20.1.0")
                 implementation("com.bkahlert.kommons:kommons:1.11.5")
 
                 // https://github.com/JetBrains/kotlin-wrappers

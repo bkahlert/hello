@@ -1,14 +1,12 @@
 package com.bkahlert.hello.links
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.RGB
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.Position
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleSheet
-import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.backgroundImage
 import org.jetbrains.compose.web.css.backgroundPosition
 import org.jetbrains.compose.web.css.backgroundRepeat
@@ -24,6 +22,7 @@ import org.jetbrains.compose.web.css.fontWeight
 import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.css.margin
+import org.jetbrains.compose.web.css.opacity
 import org.jetbrains.compose.web.css.outline
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
@@ -82,43 +81,43 @@ object LinksStyleSheet : StyleSheet() {
         position(Position.Relative)
         display(DisplayStyle.InlineBlock)
         fontWeight(400)
-        color(Color.white)
+        color(Color.gray)
         textAlign("center")
         property("vertical-align", "middle")
         property("-webkit-user-select", "none")
         property("-ms-user-select", "none")
         property("user-select", "none")
-        border(2.px, LineStyle.Solid, Color.white)
+        border(2.px, LineStyle.Solid, Color.gray)
         padding(.55.cssRem, .95.cssRem)
         fontSize(1.cssRem)
         lineHeight(150.percent)
         borderRadius(.25.cssRem)
         property("transition", "all .2s ease")
 
-        property("mix-blend-mode", "lighten")
+        opacity(.5)
+        property("mix-blend-mode", "luminosity")
         backgroundSize("cover")
         backgroundRepeat("no-repeat")
         backgroundPosition("center")
 
         self + focus style {
             outline("0")
+            opacity(1)
         }
 
         self + hover style {
-            backgroundColor(RGB("#25a5f0"))
-            property("box-shadow", "rgb(255, 255, 255) 5px 5px 50px -5px inset")
+            opacity(1)
             textDecoration("none")
         }
 
         self + ":not(:disabled):not(.disabled):active" style {
-            backgroundColor(RGB("#25a5f0"))
             backgroundSize("95%")
         }
     }
 
     val gridItem by style {
-        width(50.px)
-        height(50.px)
+        width(35.px)
+        height(35.px)
         margin(.5.em)
         padding(0.px)
 

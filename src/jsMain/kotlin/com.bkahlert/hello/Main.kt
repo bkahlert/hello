@@ -1,21 +1,35 @@
 package com.bkahlert.hello
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.bkahlert.Brand
-import com.bkahlert.hello.Dimensions.Screen
-import com.bkahlert.hello.links.Custom
+import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
+import com.bkahlert.hello.AppStylesheet.GRADIENT_HEIGHT
+import com.bkahlert.hello.AppStylesheet.Grid.Custom
+import com.bkahlert.hello.AppStylesheet.Grid.CustomGradient
+import com.bkahlert.hello.AppStylesheet.Grid.Header
+import com.bkahlert.hello.AppStylesheet.Grid.Links
+import com.bkahlert.hello.AppStylesheet.Grid.Options
+import com.bkahlert.hello.AppStylesheet.Grid.Search
+import com.bkahlert.hello.AppStylesheet.Grid.Space
+import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Engine.Google
 import com.bkahlert.hello.search.Search
+import com.bkahlert.kommons.browser.delayed
+import com.bkahlert.kommons.runtime.LocalStorage
+import com.bkahlert.kommons.time.seconds
+import org.jetbrains.compose.web.ExperimentalComposeWebApi
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.CSSBuilder
-import org.jetbrains.compose.web.css.CSSUnitValue
+import org.jetbrains.compose.web.css.CSSSizeValue
+import org.jetbrains.compose.web.css.CSSUnitLength
 import org.jetbrains.compose.web.css.Color
-import org.jetbrains.compose.web.css.Color.transparent
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.FlexWrap
@@ -24,12 +38,14 @@ import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.alignContent
 import org.jetbrains.compose.web.css.alignItems
+import org.jetbrains.compose.web.css.and
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.backgroundImage
+import org.jetbrains.compose.web.css.backgroundSize
 import org.jetbrains.compose.web.css.boxSizing
-import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.display
+import org.jetbrains.compose.web.css.div
 import org.jetbrains.compose.web.css.flexDirection
 import org.jetbrains.compose.web.css.flexWrap
 import org.jetbrains.compose.web.css.fontSize
@@ -41,13 +57,15 @@ import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.media
-import org.jetbrains.compose.web.css.mediaMaxHeight
+import org.jetbrains.compose.web.css.mediaMinHeight
 import org.jetbrains.compose.web.css.mediaMinWidth
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.selectors.CSSSelector
+import org.jetbrains.compose.web.css.transform
+import org.jetbrains.compose.web.css.unaryMinus
 import org.jetbrains.compose.web.css.vh
 import org.jetbrains.compose.web.css.vw
 import org.jetbrains.compose.web.css.width
@@ -57,71 +75,86 @@ import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.url.URL
 
+@OptIn(ExperimentalComposeWebApi::class)
 fun main() {
 
     // trigger creation to avoid flickering
     Engine.values().forEach {
-        it.greyscaleImage
+        it.grayscaleImage
         it.coloredImage
     }
 
     renderComposable("root") {
         Style(AppStylesheet)
 
-        Grid {
+        val (canSearch, setCanSearch) = remember { mutableStateOf(false) }
+
+        Grid({
+            style {
+                backgroundSize("cover")
+                backgroundImage("url(grayscale-gradient.svg)")
+            }
+        }) {
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Header)
-                    backgroundColor(Brand.colors.primary)
+                    gridArea(Header)
+                    backgroundSize("cover")
+                    backgroundImage("url(steel-gradient.svg)")
                 }
-            }) { Header("Hello") }
+            }) { Header() }
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Links)
-                    backgroundColor(Brand.colors.primary)
+                    gridArea(Links)
                     center()
                 }
             }) {
                 Links {
                     Link("https://start.me/p/4K6MOy/dashboard", "start.me", "web.svg")
                     Link("https://home.bkahlert.com", "home", "home.svg")
+                    Link("https://clickup.com/", "clickup", "clickup.svg")
                 }
             }
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Search)
-                    backgroundColor(Brand.colors.primary)
+                    gridArea(Search)
                 }
             }) {
 //                Search(value = "all engines (focussed)", allEngines = true)
 //                Search(value = "all engines", allEngines = true)
 //                Search(value = "single engine")
 //                Search(allEngines = true)
-                Search(Google)
+                Search(LocalStorage["engine", { Engine.valueOf(it) }] ?: Google,
+                    onEngineChange = { LocalStorage["engine"] = it },
+                    onFocusChange = { hasFocus ->
+                        if (hasFocus && !canSearch) {
+                            delayed(.5.seconds) { setCanSearch(true) }
+                        }
+                    })
             }
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Options)
-                    backgroundColor(Brand.colors.primary)
+                    gridArea(Options)
                 }
             })
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.CustomGradient)
+                    gridArea(CustomGradient)
                     property("z-index", "1")
-                    height(0.5.cssRem)
-                    backgroundColor(transparent)
-                    backgroundImage(linearGradient(Brand.colors.primary, Brand.colors.primary.transparentize(0)))
+                    height(GRADIENT_HEIGHT)
+                    transform { translateY(-GRADIENT_HEIGHT / 2) }
+                    backgroundColor(Color.transparent)
+                    backgroundImage(linearGradient(CUSTOM_BACKGROUND_COLOR.transparentize(0),
+                        CUSTOM_BACKGROUND_COLOR,
+                        CUSTOM_BACKGROUND_COLOR.transparentize(0)))
                 }
             }) { }
             Div({
                 style {
-                    gridArea(AppStylesheet.Grid.Custom)
-                    backgroundColor(Engine.StartMe.color)
+                    gridArea(Custom)
+                    backgroundColor(CUSTOM_BACKGROUND_COLOR)
                 }
-            }) { Custom(URL("https://start.me/p/jj2pPl/technology")) }
+            }) { Custom(if (canSearch) URL("https://start.me/p/0PBMOo/dkb") else null) }
         }
-
     }
 }
 
@@ -140,8 +173,12 @@ fun Grid(
 
 object AppStylesheet : StyleSheet() {
 
+    val HEADER_HEIGHT: CSSSizeValue<out CSSUnitLength> = 4.px
+    val GRADIENT_HEIGHT: CSSSizeValue<out CSSUnitLength> = 0.3.cssRem
+    val CUSTOM_BACKGROUND_COLOR = Brand.colors.white
+
     enum class Grid {
-        Links, Header, Search, Options, CustomGradient, Custom
+        Links, Header, Search, Options, Space, CustomGradient, Custom
     }
 
     init {
@@ -150,7 +187,7 @@ object AppStylesheet : StyleSheet() {
             height(100.percent)
             margin(0.px)
             padding(0.px)
-            backgroundColor(transparent)
+            backgroundColor(Color.transparent)
             backgroundImage("none")
             fontFamily(Brand.fonts)
         }
@@ -181,23 +218,6 @@ object AppStylesheet : StyleSheet() {
         }
     }
 
-    // A convenient way to create a class selector
-    // com.bkahlert.hello.AppStylesheet.container can be used as a class in component attrs
-    val container by style {
-        color(Color.red)
-
-        // hover selector for a class
-        self + hover style { // self is a selector for `container`
-            color(Color.green)
-        }
-
-//        media(maxWidth(640.px)) {
-//            self style {
-//                padding(12.px)
-//            }
-//        }
-    }
-
     val helloGridContainer by style {
         display(DisplayStyle.Grid)
         alignContent(AlignContent.Center)
@@ -206,33 +226,38 @@ object AppStylesheet : StyleSheet() {
         height(100.vh)
         gap(0.px, 0.px)
 
-        media(mediaMinWidth(Screen.lg)) {
+        gridTemplateColumns("1fr 1fr")
+        gridTemplateRows("0 10fr 7fr 1fr 0 0")
+        gridTemplateAreas(
+            "$Header $Header",
+            "$Search $Search",
+            "$Links $Options",
+            "$Space $Space",
+            "$CustomGradient $CustomGradient",
+            "$Custom $Custom",
+        )
+
+        // TODO check auf Handy
+        media(mediaMinWidth(ViewportDimension.medium) and mediaMinHeight(250.px)) {
+            self style {
+                gridTemplateRows("$HEADER_HEIGHT 80px 45px 15px 0 1fr")
+            }
+        }
+
+        media(mediaMinWidth(ViewportDimension.large) and mediaMinHeight(250.px)) {
             self style {
                 gridTemplateColumns("1fr 1fr 1fr 1fr")
-                gridTemplateRows("100px 100px 0 1fr")
+                gridTemplateRows("$HEADER_HEIGHT 80px 0 0 1fr")
                 gridTemplateAreas(
-                    "${Grid.Links} ${Grid.Links} ${Grid.Links} ${Grid.Links}",
-                    "${Grid.Header} ${Grid.Search} ${Grid.Search} ${Grid.Options}",
-                    "${Grid.CustomGradient} ${Grid.CustomGradient} ${Grid.CustomGradient} ${Grid.CustomGradient}",
-                    "${Grid.Custom} ${Grid.Custom} ${Grid.Custom} ${Grid.Custom}",
+                    "$Header $Header $Header $Header",
+                    "$Links $Search $Search $Options",
+                    "$Space $Space $Space $Space",
+                    "$CustomGradient $CustomGradient $CustomGradient $CustomGradient",
+                    "$Custom $Custom $Custom $Custom",
                 )
             }
         }
 
-        gridTemplateColumns("1fr 1fr")
-        gridTemplateRows("1fr 1fr 1fr 0 3fr")
-        gridTemplateAreas(
-            "${Grid.Links} ${Grid.Links}",
-            "${Grid.Search} ${Grid.Search}",
-            "${Grid.Header} ${Grid.Options}",
-            "${Grid.CustomGradient} ${Grid.CustomGradient}",
-            "${Grid.Custom} ${Grid.Custom}",
-        )
-
-        media(mediaMaxHeight(150.px)) {
-            gridTemplateRows("0 1fr 0 0 0")
-            style(className(container)) { padding(0.px) }
-        }
     }
 }
 
@@ -246,29 +271,4 @@ object Mixins {
             flexWrap(FlexWrap.Nowrap)
             justifyContent(JustifyContent.SpaceAround)
         }
-}
-
-object Dimensions {
-    object Screen {
-
-        /**
-         * Small tablets and large smartphones (landscape view)
-         */
-        val sm: CSSUnitValue = 576.px
-
-        /**
-         * Small tablets (portrait view)
-         */
-        val md: CSSUnitValue = 768.px
-
-        /**
-         * Tablets and small desktops
-         */
-        val lg: CSSUnitValue = 992.px
-
-        /**
-         * Large tablets and desktops
-         */
-        val xl: CSSUnitValue = 1200.px
-    }
 }
