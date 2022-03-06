@@ -10,7 +10,7 @@ import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.Position
-import org.jetbrains.compose.web.css.StyleBuilder
+import org.jetbrains.compose.web.css.StyleScope
 import org.jetbrains.compose.web.css.alignContent
 import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.borderWidth
@@ -37,7 +37,7 @@ import org.jetbrains.compose.web.css.width
  *
  * @see <a href="https://css-tricks.com/html-inputs-and-labels-a-love-story/">HTML Inputs and Labels: A Love Story</a>
  */
-fun StyleBuilder.visuallyHidden() {
+fun StyleScope.visuallyHidden() {
     position(Position.Absolute)
     width(1.px)
     height(1.px)
@@ -51,7 +51,7 @@ fun StyleBuilder.visuallyHidden() {
 /**
  * Centers affected elements horizontally and vertically.
  */
-fun StyleBuilder.center(direction: FlexDirection = FlexDirection.Column) {
+fun StyleScope.center(direction: FlexDirection = FlexDirection.Column) {
     height(100.percent)
     display(DisplayStyle.Flex)
     if (direction.name.startsWith("Column")) {
@@ -67,7 +67,7 @@ fun StyleBuilder.center(direction: FlexDirection = FlexDirection.Column) {
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/grid-area
-fun <T : Enum<T>> StyleBuilder.gridArea(rowStart: T) {
+fun <T : Enum<T>> StyleScope.gridArea(rowStart: T) {
     property("grid-area", rowStart.name)
 }
 
@@ -126,4 +126,4 @@ fun metalicGradient(color: Color): String =
         color.transparentize(0.9),
     )
 
-fun StyleBuilder.fontFamily(fonts: List<String>) = fontFamily(*fonts.toTypedArray())
+fun StyleScope.fontFamily(fonts: List<String>) = fontFamily(*fonts.toTypedArray())

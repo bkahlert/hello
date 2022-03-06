@@ -6,7 +6,7 @@ import com.bkahlert.RGB
 import com.bkahlert.kommons.text.quoted
 import org.jetbrains.compose.web.ExperimentalComposeWebApi
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
-import org.jetbrains.compose.web.attributes.builders.InputAttrsBuilder
+import org.jetbrains.compose.web.attributes.builders.InputAttrsScope
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.Position
@@ -37,7 +37,7 @@ import org.jetbrains.compose.web.dom.Input
 fun Toggle(
     label: String? = null,
     checkedLabel: String? = label,
-    attrs: (InputAttrsBuilder<Boolean>.() -> Unit)? = null,
+    attrs: (InputAttrsScope<Boolean>.() -> Unit)? = null,
 ) {
     val styleSheet = ToggleStyleSheet(label, checkedLabel).also { Style(it) }
     Input(Checkbox) {

@@ -1,4 +1,4 @@
-package com.bkahlert.hello.links
+package com.bkahlert.hello.integration
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.center
@@ -14,7 +14,7 @@ import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLHeadingElement
 
 @Composable
-fun Options(
+fun ClickUp(
     text: String,
     attrs: AttrBuilderContext<HTMLHeadingElement>? = null,
 ) {

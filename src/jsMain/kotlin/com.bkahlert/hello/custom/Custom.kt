@@ -12,7 +12,7 @@ import com.bkahlert.hello.custom.Sandbox.Companion.sandbox
 import com.bkahlert.kommons.backgroundImage
 import com.bkahlert.kommons.text.joinLinesToString
 import org.jetbrains.compose.web.ExperimentalComposeWebApi
-import org.jetbrains.compose.web.attributes.AttrsBuilder
+import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.CSSBuilder
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleSheet
@@ -99,7 +99,7 @@ fun CSSBuilder.spinner() {
     backgroundPosition("center center")
 }
 
-fun AttrsBuilder<HTMLIFrameElement>.src(url: URL) {
+fun AttrsScope<HTMLIFrameElement>.src(url: URL) {
     attr("src", url.toString())
 }
 
@@ -139,7 +139,7 @@ enum class Sandbox {
     ;
 
     companion object {
-        fun AttrsBuilder<HTMLIFrameElement>.sandbox(vararg permissions: Sandbox) {
+        fun AttrsScope<HTMLIFrameElement>.sandbox(vararg permissions: Sandbox) {
             attr("sandbox", permissions.joinLinesToString(" ") { it.name.lowercase().replace('_', '-') })
         }
     }

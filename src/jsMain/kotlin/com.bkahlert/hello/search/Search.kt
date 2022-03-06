@@ -28,7 +28,7 @@ import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.LineStyle
-import org.jetbrains.compose.web.css.StyleBuilder
+import org.jetbrains.compose.web.css.StyleScope
 import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.backgroundImage
@@ -85,24 +85,32 @@ fun Search(
     val spacerInputId = id("spacer-input")
 
     val inputState = remember { mutableStateOf(query ?: "") }
+
     val engineState = remember { mutableStateOf(engine) }
+
+    @Suppress("NAME_SHADOWING")
     val onEngineChange: (Engine) -> Unit = {
         engineState.value = it
         onEngineChange(it)
     }
 
     val fullSearchState = remember { mutableStateOf(fullSearch) }
+
+    @Suppress("NAME_SHADOWING")
     val onFullSearchChange: (Boolean) -> Unit = {
         fullSearchState.value = it
         onFullSearchChange(it)
     }
 
     val focusState = remember { mutableStateOf(false) }
+
+    @Suppress("NAME_SHADOWING")
     val onFocusChange: (Boolean) -> Unit = {
         focusState.value = it
         onFocusChange(it)
     }
 
+    @Suppress("NAME_SHADOWING")
     val onSearch: () -> Unit = {
         onSearch(inputState.value, Engine.values()
             .filter { fullSearchState.value || it == engineState.value }
@@ -294,6 +302,6 @@ fun Search(
     }
 }
 
-fun StyleBuilder.borderRadius2(): Unit {
+fun StyleScope.borderRadius2(): Unit {
     borderRadius(20.px)
 }

@@ -1,8 +1,10 @@
 import org.jetbrains.compose.compose
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform") version "1.6.10"
-    id("org.jetbrains.compose") version "1.0.1-rc2"
+    id("org.jetbrains.compose") version "1.1.0"
+    id("org.hidetake.ssh")
 }
 
 group = "com.bkahlert"
@@ -48,6 +50,22 @@ kotlin {
         val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
+            }
+        }
+    }
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    kotlinOptions.freeCompilerArgs += "-opt-in=org.jetbrains.compose.web.ExperimentalComposeWebApi"
+}
+
+val deploy by tasks.registering {
+    dependsOn(tasks.named("jsBrowserDistribution"))
+    doLast {
+        ssh.runSessions {
+            session(vaults["ssh-remotes.yml", "remotes", "default"]) {
+                put(buildDir.resolve("distributions").listFiles(), "./")
             }
         }
     }
