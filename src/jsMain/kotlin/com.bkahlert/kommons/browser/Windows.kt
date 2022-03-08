@@ -1,8 +1,8 @@
 package com.bkahlert.kommons.browser
 
+import io.ktor.http.Url
 import kotlinx.browser.window
 import org.w3c.dom.Window
-import org.w3c.dom.url.URL
 import kotlin.time.Duration
 
 /**
@@ -13,7 +13,7 @@ fun delayed(delay: Duration, block: () -> Unit) {
 }
 
 inline fun Window.open(
-    url: URL,
+    url: Url,
     target: String? = null,
     features: String? = null,
 ): Window? =
@@ -27,7 +27,7 @@ inline fun Window.open(
     }
 
 inline fun Window.openInSameTab(
-    url: URL,
+    url: Url,
     features: String? = null,
     newTabFallback: Boolean = true,
 ): Window? =
@@ -39,6 +39,6 @@ inline fun Window.openInSameTab(
     }.getOrThrow()
 
 inline fun Window.openInNewTab(
-    url: URL,
+    url: Url,
     features: String? = null,
 ): Window? = open(url, "_blank", features)

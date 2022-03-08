@@ -8,5 +8,5 @@ data class Team(
     val name: String,
     val color: String,
     val avatar: String,
-    val members: List<User>,
+    val members: List<BoxedUser>,
 )

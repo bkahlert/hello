@@ -14,7 +14,8 @@ import com.bkahlert.kommons.browser.openInNewTab
 import com.bkahlert.kommons.browser.openInSameTab
 import com.bkahlert.kommons.runtime.id
 import com.bkahlert.kommons.web.dom.Toggle
-import com.bkahlert.kommons.web.dom.toUrlOrNull
+import com.bkahlert.kommons.web.http.toUrlOrNull
+import io.ktor.http.Url
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.AutoComplete
@@ -59,7 +60,6 @@ import org.jetbrains.compose.web.dom.SearchInput
 import org.jetbrains.compose.web.dom.Span
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.url.URL
 
 @Composable
 fun Search(
@@ -70,13 +70,12 @@ fun Search(
     onEngineChange: (Engine) -> Unit = {},
     onFullSearchChange: (Boolean) -> Unit = {},
     onFocusChange: (Boolean) -> Unit = {},
-    onSearch: (String, List<URL>) -> Unit = { _, urls ->
+    onSearch: (String, List<Url>) -> Unit = { _, urls ->
         if (urls.size == 1) window.openInSameTab(urls.first())
         else urls.forEach(window::openInNewTab)
     },
     onPaste: (String) -> Unit = { value ->
         value.toUrlOrNull()
-            ?.takeIf { it.protocol.isNotEmpty() }
             ?.let { window.openInSameTab(it) }
     },
 ) {

@@ -6,19 +6,11 @@ import org.w3c.dom.get
 import org.w3c.dom.set
 import org.w3c.dom.Storage as NativeStorage
 
-interface Storable {
-    fun serialize(): String
-}
-
-interface Loadable<V> {
-    fun load(serialized: String): V
-}
-
 open class Storage(private val nativeStorage: NativeStorage) {
 
     operator fun get(key: String): String? = nativeStorage[key]
     operator fun set(key: String, value: String): String = value.also { nativeStorage[key] = it }
-//    fun getOrSet(key: String, value: String): String = get(key) ?: set(key, value)
+    fun remove(key: String): Unit = nativeStorage.removeItem(key)
 
     operator fun <E : Enum<E>> get(key: String, valueOf: (String) -> E): E? = nativeStorage[key]?.let { valueOf(it) }
     operator fun <E : Enum<E>> set(key: String, value: E): E = value.also { nativeStorage[key] = it.name }

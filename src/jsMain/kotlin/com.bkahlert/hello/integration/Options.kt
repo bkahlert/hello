@@ -3,6 +3,9 @@ package com.bkahlert.hello.integration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.hello.center
+import com.bkahlert.hello.clickup.ClickUpApiClient
+import com.bkahlert.hello.clickup.User
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.em
@@ -18,24 +21,30 @@ import org.w3c.dom.HTMLHeadingElement
 
 @Composable
 fun ClickUp(
-    text: String? = null,
+    user: User? = null,
     attrs: AttrBuilderContext<HTMLHeadingElement>? = null,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     Style(OptionsStyleSheet)
+    val coroutineScope = rememberCoroutineScope()
     Div({
         style {
             center()
         }
     }) {
-
-
         H1({
             classes(OptionsStyleSheet.header)
             attrs?.also { apply(it) }
         }) {
-            A("http://localhost:8080") {
-                Text(text ?: "ClickUp")
+            A("#", {
+                onClick {
+                    coroutineScope.launch {
+                        ClickUpApiClient.login()
+                    }
+                    it.preventDefault()
+                }
+            }) {
+                user?.also { Text("Logged in as ${it.username}") }
+                    ?: Text("Login")
             }
         }
     }
