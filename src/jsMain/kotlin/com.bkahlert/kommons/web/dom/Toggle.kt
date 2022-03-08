@@ -37,12 +37,12 @@ import org.jetbrains.compose.web.dom.Input
 fun Toggle(
     label: String? = null,
     checkedLabel: String? = label,
-    attrs: (InputAttrsScope<Boolean>.() -> Unit)? = null,
+    attrs: InputAttrsScope<Boolean>.() -> Unit = {},
 ) {
     val styleSheet = ToggleStyleSheet(label, checkedLabel).also { Style(it) }
     Input(Checkbox) {
         classes(styleSheet.toggle)
-        attrs?.also { apply(it) }
+        attrs.invoke(this)
     }
 }
 

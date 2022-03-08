@@ -1,6 +1,5 @@
 package com.bkahlert.hello
 
-import io.ktor.client.features.json.serializer.KotlinxSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -14,10 +13,6 @@ val SerializerJson by lazy {
         ignoreUnknownKeys = true
         explicitNulls = false
     }
-}
-
-val Serializer by lazy {
-    KotlinxSerializer(SerializerJson)
 }
 
 inline fun <reified T> T.serialize(): String = SerializerJson.encodeToString(this)

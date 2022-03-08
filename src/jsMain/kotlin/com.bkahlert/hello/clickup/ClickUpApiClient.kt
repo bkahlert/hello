@@ -2,21 +2,23 @@ package com.bkahlert.hello.clickup
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import com.bkahlert.hello.Serializer
+import com.bkahlert.hello.SerializerJson
 import com.bkahlert.kommons.runtime.LocalStorage
 import com.bkahlert.kommons.web.http.invoke
 import com.bkahlert.kommons.web.http.url
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
-import io.ktor.client.features.auth.Auth
-import io.ktor.client.features.auth.providers.BearerTokens
-import io.ktor.client.features.auth.providers.bearer
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.plugins.ContentNegotiation
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.http.Parameters
 import io.ktor.http.Url
 import io.ktor.http.formUrlEncode
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.browser.window
 import kotlinx.serialization.Serializable
 
@@ -53,8 +55,8 @@ object ClickUpApiClient {
 
     private val tokenClient by lazy {
         HttpClient(Js) {
-            install(JsonFeature) {
-                serializer = Serializer
+            install(ContentNegotiation) {
+                json(SerializerJson)
             }
         }
     }
@@ -62,8 +64,8 @@ object ClickUpApiClient {
     val client by lazy {
         if (errors.isNotEmpty()) return@lazy null
         HttpClient(Js) {
-            install(JsonFeature) {
-                serializer = Serializer
+            install(ContentNegotiation) {
+                json(SerializerJson)
             }
             install(Auth) {
                 LocalStorage[ACCESS_TOKEN_STORAGE_KEY]?.also { accessToken ->
@@ -84,7 +86,7 @@ object ClickUpApiClient {
                                 append("code", authorizationCode)
                             }.formUrlEncode())
                             console.info("getting OAuth token from", url)
-                            tokenClient.post<TokenInfo>(url).let {
+                            tokenClient.post(url).body<TokenInfo>().let {
                                 LocalStorage[ACCESS_TOKEN_STORAGE_KEY] = it.access_token
                                 BearerTokens(it.access_token, it.access_token)
                             }
@@ -124,10 +126,10 @@ object ClickUpApiClient {
     suspend fun login() {
         console.info("logging in")
         client?.apply {
-            teams.addAll(get<BoxedTeams>("$clickUpUrl/v2/team").teams.also {
+            teams.addAll(get("$clickUpUrl/v2/team").body<BoxedTeams>().teams.also {
                 console.info("teams queried", it)
             })
-            user.value = get<BoxedUser>("$clickUpUrl/v2/user").user.also {
+            user.value = get("$clickUpUrl/v2/user").body<BoxedUser>().user.also {
                 console.info("user queried", it)
             }
         }

@@ -16,6 +16,14 @@ repositories {
     google()
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven {
+        url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
+        name = "ktor-eap"
+    }
+    maven {
+        url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
+        name = "ktor-eap"
+    }
 }
 
 kotlin {
@@ -48,13 +56,15 @@ kotlin {
             dependencies {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
-                val ktor_version = "1.6.7"
+                val ktor_version = "2.0.0-beta-1"
                 implementation("io.ktor:ktor-client-core:$ktor_version")
                 implementation("io.ktor:ktor-client-js:$ktor_version")
                 implementation("io.ktor:ktor-client-auth:$ktor_version")
+                implementation("io.ktor:ktor-client-logging:$ktor_version")
                 implementation("io.ktor:ktor-client-serialization:$ktor_version")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-//                implementation("io.ktor:ktor-server-cors:$ktor_version")
                 implementation("com.bkahlert.kommons:kommons:1.11.5")
 
                 // https://github.com/JetBrains/kotlin-wrappers

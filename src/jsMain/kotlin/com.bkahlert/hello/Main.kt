@@ -177,7 +177,7 @@ fun Grid(
 ) {
     Div({
         classes(AppStylesheet.helloGridContainer)
-        attrs?.also { apply(it) }
+        attrs?.invoke(this)
     }) {
         content()
     }

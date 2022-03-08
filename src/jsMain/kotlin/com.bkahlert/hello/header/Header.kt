@@ -26,7 +26,7 @@ fun Header(
     }) {
         H1({
             classes(HeaderStyleSheet.header)
-            attrs?.also { apply(it) }
+            attrs?.invoke(this)
         }) {
             text?.let { Text(it) }
         }

@@ -33,7 +33,7 @@ fun ClickUp(
     }) {
         H1({
             classes(OptionsStyleSheet.header)
-            attrs?.also { apply(it) }
+            attrs?.invoke(this)
         }) {
             A("#", {
                 onClick {

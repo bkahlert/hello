@@ -144,7 +144,7 @@ fun Search(
                 property("box-shadow", "none")
                 borderRadius(24.px)
             }
-            attrs?.also { apply(it) }
+            attrs?.invoke(this)
         }) {
             Div({
                 style {
@@ -187,7 +187,7 @@ fun Search(
                     property("margin", "0 auto")
                     width(100.percent)
                 }
-                attrs?.also { apply(it) }
+                attrs?.invoke(this)
             }) {
                 Div({
                     style {

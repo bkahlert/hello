@@ -51,7 +51,7 @@ fun Links(
         style {
             textAlign("center")
         }
-        attrs?.also { apply(it) }
+        attrs?.invoke(this)
     }) {
         content?.also { it(this) }
     }
@@ -69,7 +69,7 @@ fun Link(
         style {
             backgroundImageUrl?.also { backgroundImage("url($it)") }
         }
-        attrs?.also { apply(it) }
+        attrs?.invoke(this)
     }) {
         Span { Text(text) }
     }

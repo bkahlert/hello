@@ -37,7 +37,7 @@ fun Custom(
     Style(CustomStyleSheet)
     Div({
         classes(CustomStyleSheet.custom, CustomStyleSheet.loading, CustomStyleSheet.loaded)
-        attrs?.also { apply(it) }
+        attrs?.invoke(this)
     }) {
         url?.also {
             Iframe({
