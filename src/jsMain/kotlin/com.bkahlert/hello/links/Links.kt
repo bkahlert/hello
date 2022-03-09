@@ -105,7 +105,7 @@ object LinksStyleSheet : StyleSheet() {
             opacity(1)
         }
 
-        self + hover style {
+        hover(self) style {
             opacity(1)
             textDecoration("none")
         }

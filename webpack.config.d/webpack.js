@@ -1,19 +1,25 @@
-if (config.devServer) {
-  config.devtool = 'eval-cheap-source-map'
+with (config) {
+  if (devServer) {
+    devtool = 'eval-source-map'
+    // devtool = 'eval-cheap-source-map'
 
-  // TODO remove
-  config.devServer.headers = {
-    'Access-Control-Allow-Origin': 'http://localhost:8080',
+    devServer.allowedHosts = ['all']
+    devServer.client = {
+      logging: 'info',
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+      progress: false,
+    }
+    devServer.open = false
+    devServer.proxy = {
+      '/api': {
+        'target': 'https://api.clickup.com',
+        'secure': false,
+      },
+    }
   }
-
-  config.devServer.allowedHosts = ['all']
-
-  config.devServer.proxy = {
-    '/api': {
-      'target': 'https://api.clickup.com',
-      'secure': false,
-    },
-  }
-
-  console.warn(config.devServer)
 }
+
+console.warn(config)

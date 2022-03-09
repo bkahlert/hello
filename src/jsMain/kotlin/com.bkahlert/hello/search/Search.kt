@@ -10,9 +10,10 @@ import com.bkahlert.hello.center
 import com.bkahlert.hello.fontFamily
 import com.bkahlert.hello.visuallyHidden
 import com.bkahlert.kommons.backgroundImage
+import com.bkahlert.kommons.browser.delayed
 import com.bkahlert.kommons.browser.openInNewTab
 import com.bkahlert.kommons.browser.openInSameTab
-import com.bkahlert.kommons.runtime.id
+import com.bkahlert.kommons.time.seconds
 import com.bkahlert.kommons.web.dom.Toggle
 import com.bkahlert.kommons.web.http.toUrlOrNull
 import io.ktor.http.Url
@@ -69,7 +70,7 @@ fun Search(
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
     onEngineChange: (Engine) -> Unit = {},
     onFullSearchChange: (Boolean) -> Unit = {},
-    onFocusChange: (Boolean) -> Unit = {},
+    onReady: () -> Unit = {},
     onSearch: (String, List<Url>) -> Unit = { _, urls ->
         if (urls.size == 1) window.openInSameTab(urls.first())
         else urls.forEach(window::openInNewTab)
@@ -81,7 +82,7 @@ fun Search(
 ) {
     val color = RGB("#5f6368")
 
-    val spacerInputId = id("spacer-input")
+    val spacerInput = "spacer-input"
 
     val inputState = remember { mutableStateOf(query ?: "") }
 
@@ -104,9 +105,11 @@ fun Search(
     val focusState = remember { mutableStateOf(false) }
 
     @Suppress("NAME_SHADOWING")
-    val onFocusChange: (Boolean) -> Unit = {
-        focusState.value = it
-        onFocusChange(it)
+    val onFocusChange: (Boolean) -> Unit = { hasFocus ->
+        focusState.value = hasFocus
+        if (hasFocus) {
+            delayed(1.seconds) { onReady() }
+        }
     }
 
     @Suppress("NAME_SHADOWING")
@@ -116,7 +119,7 @@ fun Search(
             .map { it.url(inputState.value) })
     }
 
-    val (backgroundPosition, backgroundPositionChanged) = remember { mutableStateOf("0px") }
+    val (backgroundPosition, backgroundPositionChanged) = remember { mutableStateOf(65.px) }
 
     val isEmpty = inputState.value.isEmpty()
 
@@ -240,7 +243,14 @@ fun Search(
                                 "OSLeft", "OSRight" -> onFullSearchChange(false)
                             }
                         }
-                        onInput { event -> inputState.value = event.value }
+                        onInput { event ->
+                            inputState.value = event.value
+
+                            document.getElementById(spacerInput)?.unsafeCast<HTMLElement>()?.apply {
+                                textContent = event.value
+                                backgroundPositionChanged((offsetWidth + 65).px)
+                            }
+                        }
                         onPaste { event -> event.getData("text/plain")?.also(onPaste) }
                         style {
                             if (!focusState.value) color(engineState.value.color.textColor)
@@ -267,20 +277,11 @@ fun Search(
 
                     Div({ style { visuallyHidden() } }) {
                         Span({
-                            id(spacerInputId)
+                            id(spacerInput)
                             style {
                                 fontFamily(Brand.fonts)
                             }
                         })
-                    }
-
-                    document.getElementById(spacerInputId)?.unsafeCast<HTMLElement>()?.apply {
-                        textContent = inputState.value
-                        if (isEmpty && !focusState.value) {
-                            backgroundPositionChanged("${offsetWidth + 40}px")
-                        } else {
-                            backgroundPositionChanged("${offsetWidth + 65}px")
-                        }
                     }
                 }
             }

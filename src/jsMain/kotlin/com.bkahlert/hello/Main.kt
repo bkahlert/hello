@@ -1,7 +1,8 @@
 package com.bkahlert.hello
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.Brand
@@ -14,7 +15,11 @@ import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Options
 import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.AppStylesheet.Grid.Space
+import com.bkahlert.hello.LoadingState.PartiallyLoaded
+import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.clickup.ClickUpApiClient
+import com.bkahlert.hello.clickup.Team
+import com.bkahlert.hello.clickup.User
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.integration.ClickUp
 import com.bkahlert.hello.links.Header
@@ -23,10 +28,18 @@ import com.bkahlert.hello.links.Links
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Engine.Google
 import com.bkahlert.hello.search.Search
-import com.bkahlert.kommons.browser.delayed
+import com.bkahlert.kommons.Either
+import com.bkahlert.kommons.fix.map
+import com.bkahlert.kommons.fix.or
 import com.bkahlert.kommons.runtime.LocalStorage
-import com.bkahlert.kommons.time.seconds
-import kotlinx.coroutines.launch
+import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.update
 import org.jetbrains.compose.web.ExperimentalComposeWebApi
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
@@ -79,8 +92,101 @@ import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.url.URL
 
+enum class LoadingState { Loading, PartiallyLoaded, FullLoaded }
+
+sealed interface ProfileState {
+    object Loading : ProfileState
+
+    data class Data(
+        val user: User,
+        val teams: List<Team>,
+    ) : ProfileState
+
+    data class Error(
+        val exceptions: List<Throwable>,
+    ) : ProfileState {
+        constructor(vararg exceptions: Throwable) : this(exceptions.toList())
+
+        val message: String
+            get() = exceptions.firstNotNullOfOrNull { it.message } ?: "message missing"
+    }
+}
+
+class AppModel(private val backgroundScope: CoroutineScope) {
+
+    init {
+        console.warn("New AppModel")
+    }
+
+    private val logger = simpleLogger()
+
+    private val _loading = MutableStateFlow(LoadingState.Loading) // private mutable state flow
+    val loading = _loading.asStateFlow() // publicly exposed as read-only state flow
+
+    private val _engine = MutableStateFlow(LocalStorage["engine", { Engine.valueOf(it) }] ?: Google)
+    val engine = _engine.asStateFlow()
+
+    fun change(engine: Engine) {
+        LocalStorage["engine"] = engine
+        _engine.update { engine }
+    }
+
+    fun partiallyLoaded() {
+        when (loading.value) {
+            LoadingState.Loading -> {
+                logger.log("${loading.value} -> $PartiallyLoaded")
+                _loading.update { PartiallyLoaded }
+            }
+            else -> {
+                logger.log("${loading.value} >= $PartiallyLoaded")
+            }
+        }
+    }
+
+    private val _clickUpAccessToken = MutableStateFlow(LocalStorage[ACCESS_TOKEN_STORAGE_KEY])
+    private val _clickUpApiClient = MutableStateFlow(ClickUpApiClient(_clickUpAccessToken.asStateFlow()))
+    val clickUpApiClient = _clickUpApiClient.asStateFlow()
+
+    private val _clickUpUser: Flow<Either<User, Throwable>> =
+        _clickUpApiClient.mapLatest { it.getUser() }
+    private val _clickUpTeams: Flow<Either<List<Team>, Throwable>> =
+        _clickUpApiClient.mapLatest { it.getTeams() }
+    val profile: Flow<ProfileState?> = _clickUpUser.combine(_clickUpTeams) { user: Either<User, Throwable>, teams: Either<List<Team>, Throwable> ->
+        console.warn(user, "A")
+        console.warn(teams, "B")
+        console.warn(teams, "!: " + listOf(user, teams).filterIsInstance<Throwable>().size)
+        console.warn(teams, "!: " + listOf(user, teams).filterIsInstance<Throwable>().size)
+
+        val x = user.map { theUser ->
+            teams.map { ProfileState.Data(theUser, it) } or { ProfileState.Error(it) }
+        } or { ex ->
+            user.map { ProfileState.Error(ex) } or { ProfileState.Error(ex, it) }
+        }
+
+        console.warn(x)
+
+        x
+    }
+
+    fun configureClickUp(accessToken: String) {
+        LocalStorage[ACCESS_TOKEN_STORAGE_KEY] = accessToken
+        _clickUpAccessToken.update { accessToken }
+//        backgroundScope.launch {
+//            clickUpApiClient.value.run {
+//                getUser { user -> _clickUpUser.update { user } }
+//                getTeams { teams -> _clickUpTeams.update { teams } }
+//            }
+//        }
+    }
+
+    companion object {
+        private const val ACCESS_TOKEN_STORAGE_KEY = "clickup.access-token"
+    }
+}
+
 @OptIn(ExperimentalComposeWebApi::class)
 fun main() {
+
 
     // trigger creation to avoid flickering
     Engine.values().forEach {
@@ -91,8 +197,12 @@ fun main() {
     renderComposable("root") {
         Style(AppStylesheet)
 
-        val coroutineScope = rememberCoroutineScope()
-        val (canSearch, setCanSearch) = remember { mutableStateOf(false) }
+        val backgroundScope = rememberCoroutineScope()
+        val appState = remember { AppModel(backgroundScope) }
+        val loadingState by appState.loading.collectAsState()
+        val engine by appState.engine.collectAsState()
+        val profile by appState.profile.collectAsState(null)
+
 
         Grid({
             style {
@@ -128,25 +238,31 @@ fun main() {
 //                Search(value = "all engines", allEngines = true)
 //                Search(value = "single engine")
 //                Search(allEngines = true)
-                Search(LocalStorage["engine", { Engine.valueOf(it) }] ?: Google,
-                    onEngineChange = { LocalStorage["engine"] = it },
-                    onFocusChange = { hasFocus ->
-                        if (hasFocus && !canSearch) {
-                            delayed(.5.seconds) {
-                                setCanSearch(true)
-                                coroutineScope.launch {
-                                    ClickUpApiClient.reactivate()
-                                }
-                            }
-                        }
-                    })
+                Search(engine,
+                    onEngineChange = { appState.change(it) },
+                    onReady = { appState.partiallyLoaded() })
             }
             Div({
                 style {
                     gridArea(Options)
                 }
             }) {
-                ClickUp()
+                ClickUp(
+                    profile = profile,
+                    onConfig = {
+                        window.prompt("""
+                            Currently, OAuth2 is not supported yet.
+                            
+                            To use this feature at its current state,
+                            please enter your personal ClickUp API token.
+                            
+                            More information can be found on https://clickup.com/api
+                            """.trimIndent(), "pk_4687596_XQ7VFO3V06T6TE6FJI3A6UY6EY3LBKYI")
+                            ?.also {
+                                appState.configureClickUp(it)
+                            }
+                    },
+                )
             }
             Div({
                 style {
@@ -165,7 +281,12 @@ fun main() {
                     gridArea(Custom)
                     backgroundColor(CUSTOM_BACKGROUND_COLOR)
                 }
-            }) { Custom(if (canSearch) URL("https://start.me/p/0PBMOo/dkb") else null) }
+            }) {
+                when (loadingState) {
+                    LoadingState.FullLoaded -> Custom(URL("https://start.me/p/0PBMOo/dkb"))
+                    else -> Custom(null)
+                }
+            }
         }
     }
 }

@@ -1,141 +1,90 @@
 package com.bkahlert.hello.clickup
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import com.bkahlert.hello.SerializerJson
-import com.bkahlert.kommons.runtime.LocalStorage
-import com.bkahlert.kommons.web.http.invoke
-import com.bkahlert.kommons.web.http.url
+import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
+import com.bkahlert.hello.clickup.ClickUpException.Companion.wrapOrNull
+import com.bkahlert.kommons.Either
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.ContentNegotiation
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.HttpResponseValidator
+import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.plugin
 import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.http.Parameters
-import io.ktor.http.Url
-import io.ktor.http.formUrlEncode
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.browser.window
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 
-private val token = ""
+
+class ClickUpException(
+    error: ErrorInfo,
+    cause: Throwable?,
+) : IllegalStateException("[${error.ECODE}] ${error.err}", cause) {
+    companion object {
+        /**
+         * Returns a business exception with this exception as its cause if applicable.
+         */
+        suspend fun Throwable.wrapOrNull(): ClickUpException? =
+            (this as? ResponseException)?.let {
+                kotlin.runCatching { ClickUpException(it.response.body(), it) }.getOrNull()
+            }
+    }
+}
 
 @Serializable
-data class TokenInfo(
-    val access_token: String,
-)
-
-@Serializable
-data class Error(
+data class ErrorInfo(
     val err: String,
     val ECODE: String,
 )
 
-object ClickUpApiClient {
-
-    private const val AUTHORIZATION_CODE_QUERY_KEY = "code"
-    private const val AUTHORIZATION_CODE_STORAGE_KEY = "clickup.authorization-code"
-    private const val ACCESS_TOKEN_STORAGE_KEY = "clickup.access-token"
-
+class ClickUpApiClient(
+    private val accessTokenState: StateFlow<String?>,
+) {
     //    val clickUpUrl = "https://api.clickup.com/api"
     val clickUpUrl = "http://localhost:8080/api"
 
-    private val parameters = Url(window.location.href).parameters
-
-    private val errors = listOf("auth-error", "token-error").associateWith { parameters[it] }
-        .filterValues { it != null }
-        .onEach { (error, message) ->
-            console.error(error, message)
-            window.alert("$error: $message")
-        }
+    private val logger = simpleLogger()
 
     private val tokenClient by lazy {
         HttpClient(Js) {
             install(ContentNegotiation) {
                 json(SerializerJson)
             }
-        }
-    }
-
-    val client by lazy {
-        if (errors.isNotEmpty()) return@lazy null
-        HttpClient(Js) {
-            install(ContentNegotiation) {
-                json(SerializerJson)
+            HttpResponseValidator {
+                handleResponseException { throw it.wrapOrNull() ?: it }
             }
-            install(Auth) {
-                LocalStorage[ACCESS_TOKEN_STORAGE_KEY]?.also { accessToken ->
-                    bearer {
-                        loadTokens { BearerTokens(accessToken, accessToken) }
-                        refreshTokens {
-                            window.alert("Removing expired access token")
-                            LocalStorage.remove(ACCESS_TOKEN_STORAGE_KEY)
-                            throw IllegalStateException("ClickUp access token is no longer valid")
-                        }
+            install("ClickUp-PersonalToken-Authorization") {
+                plugin(HttpSend).intercept { context ->
+                    accessTokenState.value?.also { accessToken ->
+                        logger.info("setting ${HttpHeaders.Authorization} header")
+                        context.headers[HttpHeaders.Authorization] = accessToken
                     }
-                } ?: LocalStorage[AUTHORIZATION_CODE_STORAGE_KEY]?.also { authorizationCode ->
-                    bearer {
-                        loadTokens {
-                            val url = Url("$clickUpUrl/v2/oauth/token?" + Parameters.build {
-                                append("client_id", "GN6516W1PG9IHB9E9O4ITESONC9SP8V7")
-                                append("client_secret", "") // TODO
-                                append("code", authorizationCode)
-                            }.formUrlEncode())
-                            console.info("getting OAuth token from", url)
-                            tokenClient.post(url).body<TokenInfo>().let {
-                                LocalStorage[ACCESS_TOKEN_STORAGE_KEY] = it.access_token
-                                BearerTokens(it.access_token, it.access_token)
-                            }
-                        }
-                        refreshTokens {
-                            window.alert("Removing expired access token")
-                            LocalStorage.remove(ACCESS_TOKEN_STORAGE_KEY)
-                            throw IllegalStateException("ClickUp access token is no longer valid")
-                        }
-                    }
-                } ?: parameters[AUTHORIZATION_CODE_QUERY_KEY]?.also { authorizationCode ->
-                    LocalStorage[AUTHORIZATION_CODE_STORAGE_KEY] = authorizationCode
-                    window.location.url {
-                        parameters.remove(AUTHORIZATION_CODE_QUERY_KEY)
-                    }.also {
-                        // TODO test if redirected correctly
-                        window.alert(it.toString())
-                        console.info("redirecting to", it)
-//                        window.location.url = it
-                    }
-                } ?: run {
-                    Url("https://app.clickup.com/api?" + Parameters.build {
-                        append("client_id", "GN6516W1PG9IHB9E9O4ITESONC9SP8V7")
-                        append("redirect_uri", "http://localhost:8080")
-                    }.formUrlEncode()).also {
-                        console.info("getting authorization code from", it)
-                        window.location.url = it
-                    }
+                    execute(context)
                 }
             }
         }
     }
 
-    val teams = mutableStateListOf<Team>()
-    val user = mutableStateOf<User?>(null)
-
-    suspend fun login() {
-        console.info("logging in")
-        client?.apply {
-            teams.addAll(get("$clickUpUrl/v2/team").body<BoxedTeams>().teams.also {
-                console.info("teams queried", it)
-            })
-            user.value = get("$clickUpUrl/v2/user").body<BoxedUser>().user.also {
-                console.info("user queried", it)
-            }
+    private suspend fun <T> inBackground(
+        onSuccess: (T) -> Unit,
+        onFailure: (Throwable) -> Unit = {},
+        block: suspend () -> T,
+    ): Either<T, Throwable> =
+        try {
+            val success = block()
+            onSuccess(success)
+            Either.Left(success)
+        } catch (e: Exception) {
+            onFailure(e)
+            Either.Right(e)
         }
-    }
 
-    suspend fun reactivate() {
-        if (LocalStorage[ACCESS_TOKEN_STORAGE_KEY] != null && errors.isEmpty()) login()
-    }
+    suspend fun getUser(onSuccess: (User) -> Unit = {}): Either<User, Throwable> =
+        inBackground(onSuccess) { tokenClient.get("$clickUpUrl/v2/user").body<BoxedUser>().user }
+
+    suspend fun getTeams(onSuccess: (List<Team>) -> Unit = {}): Either<List<Team>, Throwable> =
+        inBackground(onSuccess) { tokenClient.get("$clickUpUrl/v2/team").body<BoxedTeams>().teams }
 }
