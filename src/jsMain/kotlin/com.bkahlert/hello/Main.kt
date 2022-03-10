@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.Brand
 import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
 import com.bkahlert.hello.AppStylesheet.GRADIENT_HEIGHT
@@ -15,9 +14,8 @@ import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Options
 import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.AppStylesheet.Grid.Space
-import com.bkahlert.hello.LoadingState.PartiallyLoaded
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.clickup.ClickUpApiClient
+import com.bkahlert.hello.clickup.ClickupClient
 import com.bkahlert.hello.clickup.Team
 import com.bkahlert.hello.clickup.User
 import com.bkahlert.hello.custom.Custom
@@ -33,11 +31,11 @@ import com.bkahlert.kommons.fix.map
 import com.bkahlert.kommons.fix.or
 import com.bkahlert.kommons.runtime.LocalStorage
 import kotlinx.browser.window
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import org.jetbrains.compose.web.ExperimentalComposeWebApi
@@ -92,17 +90,23 @@ import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.url.URL
 
-enum class LoadingState { Loading, PartiallyLoaded, FullLoaded }
+sealed interface AppState {
+    object Loading : AppState
+    object Ready : AppState
+    object FullLoaded : AppState
+}
 
 sealed interface ProfileState {
+    object Disconnected : ProfileState
+
     object Loading : ProfileState
 
-    data class Data(
+    data class Ready(
         val user: User,
         val teams: List<Team>,
     ) : ProfileState
 
-    data class Error(
+    data class Failed(
         val exceptions: List<Throwable>,
     ) : ProfileState {
         constructor(vararg exceptions: Throwable) : this(exceptions.toList())
@@ -110,9 +114,26 @@ sealed interface ProfileState {
         val message: String
             get() = exceptions.firstNotNullOfOrNull { it.message } ?: "message missing"
     }
+
+    companion object {
+        fun of(
+            userAttempt: Either<User, Throwable>?,
+            teamsAttempt: Either<List<Team>, Throwable>?,
+        ): ProfileState {
+            return if (userAttempt == null || teamsAttempt == null) {
+                if (userAttempt == null && teamsAttempt == null) Disconnected else Loading
+            } else {
+                userAttempt.map { user ->
+                    teamsAttempt.map { Ready(user, it) } or { Failed(it) }
+                } or { ex ->
+                    userAttempt.map { Failed(ex) } or { Failed(ex, it) }
+                }
+            }
+        }
+    }
 }
 
-class AppModel(private val backgroundScope: CoroutineScope) {
+class AppModel {
 
     init {
         console.warn("New AppModel")
@@ -120,8 +141,8 @@ class AppModel(private val backgroundScope: CoroutineScope) {
 
     private val logger = simpleLogger()
 
-    private val _loading = MutableStateFlow(LoadingState.Loading) // private mutable state flow
-    val loading = _loading.asStateFlow() // publicly exposed as read-only state flow
+    private val _appState = MutableStateFlow<AppState>(AppState.Loading)
+    val appState = _appState.asStateFlow()
 
     private val _engine = MutableStateFlow(LocalStorage["engine", { Engine.valueOf(it) }] ?: Google)
     val engine = _engine.asStateFlow()
@@ -131,52 +152,23 @@ class AppModel(private val backgroundScope: CoroutineScope) {
         _engine.update { engine }
     }
 
-    fun partiallyLoaded() {
-        when (loading.value) {
-            LoadingState.Loading -> {
-                logger.log("${loading.value} -> $PartiallyLoaded")
-                _loading.update { PartiallyLoaded }
-            }
-            else -> {
-                logger.log("${loading.value} >= $PartiallyLoaded")
-            }
-        }
+    fun searchReady() {
+        if (appState.value != AppState.Loading) return
+        _appState.update { AppState.Ready }
     }
 
-    private val _clickUpAccessToken = MutableStateFlow(LocalStorage[ACCESS_TOKEN_STORAGE_KEY])
-    private val _clickUpApiClient = MutableStateFlow(ClickUpApiClient(_clickUpAccessToken.asStateFlow()))
-    val clickUpApiClient = _clickUpApiClient.asStateFlow()
+    private val _clickupToken = MutableStateFlow(LocalStorage[ACCESS_TOKEN_STORAGE_KEY])
+    private val _clickupClient = _clickupToken
+        .map { LocalStorage[ACCESS_TOKEN_STORAGE_KEY]?.let { ClickupClient(it) } }
+        .combine(_appState) { client, appState -> client.takeUnless { appState == AppState.Loading } }
 
-    private val _clickUpUser: Flow<Either<User, Throwable>> =
-        _clickUpApiClient.mapLatest { it.getUser() }
-    private val _clickUpTeams: Flow<Either<List<Team>, Throwable>> =
-        _clickUpApiClient.mapLatest { it.getTeams() }
-    val profile: Flow<ProfileState?> = _clickUpUser.combine(_clickUpTeams) { user: Either<User, Throwable>, teams: Either<List<Team>, Throwable> ->
-        console.warn(user, "A")
-        console.warn(teams, "B")
-        console.warn(teams, "!: " + listOf(user, teams).filterIsInstance<Throwable>().size)
-        console.warn(teams, "!: " + listOf(user, teams).filterIsInstance<Throwable>().size)
-
-        val x = user.map { theUser ->
-            teams.map { ProfileState.Data(theUser, it) } or { ProfileState.Error(it) }
-        } or { ex ->
-            user.map { ProfileState.Error(ex) } or { ProfileState.Error(ex, it) }
-        }
-
-        console.warn(x)
-
-        x
-    }
+    val profileState: Flow<ProfileState> =
+        _clickupClient.mapLatest { it?.getUser() }
+            .combine(_clickupClient.mapLatest { it?.getTeams() }, ProfileState.Companion::of)
 
     fun configureClickUp(accessToken: String) {
         LocalStorage[ACCESS_TOKEN_STORAGE_KEY] = accessToken
-        _clickUpAccessToken.update { accessToken }
-//        backgroundScope.launch {
-//            clickUpApiClient.value.run {
-//                getUser { user -> _clickUpUser.update { user } }
-//                getTeams { teams -> _clickUpTeams.update { teams } }
-//            }
-//        }
+        _clickupToken.update { accessToken }
     }
 
     companion object {
@@ -197,12 +189,10 @@ fun main() {
     renderComposable("root") {
         Style(AppStylesheet)
 
-        val backgroundScope = rememberCoroutineScope()
-        val appState = remember { AppModel(backgroundScope) }
-        val loadingState by appState.loading.collectAsState()
+        val appState = remember { AppModel() }
+        val loadingState by appState.appState.collectAsState()
         val engine by appState.engine.collectAsState()
-        val profile by appState.profile.collectAsState(null)
-
+        val profileState by appState.profileState.collectAsState(null)
 
         Grid({
             style {
@@ -240,17 +230,18 @@ fun main() {
 //                Search(allEngines = true)
                 Search(engine,
                     onEngineChange = { appState.change(it) },
-                    onReady = { appState.partiallyLoaded() })
+                    onReady = { appState.searchReady() })
             }
             Div({
                 style {
                     gridArea(Options)
                 }
             }) {
-                ClickUp(
-                    profile = profile,
-                    onConfig = {
-                        window.prompt("""
+                profileState?.also {
+                    ClickUp(
+                        profileState = it,
+                        onConfig = {
+                            window.prompt("""
                             Currently, OAuth2 is not supported yet.
                             
                             To use this feature at its current state,
@@ -258,11 +249,12 @@ fun main() {
                             
                             More information can be found on https://clickup.com/api
                             """.trimIndent(), "pk_4687596_XQ7VFO3V06T6TE6FJI3A6UY6EY3LBKYI")
-                            ?.also {
-                                appState.configureClickUp(it)
-                            }
-                    },
-                )
+                                ?.also {
+                                    appState.configureClickUp(it)
+                                }
+                        },
+                    )
+                }
             }
             Div({
                 style {
@@ -283,7 +275,7 @@ fun main() {
                 }
             }) {
                 when (loadingState) {
-                    LoadingState.FullLoaded -> Custom(URL("https://start.me/p/0PBMOo/dkb"))
+                    AppState.FullLoaded -> Custom(URL("https://start.me/p/0PBMOo/dkb"))
                     else -> Custom(null)
                 }
             }

@@ -2,10 +2,10 @@ import com.bkahlert.hello.clickup.BoxedUser
 import com.bkahlert.hello.clickup.user
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.shouldBe
+import kotlin.test.Test
 
-class BoxedUserTest : ShouldSpec({
+class BoxedUserTest {
     val json =
         // language=JSON
         """
@@ -22,10 +22,12 @@ class BoxedUserTest : ShouldSpec({
                 }
             }
         """.trimIndent()
-    should("deserialize") {
+
+    @Test fun deserialize() {
         json.deserialize<BoxedUser>() shouldBe user().box()
     }
-    should("serialize") {
+
+    @Test fun serialize() {
         user().box().serialize() shouldBe json
     }
-})
+}

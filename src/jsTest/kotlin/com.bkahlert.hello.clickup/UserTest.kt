@@ -2,10 +2,12 @@ package com.bkahlert.hello.clickup
 
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import io.kotest.core.spec.style.ShouldSpec
+import com.bkahlert.kommons.Color
 import io.kotest.matchers.shouldBe
+import io.ktor.http.Url
+import kotlin.test.Test
 
-class UserTest : ShouldSpec({
+class UserTest {
     val json =
         // language=JSON
         """
@@ -20,31 +22,33 @@ class UserTest : ShouldSpec({
                 "timezone": "Europe/Berlin"
             }
         """.trimIndent()
-    should("deserialize") {
+
+    @Test fun deserialize() {
         json.deserialize<User>() shouldBe user()
     }
-    should("serialize") {
+
+    @Test fun serialize() {
         user().serialize() shouldBe json
     }
-})
+}
 
 fun user(
     id: Int = 42,
     username: String = "john.doe",
     email: String = "john.doe@example.com",
-    color: String = "#ff0000",
-    profilePicture: String = "https://example.com/john-doe.jpg",
-    week_start_day: Int = 1,
-    global_font_support: Boolean = false,
-    timezone: String = "Europe/Berlin",
+    color: Color? = Color("#ff0000"),
+    profilePicture: Url? = Url("https://example.com/john-doe.jpg"),
+    weekStartDay: Int? = 1,
+    globalFontSupport: Boolean? = false,
+    timezone: String? = "Europe/Berlin",
 ) = User(
     id,
     username,
     email,
     color,
     profilePicture,
-    week_start_day,
-    global_font_support,
+    weekStartDay,
+    globalFontSupport,
     timezone,
 )
 
@@ -52,18 +56,18 @@ fun otherUser(
     id: Int = 53,
     username: String = "jane.doe",
     email: String = "jane.doe@example.com",
-    color: String = "#00ff00",
-    profilePicture: String = "https://example.com/jane-doe.jpg",
-    week_start_day: Int = 0,
-    global_font_support: Boolean = true,
-    timezone: String = "Europe/London",
+    color: Color? = Color("#00ff00"),
+    profilePicture: Url? = Url("https://example.com/jane-doe.jpg"),
+    weekStartDay: Int? = 0,
+    globalFontSupport: Boolean? = true,
+    timezone: String? = "Europe/London",
 ) = User(
     id,
     username,
     email,
     color,
     profilePicture,
-    week_start_day,
-    global_font_support,
+    weekStartDay,
+    globalFontSupport,
     timezone,
 )

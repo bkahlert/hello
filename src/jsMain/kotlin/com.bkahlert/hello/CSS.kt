@@ -1,6 +1,6 @@
 package com.bkahlert.hello
 
-import com.bkahlert.Color
+import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.SVGImage
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems

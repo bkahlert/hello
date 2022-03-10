@@ -5,10 +5,12 @@ import com.bkahlert.hello.clickup.User
 import com.bkahlert.hello.clickup.otherUser
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import io.kotest.core.spec.style.ShouldSpec
+import com.bkahlert.kommons.Color.RGB
 import io.kotest.matchers.shouldBe
+import io.ktor.http.Url
+import kotlin.test.Test
 
-class BoxedTeamsTest : ShouldSpec({
+class BoxedTeamsTest {
     val json =
         // language=JSON
         """
@@ -69,34 +71,36 @@ class BoxedTeamsTest : ShouldSpec({
                 ]
             }
         """.trimIndent()
-    should("deserialize") {
+
+    @Test fun deserialize() {
         json.deserialize<BoxedTeams>() shouldBe boxedTeams()
     }
-    should("serialize") {
+
+    @Test fun serialize() {
         boxedTeams().serialize() shouldBe json
     }
 
-    should("deserialize real world data") {
+    @Test fun deserializeRealWorldData() {
         """
             {"teams":[{"id":"257831","name":"BKAHLERT","color":"#e040fb","avatar":"https://attachments2.clickup.com/team_avatars/257831_i9f.blob?Expires=1661904000&Key-Pair-Id=APKAIYJRUKB5RLQWHZ...3VmUzJohxatUBhTx9JQxN8BCOTA__","members":[{"user":{"id":468596,"username":"Björn Kahlert","email":"mail@bkahlert.tld","color":"#4169E1","profilePicture":"https://attachments.clickup.com/profilePictures/468596_ARW.jpg","initials":"BK","role":1,"custom_role":null,"last_active":"1646622890760","date_joined":"1595175635526","date_invited":"1595175635526"}}]}]}
         """.trimIndent().deserialize<BoxedTeams>() shouldBe BoxedTeams(listOf(
             Team(257831,
                 "BKAHLERT",
-                "#e040fb",
-                "https://attachments2.clickup.com/team_avatars/257831_i9f.blob?Expires=1661904000&Key-Pair-Id=APKAIYJRUKB5RLQWHZ...3VmUzJohxatUBhTx9JQxN8BCOTA__",
+                RGB("#e040fb"),
+                Url("https://attachments2.clickup.com/team_avatars/257831_i9f.blob?Expires=1661904000&Key-Pair-Id=APKAIYJRUKB5RLQWHZ...3VmUzJohxatUBhTx9JQxN8BCOTA__"),
                 listOf(BoxedUser(User(
                     468596,
                     "Björn Kahlert",
                     "mail@bkahlert.tld",
-                    "#4169E1",
-                    "https://attachments.clickup.com/profilePictures/468596_ARW.jpg",
+                    RGB("#4169E1"),
+                    Url("https://attachments.clickup.com/profilePictures/468596_ARW.jpg"),
                     null,
                     null,
                     null,
                 )
                 )))))
     }
-})
+}
 
 fun boxedTeams(
     vararg teams: Team = arrayOf(team(), team(id = 4829, members = arrayOf(otherUser()))),

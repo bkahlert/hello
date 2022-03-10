@@ -1,25 +1,23 @@
-with (config) {
-  if (devServer) {
-    devtool = 'eval-source-map'
-    // devtool = 'eval-cheap-source-map'
-
-    devServer.allowedHosts = ['all']
-    devServer.client = {
+;(function (config) {
+  config.devtool = 'eval-source-map'
+  config.devServer = config.devServer || {}
+  Object.assign(config.devServer, config.devServer, {
+    allowedHosts: ['all'],
+    client: {
       logging: 'info',
       overlay: {
         errors: true,
         warnings: false,
       },
       progress: false,
-    }
-    devServer.open = false
-    devServer.proxy = {
+    },
+    open: false,
+    proxy: {
       '/api': {
         'target': 'https://api.clickup.com',
         'secure': false,
       },
     }
-  }
-}
-
+  })
+})(config)
 console.warn(config)

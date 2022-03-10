@@ -1,12 +1,10 @@
 package com.bkahlert.hello
 
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-@OptIn(ExperimentalSerializationApi::class)
-val SerializerJson by lazy {
+val JsonSerializer: Json by lazy {
     Json {
         prettyPrint = true
         isLenient = true
@@ -15,5 +13,5 @@ val SerializerJson by lazy {
     }
 }
 
-inline fun <reified T> T.serialize(): String = SerializerJson.encodeToString(this)
-inline fun <reified T> String.deserialize(): T = SerializerJson.decodeFromString(trimIndent())
+inline fun <reified T> T.serialize(): String = JsonSerializer.encodeToString(this)
+inline fun <reified T> String.deserialize(): T = JsonSerializer.decodeFromString(trimIndent())

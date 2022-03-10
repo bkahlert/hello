@@ -4,11 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.bkahlert.Brand
-import com.bkahlert.RGB
 import com.bkahlert.hello.MagnifyingGlass
 import com.bkahlert.hello.center
 import com.bkahlert.hello.fontFamily
 import com.bkahlert.hello.visuallyHidden
+import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.backgroundImage
 import com.bkahlert.kommons.browser.delayed
 import com.bkahlert.kommons.browser.openInNewTab

@@ -1,6 +1,6 @@
 package com.bkahlert.hello.clickup
 
-import com.bkahlert.hello.SerializerJson
+import com.bkahlert.hello.JsonSerializer
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.clickup.ClickUpException.Companion.wrapOrNull
 import com.bkahlert.kommons.Either
@@ -15,9 +15,7 @@ import io.ktor.client.plugins.plugin
 import io.ktor.client.request.get
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
-
 
 class ClickUpException(
     error: ErrorInfo,
@@ -40,8 +38,8 @@ data class ErrorInfo(
     val ECODE: String,
 )
 
-class ClickUpApiClient(
-    private val accessTokenState: StateFlow<String?>,
+class ClickupClient(
+    private val accessToken: String,
 ) {
     //    val clickUpUrl = "https://api.clickup.com/api"
     val clickUpUrl = "http://localhost:8080/api"
@@ -51,17 +49,15 @@ class ClickUpApiClient(
     private val tokenClient by lazy {
         HttpClient(Js) {
             install(ContentNegotiation) {
-                json(SerializerJson)
+                json(JsonSerializer)
             }
             HttpResponseValidator {
                 handleResponseException { throw it.wrapOrNull() ?: it }
             }
             install("ClickUp-PersonalToken-Authorization") {
                 plugin(HttpSend).intercept { context ->
-                    accessTokenState.value?.also { accessToken ->
-                        logger.info("setting ${HttpHeaders.Authorization} header")
-                        context.headers[HttpHeaders.Authorization] = accessToken
-                    }
+                    logger.info("setting ${HttpHeaders.Authorization} header")
+                    context.headers[HttpHeaders.Authorization] = accessToken
                     execute(context)
                 }
             }

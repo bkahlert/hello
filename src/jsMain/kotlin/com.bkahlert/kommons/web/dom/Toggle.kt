@@ -2,7 +2,7 @@ package com.bkahlert.kommons.web.dom
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.Brand
-import com.bkahlert.RGB
+import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.text.quoted
 import org.jetbrains.compose.web.ExperimentalComposeWebApi
 import org.jetbrains.compose.web.attributes.InputType.Checkbox

@@ -46,12 +46,6 @@ kotlin {
         binaries.executable()
     }
     sourceSets {
-        val commonTest by getting {
-            dependencies {
-                implementation("io.kotest:kotest-framework-engine:5.1.0")
-                implementation("io.kotest:kotest-assertions-core:5.1.0")
-            }
-        }
         val jsMain by getting {
             dependencies {
                 implementation(compose.web.core)
@@ -78,7 +72,6 @@ kotlin {
         val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
-                implementation("io.kotest:kotest-framework-engine-js:5.1.0")
                 implementation("io.kotest:kotest-assertions-core-js:5.1.0")
             }
         }
@@ -87,6 +80,7 @@ kotlin {
 
 tasks.withType<Kotlin2JsCompile>().configureEach {
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
     kotlinOptions.freeCompilerArgs += "-opt-in=org.jetbrains.compose.web.ExperimentalComposeWebApi"
 }

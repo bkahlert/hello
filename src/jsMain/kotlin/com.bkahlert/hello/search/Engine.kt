@@ -1,10 +1,10 @@
 package com.bkahlert.hello.search
 
 import com.bkahlert.Brand
-import com.bkahlert.Color
-import com.bkahlert.RGB
 import com.bkahlert.hello.fmod
 import com.bkahlert.hello.search.Engine.Google
+import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.Image
 import com.bkahlert.kommons.SVGImage
 import io.ktor.http.Url
@@ -30,7 +30,7 @@ enum class Engine(
     /**
      * [Linguee](https://www.linguee.de)
      */
-    Linguee("Linguee", RGB("#0e2b46"), {
+    Linguee("Linguee", RGB(0x0e2b46), {
         Url("https://www.linguee.de/deutsch-englisch/search?source=auto&query=$it")
     }),
 
