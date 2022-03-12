@@ -1,18 +1,21 @@
+@file:UseSerializers(DateAsMillisecondsSerializer::class, UrlSerializer::class)
+
 package com.bkahlert.hello.clickup
 
 import com.bkahlert.kommons.Color
-import com.bkahlert.kommons.serialization.ColorSerializer
+import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.UrlSerializer
 import io.ktor.http.Url
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
 @Serializable
 data class Team(
-    val id: Int,
-    val name: String,
-    @Serializable(ColorSerializer::class)
-    val color: Color,
-    @Serializable(UrlSerializer::class)
-    val avatar: Url,
-    val members: List<BoxedUser>,
+    @SerialName("id") val id: Int,
+    @SerialName("name") val name: String,
+    @SerialName("color") val color: Color,
+    @SerialName("avatar") val avatar: Url,
+    @SerialName("members") val members: List<Named<User>>,
 )

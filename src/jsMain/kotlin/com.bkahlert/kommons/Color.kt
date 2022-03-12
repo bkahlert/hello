@@ -219,6 +219,7 @@ abstract class Color : CSSColorValue {
         val PERCEIVED_GREEN_RATIO: Double = 0.587
         val PERCEIVED_BLUE_RATIO: Double = 0.114
 
+        operator fun invoke(color: Int): RGB = RGB(color)
         operator fun invoke(color: String): Color = parseOrNull(color) ?: throw IllegalArgumentException("$color is no color")
         fun parseOrNull(color: String): Color? =
             if (color.startsWith("hsl")) HSL.parseOrNull(color) else RGB.parseOrNull(color)

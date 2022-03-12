@@ -1,4 +1,6 @@
 import org.jetbrains.compose.compose
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
@@ -29,17 +31,23 @@ repositories {
 kotlin {
     js(IR) {
         browser {
-            runTask {
-                sourceMaps = true
-            }
             commonWebpackConfig {
-                sourceMaps = true
+                when (mode) {
+                    PRODUCTION -> {
+                        devtool = null
+                    }
+                    DEVELOPMENT -> {
+                        devtool = "eval-source-map"
+                        cssSupport.enabled = true
+                        // main config in webpack.config.d directory
+                    }
+                }
             }
             testTask {
                 testLogging.showStandardStreams = true
                 useKarma {
                     useChromeHeadless()
-                    useFirefox()
+//                    useFirefox()
                 }
             }
         }
@@ -50,7 +58,7 @@ kotlin {
             dependencies {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
-                val ktor_version = "2.0.0-beta-1"
+                @Suppress("LocalVariableName") val ktor_version = "2.0.0-beta-1"
                 implementation("io.ktor:ktor-client-core:$ktor_version")
                 implementation("io.ktor:ktor-client-js:$ktor_version")
                 implementation("io.ktor:ktor-client-auth:$ktor_version")
@@ -80,6 +88,7 @@ kotlin {
 
 tasks.withType<Kotlin2JsCompile>().configureEach {
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.contracts.ExperimentalContracts"
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
     kotlinOptions.freeCompilerArgs += "-opt-in=org.jetbrains.compose.web.ExperimentalComposeWebApi"
@@ -89,7 +98,7 @@ tasks.withType<Test> {
 }
 
 val deploy by tasks.registering {
-    dependsOn(tasks.named("jsBrowserDistribution"))
+    dependsOn(tasks.named("jsBrowserProductionWebpack"))
     doLast {
         ssh.runSessions {
             session(vaults["ssh-remotes.yml", "remotes", "default"]) {

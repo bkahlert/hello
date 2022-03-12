@@ -10,15 +10,16 @@ import kotlinx.serialization.encoding.Encoder
 import kotlin.js.Date
 
 @Serializer(Date::class)
-class DateSerializer : KSerializer<Date> {
+object DateAsMillisecondsSerializer : KSerializer<Date> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Date", STRING)
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
+        "com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer", STRING)
 
     override fun serialize(encoder: Encoder, value: Date) {
-        encoder.encodeString(value.toISOString())
+        encoder.encodeLong(value.getTime().toLong())
     }
 
     override fun deserialize(decoder: Decoder): Date {
-        return Date(decoder.decodeString())
+        return Date(decoder.decodeLong())
     }
 }

@@ -15,8 +15,12 @@ import com.bkahlert.hello.AppStylesheet.Grid.Options
 import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.AppStylesheet.Grid.Space
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
+import com.bkahlert.hello.clickup.AccessToken
 import com.bkahlert.hello.clickup.ClickupClient
+import com.bkahlert.hello.clickup.ClickupList
+import com.bkahlert.hello.clickup.Task
 import com.bkahlert.hello.clickup.Team
+import com.bkahlert.hello.clickup.TimeEntry
 import com.bkahlert.hello.clickup.User
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.integration.ClickUp
@@ -30,7 +34,6 @@ import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.fix.map
 import com.bkahlert.kommons.fix.or
 import com.bkahlert.kommons.runtime.LocalStorage
-import kotlinx.browser.window
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,7 +41,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
-import org.jetbrains.compose.web.ExperimentalComposeWebApi
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.CSSBuilder
@@ -89,6 +91,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.url.URL
+import com.bkahlert.hello.clickup.Space as ClickupSpace
 
 sealed interface AppState {
     object Loading : AppState
@@ -117,23 +120,37 @@ sealed interface ProfileState {
 
     companion object {
         fun of(
-            userAttempt: Either<User, Throwable>?,
-            teamsAttempt: Either<List<Team>, Throwable>?,
+            userResponse: Response<User>,
+            teamsResponse: Response<List<Team>>,
         ): ProfileState {
-            return if (userAttempt == null || teamsAttempt == null) {
-                if (userAttempt == null && teamsAttempt == null) Disconnected else Loading
+            return if (userResponse == null || teamsResponse == null) {
+                if (userResponse == null && teamsResponse == null) Disconnected else Loading
             } else {
-                userAttempt.map { user ->
-                    teamsAttempt.map { Ready(user, it) } or { Failed(it) }
+                userResponse.map { user ->
+                    teamsResponse.map { Ready(user, it) } or { Failed(it) }
                 } or { ex ->
-                    userAttempt.map { Failed(ex) } or { Failed(ex, it) }
+                    userResponse.map { Failed(ex) } or { Failed(ex, it) }
                 }
             }
         }
     }
 }
 
-class AppModel {
+/** A response that did not arrive yet or either succeeded or failed. */
+typealias Response<T> = Either<T, Throwable>?
+typealias Success<A, B> = Either.Left<A, B>
+typealias Failure<A, B> = Either.Right<A, B>
+
+data class Session(
+    val user: User,
+    val team: Team,
+    val runningTimeEntry: Response<TimeEntry?> = null,
+    val spaces: Response<List<ClickupSpace>> = null,
+    val tasks: Response<List<Task>> = null,
+    val lists: Map<ClickupSpace, Response<List<ClickupList>>> = emptyMap(),
+)
+
+class AppModel(private val config: Config) {
 
     init {
         console.warn("New AppModel")
@@ -157,28 +174,45 @@ class AppModel {
         _appState.update { AppState.Ready }
     }
 
-    private val _clickupToken = MutableStateFlow(LocalStorage[ACCESS_TOKEN_STORAGE_KEY])
-    private val _clickupClient = _clickupToken
-        .map { LocalStorage[ACCESS_TOKEN_STORAGE_KEY]?.let { ClickupClient(it) } }
+    private val clickupToken = MutableStateFlow(AccessToken.load())
+    private val savedToken = clickupToken.map { (it ?: config.clickup.fallbackAccessToken)?.save() }
+    private val clickupClient = savedToken
+        .map { it?.let { token -> ClickupClient(token) } }
         .combine(_appState) { client, appState -> client.takeUnless { appState == AppState.Loading } }
 
     val profileState: Flow<ProfileState> =
-        _clickupClient.mapLatest { it?.getUser() }
-            .combine(_clickupClient.mapLatest { it?.getTeams() }, ProfileState.Companion::of)
+        combine(
+            clickupClient.mapLatest { it?.getUser() },
+            clickupClient.mapLatest { it?.getTeams() },
+            ProfileState.Companion::of)
 
-    fun configureClickUp(accessToken: String) {
-        LocalStorage[ACCESS_TOKEN_STORAGE_KEY] = accessToken
-        _clickupToken.update { accessToken }
+    fun configureClickUp(accessToken: AccessToken) {
+        clickupToken.update { accessToken }
     }
 
-    companion object {
-        private const val ACCESS_TOKEN_STORAGE_KEY = "clickup.access-token"
+    private val _sessionState = MutableStateFlow<Session?>(null)
+    val sessionState = _sessionState
+        .combine(clickupClient) { session, client ->
+            session?.run { session.copy(runningTimeEntry = client?.getRunningTimeEntry(team, user)) }
+        }.combine(clickupClient) { session, client ->
+            session?.team?.let { team -> session.copy(spaces = client?.getSpaces(team)) }
+        }.combine(clickupClient) { session, client ->
+            session?.team?.let { team -> session.copy(tasks = client?.getTasks(team)) }
+        }.combine(clickupClient) { session, client ->
+            (session?.spaces as? Either.Left)?.left?.let { spaces ->
+                val lists = client?.run { spaces.associateWith { getLists(it) } }
+                lists?.let { session.copy(lists = it) } ?: session
+            } ?: session
+        }
+
+    fun activate(user: User, team: Team) {
+        console.info("Activating ${user.username}@${team.name}")
+        _sessionState.update { Session(user, team) }
     }
 }
 
-@OptIn(ExperimentalComposeWebApi::class)
-fun main() {
 
+fun main() {
 
     // trigger creation to avoid flickering
     Engine.values().forEach {
@@ -189,10 +223,12 @@ fun main() {
     renderComposable("root") {
         Style(AppStylesheet)
 
-        val appState = remember { AppModel() }
+        val appState = remember { AppModel(AppConfig) }
         val loadingState by appState.appState.collectAsState()
         val engine by appState.engine.collectAsState()
+
         val profileState by appState.profileState.collectAsState(null)
+        val session by appState.sessionState.collectAsState(null)
 
         Grid({
             style {
@@ -240,19 +276,9 @@ fun main() {
                 profileState?.also {
                     ClickUp(
                         profileState = it,
-                        onConfig = {
-                            window.prompt("""
-                            Currently, OAuth2 is not supported yet.
-                            
-                            To use this feature at its current state,
-                            please enter your personal ClickUp API token.
-                            
-                            More information can be found on https://clickup.com/api
-                            """.trimIndent(), "pk_4687596_XQ7VFO3V06T6TE6FJI3A6UY6EY3LBKYI")
-                                ?.also {
-                                    appState.configureClickUp(it)
-                                }
-                        },
+                        session = session,
+                        onConnect = { details -> details(AppConfig.clickup.fallbackAccessToken, appState::configureClickUp) },
+                        onTeamSelect = appState::activate
                     )
                 }
             }
@@ -372,7 +398,8 @@ object AppStylesheet : StyleSheet() {
         media(mediaMinWidth(ViewportDimension.large) and mediaMinHeight(250.px)) {
             self style {
                 gridTemplateColumns("1fr 1fr 1fr 1fr")
-                gridTemplateRows("$HEADER_HEIGHT 80px 0 0 1fr")
+//                gridTemplateRows("$HEADER_HEIGHT 80px 0 0 1fr")  TODO restore
+                gridTemplateRows("$HEADER_HEIGHT 240px 0 0 1fr")
                 gridTemplateAreas(
                     "$Header $Header $Header $Header",
                     "$Links $Search $Search $Options",
