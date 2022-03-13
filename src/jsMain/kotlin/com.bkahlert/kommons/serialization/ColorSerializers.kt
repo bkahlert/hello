@@ -19,7 +19,7 @@ object ColorSerializer : KSerializer<Color> {
         "com.bkahlert.kommons.serialization.ColorSerializer", STRING)
 
     override fun serialize(encoder: Encoder, value: Color) {
-        encoder.encodeString(value.toString())
+        encoder.encodeString(value.toRGB().toString())
     }
 
     override fun deserialize(decoder: Decoder): Color {
@@ -38,7 +38,7 @@ object RgbSerializer : KSerializer<RGB> {
     }
 
     override fun deserialize(decoder: Decoder): RGB {
-        return RGB.parseOrNull(decoder.decodeString().also { println(it) }) ?: throw SerializationException()
+        return RGB.parseOrNull(decoder.decodeString()) ?: throw SerializationException()
     }
 }
 

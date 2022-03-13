@@ -10,7 +10,7 @@ class ClickupListTest : SerializerTest<ClickupList>(ClickupList.serializer(),
     // language=JSON
     """
         {
-            "id": 25510969,
+            "id": "25510969",
             "name": "Professional",
             "orderindex": 0,
             "status": {
@@ -25,13 +25,13 @@ class ClickupListTest : SerializerTest<ClickupList>(ClickupList.serializer(),
             },
             "task_count": 45,
             "folder": {
-                "id": 11087491,
+                "id": "11087491",
                 "name": "hidden",
                 "hidden": true,
                 "access": true
             },
             "space": {
-                "id": 4564985,
+                "id": "4564985",
                 "name": "Personal",
                 "access": true
             },
@@ -43,7 +43,7 @@ class ClickupListTest : SerializerTest<ClickupList>(ClickupList.serializer(),
 
 
 fun clickupList(
-    id: Int = 25510969,
+    id: ClickupList.ID = ClickupList.ID("25510969"),
     name: String = "Professional",
     orderIndex: Int = 0,
     content: String? = null,
@@ -59,13 +59,13 @@ fun clickupList(
     dueDate: Date? = null,
     startDate: Date? = null,
     folder: Folder.Preview = Folder.Preview(
-        id = 11087491,
+        id = Folder.ID("11087491"),
         name = "hidden",
         hidden = true,
         access = true
     ),
     space: Space.Preview = Space.Preview(
-        4564985,
+        Space.ID("4564985"),
         "Personal",
         true
     ),

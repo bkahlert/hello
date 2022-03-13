@@ -1,7 +1,6 @@
 import org.jetbrains.compose.compose
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
-import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
     kotlin("multiplatform") version "1.6.10"
@@ -76,23 +75,30 @@ kotlin {
 //                implementation(kotlinWrapper("extensions")) { because("require") }
 //                implementation(npm("jsHue", ">= 2.1.1"))
             }
+
+            languageSettings.apply {
+                optIn("kotlin.RequiresOptIn")
+                optIn("kotlin.contracts.ExperimentalContracts")
+                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+                optIn("kotlinx.serialization.ExperimentalSerializationApi")
+                optIn("org.jetbrains.compose.web.ExperimentalComposeWebApi")
+                progressiveMode = true // false by default
+            }
         }
         val jsTest by getting {
             dependencies {
                 implementation(kotlin("test-js"))
+                implementation(compose.web.testUtils)
                 implementation("io.kotest:kotest-assertions-core-js:5.1.0")
+            }
+
+            languageSettings.apply {
+                optIn("org.jetbrains.compose.web.testutils.ComposeWebExperimentalTestsApi")
             }
         }
     }
 }
 
-tasks.withType<Kotlin2JsCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.contracts.ExperimentalContracts"
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-    kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
-    kotlinOptions.freeCompilerArgs += "-opt-in=org.jetbrains.compose.web.ExperimentalComposeWebApi"
-}
 tasks.withType<Test> {
     useJUnitPlatform()
 }

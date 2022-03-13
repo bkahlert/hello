@@ -19,6 +19,4 @@ var Location.url: Url
 
 inline operator fun Url.invoke(builder: URLBuilder.() -> Unit): Url = URLBuilder(this).apply(builder).build()
 
-inline infix operator fun Url.div(path: String): Url = invoke { pathSegments = pathSegments + path }
-
-inline infix operator fun Url.div(path: Number): Url = this / path.toString()
+infix operator fun Url.div(path: String): Url = invoke { pathSegments = pathSegments + path }

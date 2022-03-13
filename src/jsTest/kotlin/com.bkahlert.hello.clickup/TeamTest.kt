@@ -12,7 +12,7 @@ class TeamTest : SerializerTest<Team>(Team.serializer(),
     // language=JSON
     """
         {
-            "id": 180,
+            "id": "180",
             "name": "work group",
             "color": "#0000ff",
             "avatar": "https://example.com/work.png",
@@ -48,7 +48,7 @@ class TeamTest : SerializerTest<Team>(Team.serializer(),
     """.trimIndent() to team())
 
 fun team(
-    id: Int = 180,
+    id: Team.ID = Team.ID("180"),
     name: String = "work group",
     color: Color = RGB("#0000ff"),
     avatar: Url = Url("https://example.com/work.png"),

@@ -48,7 +48,7 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                 "checklists": [],
                 "tags": [],
                 "parent": null,
-                "priority": null,
+                "priority": 1,
                 "due_date": null,
                 "start_date": null,
                 "points": null,

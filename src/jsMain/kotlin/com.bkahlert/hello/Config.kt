@@ -1,6 +1,6 @@
 package com.bkahlert.hello
 
-import com.bkahlert.hello.clickup.AccessToken
+import com.bkahlert.hello.clickup.rest.AccessToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -14,7 +14,8 @@ private external val _devConfig: dynamic
 
 @Serializable
 data class Config(
-    val clickup: ClickupConfig = ClickupConfig(),
+    @SerialName("ui-only") val uiOnly: Boolean = false,
+    @SerialName("clickup") val clickup: ClickupConfig = ClickupConfig(),
 )
 
 @Serializable

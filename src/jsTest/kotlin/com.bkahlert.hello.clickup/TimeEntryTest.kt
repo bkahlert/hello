@@ -1,8 +1,15 @@
 package com.bkahlert.hello.clickup
 
+import com.bkahlert.hello.deserialize
+import com.bkahlert.hello.integration.ActiveTask
+import com.bkahlert.hello.test.JOHN
+import com.bkahlert.hello.test.response
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
+import io.kotest.matchers.string.shouldContain
+import org.jetbrains.compose.web.testutils.runTest
+import kotlin.test.Test
 
 class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(TimeEntry.serializer()),
     // language=JSON
@@ -45,26 +52,40 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
         "task_url": "https://app.clickup.com/t/20jg1er"
       }
     }
-    """.trimIndent())
+    """.trimIndent()) {
 
-//
-//
-//fun <T> response(value: T) = Either.Left<T, Throwable>(value)
-//fun <T> failedResponse() = Either.Right<T, Throwable>(ClickUpException(
-//    ErrorInfo("something went wrong", "TEST-1234"), RuntimeException("underlying problem")
-//))
-//
-//fun main() {
-//
-//    // trigger creation to avoid flickering
-//    Engine.values().forEach {
-//        it.grayscaleImage
-//        it.coloredImage
-//    }
-//
-//    renderComposable("root") {
-//        Style(AppStylesheet)
-//
-//        ActiveTask(response<TimeEntry?>(null))
-//    }
-//}
+    val x = """
+    {"data":{"id":"2874288493751214437","task":{"id":"20jg1er","name":"hello.bkahlert.com","status":{"status":"in progress","color":"#a875ff","type":"custom","orderindex":1}},"wid":"2576831","user":{"id":4687596,"username":"Björn Kahlert","email":"mail@bkahlert.com","color":"#4169E1","initials":"BK","profilePicture":"https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"},"billable":true,"start":1647117084159,"duration":-279,"description":"hello again","tags":[{"name":"tag1","tag_fg":"hsl(329deg, 73.2%, 43.9%)","tag_bg":"hsl(198deg, 76.7%, 51.2%)"},{"name":"tag2"}],"at":1647117084159,"task_location":{},"stopped":"2874274324586996059"}}
+""".trimIndent()
+
+
+    val request = """
+        {
+            "tid": "20jg1er",
+            "description": "hello again",
+            "billable": true,
+            "tags": [
+                {
+                    "name": "tag1",
+                    "tag_fg": "hsl(329deg, 73.2%, 43.9%)",
+                    "tag_bg": "hsl(198deg, 76.7%, 51.2%)"
+                },
+                {
+                    "name": "tag2"
+                }
+            ]
+        }
+    """.trimIndent()
+
+    // https://github.com/JetBrains/compose-jb/tree/master/tutorials/Web/Using_Test_Utils
+    @Test
+    fun testDateFormat() = runTest {
+        composition {
+            ActiveTask(response(jsons.first().deserialize<Named<TimeEntry>>().value))
+        }
+
+        console.log(root.innerHTML)
+
+        root.innerHTML shouldContain "12.03.2022"
+    }
+}

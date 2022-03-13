@@ -15,13 +15,13 @@ import com.bkahlert.hello.AppStylesheet.Grid.Options
 import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.AppStylesheet.Grid.Space
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.clickup.AccessToken
-import com.bkahlert.hello.clickup.ClickupClient
 import com.bkahlert.hello.clickup.ClickupList
 import com.bkahlert.hello.clickup.Task
 import com.bkahlert.hello.clickup.Team
 import com.bkahlert.hello.clickup.TimeEntry
 import com.bkahlert.hello.clickup.User
+import com.bkahlert.hello.clickup.rest.AccessToken
+import com.bkahlert.hello.clickup.rest.ClickupClient
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.integration.ClickUp
 import com.bkahlert.hello.links.Header
@@ -30,6 +30,7 @@ import com.bkahlert.hello.links.Links
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Engine.Google
 import com.bkahlert.hello.search.Search
+import com.bkahlert.hello.test.mainTest
 import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.fix.map
 import com.bkahlert.kommons.fix.or
@@ -144,9 +145,10 @@ typealias Failure<A, B> = Either.Right<A, B>
 data class Session(
     val user: User,
     val team: Team,
+    val client: ClickupClient? = null, // TODO make private
     val runningTimeEntry: Response<TimeEntry?> = null,
-    val spaces: Response<List<ClickupSpace>> = null,
     val tasks: Response<List<Task>> = null,
+    val spaces: Response<List<ClickupSpace>> = null,
     val lists: Map<ClickupSpace, Response<List<ClickupList>>> = emptyMap(),
 )
 
@@ -193,16 +195,11 @@ class AppModel(private val config: Config) {
     private val _sessionState = MutableStateFlow<Session?>(null)
     val sessionState = _sessionState
         .combine(clickupClient) { session, client ->
+            session?.run { session.copy(client = client) }
+        }.combine(clickupClient) { session, client ->
             session?.run { session.copy(runningTimeEntry = client?.getRunningTimeEntry(team, user)) }
         }.combine(clickupClient) { session, client ->
-            session?.team?.let { team -> session.copy(spaces = client?.getSpaces(team)) }
-        }.combine(clickupClient) { session, client ->
-            session?.team?.let { team -> session.copy(tasks = client?.getTasks(team)) }
-        }.combine(clickupClient) { session, client ->
-            (session?.spaces as? Either.Left)?.left?.let { spaces ->
-                val lists = client?.run { spaces.associateWith { getLists(it) } }
-                lists?.let { session.copy(lists = it) } ?: session
-            } ?: session
+            session?.team?.let { team -> session.copy(tasks = client?.getTasks(team)) } ?: session
         }
 
     fun activate(user: User, team: Team) {
@@ -218,6 +215,11 @@ fun main() {
     Engine.values().forEach {
         it.grayscaleImage
         it.coloredImage
+    }
+
+    if (AppConfig.uiOnly) {
+        mainTest()
+        return
     }
 
     renderComposable("root") {
@@ -278,7 +280,7 @@ fun main() {
                         profileState = it,
                         session = session,
                         onConnect = { details -> details(AppConfig.clickup.fallbackAccessToken, appState::configureClickUp) },
-                        onTeamSelect = appState::activate
+                        onTeamSelect = appState::activate,
                     )
                 }
             }
@@ -346,7 +348,7 @@ object AppStylesheet : StyleSheet() {
         // `universal` can be used instead of "*": `universal style {}`
         "*" style {
 //            fontSize(35.px)
-            padding(0.px)
+//            padding(0.px)
         }
 
         "*, ::after, ::before" style {

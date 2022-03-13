@@ -2,6 +2,7 @@
 
 package com.bkahlert.hello.clickup
 
+import com.bkahlert.hello.clickup.rest.Identifier
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.UrlSerializer
 import io.ktor.http.Url
@@ -11,7 +12,7 @@ import kotlinx.serialization.UseSerializers
 
 @Serializable
 data class User(
-    @SerialName("id") val id: Int,
+    @SerialName("id") val id: ID,
     @SerialName("username") val username: String,
     @SerialName("email") val email: String,
     @SerialName("color") val color: Color?,
@@ -21,8 +22,11 @@ data class User(
     @SerialName("global_font_support") val globalFontSupport: Boolean?,
     @SerialName("timezone") val timezone: String?,
 ) {
+    @Serializable value class ID(override val id: Int) : Identifier<Int>
+
     @Serializable
     data class Preview(
+        @SerialName("id") val id: ID? = null,
         @SerialName("color") val color: Color,
         @SerialName("username") val username: String,
         @SerialName("initials") val initials: String?,

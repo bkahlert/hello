@@ -1,11 +1,18 @@
-package com.bkahlert.hello.clickup
+package com.bkahlert.hello.clickup.rest
 
 import com.bkahlert.hello.JsonSerializer
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.clickup.ClickUpException.Companion.wrapOrNull
+import com.bkahlert.hello.clickup.ClickupList
+import com.bkahlert.hello.clickup.Space
+import com.bkahlert.hello.clickup.Tag
+import com.bkahlert.hello.clickup.Task
+import com.bkahlert.hello.clickup.Task.ID
+import com.bkahlert.hello.clickup.Team
+import com.bkahlert.hello.clickup.TimeEntry
+import com.bkahlert.hello.clickup.User
+import com.bkahlert.hello.clickup.rest.ClickUpException.Companion.wrapOrNull
 import com.bkahlert.hello.serialize
 import com.bkahlert.kommons.Either
-import com.bkahlert.kommons.runtime.LocalStorage
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.web.http.div
 import io.ktor.client.HttpClient
@@ -14,60 +21,18 @@ import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.ContentNegotiation
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpSend
-import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.plugin
-import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.Date
-
-class ClickUpException(
-    error: ErrorInfo,
-    cause: Throwable?,
-) : IllegalStateException("[${error.ECODE}] ${error.err}", cause) {
-    companion object {
-        /**
-         * Returns a business exception with this exception as its cause if applicable.
-         */
-        suspend fun Throwable.wrapOrNull(): ClickUpException? =
-            (this as? ResponseException)?.let {
-                kotlin.runCatching { ClickUpException(it.response.body(), it) }.getOrNull()
-            }
-    }
-}
-
-@Serializable
-data class ErrorInfo(
-    val err: String,
-    val ECODE: String,
-)
-
-@Serializable
-value class AccessToken(
-    val token: String,
-) {
-    init {
-        require(token.isNotBlank()) { "token must not be empty / blank" }
-    }
-
-    fun configue(context: HttpRequestBuilder) {
-        context.headers[HttpHeaders.Authorization] = token
-    }
-
-    fun save(): AccessToken = also {
-        LocalStorage[ACCESS_TOKEN_STORAGE_KEY] = token
-    }
-
-    companion object {
-        private const val ACCESS_TOKEN_STORAGE_KEY = "clickup.access-token"
-        fun load() = LocalStorage[ACCESS_TOKEN_STORAGE_KEY]?.let { AccessToken(it) }
-    }
-}
 
 class ClickupClient(
     private val accessToken: AccessToken,
@@ -89,6 +54,7 @@ class ClickupClient(
             HttpResponseValidator {
                 handleResponseException { throw it.wrapOrNull() ?: it }
             }
+            // TODO cache
             install("ClickUp-PersonalToken-Authorization") {
                 plugin(HttpSend).intercept { context ->
                     logger.debug("setting ${HttpHeaders.Authorization}=$accessToken")
@@ -239,36 +205,45 @@ class ClickupClient(
         onSuccess: (TimeEntry?) -> Unit = {},
     ): Either<TimeEntry?, Throwable> =
         inBackground(onSuccess) {
-            logger.debug("getting running time entry team=${team.name} and assignee=${assignee?.username}")
+            logger.debug("getting running time entry for team=${team.name} and assignee=${assignee?.username}")
             tokenClient.get(clickUpUrl / "team" / team.id / "time_entries" / "current") {
-                parameter("assignee", assignee?.id)
+                parameter("assignee", assignee?.id?.stringValue)
             }.body<Named<TimeEntry?>>().value
         }
-}
 
-@Serializable
-data class CustomFieldFilter(
-    @SerialName("field_id") val id: String,
-    val operator: Operator,
-    val values: List<String>,
-) {
-    enum class Operator(val value: String) {
-        Equals("="),
-        LessThan("<"),
-        LessThanOrEqualTo("<="),
-        GreaterThan(">"),
-        GreaterThanOrEqualTo(">="),
-        NotEquals("!="),
-        IsNull("IS NULL"),
-        IsNotNull("IS NOT NULL"),
-        Range("RANGE"),
-        `Any`("ANY"),
-        All("ALL"),
-        NotAny("NOT ANY"),
-        NotAll("NOT ALL")
-    }
-}
+    @Serializable
+    data class StartTimeEntryRequest(
+        val tid: ID,
+        val description: String?,
+        val billable: Boolean,
+        val tags: List<Tag>,
+    )
 
-// https://api.clickup.com/api/v2/team/2576831/space
-// Björn: 4564985
-// Work: 4565284
+    suspend fun startTimeEntry(
+        team: Team,
+        task: Task,
+        description: String? = null,
+        billable: Boolean = false,
+        vararg tags: Tag,
+        onSuccess: (TimeEntry) -> Unit = {},
+    ): Either<TimeEntry, Throwable> =
+        inBackground(onSuccess) {
+            logger.debug("starting time entry of task=${task.name} for team=${team.name}")
+            tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "start") {
+                val body1 = StartTimeEntryRequest(task.id, description, billable, tags.toList())
+                console.warn("PAYLOAD", body1)
+                console.warn("PAYLOAD", body1.toString())
+                contentType(ContentType.Application.Json)
+                setBody(body1)
+            }.body<Named<TimeEntry>>().value
+        }
+
+    suspend fun stopTimeEntry(
+        team: Team,
+        onSuccess: (TimeEntry) -> Unit = {},
+    ): Either<TimeEntry, Throwable> =
+        inBackground(onSuccess) {
+            logger.debug("stopping time entry for team=${team.name}")
+            tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "stop").body<Named<TimeEntry>>().value
+        }
+}

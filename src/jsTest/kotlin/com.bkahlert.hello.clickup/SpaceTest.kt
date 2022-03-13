@@ -7,7 +7,7 @@ class SpaceTest : SerializerTest<Space>(Space.serializer(),
     // language=JSON
     """
         {
-            "id": 4564985,
+            "id": "4564985",
             "name": "Personal",
             "private": false,
             "statuses": [
@@ -38,26 +38,26 @@ class SpaceTest : SerializerTest<Space>(Space.serializer(),
     """.trimIndent() to space())
 
 fun space(
-    id: Int = 4564985,
+    id: Space.ID = Space.ID("4564985"),
     name: String = "Personal",
     private: Boolean = false,
     statuses: List<Status> = listOf(
         Status(
-            "p4564985_LD0PMLG0",
+            Status.ID("p4564985_LD0PMLG0"),
             "to do",
             Color(0x02BCD4),
             0,
             "open",
         ),
         Status(
-            "p4564985_BBLbHB8w",
+            Status.ID("p4564985_BBLbHB8w"),
             "in progress",
             Color(0xa875ff),
             1,
             "custom",
         ),
         Status(
-            "p4564985_BrkjGhEw",
+            Status.ID("p4564985_BrkjGhEw"),
             "Closed",
             Color(0x6bc950),
             2,

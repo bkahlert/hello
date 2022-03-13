@@ -66,5 +66,5 @@ class NamedSerializerTest {
                     }
                 ]
             }
-        """.trimIndent() to Named.ofMultiple(listOf(user(), user(id = 43))))
+        """.trimIndent() to Named.ofMultiple(listOf(user(), user(id = User.ID(43)))))
 }

@@ -28,6 +28,7 @@
         background-size: 200% 200%;
         background-origin: content-box;
         animation: background-movement 8s linear infinite;
+        animation-play-state: paused;
         }
 
         .fg {
@@ -37,6 +38,7 @@
         -moz-background-clip: text;
         background-clip: text;
         animation-delay: -30s;
+        animation-play-state: paused;
         }
 
         .container {

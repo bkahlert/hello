@@ -26,9 +26,9 @@ abstract class Color : CSSColorValue {
     val perceivedBrightness: Double
         get() = toRGB().let { (r, g, b, _) ->
             sqrt(
-                r.pow(2) * PERCEIVED_RED_RATIO +
-                    g.pow(2) * PERCEIVED_GREEN_RATIO +
-                    b.pow(2) * PERCEIVED_BLUE_RATIO
+                (r / 255.0).pow(2) * PERCEIVED_RED_RATIO +
+                    (g / 255.0).pow(2) * PERCEIVED_GREEN_RATIO +
+                    (b / 255.0).pow(2) * PERCEIVED_BLUE_RATIO
             )
         }
 
@@ -92,7 +92,12 @@ abstract class Color : CSSColorValue {
             private const val HEX_PATTERN = "[a-fA-F0-9]"
             private val REGEX = Regex("(?:#|0x)($HEX_PATTERN{3,4}|$HEX_PATTERN{6}|$HEX_PATTERN{8})\\b|rgba?\\(([^)]*)\\)")
             private val SPLIT_REGEX = Regex("\\s*[ ,/]\\s*")
-            operator fun invoke(rgb: Int): RGB = invoke("#${rgb.toHexadecimalString()}")
+            operator fun invoke(rgb: Int): RGB = if (rgb > 16777215) {
+                RGB(r = (rgb shr 24) and 0xFF, g = (rgb shr 16) and 0xFF, b = (rgb shr 8) and 0xFF, a = (rgb and 0xFF) / 255.0)
+            } else {
+                RGB(r = (rgb shr 16) and 0xFF, g = (rgb shr 8) and 0xFF, b = rgb and 0xFF)
+            }
+
             operator fun invoke(rgb: String): RGB = parseOrNull(rgb) ?: throw IllegalArgumentException("$rgb is no color")
             fun parseOrNull(rgb: String): RGB? = REGEX.find(rgb)?.groupValues?.run {
                 when {
@@ -225,3 +230,27 @@ abstract class Color : CSSColorValue {
             if (color.startsWith("hsl")) HSL.parseOrNull(color) else RGB.parseOrNull(color)
     }
 }
+
+fun Color.RGB.coerceAtMost(
+    red: Double? = null,
+    green: Double? = null,
+    blue: Double? = null,
+    alpha: Double? = null,
+) = copy(
+    r = red?.let { r.coerceAtMost(it) } ?: r,
+    g = green?.let { g.coerceAtMost(it) } ?: g,
+    b = blue?.let { b.coerceAtMost(it) } ?: b,
+    a = alpha?.let { a.coerceAtMost(it) } ?: a,
+)
+
+fun Color.HSL.coerceAtMost(
+    hue: Double? = null,
+    saturation: Double? = null,
+    lightness: Double? = null,
+    alpha: Double? = null,
+) = copy(
+    h = hue?.let { h.coerceAtMost(it) } ?: h,
+    s = saturation?.let { s.coerceAtMost(it) } ?: s,
+    l = lightness?.let { l.coerceAtMost(it) } ?: l,
+    a = alpha?.let { a.coerceAtMost(it) } ?: a,
+)

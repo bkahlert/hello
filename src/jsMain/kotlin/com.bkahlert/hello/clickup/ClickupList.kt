@@ -2,6 +2,7 @@
 
 package com.bkahlert.hello.clickup
 
+import com.bkahlert.hello.clickup.rest.Identifier
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
@@ -12,7 +13,7 @@ import kotlin.js.Date
 
 @Serializable
 data class ClickupList(
-    @SerialName("id") val id: Int,
+    @SerialName("id") val id: ID,
     @SerialName("name") val name: String,
     @SerialName("orderindex") val orderIndex: Int,
     @SerialName("content") val content: String?,
@@ -28,6 +29,8 @@ data class ClickupList(
     @SerialName("override_statuses") val overrideStatuses: Boolean,
     @SerialName("permission_level") val permissionLevel: String,
 ) {
+    @Serializable value class ID(override val id: String) : Identifier<String>
+
     @Serializable
     data class Status(
         @SerialName("status") val status: String,
@@ -43,7 +46,7 @@ data class ClickupList(
 
     @Serializable
     data class Preview(
-        @SerialName("id") val id: Int,
+        @SerialName("id") val id: ID,
         @SerialName("name") val name: String,
         @SerialName("access") val access: Boolean,
     )

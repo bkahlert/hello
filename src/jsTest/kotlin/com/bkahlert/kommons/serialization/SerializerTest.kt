@@ -40,6 +40,7 @@ abstract class BasicSerializerTest<T>(
 
     @Test fun deserialize() {
         jsons.forEach { json ->
+            json.deserialize(serializer)
             shouldNotThrow<Throwable> {
                 json.deserialize(serializer)
             }
