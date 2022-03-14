@@ -19,7 +19,7 @@ object ColorSerializer : KSerializer<Color> {
         "com.bkahlert.kommons.serialization.ColorSerializer", STRING)
 
     override fun serialize(encoder: Encoder, value: Color) {
-        encoder.encodeString(value.toRGB().toString())
+        encoder.encodeString((value.takeIf { (it as? HSL)?.a != 1.0 }?.toRGB() ?: value).toString())
     }
 
     override fun deserialize(decoder: Decoder): Color {

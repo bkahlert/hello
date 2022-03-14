@@ -6,7 +6,6 @@ import com.bkahlert.hello.clickup.ClickupList
 import com.bkahlert.hello.clickup.Space
 import com.bkahlert.hello.clickup.Tag
 import com.bkahlert.hello.clickup.Task
-import com.bkahlert.hello.clickup.Task.ID
 import com.bkahlert.hello.clickup.Team
 import com.bkahlert.hello.clickup.TimeEntry
 import com.bkahlert.hello.clickup.User
@@ -16,25 +15,35 @@ import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.web.http.div
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.call.HttpClientCall
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.ContentNegotiation
+import io.ktor.client.plugins.HttpClientPlugin
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.plugin
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.Url
+import io.ktor.http.auth.parseAuthorizationHeader
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.util.AttributeKey
+import io.ktor.util.InternalAPI
 import kotlinx.serialization.Serializable
+import org.w3c.workers.Cache
 import kotlin.js.Date
 
-class ClickupClient(
+data class ClickupClient(
     private val accessToken: AccessToken,
 ) {
     //    val clickUpUrl = "https://api.clickup.com/api/v2"
@@ -75,6 +84,7 @@ class ClickupClient(
             onSuccess(success)
             Either.Left(success)
         } catch (e: Exception) {
+            console.error("error", e.message) // TODO
             onFailure(e)
             Either.Right(e)
         }
@@ -213,7 +223,7 @@ class ClickupClient(
 
     @Serializable
     data class StartTimeEntryRequest(
-        val tid: ID,
+        val tid: Task.ID?,
         val description: String?,
         val billable: Boolean,
         val tags: List<Tag>,
@@ -221,20 +231,17 @@ class ClickupClient(
 
     suspend fun startTimeEntry(
         team: Team,
-        task: Task,
+        taskId: Task.ID? = null,
         description: String? = null,
         billable: Boolean = false,
         vararg tags: Tag,
         onSuccess: (TimeEntry) -> Unit = {},
     ): Either<TimeEntry, Throwable> =
         inBackground(onSuccess) {
-            logger.debug("starting time entry of task=${task.name} for team=${team.name}")
+            logger.debug("starting time entry of task=${taskId?.stringValue ?: "<no task>"} for team=${team.name}")
             tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "start") {
-                val body1 = StartTimeEntryRequest(task.id, description, billable, tags.toList())
-                console.warn("PAYLOAD", body1)
-                console.warn("PAYLOAD", body1.toString())
                 contentType(ContentType.Application.Json)
-                setBody(body1)
+                setBody(StartTimeEntryRequest(taskId, description, billable, tags.toList()))
             }.body<Named<TimeEntry>>().value
         }
 

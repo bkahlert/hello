@@ -1,16 +1,17 @@
 package com.bkahlert.hello.integration
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.Brand
 import com.bkahlert.hello.Failure
 import com.bkahlert.hello.ProfileState
 import com.bkahlert.hello.ProfileState.Disconnected
 import com.bkahlert.hello.ProfileState.Failed
 import com.bkahlert.hello.ProfileState.Loading
-import com.bkahlert.hello.ProfileState.Ready
+import com.bkahlert.hello.ProfileState.Ready.Activated
+import com.bkahlert.hello.ProfileState.Ready.Activating
+import com.bkahlert.hello.ProfileState.Ready.FullySearchable
+import com.bkahlert.hello.ProfileState.Ready.Searchable
 import com.bkahlert.hello.Response
-import com.bkahlert.hello.Session
 import com.bkahlert.hello.Success
 import com.bkahlert.hello.center
 import com.bkahlert.hello.clickup.Tag
@@ -19,11 +20,11 @@ import com.bkahlert.hello.clickup.TimeEntry
 import com.bkahlert.hello.clickup.User
 import com.bkahlert.hello.clickup.rest.AccessToken
 import com.bkahlert.hello.visualize
+import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.coerceAtMost
 import com.bkahlert.kommons.fix.value
 import com.bkahlert.kommons.time.toMoment
 import kotlinx.browser.window
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.Color
@@ -89,18 +90,20 @@ fun ErrorMessage(
     ErrorMessage { Text(message) }
 }
 
+val Throwable.errorMessage: String get() = message ?: toString()
+
 @Composable
 fun ErrorMessage(
     throwable: Throwable,
 ) {
     ErrorMessage {
-        console.error(throwable)
+        console.error("an error occurred", throwable)
         Span({
             title(throwable.stackTraceToString())
             style {
                 cursor("help")
             }
-        }) { Text(throwable.message ?: throwable.toString()) }
+        }) { Text(throwable.errorMessage) }
     }
 }
 
@@ -120,8 +123,6 @@ fun ErrorMessage(
 fun ClickUp(
     profileState: ProfileState,
     onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit,
-    onTeamSelect: (User, Team) -> Unit,
-    session: Session?,
 ) {
     Style(OptionsStyleSheet)
 
@@ -143,9 +144,11 @@ fun ClickUp(
                 Text("Loading")
             }
 
-            is Ready -> {
-                if (session != null) Session(session)
-                else Profile(profileState, onTeamSelect)
+            is Activating -> {
+                TeamActivation(profileState.user, profileState.teams) { profileState.activate(it) }
+            }
+            is Activated -> {
+                Session(profileState)
             }
             is Failed -> ErrorMessage {
                 Text(profileState.message)
@@ -184,26 +187,26 @@ fun Connect(
 }
 
 @Composable
-fun Profile(
-    profileState: Ready,
-    onTeamSelect: (User, Team) -> Unit,
+fun TeamActivation(
+    user: User,
+    teams: List<Team>,
+    onTeamSelect: (Team) -> Unit,
 ) {
-    B { Text("Hi, ${profileState.user.username}") }
-    val teams = profileState.teams
+    B { Text("Hi, ${user.username}") }
     when (teams.size) {
         1 -> {
             val team = teams.first()
             B { Text(team.name) }
-            onTeamSelect(profileState.user, team)
+            onTeamSelect(team)
         }
         else -> Select({
             onChange { event ->
                 val teamId = Team.ID(checkNotNull(event.value) { "missing option value" })
-                val team = profileState.teams.first { it.id == teamId }
-                onTeamSelect(profileState.user, team)
+                val team = teams.first { it.id == teamId }
+                onTeamSelect(team)
             }
         }) {
-            profileState.teams.forEach {
+            teams.forEach {
                 Option(it.id.id, {
                     style { backgroundColor(it.color) }
                 }) {
@@ -216,7 +219,7 @@ fun Profile(
 
 @Composable
 fun Session(
-    session: Session,
+    session: Activated,
 ) {
     Div({
         style {
@@ -228,27 +231,36 @@ fun Session(
             alignItems(AlignItems.Start)
         }
     }) {
-        Team(session.team)
-        session.tasks.visualize { TaskCount(it.size) }
-        ActiveTask(session.runningTimeEntry)
-        session.spaces.visualize { spaces ->
-            Ul {
-                spaces.forEach { space ->
-                    Li {
-                        Text(space.name)
-                        when (val lists = session.lists[space]) {
-                            null -> {}
-                            is Success -> {
-                                lists.value.forEach {
-                                    Text(" ")
-                                    Span {
-                                        Text(it.name)
+        Team(session.activeTeam)
+
+        if (session is Searchable) {
+            session.tasks.visualize { TaskCount(it.size) }
+        }
+
+        ActiveTask(session.runningTimeEntry,
+            onStart = { session.startTimeEntry() },
+            onStop = { session.stopTimeEntry() })
+
+        if (session is FullySearchable) {
+            session.spaces.visualize { spaces ->
+                Ul {
+                    spaces.forEach { space ->
+                        Li {
+                            Text(space.name)
+                            when (val lists = session.lists[space]) {
+                                null -> {}
+                                is Success -> {
+                                    lists.value.forEach {
                                         Text(" ")
-                                        TaskCount(it.taskCount)
+                                        Span {
+                                            Text(it.name)
+                                            Text(" ")
+                                            TaskCount(it.taskCount)
+                                        }
                                     }
                                 }
+                                is Failure -> ErrorMessage(lists.right)
                             }
-                            is Failure -> ErrorMessage(lists.right)
                         }
                     }
                 }
@@ -258,8 +270,12 @@ fun Session(
 }
 
 @Composable
-fun ActiveTask(runningTimeEntry: Response<TimeEntry?>) {
-    runningTimeEntry.visualize(false) {
+fun ActiveTask(
+    runningTimeEntry: Response<TimeEntry?>,
+    onStart: (TimeEntry) -> Unit = {}, // TODO refactor
+    onStop: (TimeEntry) -> Unit = {},
+) {
+    runningTimeEntry.visualize(false) { timeEntry ->
         B {
             Em { Small { Text("Active") } }
             Br()
@@ -267,9 +283,23 @@ fun ActiveTask(runningTimeEntry: Response<TimeEntry?>) {
                 Span({
                     style { color(Brand.colors.red) }
                 }) {
+                    val taskName = timeEntry.task?.name
                     timeEntry.taskUrl?.also { url ->
-                        A(url.toString()) { Text(timeEntry.task.name) }
-                    } ?: Text(timeEntry.task.name)
+                        A(url.toString()) {
+                            if (taskName != null) Text(taskName)
+                            else Span({
+                                style {
+                                    fontSize(12.px)
+                                    fontWeight(400)
+                                    lineHeight(1.em)
+                                    whiteSpace("nowrap")
+                                    overflow("hidden")
+                                    property("text-overflow", "ellipsis")
+                                    color(RGB(0x292d34))
+                                }
+                            }) { Text("(no task)") }
+                        }
+                    } ?: Text(taskName ?: "TODO")
                     Text(" ⏱ ")
                     Text(timeEntry.duration.absoluteValue.toMoment())
                     Text(" ")
@@ -310,7 +340,7 @@ fun ActiveTask(runningTimeEntry: Response<TimeEntry?>) {
                         }
                         TagElement<SVGElement>("svg", {}) {
                             TagElement<SVGUseElement>("use", {
-                                attr("xlink:href", "svg-sprite-cu2-tags")
+                                attr("xlink:href", "clickup-symbols.svg#svg-sprite-cu2-tags")
                             }) {
 
                             }

@@ -16,7 +16,7 @@ import kotlin.time.Duration
 @Serializable
 data class TimeEntry(
     @SerialName("id") val id: ID,
-    @SerialName("task") val task: Task.Preview,
+    @SerialName("task") val task: Task.Preview?,
     @SerialName("wid") val wid: Team.ID,
     @SerialName("user") val user: User,
     @SerialName("billable") val billable: Boolean,
@@ -30,4 +30,6 @@ data class TimeEntry(
     @SerialName("task_url") val taskUrl: Url?,
 ) {
     @Serializable value class ID(override val id: String) : Identifier<String>
+
+    val url: Url? get() = taskUrl?.takeUnless { it.pathSegments.also { console.warn(it.joinToString("---")) }.lastOrNull() == "null" }
 }

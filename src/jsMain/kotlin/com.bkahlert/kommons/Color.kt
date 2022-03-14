@@ -14,6 +14,7 @@ import org.jetbrains.compose.web.css.hsla
 import org.jetbrains.compose.web.css.rgba
 import kotlin.math.abs
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 @Serializable(with = ColorSerializer::class)
@@ -86,7 +87,12 @@ abstract class Color : CSSColorValue {
                 append(g.toInt().toHexadecimalString())
                 append(b.toInt().toHexadecimalString())
             }
-            else rgba(r, g, b, a).toString()
+            else rgba(
+                r.roundToInt(),
+                g.roundToInt(),
+                b.roundToInt(),
+                a,
+            ).toString()
 
         companion object {
             private const val HEX_PATTERN = "[a-fA-F0-9]"

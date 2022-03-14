@@ -14,8 +14,10 @@ import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Options
 import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.AppStylesheet.Grid.Space
+import com.bkahlert.hello.ProfileState.Ready.Activating
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.clickup.ClickupList
+import com.bkahlert.hello.clickup.Tag
 import com.bkahlert.hello.clickup.Task
 import com.bkahlert.hello.clickup.Team
 import com.bkahlert.hello.clickup.TimeEntry
@@ -24,6 +26,7 @@ import com.bkahlert.hello.clickup.rest.AccessToken
 import com.bkahlert.hello.clickup.rest.ClickupClient
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.integration.ClickUp
+import com.bkahlert.hello.integration.errorMessage
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
@@ -31,16 +34,18 @@ import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Engine.Google
 import com.bkahlert.hello.search.Search
 import com.bkahlert.hello.test.mainTest
+import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.fix.map
 import com.bkahlert.kommons.fix.or
+import com.bkahlert.kommons.fix.value
 import com.bkahlert.kommons.runtime.LocalStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
@@ -105,10 +110,111 @@ sealed interface ProfileState {
 
     object Loading : ProfileState
 
-    data class Ready(
+    sealed class Ready(
+        protected val client: ClickupClient,
         val user: User,
         val teams: List<Team>,
-    ) : ProfileState
+        protected val update: (suspend (ProfileState) -> ProfileState) -> Unit,
+    ) : ProfileState {
+
+        protected val logger = simpleLogger()
+
+        fun activate(team: Team) {
+            logger.info("Activating ${user.username}@${team.name}")
+            update { Activated(client, user, teams, team, client.getRunningTimeEntry(team, user), update) }
+        }
+
+        class Activating(
+            client: ClickupClient,
+            user: User,
+            teams: List<Team>,
+            update: (suspend (ProfileState) -> ProfileState) -> Unit,
+        ) : Ready(client, user, teams, update)
+
+        open class Activated(
+            client: ClickupClient,
+            user: User,
+            teams: List<Team>,
+            val activeTeam: Team,
+            val runningTimeEntry: Response<TimeEntry?>,
+            update: (suspend (ProfileState) -> ProfileState) -> Unit,
+        ) : Ready(client, user, teams, update) {
+
+            fun prepare() {
+                update { Searchable(client, user, teams, activeTeam, runningTimeEntry, client.getTasks(activeTeam), update) }
+            }
+
+            fun startTimeEntry() {
+                val tomato = RGB(0xff6347)
+                val tomatoSauce = RGB(0xb21807)
+                update {
+                    logger.log("starting time entry")
+                    val xxx: Either<TimeEntry, Throwable> = client.startTimeEntry(
+                        activeTeam,
+                        Task.ID("20jg1er"),
+                        "50m pomodoro",
+                        false,
+                        Tag("🍅", tomato, tomato, null),
+                        Tag("pomodoro", tomato, tomato, null),
+                        Tag("🥫", tomatoSauce, tomatoSauce, null),
+                        Tag("pomodoro-50m", tomatoSauce, tomatoSauce, null),
+                    )
+                    Activated(client, user, teams, activeTeam, xxx, update)
+                }
+            }
+
+            fun stopTimeEntry() {
+                update {
+                    logger.info("stopping time entry")
+                    when (val response = client.stopTimeEntry(activeTeam)) {
+                        is Success -> console.log("stopped", response.value)
+                        is Failure -> console.error("failed to stop", response.value.errorMessage)
+                    }
+                    this
+                }
+            }
+        }
+
+        open class Searchable(
+            client: ClickupClient,
+            user: User,
+            teams: List<Team>,
+            activeTeam: Team,
+            runningTimeEntry: Response<TimeEntry?>,
+            val tasks: Response<List<Task>>,
+            update: (suspend (ProfileState) -> ProfileState) -> Unit,
+        ) : Activated(client, user, teams, activeTeam, runningTimeEntry, update) {
+
+            fun fullyLoad() {
+                update {
+                    val spaces = client.getSpaces(activeTeam)
+                    // TODO
+//                     val lists = when (spaces) {
+//                         is Success ->  spaces.value.associateWith { client.getLists(it) })
+//                         is Failure -> console.error("Failed to refresh lists because spaces did not load: ${spaces.value.errorMessage}")
+//                         null -> {
+//                             console.warn("Spaces did not load, yet. Triggering...")
+//                             refreshSpaces()
+//                         }
+//                     }
+                    val lists = emptyMap<ClickupSpace, Response<List<ClickupList>>>()
+                    FullySearchable(client, user, teams, activeTeam, runningTimeEntry, tasks, spaces, lists, update)
+                }
+            }
+        }
+
+        class FullySearchable(
+            client: ClickupClient,
+            user: User,
+            teams: List<Team>,
+            activeTeam: Team,
+            runningTimeEntry: Response<TimeEntry?>,
+            tasks: Response<List<Task>>,
+            val spaces: Response<List<ClickupSpace>> = null,
+            val lists: Map<ClickupSpace, Response<List<ClickupList>>> = emptyMap(),
+            update: (suspend (ProfileState) -> ProfileState) -> Unit,
+        ) : Searchable(client, user, teams, activeTeam, runningTimeEntry, tasks, update)
+    }
 
     data class Failed(
         val exceptions: List<Throwable>,
@@ -121,42 +227,28 @@ sealed interface ProfileState {
 
     companion object {
         fun of(
+            client: ClickupClient,
             userResponse: Response<User>,
             teamsResponse: Response<List<Team>>,
+            update: (suspend (ProfileState) -> ProfileState) -> Unit,
         ): ProfileState {
-            return if (userResponse == null || teamsResponse == null) {
-                if (userResponse == null && teamsResponse == null) Disconnected else Loading
-            } else {
-                userResponse.map { user ->
-                    teamsResponse.map { Ready(user, it) } or { Failed(it) }
-                } or { ex ->
-                    userResponse.map { Failed(ex) } or { Failed(ex, it) }
-                }
+            if (userResponse == null || teamsResponse == null) return Loading
+            return userResponse.map { user ->
+                teamsResponse.map { Activating(client, user, it, update) } or { Failed(it) }
+            } or { ex ->
+                userResponse.map { Failed(ex) } or { Failed(ex, it) }
             }
         }
     }
 }
 
 /** A response that did not arrive yet or either succeeded or failed. */
-typealias Response<T> = Either<T, Throwable>?
+typealias Response<T> = Either<out T, Throwable>?
 typealias Success<A, B> = Either.Left<A, B>
 typealias Failure<A, B> = Either.Right<A, B>
 
-data class Session(
-    val user: User,
-    val team: Team,
-    val client: ClickupClient? = null, // TODO make private
-    val runningTimeEntry: Response<TimeEntry?> = null,
-    val tasks: Response<List<Task>> = null,
-    val spaces: Response<List<ClickupSpace>> = null,
-    val lists: Map<ClickupSpace, Response<List<ClickupList>>> = emptyMap(),
-)
 
 class AppModel(private val config: Config) {
-
-    init {
-        console.warn("New AppModel")
-    }
 
     private val logger = simpleLogger()
 
@@ -176,36 +268,39 @@ class AppModel(private val config: Config) {
         _appState.update { AppState.Ready }
     }
 
-    private val clickupToken = MutableStateFlow(AccessToken.load())
-    private val savedToken = clickupToken.map { (it ?: config.clickup.fallbackAccessToken)?.save() }
-    private val clickupClient = savedToken
-        .map { it?.let { token -> ClickupClient(token) } }
-        .combine(_appState) { client, appState -> client.takeUnless { appState == AppState.Loading } }
-
-    val profileState: Flow<ProfileState> =
-        combine(
-            clickupClient.mapLatest { it?.getUser() },
-            clickupClient.mapLatest { it?.getTeams() },
-            ProfileState.Companion::of)
-
+    // flow starts with access token
+    private val _clickupTokenState = MutableStateFlow(AccessToken.load())
     fun configureClickUp(accessToken: AccessToken) {
-        clickupToken.update { accessToken }
+        logger.debug("setting access token")
+        _clickupTokenState.update { accessToken }
     }
 
-    private val _sessionState = MutableStateFlow<Session?>(null)
-    val sessionState = _sessionState
-        .combine(clickupClient) { session, client ->
-            session?.run { session.copy(client = client) }
-        }.combine(clickupClient) { session, client ->
-            session?.run { session.copy(runningTimeEntry = client?.getRunningTimeEntry(team, user)) }
-        }.combine(clickupClient) { session, client ->
-            session?.team?.let { team -> session.copy(tasks = client?.getTasks(team)) } ?: session
+    // save access token in locally
+    // if access token is missing use fallback if set
+    // result is saved
+    private val _savedClickupTokenState = _clickupTokenState
+        .onEach { it?.save() }
+        .map { it ?: config.clickup.fallbackAccessToken }
+
+    // mutable state to store a lambda that can update an existing profile state
+    private val _updateState = MutableStateFlow<(suspend (ProfileState) -> ProfileState)> { it }
+    private fun update(update: suspend (ProfileState) -> ProfileState) {
+        _updateState.update { update }
+    }
+
+    // actual profile state deducted from an initial one
+    // and update state applied to it
+    val profileState: Flow<ProfileState> = _savedClickupTokenState
+        .combine(appState) { token, appState ->
+            if (appState == AppState.Loading) {
+                ProfileState.Loading
+            } else {
+                token?.let(::ClickupClient)?.let {
+                    ProfileState.of(it, it.getUser(), it.getTeams(), ::update)
+                } ?: ProfileState.Disconnected
+            }
         }
-
-    fun activate(user: User, team: Team) {
-        console.info("Activating ${user.username}@${team.name}")
-        _sessionState.update { Session(user, team) }
-    }
+        .combine(_updateState) { profile, update -> update(profile) }
 }
 
 
@@ -224,13 +319,10 @@ fun main() {
 
     renderComposable("root") {
         Style(AppStylesheet)
-
         val appState = remember { AppModel(AppConfig) }
         val loadingState by appState.appState.collectAsState()
         val engine by appState.engine.collectAsState()
-
         val profileState by appState.profileState.collectAsState(null)
-        val session by appState.sessionState.collectAsState(null)
 
         Grid({
             style {
@@ -266,9 +358,11 @@ fun main() {
 //                Search(value = "all engines", allEngines = true)
 //                Search(value = "single engine")
 //                Search(allEngines = true)
-                Search(engine,
-                    onEngineChange = { appState.change(it) },
-                    onReady = { appState.searchReady() })
+                Search(
+                    engine,
+                    onEngineChange = appState::change,
+                    onReady = appState::searchReady,
+                )
             }
             Div({
                 style {
@@ -278,9 +372,9 @@ fun main() {
                 profileState?.also {
                     ClickUp(
                         profileState = it,
-                        session = session,
-                        onConnect = { details -> details(AppConfig.clickup.fallbackAccessToken, appState::configureClickUp) },
-                        onTeamSelect = appState::activate,
+                        onConnect = { details ->
+                            details(AppConfig.clickup.fallbackAccessToken, appState::configureClickUp)
+                        },
                     )
                 }
             }

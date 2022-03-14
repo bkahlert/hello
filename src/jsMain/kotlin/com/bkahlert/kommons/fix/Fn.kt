@@ -27,9 +27,7 @@ public inline infix fun <A : R, B, R> Either<A, B>.or(transform: (B) -> R): R =
 public inline fun <A, B, R> Either<A, B>.map(transform: (A) -> R): Either<R, B> =
     when (this) {
         is Left -> Left(transform(left))
-        is Right ->
-            @Suppress("UNCHECKED_CAST")
-            this as Either<R, B>
+        is Right -> @Suppress("UNCHECKED_CAST") (this as Either<R, B>)
     }
 
 /** Alias for [Left.left] */

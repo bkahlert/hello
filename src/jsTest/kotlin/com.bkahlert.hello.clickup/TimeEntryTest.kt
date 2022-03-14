@@ -52,6 +52,36 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
         "task_url": "https://app.clickup.com/t/20jg1er"
       }
     }
+    """.trimIndent(),
+    // language=JSON
+    """
+    {
+      "data": {
+        "id": "2874960270525506934",
+        "wid": "2576831",
+        "user": {
+          "id": 4687596,
+          "username": "Björn Kahlert",
+          "email": "mail@bkahlert.com",
+          "color": "#4169E1",
+          "initials": "BK",
+          "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
+        },
+        "billable": false,
+        "start": "1647157125275",
+        "duration": -117108,
+        "description": "",
+        "tags": [],
+        "source": "clickup",
+        "at": "1647157125275",
+        "task_location": {
+          "list_id": null,
+          "folder_id": null,
+          "space_id": null
+        },
+        "task_url": "https://app.clickup.com/t/null"
+      }
+    }
     """.trimIndent()) {
 
     val x = """
