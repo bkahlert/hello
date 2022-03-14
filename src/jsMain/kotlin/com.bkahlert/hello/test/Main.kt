@@ -5,7 +5,7 @@ import com.bkahlert.hello.clickup.TimeEntry
 import com.bkahlert.hello.clickup.rest.ClickUpException
 import com.bkahlert.hello.clickup.rest.ErrorInfo
 import com.bkahlert.hello.deserialize
-import com.bkahlert.hello.integration.ActiveTask
+import com.bkahlert.hello.integration.CurrentTask
 import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.serialization.Named
 import org.jetbrains.compose.web.css.Style
@@ -68,19 +68,19 @@ fun mainTest() {
         Style(AppStylesheet)
 
         Div {
-            ActiveTask(response(null)) {
+            CurrentTask(response(null)) {
                 console.info("stopping $it")
             }
         }
         Hr()
         Div {
-            ActiveTask(failedResponse()) {
+            CurrentTask(failedResponse()) {
                 console.info("stopping $it")
             }
         }
         Hr()
         Div {
-            ActiveTask(response(timeEntry)) {
+            CurrentTask(response(timeEntry)) {
                 console.info("stopping $it")
             }
         }

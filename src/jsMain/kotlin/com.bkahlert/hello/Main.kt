@@ -14,9 +14,8 @@ import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Options
 import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.AppStylesheet.Grid.Space
-import com.bkahlert.hello.ProfileState.Ready.Activating
+import com.bkahlert.hello.ProfileState.Loaded.Activating
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.clickup.ClickupList
 import com.bkahlert.hello.clickup.Tag
 import com.bkahlert.hello.clickup.Task
 import com.bkahlert.hello.clickup.Team
@@ -110,7 +109,7 @@ sealed interface ProfileState {
 
     object Loading : ProfileState
 
-    sealed class Ready(
+    sealed class Loaded(
         protected val client: ClickupClient,
         val user: User,
         val teams: List<Team>,
@@ -129,7 +128,7 @@ sealed interface ProfileState {
             user: User,
             teams: List<Team>,
             update: (suspend (ProfileState) -> ProfileState) -> Unit,
-        ) : Ready(client, user, teams, update)
+        ) : Loaded(client, user, teams, update)
 
         open class Activated(
             client: ClickupClient,
@@ -138,7 +137,7 @@ sealed interface ProfileState {
             val activeTeam: Team,
             val runningTimeEntry: Response<TimeEntry?>,
             update: (suspend (ProfileState) -> ProfileState) -> Unit,
-        ) : Ready(client, user, teams, update) {
+        ) : Loaded(client, user, teams, update) {
 
             fun prepare() {
                 update { Searchable(client, user, teams, activeTeam, runningTimeEntry, client.getTasks(activeTeam), update) }
@@ -154,10 +153,7 @@ sealed interface ProfileState {
                         Task.ID("20jg1er"),
                         "50m pomodoro",
                         false,
-                        Tag("🍅", tomato, tomato, null),
                         Tag("pomodoro", tomato, tomato, null),
-                        Tag("🥫", tomatoSauce, tomatoSauce, null),
-                        Tag("pomodoro-50m", tomatoSauce, tomatoSauce, null),
                     )
                     Activated(client, user, teams, activeTeam, xxx, update)
                 }
@@ -183,37 +179,7 @@ sealed interface ProfileState {
             runningTimeEntry: Response<TimeEntry?>,
             val tasks: Response<List<Task>>,
             update: (suspend (ProfileState) -> ProfileState) -> Unit,
-        ) : Activated(client, user, teams, activeTeam, runningTimeEntry, update) {
-
-            fun fullyLoad() {
-                update {
-                    val spaces = client.getSpaces(activeTeam)
-                    // TODO
-//                     val lists = when (spaces) {
-//                         is Success ->  spaces.value.associateWith { client.getLists(it) })
-//                         is Failure -> console.error("Failed to refresh lists because spaces did not load: ${spaces.value.errorMessage}")
-//                         null -> {
-//                             console.warn("Spaces did not load, yet. Triggering...")
-//                             refreshSpaces()
-//                         }
-//                     }
-                    val lists = emptyMap<ClickupSpace, Response<List<ClickupList>>>()
-                    FullySearchable(client, user, teams, activeTeam, runningTimeEntry, tasks, spaces, lists, update)
-                }
-            }
-        }
-
-        class FullySearchable(
-            client: ClickupClient,
-            user: User,
-            teams: List<Team>,
-            activeTeam: Team,
-            runningTimeEntry: Response<TimeEntry?>,
-            tasks: Response<List<Task>>,
-            val spaces: Response<List<ClickupSpace>> = null,
-            val lists: Map<ClickupSpace, Response<List<ClickupList>>> = emptyMap(),
-            update: (suspend (ProfileState) -> ProfileState) -> Unit,
-        ) : Searchable(client, user, teams, activeTeam, runningTimeEntry, tasks, update)
+        ) : Activated(client, user, teams, activeTeam, runningTimeEntry, update)
     }
 
     data class Failed(
@@ -493,9 +459,10 @@ object AppStylesheet : StyleSheet() {
 
         media(mediaMinWidth(ViewportDimension.large) and mediaMinHeight(250.px)) {
             self style {
-                gridTemplateColumns("1fr 1fr 1fr 1fr")
+//                gridTemplateColumns("1fr 1fr 1fr 1fr") TODO restore
 //                gridTemplateRows("$HEADER_HEIGHT 80px 0 0 1fr")  TODO restore
-                gridTemplateRows("$HEADER_HEIGHT 240px 0 0 1fr")
+                gridTemplateColumns("1fr 1fr 1fr 3fr")
+                gridTemplateRows("$HEADER_HEIGHT 640px 0 0 1fr")
                 gridTemplateAreas(
                     "$Header $Header $Header $Header",
                     "$Links $Search $Search $Options",

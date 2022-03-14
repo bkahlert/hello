@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup
 
 import com.bkahlert.hello.deserialize
-import com.bkahlert.hello.integration.ActiveTask
+import com.bkahlert.hello.integration.CurrentTask
 import com.bkahlert.hello.test.JOHN
 import com.bkahlert.hello.test.response
 import com.bkahlert.kommons.serialization.BasicSerializerTest
@@ -111,7 +111,7 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
     @Test
     fun testDateFormat() = runTest {
         composition {
-            ActiveTask(response(jsons.first().deserialize<Named<TimeEntry>>().value))
+            CurrentTask(response(jsons.first().deserialize<Named<TimeEntry>>().value))
         }
 
         console.log(root.innerHTML)

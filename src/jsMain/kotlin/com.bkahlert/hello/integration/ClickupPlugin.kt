@@ -1,20 +1,20 @@
 package com.bkahlert.hello.integration
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import com.bkahlert.Brand
-import com.bkahlert.hello.Failure
 import com.bkahlert.hello.ProfileState
 import com.bkahlert.hello.ProfileState.Disconnected
 import com.bkahlert.hello.ProfileState.Failed
+import com.bkahlert.hello.ProfileState.Loaded.Activated
+import com.bkahlert.hello.ProfileState.Loaded.Activating
+import com.bkahlert.hello.ProfileState.Loaded.Searchable
 import com.bkahlert.hello.ProfileState.Loading
-import com.bkahlert.hello.ProfileState.Ready.Activated
-import com.bkahlert.hello.ProfileState.Ready.Activating
-import com.bkahlert.hello.ProfileState.Ready.FullySearchable
-import com.bkahlert.hello.ProfileState.Ready.Searchable
 import com.bkahlert.hello.Response
-import com.bkahlert.hello.Success
 import com.bkahlert.hello.center
 import com.bkahlert.hello.clickup.Tag
+import com.bkahlert.hello.clickup.Task
 import com.bkahlert.hello.clickup.Team
 import com.bkahlert.hello.clickup.TimeEntry
 import com.bkahlert.hello.clickup.User
@@ -22,7 +22,6 @@ import com.bkahlert.hello.clickup.rest.AccessToken
 import com.bkahlert.hello.visualize
 import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.coerceAtMost
-import com.bkahlert.kommons.fix.value
 import com.bkahlert.kommons.time.toMoment
 import kotlinx.browser.window
 import org.jetbrains.compose.web.css.AlignContent
@@ -55,6 +54,7 @@ import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.marginLeft
+import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.minWidth
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
@@ -73,6 +73,7 @@ import org.jetbrains.compose.web.dom.Em
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Option
+import org.jetbrains.compose.web.dom.SearchInput
 import org.jetbrains.compose.web.dom.Select
 import org.jetbrains.compose.web.dom.Small
 import org.jetbrains.compose.web.dom.Span
@@ -112,7 +113,7 @@ fun ErrorMessage(
     content: ContentBuilder<HTMLElement>? = null,
 ) {
     B({
-        classes(OptionsStyleSheet.header)
+        classes(ClickupStyleSheet.header)
         style {
             color(Brand.colors.red)
         }
@@ -124,7 +125,7 @@ fun ClickUp(
     profileState: ProfileState,
     onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit,
 ) {
-    Style(OptionsStyleSheet)
+    Style(ClickupStyleSheet)
 
     Div({
         style {
@@ -133,13 +134,13 @@ fun ClickUp(
     }) {
         when (profileState) {
             Disconnected -> B({
-                classes(OptionsStyleSheet.header)
+                classes(ClickupStyleSheet.header)
             }) {
                 Connect(onConnect = onConnect)
             }
 
             Loading -> B({
-                classes(OptionsStyleSheet.header)
+                classes(ClickupStyleSheet.header)
             }) {
                 Text("Loading")
             }
@@ -222,61 +223,64 @@ fun Session(
     session: Activated,
 ) {
     Div({
-        style {
-            display(DisplayStyle.Flex)
-            flexDirection(FlexDirection.Row)
-            flexWrap(FlexWrap.Nowrap)
-            justifyContent(JustifyContent.Center)
-            alignContent(AlignContent.Start)
-            alignItems(AlignItems.Start)
-        }
+        classes(ClickupStyleSheet.session)
     }) {
         Team(session.activeTeam)
 
-        if (session is Searchable) {
-            session.tasks.visualize { TaskCount(it.size) }
-        }
-
-        ActiveTask(session.runningTimeEntry,
+        CurrentTask(session.runningTimeEntry,
             onStart = { session.startTimeEntry() },
             onStop = { session.stopTimeEntry() })
 
-        if (session is FullySearchable) {
-            session.spaces.visualize { spaces ->
-                Ul {
-                    spaces.forEach { space ->
-                        Li {
-                            Text(space.name)
-                            when (val lists = session.lists[space]) {
-                                null -> {}
-                                is Success -> {
-                                    lists.value.forEach {
-                                        Text(" ")
-                                        Span {
-                                            Text(it.name)
-                                            Text(" ")
-                                            TaskCount(it.taskCount)
-                                        }
-                                    }
-                                }
-                                is Failure -> ErrorMessage(lists.right)
-                            }
+        if (session !is Searchable) session.prepare() else {
+            AllTasks(session.tasks)
+        }
+    }
+}
+
+@Composable
+fun AllTasks(
+    tasksResponse: Response<List<Task>>,
+) {
+    val query = remember { mutableStateOf("") }
+    tasksResponse.visualize(false) { tasks ->
+        Div({
+            classes(ClickupStyleSheet.sessionTasks)
+        }) {
+            SearchInput(query.value) {
+                onInput { query.value = it.value }
+            }
+            TaskCount(tasks.size)
+            Select({
+                style {
+                    maxWidth(400.px)
+                }
+            }) {
+                tasks
+                    .filter { it.name.contains(query.value, ignoreCase = true) }
+                    .forEach {
+                        // TODO task status
+                        Option(it.id.stringValue) {
+                            Text(it.name)
+                            Text(" (")
+                            Text(it.status.status)
+                            Text(")")
                         }
                     }
-                }
             }
         }
     }
 }
 
 @Composable
-fun ActiveTask(
+fun CurrentTask(
     runningTimeEntry: Response<TimeEntry?>,
     onStart: (TimeEntry) -> Unit = {}, // TODO refactor
     onStop: (TimeEntry) -> Unit = {},
 ) {
     runningTimeEntry.visualize(false) { timeEntry ->
-        B {
+        B({
+            classes(ClickupStyleSheet.sessionCurrentTask)
+        }) {
             Em { Small { Text("Active") } }
             Br()
             if (timeEntry != null) {
@@ -427,14 +431,7 @@ fun Team(
     team: Team,
 ) {
     Div({
-        style {
-            display(DisplayStyle.Flex)
-            flexDirection(FlexDirection.Row)
-            flexWrap(FlexWrap.Nowrap)
-            justifyContent(JustifyContent.Center)
-            alignContent(AlignContent.Start)
-            alignItems(AlignItems.Center)
-        }
+        classes(ClickupStyleSheet.sessionTeam)
     }) {
         Img(src = team.avatar.toString()) {
             style {
@@ -463,10 +460,57 @@ fun TaskCount(
     }
 }
 
-object OptionsStyleSheet : StyleSheet() {
+object ClickupStyleSheet : StyleSheet() {
 
     val header by style {
         textAlign("center")
         fontSize(1.em)
+    }
+
+    val session by style {
+        display(DisplayStyle.Flex)
+        flexDirection(FlexDirection.Column)
+        flexWrap(FlexWrap.Nowrap)
+        justifyContent(JustifyContent.Center)
+        alignContent(AlignContent.Start)
+        alignItems(AlignItems.Start)
+        border {
+            width(1.px)
+            style(LineStyle.Solid)
+            color(Color.red)
+        }
+    }
+
+    val sessionTeam by style {
+        display(DisplayStyle.Flex)
+        flexDirection(FlexDirection.Row)
+        flexWrap(FlexWrap.Nowrap)
+        justifyContent(JustifyContent.Center)
+        alignContent(AlignContent.Start)
+        alignItems(AlignItems.Center)
+        border {
+            width(1.px)
+            style(LineStyle.Solid)
+            color(Color.magenta)
+        }
+
+    }
+
+    val sessionTasks by style {
+        border {
+            width(1.px)
+            style(LineStyle.Solid)
+            color(Color.green)
+        }
+
+    }
+
+    val sessionCurrentTask by style {
+        border {
+            width(1.px)
+            style(LineStyle.Solid)
+            color(Color.blue)
+        }
+
     }
 }
