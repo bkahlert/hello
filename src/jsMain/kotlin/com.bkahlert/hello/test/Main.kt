@@ -5,7 +5,7 @@ import com.bkahlert.hello.clickup.TimeEntry
 import com.bkahlert.hello.clickup.rest.ClickUpException
 import com.bkahlert.hello.clickup.rest.ErrorInfo
 import com.bkahlert.hello.deserialize
-import com.bkahlert.hello.integration.CurrentTask
+import com.bkahlert.hello.plugins.CurrentTask
 import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.serialization.Named
 import org.jetbrains.compose.web.css.Style

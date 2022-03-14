@@ -11,7 +11,7 @@ import com.bkahlert.hello.AppStylesheet.Grid.Custom
 import com.bkahlert.hello.AppStylesheet.Grid.CustomGradient
 import com.bkahlert.hello.AppStylesheet.Grid.Header
 import com.bkahlert.hello.AppStylesheet.Grid.Links
-import com.bkahlert.hello.AppStylesheet.Grid.Options
+import com.bkahlert.hello.AppStylesheet.Grid.Plugins
 import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.AppStylesheet.Grid.Space
 import com.bkahlert.hello.ProfileState.Loaded.Activating
@@ -24,11 +24,11 @@ import com.bkahlert.hello.clickup.User
 import com.bkahlert.hello.clickup.rest.AccessToken
 import com.bkahlert.hello.clickup.rest.ClickupClient
 import com.bkahlert.hello.custom.Custom
-import com.bkahlert.hello.integration.ClickUp
-import com.bkahlert.hello.integration.errorMessage
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
+import com.bkahlert.hello.plugins.ClickUp
+import com.bkahlert.hello.plugins.errorMessage
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Engine.Google
 import com.bkahlert.hello.search.Search
@@ -332,7 +332,7 @@ fun main() {
             }
             Div({
                 style {
-                    gridArea(Options)
+                    gridArea(Plugins)
                 }
             }) {
                 profileState?.also {
@@ -391,7 +391,7 @@ object AppStylesheet : StyleSheet() {
     val CUSTOM_BACKGROUND_COLOR = Brand.colors.white
 
     enum class Grid {
-        Links, Header, Search, Options, Space, CustomGradient, Custom
+        Links, Header, Search, Plugins, Space, CustomGradient, Custom
     }
 
     init {
@@ -444,7 +444,7 @@ object AppStylesheet : StyleSheet() {
         gridTemplateAreas(
             "$Header $Header",
             "$Search $Search",
-            "$Links $Options",
+            "$Links $Plugins",
             "$Space $Space",
             "$CustomGradient $CustomGradient",
             "$Custom $Custom",
@@ -465,7 +465,7 @@ object AppStylesheet : StyleSheet() {
                 gridTemplateRows("$HEADER_HEIGHT 640px 0 0 1fr")
                 gridTemplateAreas(
                     "$Header $Header $Header $Header",
-                    "$Links $Search $Search $Options",
+                    "$Links $Search $Search $Plugins",
                     "$Space $Space $Space $Space",
                     "$CustomGradient $CustomGradient $CustomGradient $CustomGradient",
                     "$Custom $Custom $Custom $Custom",

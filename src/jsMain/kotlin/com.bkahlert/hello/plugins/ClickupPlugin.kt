@@ -1,4 +1,4 @@
-package com.bkahlert.hello.integration
+package com.bkahlert.hello.plugins
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf

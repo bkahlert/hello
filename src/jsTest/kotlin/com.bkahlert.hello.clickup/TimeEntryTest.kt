@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup
 
 import com.bkahlert.hello.deserialize
-import com.bkahlert.hello.integration.CurrentTask
+import com.bkahlert.hello.plugins.CurrentTask
 import com.bkahlert.hello.test.JOHN
 import com.bkahlert.hello.test.response
 import com.bkahlert.kommons.serialization.BasicSerializerTest

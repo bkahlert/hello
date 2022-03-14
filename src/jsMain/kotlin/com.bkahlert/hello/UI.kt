@@ -1,7 +1,7 @@
 package com.bkahlert.hello
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.integration.ErrorMessage
+import com.bkahlert.hello.plugins.ErrorMessage
 import com.bkahlert.kommons.fix.value
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Small
