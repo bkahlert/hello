@@ -1,5 +1,5 @@
-import com.bkahlert.hello.clickup.Team
-import com.bkahlert.hello.clickup.User
+import com.clickup.api.Team
+import com.clickup.api.User
 import com.bkahlert.hello.clickup.otherUser
 import com.bkahlert.hello.clickup.user
 import com.bkahlert.kommons.Color

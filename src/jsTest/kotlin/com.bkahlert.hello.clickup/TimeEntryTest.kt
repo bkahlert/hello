@@ -7,6 +7,7 @@ import com.bkahlert.hello.test.response
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
+import com.clickup.api.TimeEntry
 import io.kotest.matchers.string.shouldContain
 import org.jetbrains.compose.web.testutils.runTest
 import kotlin.test.Test

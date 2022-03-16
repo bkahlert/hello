@@ -1,8 +1,12 @@
 package com.bkahlert.hello.clickup
 
-import com.bkahlert.hello.clickup.ClickupList.Priority
+import com.clickup.api.ClickupList.Priority
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.SerializerTest
+import com.clickup.api.Assignee
+import com.clickup.api.ClickupList
+import com.clickup.api.Folder
+import com.clickup.api.Space
 import io.ktor.http.Url
 import kotlin.js.Date
 

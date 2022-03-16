@@ -3,6 +3,7 @@ package com.bkahlert.hello.clickup
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
+import com.clickup.api.Task
 import kotlinx.serialization.builtins.ListSerializer
 
 class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSerializer(Task.serializer())),

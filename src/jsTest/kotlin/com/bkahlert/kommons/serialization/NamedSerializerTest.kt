@@ -1,6 +1,6 @@
 package com.bkahlert.kommons.serialization
 
-import com.bkahlert.hello.clickup.User
+import com.clickup.api.User
 import com.bkahlert.hello.clickup.user
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.nullable

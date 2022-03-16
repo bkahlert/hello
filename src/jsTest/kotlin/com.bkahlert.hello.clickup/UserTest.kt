@@ -2,6 +2,7 @@ package com.bkahlert.hello.clickup
 
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.SerializerTest
+import com.clickup.api.User
 import io.ktor.http.Url
 
 class UserTest : SerializerTest<User>(User.serializer(),

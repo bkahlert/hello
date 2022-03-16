@@ -2,6 +2,9 @@ package com.bkahlert.hello.clickup
 
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.SerializerTest
+import com.clickup.api.Space
+import com.clickup.api.Status
+import com.clickup.api.Status.ID
 
 class SpaceTest : SerializerTest<Space>(Space.serializer(),
     // language=JSON
@@ -43,21 +46,21 @@ fun space(
     private: Boolean = false,
     statuses: List<Status> = listOf(
         Status(
-            Status.ID("p4564985_LD0PMLG0"),
+            ID("p4564985_LD0PMLG0"),
             "to do",
             Color(0x02BCD4),
             0,
             "open",
         ),
         Status(
-            Status.ID("p4564985_BBLbHB8w"),
+            ID("p4564985_BBLbHB8w"),
             "in progress",
             Color(0xa875ff),
             1,
             "custom",
         ),
         Status(
-            Status.ID("p4564985_BrkjGhEw"),
+            ID("p4564985_BrkjGhEw"),
             "Closed",
             Color(0x6bc950),
             2,
