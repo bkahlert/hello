@@ -1,15 +1,19 @@
-@file:UseSerializers(DateAsMillisecondsSerializer::class, UrlSerializer::class)
+@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
 
 package com.clickup.api
 
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
+import com.bkahlert.kommons.time.Now
+import com.bkahlert.kommons.time.compareTo
 import com.clickup.api.rest.Identifier
 import io.ktor.http.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlin.js.Date
+import kotlin.time.Duration
 
 @Serializable
 data class Task(
@@ -18,7 +22,7 @@ data class Task(
     @SerialName("name") val name: String,
     @SerialName("text_content") val textContent: String?,
     @SerialName("description") val description: String?,
-    @SerialName("status") val status: com.clickup.api.Status.Preview,
+    @SerialName("status") val status: Status.Preview,
     @SerialName("orderindex") val orderIndex: Double?,
     @SerialName("date_created") val dateCreated: Date?,
     @SerialName("date_updated") val dateUpdated: Date?,
@@ -33,11 +37,12 @@ data class Task(
     @SerialName("due_date") val dueDate: Date?,
     @SerialName("start_date") val startDate: Date?,
     @SerialName("points") val points: Double?,
-    @SerialName("time_estimate") val timeEstimate: Double?,
+    @SerialName("time_estimate") val timeEstimate: Duration?,
+    @SerialName("time_spent") val timeSpent: Duration?,
     @SerialName("custom_fields") val customFields: List<CustomField>,
     @SerialName("dependencies") val dependencies: List<String>,
     @SerialName("linked_tasks") val linkedTasks: List<Link>,
-    @SerialName("team_id") val teamId: com.clickup.api.Team.ID?,
+    @SerialName("team_id") val teamId: Team.ID?,
     @SerialName("url") val url: Url?,
     @SerialName("permission_level") val permissionLevel: String?,
     @SerialName("list") val list: ClickupList.Preview?,
@@ -46,11 +51,13 @@ data class Task(
 ) {
     @Serializable value class ID(override val id: String) : Identifier<String>
 
+    val overdue: Boolean? get() = dueDate?.let { Now > it }
+
     @Serializable
     data class Preview(
         @SerialName("id") val id: ID,
         @SerialName("name") val name: String,
-        @SerialName("status") val status: com.clickup.api.Status.Preview,
+        @SerialName("status") val status: Status.Preview,
         @SerialName("custom_type") val customType: String?,
     )
 

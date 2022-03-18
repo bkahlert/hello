@@ -21,6 +21,17 @@ public inline infix fun <A : R, B, R> Either<A, B>.or(transform: (B) -> R): R =
     }
 
 /**
+ * Returns either the encapsulated instance [A] or `null`
+ * (ignoring the encapsulated instance [B]).
+ */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun <A> Either<A, *>.orNull(): A? =
+    when (this) {
+        is Left -> left
+        is Right -> null
+    }
+
+/**
  * Returns either the encapsulated instance [A] mapped using [transform] or
  * the encapsulated instance [B].
  */

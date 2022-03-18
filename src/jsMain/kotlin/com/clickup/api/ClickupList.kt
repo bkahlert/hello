@@ -1,9 +1,10 @@
-@file:UseSerializers(DateAsMillisecondsSerializer::class, UrlSerializer::class)
+@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
 
 package com.clickup.api
 
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
 import com.clickup.api.rest.Identifier
 import kotlinx.serialization.SerialName
@@ -17,16 +18,16 @@ data class ClickupList(
     @SerialName("name") val name: String,
     @SerialName("orderindex") val orderIndex: Int,
     @SerialName("content") val content: String?,
-    @SerialName("status") val status: Status,
+    @SerialName("status") val status: Status?,
     @SerialName("priority") val priority: Priority?,
     @SerialName("assignee") val assignee: Assignee?,
     @SerialName("task_count") val taskCount: Int?,
     @SerialName("due_date") val dueDate: Date?,
     @SerialName("start_dare") val startDate: Date?,
-    @SerialName("folder") val folder: com.clickup.api.Folder.Preview,
+    @SerialName("folder") val folder: Folder.Preview?,
     @SerialName("space") val space: Space.Preview,
     @SerialName("archived") val archived: Boolean,
-    @SerialName("override_statuses") val overrideStatuses: Boolean,
+    @SerialName("override_statuses") val overrideStatuses: Boolean?,
     @SerialName("permission_level") val permissionLevel: String,
 ) {
     @Serializable value class ID(override val id: String) : Identifier<String>

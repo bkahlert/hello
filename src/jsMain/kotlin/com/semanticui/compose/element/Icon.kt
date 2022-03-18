@@ -10,8 +10,24 @@ import org.w3c.dom.HTMLElement
 interface IconElement : SemanticElement
 
 /**
+ * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition).
+ *
+ * @see <a href="https://semantic-ui.com/elements/icon.html#/icon">Icons</a>
+ */
+@Composable
+fun Icon(
+    attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
+    content: SemanticBuilder<IconElement, HTMLElement>? = null,
+) {
+    SemanticElement({
+        attrs?.invoke(this)
+        classes("icon")
+    }, content) { a, c -> I(a, c) }
+}
+
+/**
  * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition)
- * using the specified [name] and [modifiers].
+ * using the specified [name].
  *
  * @see <a href="https://semantic-ui.com/elements/icon.html#/icon">Icons</a>
  */
@@ -29,7 +45,7 @@ fun Icon(
 
 /**
  * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition)
- * using the specified [name1], [name2] and [modifiers].
+ * using the specified [name1] and [name2].
  *
  * @see <a href="https://semantic-ui.com/elements/icon.html#/icon">Icons</a>
  */
@@ -48,7 +64,7 @@ fun Icon(
 
 /**
  * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition)
- * using the specified [name1], [name2], [name3] and [modifiers].
+ * using the specified [name1], [name2] and [name3].
  *
  * @see <a href="https://semantic-ui.com/elements/icon.html#/icon">Icons</a>
  */

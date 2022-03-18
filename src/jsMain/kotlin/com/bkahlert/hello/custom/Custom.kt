@@ -2,13 +2,13 @@ package com.bkahlert.hello.custom
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.Brand.colors
-import com.bkahlert.hello.Spinner
 import com.bkahlert.hello.custom.Sandbox.ALLOW_POPUPS
 import com.bkahlert.hello.custom.Sandbox.ALLOW_SAME_ORIGIN
 import com.bkahlert.hello.custom.Sandbox.ALLOW_SCRIPTS
 import com.bkahlert.hello.custom.Sandbox.ALLOW_TOP_NAVIGATION
 import com.bkahlert.hello.custom.Sandbox.ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION
 import com.bkahlert.hello.custom.Sandbox.Companion.sandbox
+import com.bkahlert.hello.ui.Spinner
 import com.bkahlert.kommons.backgroundImage
 import com.bkahlert.kommons.text.joinLinesToString
 import org.jetbrains.compose.web.ExperimentalComposeWebApi

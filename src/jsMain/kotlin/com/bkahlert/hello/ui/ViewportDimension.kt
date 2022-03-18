@@ -1,4 +1,4 @@
-package com.bkahlert.hello
+package com.bkahlert.hello.ui
 
 import org.jetbrains.compose.web.css.CSSSizeValue
 import org.jetbrains.compose.web.css.CSSUnitLength

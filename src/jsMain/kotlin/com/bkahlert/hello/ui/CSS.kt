@@ -1,7 +1,8 @@
-package com.bkahlert.hello
+package com.bkahlert.hello.ui
 
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.SVGImage
+import com.bkahlert.kommons.text.quoted
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.CSSColorValue
@@ -30,6 +31,23 @@ import org.jetbrains.compose.web.css.whiteSpace
 import org.jetbrains.compose.web.css.width
 
 /**
+ * Truncates overflowing text using the specified [marker].
+ *
+ * In order for that to actually occur text must be forced
+ * to overflow which, which done by [forceOverflow].
+ */
+fun StyleScope.textOverflow(
+    string: String = "ellipsis",
+    forceOverflow: Boolean = true,
+) {
+    if (forceOverflow) {
+        whiteSpace("nowrap")
+        overflow("hidden")
+    }
+    property("text-overflow", if (string == "ellipsis" || string == "…") "ellipsis" else string.quoted)
+}
+
+/**
  * Visually hides affected elements.
  *
  * Screenreaders treat these elements like any other
@@ -51,6 +69,7 @@ fun StyleScope.visuallyHidden() {
 /**
  * Centers affected elements horizontally and vertically.
  */
+@Deprecated("use solution without height")
 fun StyleScope.center(direction: FlexDirection = FlexDirection.Column) {
     height(100.percent)
     display(DisplayStyle.Flex)
@@ -71,6 +90,7 @@ fun <T : Enum<T>> StyleScope.gridArea(rowStart: T) {
     property("grid-area", rowStart.name)
 }
 
+@Deprecated("use semantic UI loader")
 class Spinner(
     color: Color,
     d: Int = 38,

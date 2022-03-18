@@ -1,20 +1,31 @@
 package com.bkahlert.hello.plugins
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.bkahlert.Brand
-import com.bkahlert.hello.ProfileState
-import com.bkahlert.hello.ProfileState.Disconnected
-import com.bkahlert.hello.ProfileState.Failed
-import com.bkahlert.hello.ProfileState.Loaded.Activated
-import com.bkahlert.hello.ProfileState.Loaded.Activating
-import com.bkahlert.hello.ProfileState.Loaded.Searchable
-import com.bkahlert.hello.ProfileState.Loading
+import com.bkahlert.hello.Failure
 import com.bkahlert.hello.Response
-import com.bkahlert.hello.visualize
+import com.bkahlert.hello.Success
+import com.bkahlert.hello.plugins.clickup.ActivityItem
+import com.bkahlert.hello.plugins.clickup.ClickupState
+import com.bkahlert.hello.plugins.clickup.ClickupState.Disconnected
+import com.bkahlert.hello.plugins.clickup.ClickupState.Failed
+import com.bkahlert.hello.plugins.clickup.ClickupState.Loaded.Activated
+import com.bkahlert.hello.plugins.clickup.ClickupState.Loaded.Activated.Activity
+import com.bkahlert.hello.plugins.clickup.ClickupState.Loaded.Activated.Activity.RunningTaskActivity
+import com.bkahlert.hello.plugins.clickup.ClickupState.Loaded.Activating
+import com.bkahlert.hello.plugins.clickup.ClickupState.Loading
+import com.bkahlert.hello.plugins.clickup.MetaIcon
+import com.bkahlert.hello.plugins.clickup.TaskIcon
+import com.bkahlert.hello.ui.ErrorMessage
+import com.bkahlert.hello.ui.textOverflow
+import com.bkahlert.hello.ui.visualize
 import com.bkahlert.kommons.Color.RGB
-import com.bkahlert.kommons.coerceAtMost
+import com.bkahlert.kommons.fix.value
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.toMoment
 import com.clickup.api.Tag
 import com.clickup.api.Task
@@ -23,30 +34,34 @@ import com.clickup.api.TimeEntry
 import com.clickup.api.User
 import com.clickup.api.rest.AccessToken
 import com.semanticui.compose.State
-import com.semanticui.compose.State.Disabled
 import com.semanticui.compose.Variation
 import com.semanticui.compose.Variation.Borderless
 import com.semanticui.compose.Variation.Colored.Blue
 import com.semanticui.compose.Variation.Colored.Green
 import com.semanticui.compose.Variation.Colored.Red
+import com.semanticui.compose.Variation.Columns.One
 import com.semanticui.compose.Variation.Corner
-import com.semanticui.compose.Variation.Error
+import com.semanticui.compose.Variation.Direction
 import com.semanticui.compose.Variation.Floating
 import com.semanticui.compose.Variation.Fluid
+import com.semanticui.compose.Variation.Inverted
 import com.semanticui.compose.Variation.Position.Bottom
 import com.semanticui.compose.Variation.Position.Right
 import com.semanticui.compose.Variation.Size.Mini
 import com.semanticui.compose.Variation.Size.Small
 import com.semanticui.compose.collection.DropdownItem
+import com.semanticui.compose.collection.LinkItem
 import com.semanticui.compose.collection.Menu
-import com.semanticui.compose.collection.Message
-import com.semanticui.compose.element.Divider
-import com.semanticui.compose.element.Header
+import com.semanticui.compose.collection.SubMenu
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.IconGroup
 import com.semanticui.compose.element.Input
+import com.semanticui.compose.module.Divider
 import com.semanticui.compose.module.Dropdown
 import com.semanticui.compose.module.Dropdown.Type.SearchSelection
+import com.semanticui.compose.module.DropdownText
+import com.semanticui.compose.module.Header
+import com.semanticui.compose.module.InlineDropdown
 import com.semanticui.compose.view.Item
 import io.ktor.client.fetch.get
 import kotlinx.browser.window
@@ -69,7 +84,6 @@ import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
 import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.cssRem
-import org.jetbrains.compose.web.css.cursor
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex
@@ -84,8 +98,8 @@ import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.marginLeft
 import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.minWidth
-import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
+import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.style
 import org.jetbrains.compose.web.css.textAlign
@@ -95,14 +109,13 @@ import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.B
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.Button
-import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Em
+import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Option
-import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.SearchInput
 import org.jetbrains.compose.web.dom.Select
 import org.jetbrains.compose.web.dom.Small
@@ -110,45 +123,9 @@ import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.TagElement
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.Ul
-import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGUseElement
-
-@Composable
-fun ErrorMessage(
-    message: String,
-) {
-    ErrorMessage { Text(message) }
-}
-
-val Throwable.errorMessage: String get() = message ?: toString()
-
-@Composable
-fun ErrorMessage(
-    throwable: Throwable,
-) {
-    ErrorMessage {
-        console.error("an error occurred", throwable)
-        Span({
-            title(throwable.stackTraceToString())
-            style {
-                cursor("help")
-            }
-        }) { Text(throwable.errorMessage) }
-    }
-}
-
-@Composable
-fun ErrorMessage(
-    content: ContentBuilder<HTMLElement>? = null,
-) {
-    B({
-        classes(ClickupStyleSheet.header)
-        style {
-            color(Brand.colors.red)
-        }
-    }, content)
-}
+import kotlin.js.Date
 
 @Composable
 fun ClickUp(
@@ -156,113 +133,286 @@ fun ClickUp(
     onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit,
 ) {
 
-    Menu(Mini) {
-        DropdownItem(profileState, Borderless, Variation.Icon) {
-            Icon("youtube")
-            Menu {
-                Item {
-                    Icon("dropdown")
-                    Span({ classes("text") }) { Text("Switch Team") }
-                    Menu {
+    H1 { Text(date.toTimeString()) }
+
+    var selectedPomodoroType by remember { mutableStateOf(Pomodoro.Type.values().first()) }
+
+    when (clickupState) {
+        Disconnected -> {
+
+            Menu({ variation(Mini) }) {
+                DropdownItem(clickupState, { _, _, _ -> }, { variation(Borderless, Variation.Icon) }) {
+                    Icon("youtube")
+                    SubMenu {
                         Item {
-                            Icon("grid", "layout")
-                            Text("Team A")
-                        }
-                        Item {
-                            Icon("grid", "layout")
-                            Text("Team B")
+                            Icon("sign-in")
+                            Text("Sign-in")
                         }
                     }
                 }
-                Item {
-                    Icon("sign-out")
-                    Text("Sign-out")
+                DropdownItem(clickupState, { _, _, _ -> }, {
+                    variation(Borderless, Variation.Icon)
+                    state(State.Disabled)
+                }) {
+                    Icon("stopwatch")
                 }
             }
         }
 
-        when (profileState) {
-            Disconnected -> DropdownItem(profileState, Borderless, Variation.Icon, Disabled) {
-                Icon("stopwatch")
-            }
-
-            Loading -> DropdownItem(profileState, Borderless, Variation.Icon, State.Loading) {
-                Icon("stopwatch")
-            }
-
-            is Activating -> {
-                DropdownItem(profileState, Borderless, Variation.Icon, State.Loading) {
-                    Icon("stopwatch")
+        Loading -> {
+            Menu({
+                variation(Mini, Fluid, One)
+                classes("item")
+            }) {
+                DropdownItem(clickupState, { _, _, _ -> }, {
+                    variation(Borderless, Variation.Icon)
+                    state(State.Loading, State.Disabled)
+                }) {
+                    Icon("youtube")
                 }
             }
-            is Activated -> {
-                DropdownItem(profileState, Borderless, Variation.Icon, State.Loading) {
-                    Icon("stopwatch")
+        }
+
+        is Activating -> {
+            Menu({ variation(Mini) }) {
+                DropdownItem(clickupState, { _, _, _ -> }, {
+                    variation(Borderless, Variation.Icon)
+                }) {
+                    Icon("youtube")
+                    SubMenu {
+                        Item {
+                            Icon("sign-out")
+                            Text("Sign-out")
+                        }
+                    }
+                }
+                LinkItem({ variation(Borderless) }) {
+                    Icon("grid", "layout")
+                    Text("Team A")
+                }
+                LinkItem({ variation(Borderless) }) {
+                    Icon("grid", "layout")
+                    Text("Team B")
                 }
             }
-            is Searchable -> {
-                DropdownItem(profileState, Borderless, Variation.Icon) {
-                    Icon("stopwatch")
-                    Menu {
-                        Header { Text("Start new pomodoro") }
-                        Input({ variation(Variation.Icon("search")) }) {
-                            Input(InputType.Text) { placeholder("Search tasks...") }
-                            Icon("search")
-                        }
-                        Divider()
 
-                        // TODO iterate and group
-                        Header(Blue) {
-                            Icon("list")
-                            Text("Professional")
+            if (clickupState.teams.size == 1) {
+                clickupState.activate(clickupState.teams.first())
+            }
+        }
+
+        is Activated -> {
+            val selectedActivity = remember { mutableStateOf<Activity<*>?>(null) }
+
+            // pre-select always with running activity if any
+            if (selectedActivity.value?.takeUnless { it is RunningTaskActivity } == null) {
+                selectedActivity.value = clickupState.runningActivity
+            }
+
+            Menu({ variation(Mini) }) {
+                DropdownItem(clickupState, { _, _, _ -> }, {
+                    variation(Borderless, Variation.Icon)
+                }) {
+                    Icon("youtube")
+                    SubMenu {
+                        Item {
+                            Icon("dropdown")
+                            Span({ classes("text") }) { Text("Switch Team") }
+                            SubMenu {
+                                Item {
+                                    Icon("grid", "layout")
+                                    Text("Team A")
+                                }
+                                Item {
+                                    Icon("grid", "layout")
+                                    Text("Team B")
+                                }
+                            }
+                        }
+                        Item {
+                            Icon("sign-out")
+                            Text("Sign-out")
+                        }
+                    }
+                }
+                when (val tasks = clickupState.tasks) {
+                    null -> {
+                        DropdownItem(clickupState, { _, _, _ -> }, {
+                            variation(Borderless, Variation.Icon)
+                            state(State.Loading, State.Disabled)
+                        }) {
+                            Icon("stopwatch")
+                        }
+                        clickupState.prepare()
+                    }
+                    is Success -> {
+                        DropdownItem(clickupState, { value, _, _ ->
+                            selectedActivity.value = clickupState.activity(value)
+                        }, {
+                            variation(Borderless, Variation.Icon)
+                        }) {
+                            Icon("stopwatch")
+                            SubMenu {
+
+                                Header { Text("Start new pomodoro") }
+                                Input({ variation(Variation.Icon("search")) }) {
+                                    Input(InputType.Text) { placeholder("Search tasks...") }
+                                    Icon("search")
+                                }
+                                Divider()
+
+                                tasks.value.groupBy { it.list }.forEach { (list, listTasks) ->
+                                    Header({ variation(Blue) }) {
+                                        Icon("list")
+                                        Text(list?.name ?: "?")
+                                    }  // TODO title or tooltip
+                                    listTasks.forEach { task ->
+                                        Item({
+                                            attr("data-value", task.id.stringValue)
+                                            style {
+                                                maxWidth(200.px)
+                                                textOverflow()
+                                            }
+                                        }) {
+                                            TaskIcon(task)
+                                            Text(task.name)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        LinkItem({
+                            variation(Borderless)
+                            if (selectedActivity.value == null) state(State.Disabled)
+                        }) {
+                            when (clickupState.runningTimeEntry) {
+                                null -> Icon("green", "play", "disabled")
+                                is Failure -> IconGroup {
+                                    Icon("green", "play")
+                                    Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
+                                }
+                                is Success -> {
+                                    when (val running = clickupState.runningTimeEntry.value) {
+                                        null -> if (selectedActivity.value != null) {
+                                            Icon("green", "play")
+                                        } else {
+                                            Icon("green", "play", "disabled")
+                                        }
+                                        else -> {
+                                            Icon("red", "stop")
+                                            Text(Now.toTimeString())
+//                                            onTick()
+                                        }
+                                    }
+                                }
+                            }
+                            InlineDropdown(clickupState.runningTimeEntry,
+                                { value, _, _ -> selectedPomodoroType = enumValueOf(value) }) {
+                                DropdownText { Text(selectedPomodoroType.duration.toMoment(false)) }
+                                Icon("dropdown")
+                                SubMenu {
+                                    Pomodoro.Type.values().forEach {
+                                        Item({ attr("data-value", it.name) }) { Text(it.duration.toMoment(false)) }
+                                    }
+                                }
+                            }
                         }
                         Item({
-                            attr("data-value", "task.id.stringValue")
+                            variation(Borderless)
+                            if (selectedActivity.value == null) state(State.Disabled)
+                            style {
+                                flex(1, 1)
+                                minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
+                            }
                         }) {
-                            Icon("square", { variation(Blue) })
-                            Text("task.name")
+                            selectedActivity.value?.also { TaskIcon(it) } ?: Icon({ variation(Inverted) })
+                            InlineDropdown(clickupState, { value, _, _ ->
+                                selectedActivity.value = clickupState.activity(value)
+                            }, {
+                                variation(Variation.Scrolling)
+                                style {
+                                    flex(1, 1)
+                                    minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
+                                }
+                            }) {
+                                DropdownText({
+                                    style {
+                                        maxWidth(100.percent)
+                                        textOverflow()
+                                    }
+                                }) {
+                                    when (val task = selectedActivity.value) {
+                                        null -> Text("Select task...")
+                                        else -> Text(task.name)
+                                    }
+                                }
+                                SubMenu({
+                                    style { maxWidth(200.percent) }
+                                }) {
+                                    Input({ variation(Variation.Icon("search")) }) {
+                                        Input(InputType.Text) { placeholder("Search tasks...") }
+                                        Icon("search")
+                                    }
+
+                                    clickupState.activities.onEach { (meta, color, activities) ->
+                                        Divider()
+                                        Header({ style { color?.also { color(it) } } }) {
+                                            meta.forEachIndexed { index, meta ->
+                                                if (index > 0) Icon("inverted")
+                                                Icon({
+                                                    title(meta.title)
+                                                    style { classes(*meta.iconVariations.toTypedArray()) }
+                                                })
+                                                meta.text?.also { Text(it) }
+                                            }
+                                        }
+                                        activities.forEach { activity ->
+                                            ActivityItem(activity)
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        Item({
-                            attr("data-value", "task.id.stringValue")
-                        }) {
-                            Menu {
-                                Icon("square", { variation(Blue) })
-                                Text("task.name")
+
+                        SubMenu({ variation(Direction.Right) }) {
+                            selectedActivity.value?.meta?.forEach {
+                                Item({ variation(Borderless) }) {
+                                    MetaIcon(it)
+                                }
                             }
                         }
                     }
-                }
-            }
-            is Failed -> DropdownItem(profileState, Borderless, Error, Variation.Icon) {
-                Icon("stopwatch")
-                Menu {
-                    // TODO replace ErrorMessage
-                    Message({
-                        variation(Variation.Error)
+                    is Failure -> DropdownItem(clickupState, { _, _, _ -> }, {
+                        variation(Borderless, Variation.Icon)
                     }) {
-                        Header {
-                            Text("We're sorry we can't apply that discount")
+                        IconGroup {
+                            Icon("youtube")
+                            Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
                         }
-                        P { Text("That offer has expired") }
+                        SubMenu {
+                            ErrorMessage(tasks.value)
+                        }
                     }
                 }
             }
         }
 
-        DropdownItem(profileState, Borderless, Floating, Variation.Icon) {
-            IconGroup {
-                Icon("stopwatch")
-                Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
-            }
-            Menu {
-                // TODO replace ErrorMessage
-                Message({
-                    variation(Variation.Error)
+        is Failed -> {
+            Menu({ variation(Mini) }) {
+                DropdownItem(clickupState, { _, _, _ -> }, {
+                    variation(Borderless, Floating, Variation.Icon)
                 }) {
-                    Header {
-                        Text("We're sorry we can't apply that discount")
+                    IconGroup {
+                        Icon("youtube")
+                        Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
                     }
-                    P { Text("That offer has expired") }
+                    SubMenu {
+                        ErrorMessage(clickupState.exceptions.first())
+                        Item {
+                            Icon("sign-out")
+                            Text("Sign-out")
+                        }
+                    }
                 }
             }
         }
@@ -271,13 +421,13 @@ fun ClickUp(
 
 @Composable
 fun ClickUpDeprecated(
-    profileState: ProfileState,
+    clickupState: ClickupState,
     onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit,
 ) {
     Style(ClickupStyleSheet)
 
     Div {
-        when (profileState) {
+        when (clickupState) {
             Disconnected -> B({
                 classes(ClickupStyleSheet.header)
             }) {
@@ -291,13 +441,13 @@ fun ClickUpDeprecated(
             }
 
             is Activating -> {
-                TeamActivation(profileState.user, profileState.teams) { profileState.activate(it) }
+                TeamActivation(clickupState.user, clickupState.teams) { clickupState.activate(it) }
             }
             is Activated -> {
-                Session(profileState)
+                Session(clickupState)
             }
             is Failed -> ErrorMessage {
-                Text(profileState.message)
+                Text(clickupState.message)
                 Br()
                 Small { Connect("Try again...", onConnect = onConnect) }
             }
@@ -384,7 +534,7 @@ fun Session(
             onStart = { session.startTimeEntry() },
             onStop = { session.stopTimeEntry() })
 
-        if (session !is Searchable) session.prepare() else {
+        if (session.tasks == null) session.prepare() else {
             AllTasks(session.tasks)
         }
     }
@@ -394,13 +544,13 @@ fun Session(
 fun AllTasks(
     tasksResponse: Response<List<Task>>,
 ) {
-    val query = remember { mutableStateOf("") }
+    var query by remember { mutableStateOf("") }
     tasksResponse.visualize(false) { tasks ->
         Div({
             classes(ClickupStyleSheet.sessionTasks)
         }) {
-            SearchInput(query.value) {
-                onInput { query.value = it.value }
+            SearchInput(query) {
+                onInput { query = it.value }
             }
             TaskCount(tasks.size)
 
@@ -424,7 +574,7 @@ fun AllTasks(
                     classes("item")
                     attr("data-value", task.id.stringValue)
                 }) {
-                    Icon("square", { variation(Blue) })
+                    TaskIcon(task)
                     Text(task.name)
                 }
             }
@@ -437,7 +587,7 @@ fun AllTasks(
                 }
             }) {
                 tasks
-                    .filter { it.name.contains(query.value, ignoreCase = true) }
+                    .filter { it.name.contains(query, ignoreCase = true) }
                     .forEach {
                         // TODO task status
                         Option(it.id.stringValue) {
@@ -477,9 +627,7 @@ fun CurrentTask(
                                     fontSize(12.px)
                                     fontWeight(400)
                                     lineHeight(1.em)
-                                    whiteSpace("nowrap")
-                                    overflow("hidden")
-                                    property("text-overflow", "ellipsis")
+                                    textOverflow()
                                     color(RGB(0x292d34))
                                 }
                             }) { Text("(no task)") }
@@ -573,21 +721,20 @@ fun Tag(
             whiteSpace("nowrap")
             lineHeight(13.px)
             if (outline) {
-                color(tag.foregroundColor)
-                backgroundColor(tag.foregroundColor.transparentize(.2))
+                color(tag.outlineForegroundColor)
+                backgroundColor(tag.outlineBackgroundColor)
                 border {
                     width(1.px)
                     style(LineStyle.Solid)
-                    color(tag.foregroundColor)
+                    color(tag.outlineBorderColor)
                 }
             } else {
-                color(Color.white)
-                val backgroundColor = tag.backgroundColor.toHSL().coerceAtMost(lightness = 67.0)
-                backgroundColor(backgroundColor)
+                color(tag.solidForegroundColor)
+                backgroundColor(tag.solidBackgroundColor)
                 border {
                     width(1.px)
                     style(LineStyle.Solid)
-                    color(backgroundColor)
+                    color(tag.solidBorderColor)
                 }
             }
         }
@@ -597,9 +744,7 @@ fun Tag(
                 display(DisplayStyle.Flex)
                 fontSize(12.px)
                 fontWeight(700)
-                whiteSpace("nowrap")
-                overflow("hidden")
-                property("text-overflow", "ellipsis")
+                textOverflow()
             }
         }) {
             Text(tag.name)
@@ -644,6 +789,7 @@ fun TaskCount(
 @Suppress("PublicApiImplicitType")
 object ClickupStyleSheet : StyleSheet() {
 
+    @Deprecated("use semantic header")
     val header by style {
         textAlign("center")
         fontSize(1.em)

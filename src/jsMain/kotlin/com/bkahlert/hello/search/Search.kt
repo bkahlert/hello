@@ -1,13 +1,15 @@
 package com.bkahlert.hello.search
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.bkahlert.Brand
-import com.bkahlert.hello.MagnifyingGlass
-import com.bkahlert.hello.center
-import com.bkahlert.hello.fontFamily
-import com.bkahlert.hello.visuallyHidden
+import com.bkahlert.hello.ui.MagnifyingGlass
+import com.bkahlert.hello.ui.center
+import com.bkahlert.hello.ui.fontFamily
+import com.bkahlert.hello.ui.visuallyHidden
 import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.backgroundImage
 import com.bkahlert.kommons.browser.delayed
@@ -84,29 +86,29 @@ fun Search(
 
     val spacerInput = "spacer-input"
 
-    val inputState = remember { mutableStateOf(query ?: "") }
+    var inputState by remember { mutableStateOf(query ?: "") }
 
-    val engineState = remember { mutableStateOf(engine) }
+    var engineState by remember { mutableStateOf(engine) }
 
     @Suppress("NAME_SHADOWING")
     val onEngineChange: (Engine) -> Unit = {
-        engineState.value = it
+        engineState = it
         onEngineChange(it)
     }
 
-    val fullSearchState = remember { mutableStateOf(fullSearch) }
+    var fullSearchState by remember { mutableStateOf(fullSearch) }
 
     @Suppress("NAME_SHADOWING")
     val onFullSearchChange: (Boolean) -> Unit = {
-        fullSearchState.value = it
+        fullSearchState = it
         onFullSearchChange(it)
     }
 
-    val focusState = remember { mutableStateOf(false) }
+    var focusState by remember { mutableStateOf(false) }
 
     @Suppress("NAME_SHADOWING")
     val onFocusChange: (Boolean) -> Unit = { hasFocus ->
-        focusState.value = hasFocus
+        focusState = hasFocus
         if (hasFocus) {
             delayed(1.seconds) { onReady() }
         }
@@ -114,14 +116,14 @@ fun Search(
 
     @Suppress("NAME_SHADOWING")
     val onSearch: () -> Unit = {
-        onSearch(inputState.value, Engine.values()
-            .filter { fullSearchState.value || it == engineState.value }
-            .map { it.url(inputState.value) })
+        onSearch(inputState, Engine.values()
+            .filter { fullSearchState || it == engineState }
+            .map { it.url(inputState) })
     }
 
     val (backgroundPosition, backgroundPositionChanged) = remember { mutableStateOf(65.px) }
 
-    val isEmpty = inputState.value.isEmpty()
+    val isEmpty = inputState.isEmpty()
 
     Div({
         style {
@@ -155,26 +157,26 @@ fun Search(
                         "color .2s ease-in, background-color .2s ease-in, background-position .2s ease-in, background-size .2s ease-in")
                     borderRadius2()
                     backgroundRepeat("no-repeat")
-                    if (fullSearchState.value) {
-                        if (focusState.value) {
+                    if (fullSearchState) {
+                        if (focusState) {
                             color(Color.black)
                             backgroundColor(Brand.colors.input.transparentize(0.33))
-                            backgroundImage(engineState.value.coloredImage)
+                            backgroundImage(engineState.coloredImage)
                         } else {
                             color(Color.white)
                             backgroundColor(Brand.colors.input.transparentize(0.0))
-                            backgroundImage(engineState.value.grayscaleImage)
+                            backgroundImage(engineState.grayscaleImage)
                         }
                         backgroundPosition("-15em ${if (isEmpty) "45%" else "50%"}")
                     } else {
-                        if (focusState.value) {
+                        if (focusState) {
                             color(Color.black)
                             backgroundColor(Brand.colors.input)
-                            backgroundImage(engineState.value.coloredImage)
+                            backgroundImage(engineState.coloredImage)
                         } else {
-                            color(engineState.value.color.textColor)
-                            backgroundColor(engineState.value.color)
-                            if (isEmpty) backgroundImage(engineState.value.grayscaleImage)
+                            color(engineState.color.textColor)
+                            backgroundColor(engineState.color)
+                            if (isEmpty) backgroundImage(engineState.grayscaleImage)
                         }
                         if (isEmpty) {
                             backgroundPosition("$backgroundPosition 45%")
@@ -210,16 +212,16 @@ fun Search(
                         Em({
                             style {
                                 property("margin", "auto")
-                                if (focusState.value) backgroundImage(MagnifyingGlass(color))
-                                else backgroundImage(MagnifyingGlass(engineState.value.color.textColor))
+                                if (focusState) backgroundImage(MagnifyingGlass(color))
+                                else backgroundImage(MagnifyingGlass(engineState.color.textColor))
                                 width(20.px)
                                 height(20.px)
                             }
                         })
                     }
                     // TODO redesign using https://semantic-ui.com/elements/input.html#action
-                    SearchInput(inputState.value) {
-                        attr("data-engine", engineState.value.name)
+                    SearchInput(inputState) {
+                        attr("data-engine", engineState.name)
                         attr("autocapitalize", "off")
                         autoComplete(AutoComplete.off)
                         attr("autocorrect", "off")
@@ -232,8 +234,8 @@ fun Search(
                         title("Press ↑ or ↓ to switch the search engine")
                         onKeyDown { event ->
                             when (event.code) {
-                                "ArrowUp" -> onEngineChange(engineState.value.prev)
-                                "ArrowDown" -> onEngineChange(engineState.value.next)
+                                "ArrowUp" -> onEngineChange(engineState.prev)
+                                "ArrowDown" -> onEngineChange(engineState.next)
                                 "OSLeft", "OSRight" -> onFullSearchChange(true)
                                 "Enter", "NumpadEnter" -> onSearch()
                             }
@@ -244,7 +246,7 @@ fun Search(
                             }
                         }
                         onInput { event ->
-                            inputState.value = event.value
+                            inputState = event.value
 
                             document.getElementById(spacerInput)?.unsafeCast<HTMLElement>()?.apply {
                                 textContent = event.value
@@ -253,7 +255,7 @@ fun Search(
                         }
                         onPaste { event -> event.getData("text/plain")?.also(onPaste) }
                         style {
-                            if (!focusState.value) color(engineState.value.color.textColor)
+                            if (!focusState) color(engineState.color.textColor)
                             backgroundColor(Color.transparent)
                             property("border", "none")
                             property("margin", "0")
@@ -296,7 +298,7 @@ fun Search(
                 marginLeft(1.cssRem)
             }
             title("If checked all search engines are opened in separate tabs")
-            checked(fullSearchState.value)
+            checked(fullSearchState)
             onChange { event -> onFullSearchChange(event.value) }
         }
     }

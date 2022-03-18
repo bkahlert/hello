@@ -3,6 +3,7 @@ package com.bkahlert.hello
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.bkahlert.Brand
 import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
@@ -11,10 +12,9 @@ import com.bkahlert.hello.AppStylesheet.Grid.Custom
 import com.bkahlert.hello.AppStylesheet.Grid.CustomGradient
 import com.bkahlert.hello.AppStylesheet.Grid.Header
 import com.bkahlert.hello.AppStylesheet.Grid.Links
+import com.bkahlert.hello.AppStylesheet.Grid.Margin
 import com.bkahlert.hello.AppStylesheet.Grid.Plugins
 import com.bkahlert.hello.AppStylesheet.Grid.Search
-import com.bkahlert.hello.AppStylesheet.Grid.Space
-import com.bkahlert.hello.ProfileState.Loaded.Activating
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.links.Header
@@ -22,22 +22,19 @@ import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
 import com.bkahlert.hello.plugins.ClickUp
 import com.bkahlert.hello.plugins.ClickUpDeprecated
-import com.bkahlert.hello.plugins.errorMessage
+import com.bkahlert.hello.plugins.clickup.ClickupState
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Engine.Google
 import com.bkahlert.hello.search.Search
-import com.bkahlert.hello.test.mainTest
-import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.hello.ui.ViewportDimension
+import com.bkahlert.hello.ui.center
+import com.bkahlert.hello.ui.fontFamily
+import com.bkahlert.hello.ui.gridArea
+import com.bkahlert.hello.ui.linearGradient
+import com.bkahlert.hello.ui.mainTest
 import com.bkahlert.kommons.Either
-import com.bkahlert.kommons.fix.map
-import com.bkahlert.kommons.fix.or
-import com.bkahlert.kommons.fix.value
 import com.bkahlert.kommons.runtime.LocalStorage
-import com.clickup.api.Tag
-import com.clickup.api.Task
-import com.clickup.api.Team
-import com.clickup.api.TimeEntry
-import com.clickup.api.User
+import com.bkahlert.kommons.time.Now
 import com.clickup.api.rest.AccessToken
 import com.clickup.api.rest.ClickupClient
 import kotlinx.coroutines.flow.Flow
@@ -103,7 +100,6 @@ import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.url.URL
 
-// TODO search / filter tasks
 // TODO start tasks
 // TODO clock / timer of passed time
 // TODO detect updates
@@ -112,110 +108,6 @@ sealed interface AppState {
     object Loading : AppState
     object Ready : AppState
     object FullLoaded : AppState
-}
-
-sealed interface ProfileState {
-    object Disconnected : ProfileState
-
-    object Loading : ProfileState
-
-    sealed class Loaded(
-        protected val client: ClickupClient,
-        val user: User,
-        val teams: List<Team>,
-        protected val update: (suspend (ProfileState) -> ProfileState) -> Unit,
-    ) : ProfileState {
-
-        protected val logger = simpleLogger()
-
-        fun activate(team: Team) {
-            logger.info("Activating ${user.username}@${team.name}")
-            update { Activated(client, user, teams, team, client.getRunningTimeEntry(team, user), update) }
-        }
-
-        class Activating(
-            client: ClickupClient,
-            user: User,
-            teams: List<Team>,
-            update: (suspend (ProfileState) -> ProfileState) -> Unit,
-        ) : Loaded(client, user, teams, update)
-
-        open class Activated(
-            client: ClickupClient,
-            user: User,
-            teams: List<Team>,
-            val activeTeam: Team,
-            val runningTimeEntry: Response<TimeEntry?>,
-            update: (suspend (ProfileState) -> ProfileState) -> Unit,
-        ) : Loaded(client, user, teams, update) {
-
-            fun prepare() {
-                update { Searchable(client, user, teams, activeTeam, runningTimeEntry, client.getTasks(activeTeam), update) }
-            }
-
-            fun startTimeEntry() {
-                val tomato = RGB(0xff6347)
-                val tomatoSauce = RGB(0xb21807)
-                update {
-                    logger.log("starting time entry")
-                    val xxx: Either<TimeEntry, Throwable> = client.startTimeEntry(
-                        activeTeam,
-                        Task.ID("20jg1er"),
-                        "50m pomodoro",
-                        false,
-                        Tag("pomodoro", tomato, tomato, null),
-                    )
-                    Activated(client, user, teams, activeTeam, xxx, update)
-                }
-            }
-
-            fun stopTimeEntry() {
-                update {
-                    logger.info("stopping time entry")
-                    when (val response = client.stopTimeEntry(activeTeam)) {
-                        is Success -> console.log("stopped", response.value)
-                        is Failure -> console.error("failed to stop", response.value.errorMessage)
-                    }
-                    this
-                }
-            }
-        }
-
-        open class Searchable(
-            client: ClickupClient,
-            user: User,
-            teams: List<Team>,
-            activeTeam: Team,
-            runningTimeEntry: Response<TimeEntry?>,
-            val tasks: Response<List<Task>>,
-            update: (suspend (ProfileState) -> ProfileState) -> Unit,
-        ) : Activated(client, user, teams, activeTeam, runningTimeEntry, update)
-    }
-
-    data class Failed(
-        val exceptions: List<Throwable>,
-    ) : ProfileState {
-        constructor(vararg exceptions: Throwable) : this(exceptions.toList())
-
-        val message: String
-            get() = exceptions.firstNotNullOfOrNull { it.message } ?: "message missing"
-    }
-
-    companion object {
-        fun of(
-            client: ClickupClient,
-            userResponse: Response<User>,
-            teamsResponse: Response<List<Team>>,
-            update: (suspend (ProfileState) -> ProfileState) -> Unit,
-        ): ProfileState {
-            if (userResponse == null || teamsResponse == null) return Loading
-            return userResponse.map { user ->
-                teamsResponse.map { Activating(client, user, it, update) } or { Failed(it) }
-            } or { ex ->
-                userResponse.map { Failed(ex) } or { Failed(ex, it) }
-            }
-        }
-    }
 }
 
 /** A response that did not arrive yet or either succeeded or failed. */
@@ -259,21 +151,21 @@ class AppModel(private val config: Config) {
         .map { it ?: config.clickup.fallbackAccessToken }
 
     // mutable state to store a lambda that can update an existing profile state
-    private val _updateState = MutableStateFlow<(suspend (ProfileState) -> ProfileState)> { it }
-    private fun update(update: suspend (ProfileState) -> ProfileState) {
+    private val _updateState = MutableStateFlow<(suspend (ClickupState) -> ClickupState)> { it }
+    private fun update(update: suspend (ClickupState) -> ClickupState) {
         _updateState.update { update }
     }
 
     // actual profile state deducted from an initial one
     // and update state applied to it
-    val profileState: Flow<ProfileState> = _savedClickupTokenState
+    val clickupState: Flow<ClickupState> = _savedClickupTokenState
         .combine(appState) { token, appState ->
             if (appState == AppState.Loading) {
-                ProfileState.Loading
+                ClickupState.Loading
             } else {
                 token?.let(::ClickupClient)?.let {
-                    ProfileState.of(it, it.getUser(), it.getTeams(), ::update)
-                } ?: ProfileState.Disconnected
+                    ClickupState.of(it, it.getUser(), it.getTeams(), ::update)
+                } ?: ClickupState.Disconnected
             }
         }
         .combine(_updateState) { profile, update -> update(profile) }
@@ -298,7 +190,9 @@ fun main() {
         val appState = remember { AppModel(AppConfig) }
         val loadingState by appState.appState.collectAsState()
         val engine by appState.engine.collectAsState()
-        val profileState by appState.profileState.collectAsState(null)
+        val profileState by appState.clickupState.collectAsState(null)
+        val nowState = remember { mutableStateOf(Now) }
+        val now = nowState.value
 
         Grid({
             style {
@@ -364,7 +258,7 @@ fun main() {
                         },
                     )
                     ClickUpDeprecated(
-                        profileState = it,
+                        clickupState = it,
                         onConnect = { details ->
                             details(AppConfig.clickup.fallbackAccessToken, appState::configureClickUp)
                         },
@@ -418,7 +312,7 @@ object AppStylesheet : StyleSheet() {
     val CUSTOM_BACKGROUND_COLOR = Brand.colors.white
 
     enum class Grid {
-        Links, Header, Search, Plugins, Space, CustomGradient, Custom
+        Links, Header, Search, Plugins, Margin, CustomGradient, Custom
     }
 
     init {
@@ -456,6 +350,14 @@ object AppStylesheet : StyleSheet() {
         ) style {
             fontSize(25.px)
         }
+        // combined selector
+        type("A") + attr( // selects all tags <a> with href containing 'jetbrains'
+            name = "href",
+            value = "jetbrains",
+            operator = CSSSelector.Attribute.Operator.Equals
+        ) style {
+            fontSize(25.px)
+        }
     }
 
     val helloGridContainer by style {
@@ -472,7 +374,7 @@ object AppStylesheet : StyleSheet() {
             "$Header $Header",
             "$Search $Search",
             "$Links $Plugins",
-            "$Space $Space",
+            "$Margin $Margin",
             "$CustomGradient $CustomGradient",
             "$Custom $Custom",
         )
@@ -486,14 +388,16 @@ object AppStylesheet : StyleSheet() {
 
         media(mediaMinWidth(ViewportDimension.large) and mediaMinHeight(250.px)) {
             self style {
-//                gridTemplateColumns("1fr 1fr 1fr 1fr") TODO restore
+                // minmax enforces cell content to not consume more space
+                // https://css-tricks.com/preventing-a-grid-blowout/
+//                gridTemplateColumns("1fr 1fr 1fr minmax(0, 1fr)") TODO restore
 //                gridTemplateRows("$HEADER_HEIGHT 80px 0 0 1fr")  TODO restore
-                gridTemplateColumns("1fr 1fr 1fr 3fr")
+                gridTemplateColumns("1fr 1fr 1fr minmax(0, 3fr)")
                 gridTemplateRows("$HEADER_HEIGHT 640px 0 0 1fr")
                 gridTemplateAreas(
                     "$Header $Header $Header $Header",
                     "$Links $Search $Search $Plugins",
-                    "$Space $Space $Space $Space",
+                    "$Margin $Margin $Margin $Margin",
                     "$CustomGradient $CustomGradient $CustomGradient $CustomGradient",
                     "$Custom $Custom $Custom $Custom",
                 )

@@ -1,10 +1,10 @@
 package com.semanticui.compose.element
 
 import androidx.compose.runtime.Composable
-import com.semanticui.compose.Modifier
-import com.semanticui.compose.classNames
-import org.jetbrains.compose.web.dom.ContentBuilder
-import org.jetbrains.compose.web.dom.Div
+import com.semanticui.compose.SemanticAttrBuilder
+import com.semanticui.compose.SemanticBuilder
+import com.semanticui.compose.SemanticDivElement
+import com.semanticui.compose.SemanticElement
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.H3
@@ -14,17 +14,21 @@ import org.jetbrains.compose.web.dom.H6
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLHeadingElement
 
+interface HeaderElement : SemanticElement
+
 /**
  * Creates a [SemanticUI page header](https://semantic-ui.com/elements/header.html#page-headers).
  */
 @Composable
 fun Header1(
-    vararg modifiers: Modifier,
-    content: ContentBuilder<HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
-    H1({
-        classes("ui", *modifiers.classNames, "header")
-    }, content)
+    SemanticElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("header")
+    }, content) { a, c -> H1(a, c) }
 }
 
 /**
@@ -32,12 +36,14 @@ fun Header1(
  */
 @Composable
 fun Header2(
-    vararg modifiers: Modifier,
-    content: ContentBuilder<HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
-    H2({
-        classes("ui", *modifiers.classNames, "header")
-    }, content)
+    SemanticElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("header")
+    }, content) { a, c -> H2(a, c) }
 }
 
 /**
@@ -45,12 +51,14 @@ fun Header2(
  */
 @Composable
 fun Header3(
-    vararg modifiers: Modifier,
-    content: ContentBuilder<HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
-    H3({
-        classes("ui", *modifiers.classNames, "header")
-    }, content)
+    SemanticElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("header")
+    }, content) { a, c -> H3(a, c) }
 }
 
 /**
@@ -58,12 +66,14 @@ fun Header3(
  */
 @Composable
 fun Header4(
-    vararg modifiers: Modifier,
-    content: ContentBuilder<HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
-    H4({
-        classes("ui", *modifiers.classNames, "header")
-    }, content)
+    SemanticElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("header")
+    }, content) { a, c -> H4(a, c) }
 }
 
 /**
@@ -71,12 +81,14 @@ fun Header4(
  */
 @Composable
 fun Header5(
-    vararg modifiers: Modifier,
-    content: ContentBuilder<HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
-    H5({
-        classes("ui", *modifiers.classNames, "header")
-    }, content)
+    SemanticElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("header")
+    }, content) { a, c -> H5(a, c) }
 }
 
 /**
@@ -84,12 +96,14 @@ fun Header5(
  */
 @Composable
 fun Header6(
-    vararg modifiers: Modifier,
-    content: ContentBuilder<HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
-    H6({
-        classes("ui", *modifiers.classNames, "header")
-    }, content)
+    SemanticElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("header")
+    }, content) { a, c -> H6(a, c) }
 }
 
 /**
@@ -97,10 +111,12 @@ fun Header6(
  */
 @Composable
 fun Header(
-    vararg modifiers: Modifier,
-    content: ContentBuilder<HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilder<HeaderElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<HeaderElement, HTMLDivElement>? = null,
 ) {
-    Div({
-        classes("ui", *modifiers.classNames, "header")
+    SemanticDivElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("header")
     }, content)
 }

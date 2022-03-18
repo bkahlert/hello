@@ -1,8 +1,8 @@
 package com.bkahlert.hello.search
 
 import com.bkahlert.Brand
-import com.bkahlert.hello.fmod
 import com.bkahlert.hello.search.Engine.Google
+import com.bkahlert.hello.ui.fmod
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.Image

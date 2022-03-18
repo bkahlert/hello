@@ -17,7 +17,11 @@ import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.User
 import com.clickup.api.rest.ClickUpException.Companion.wrapOrNull
+import com.clickup.api.rest.ClickupClient.Cache.FOLDERS
+import com.clickup.api.rest.ClickupClient.Cache.FOLDER_LISTS
 import com.clickup.api.rest.ClickupClient.Cache.RUNNING_TIME_ENTRY
+import com.clickup.api.rest.ClickupClient.Cache.SPACES
+import com.clickup.api.rest.ClickupClient.Cache.SPACE_LISTS
 import com.clickup.api.rest.ClickupClient.Cache.TASKS
 import com.clickup.api.rest.ClickupClient.Cache.TEAMS
 import com.clickup.api.rest.ClickupClient.Cache.USER
@@ -61,7 +65,6 @@ data class ClickupClient(
             HttpResponseValidator {
                 handleResponseException { throw it.wrapOrNull() ?: it }
             }
-            // TODO cache
             install("ClickUp-PersonalToken-Authorization") {
                 plugin(HttpSend).intercept { context ->
                     logger.debug("setting ${HttpHeaders.Authorization}=$accessToken")
@@ -82,7 +85,7 @@ data class ClickupClient(
             onSuccess(success)
             Either.Left(success)
         } catch (e: Exception) {
-            console.error("error", e.message) // TODO
+            logger.error("ClickUp error occurred", e)
             onFailure(e)
             Either.Right(e)
         }
@@ -94,6 +97,10 @@ data class ClickupClient(
         object TEAMS : Cache("clickup-teams")
         data class RUNNING_TIME_ENTRY(val id: Team.ID) : Cache("clickup-running-time-entry-${id.stringValue}")
         data class TASKS(val id: Team.ID) : Cache("clickup-team-tasks-${id.stringValue}")
+        data class SPACES(val id: Team.ID) : Cache("clickup-team-spaces-${id.stringValue}")
+        data class SPACE_LISTS(val id: Space.ID) : Cache("clickup-space-lists-${id.stringValue}")
+        data class FOLDERS(val id: Space.ID) : Cache("clickup-space-folders-${id.stringValue}")
+        data class FOLDER_LISTS(val id: Folder.ID) : Cache("clickup-folder-lists-${id.stringValue}")
 
         private val logger = simpleLogger()
 
@@ -184,6 +191,54 @@ data class ClickupClient(
                 parameter("date_updated_lt", date_updated_lt)
                 custom_fields?.forEach { parameter("custom_fields", it) }
                 custom_fields?.forEach { parameter("custom_fields", it.serialize()) }
+            }.value
+        }
+
+    suspend fun getSpaces(
+        team: Team,
+        archived: Boolean = false,
+        onSuccess: (List<Space>) -> Unit = {},
+    ): Either<List<Space>, Throwable> =
+        inBackground(onSuccess) {
+            logger.debug("getting spaces for team=${team.name}")
+            tokenClient.caching<Named<List<Space>>>(SPACES(team.id), clickUpUrl / "team" / team.id / "space") {
+                parameter("archived", archived)
+            }.value
+        }
+
+    suspend fun getLists(
+        space: Space,
+        archived: Boolean = false,
+        onSuccess: (List<ClickupList>) -> Unit = {},
+    ): Either<List<ClickupList>, Throwable> =
+        inBackground(onSuccess) {
+            logger.debug("getting lists for space=${space.name}")
+            tokenClient.caching<Named<List<ClickupList>>>(SPACE_LISTS(space.id), clickUpUrl / "space" / space.id / "list") {
+                parameter("archived", archived)
+            }.value
+        }
+
+    suspend fun getFolders(
+        space: Space,
+        archived: Boolean = false,
+        onSuccess: (List<Folder>) -> Unit = {},
+    ): Either<List<Folder>, Throwable> =
+        inBackground(onSuccess) {
+            logger.debug("getting folders for space=${space.name}")
+            tokenClient.caching<Named<List<Folder>>>(FOLDERS(space.id), clickUpUrl / "space" / space.id / "folder") {
+                parameter("archived", archived)
+            }.value
+        }
+
+    suspend fun getLists(
+        folder: Folder,
+        archived: Boolean = false,
+        onSuccess: (List<ClickupList>) -> Unit = {},
+    ): Either<List<ClickupList>, Throwable> =
+        inBackground(onSuccess) {
+            logger.debug("getting lists for folder=${folder.name}")
+            tokenClient.caching<Named<List<ClickupList>>>(FOLDER_LISTS(folder.id), clickUpUrl / "folder" / folder.id / "list") {
+                parameter("archived", archived)
             }.value
         }
 

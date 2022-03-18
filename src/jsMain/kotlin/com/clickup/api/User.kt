@@ -1,8 +1,10 @@
-@file:UseSerializers(UrlSerializer::class)
+@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
 
 package com.clickup.api
 
 import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
 import com.clickup.api.User.Preview
 import com.clickup.api.rest.Identifier

@@ -1,38 +1,26 @@
 package com.semanticui.compose.view
 
 import androidx.compose.runtime.Composable
-import com.semanticui.compose.Modifier
-import com.semanticui.compose.classNames
-import org.jetbrains.compose.web.dom.AttrBuilderContext
-import org.jetbrains.compose.web.dom.ContentBuilder
-import org.jetbrains.compose.web.dom.Div
+import com.semanticui.compose.SemanticAttrBuilder
+import com.semanticui.compose.SemanticBuilder
+import com.semanticui.compose.SemanticDivElement
+import com.semanticui.compose.SemanticElement
 import org.w3c.dom.HTMLDivElement
 
-/**
- * Creates a [SemanticUI item](https://semantic-ui.com/views/item.html).
- */
-@Composable
-fun Item(
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
-) {
-    Div({
-        attrs?.invoke(this)
-    }, content)
-}
+interface ItemElement : SemanticElement
+interface ItemsElement : SemanticElement
 
 /**
  * Creates a [SemanticUI item](https://semantic-ui.com/views/item.html).
  */
 @Composable
 fun Item(
-    modifier: Modifier, vararg modifiers: Modifier,
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilder<ItemElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<ItemElement, HTMLDivElement>? = null,
 ) {
-    Item({
-        classes(*modifier.classNames, *modifiers.classNames, "item")
+    SemanticDivElement({
         attrs?.invoke(this)
+        classes("item")
     }, content)
 }
 
@@ -41,10 +29,12 @@ fun Item(
  */
 @Composable
 fun Items(
-    vararg modifiers: Modifier,
-    content: ContentBuilder<HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilder<ItemElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<ItemElement, HTMLDivElement>? = null,
 ) {
-    Div({
-        classes("ui", *modifiers.classNames, "items")
+    SemanticDivElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("item")
     }, content)
 }

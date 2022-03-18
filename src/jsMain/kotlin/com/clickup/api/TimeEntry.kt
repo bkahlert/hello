@@ -18,7 +18,7 @@ import kotlin.time.Duration
 data class TimeEntry(
     @SerialName("id") val id: ID,
     @SerialName("task") val task: Preview?,
-    @SerialName("wid") val wid: com.clickup.api.Team.ID,
+    @SerialName("wid") val wid: Team.ID,
     @SerialName("user") val user: User,
     @SerialName("billable") val billable: Boolean,
     @SerialName("start") val start: Date,

@@ -1,7 +1,7 @@
 package com.bkahlert.kommons
 
 import com.bkahlert.Brand.colors
-import com.bkahlert.hello.fmod
+import com.bkahlert.hello.ui.fmod
 import com.bkahlert.kommons.math.toHexadecimalString
 import com.bkahlert.kommons.serialization.ColorSerializer
 import com.bkahlert.kommons.serialization.HslSerializer

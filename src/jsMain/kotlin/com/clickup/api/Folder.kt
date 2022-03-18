@@ -1,8 +1,14 @@
+@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
+
 package com.clickup.api
 
+import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.UrlSerializer
 import com.clickup.api.rest.Identifier
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
 @Serializable
 data class Folder(
@@ -14,7 +20,7 @@ data class Folder(
     @SerialName("task_count") val taskCount: String,
     @SerialName("archived") val archived: Boolean,
     @SerialName("statuses") val statuses: List<Status>,
-    @SerialName("lists") val lists: List<String>,
+    @SerialName("lists") val lists: List<ClickupList>,
     @SerialName("permission_level") val permissionLevel: String,
 ) {
     @Serializable value class ID(override val id: String) : Identifier<String>

@@ -56,7 +56,6 @@ fun <TSemantic : SemanticElement> SemanticDivElement(
     SemanticElement(attrs, content) { a, c -> Div(a, c) }
 }
 
-@Deprecated("use Type, Variation or State directly")
 interface Modifier {
     val classNames: Array<out String>
 
@@ -77,6 +76,7 @@ object Empty : Modifier {
 
 sealed class Variation(override vararg val classNames: String) : Modifier {
     object Fitted : Variation("fitted")
+    object Compact : Variation("compact")
     sealed class Size(className: String) : Variation(className) {
         object Mini : Size("mini")
         object Tiny : Size("tiny")
@@ -125,6 +125,20 @@ sealed class Variation(override vararg val classNames: String) : Modifier {
         object Left : Colored("left")
     }
 
+    sealed class Direction(className: String) : Variation(className) {
+        object Top : Colored("top")
+        object Right : Colored("right")
+        object Bottom : Colored("bottom")
+        object Left : Colored("left")
+    }
+
+    sealed class Columns(className: String) : Variation(className) {
+        object One : Columns("one")
+        object Two : Columns("two")
+        object Three : Columns("three")
+        object Four : Columns("four")
+    }
+
     object Fluid : Variation("fluid")
     object Floating : Variation("floating")
     object Borderless : Variation("borderless")
@@ -135,6 +149,7 @@ sealed class Variation(override vararg val classNames: String) : Modifier {
     }
 
     object Transparent : Variation("transparent")
+    object Scrolling : Variation("scrolling")
 }
 
 sealed class State(override vararg val classNames: String) : Modifier {

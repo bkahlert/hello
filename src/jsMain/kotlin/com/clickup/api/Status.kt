@@ -1,9 +1,15 @@
+@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
+
 package com.clickup.api
 
 import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.UrlSerializer
 import com.clickup.api.rest.Identifier
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
 @Serializable
 data class Status(

@@ -1,7 +1,7 @@
 package com.bkahlert.hello.links
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.center
+import com.bkahlert.hello.ui.center
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.em

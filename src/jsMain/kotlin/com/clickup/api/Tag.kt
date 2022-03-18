@@ -1,8 +1,11 @@
-@file:UseSerializers(UrlSerializer::class)
+@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
 
 package com.clickup.api
 
 import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.coerceAtMost
+import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
 import com.clickup.api.User.ID
 import kotlinx.serialization.SerialName
@@ -18,4 +21,11 @@ data class Tag(
 ) {
     val foregroundColor: Color by lazy { tagForeground ?: Color(0x000000) }
     val backgroundColor: Color by lazy { tagBackground ?: Color(0x000000) }
+
+    val outlineForegroundColor: Color get() = foregroundColor
+    val outlineBackgroundColor: Color get() = foregroundColor.transparentize(.2)
+    val outlineBorderColor: Color get() = foregroundColor
+    val solidForegroundColor: Color get() = Color(0xffffff)
+    val solidBackgroundColor: Color get() = backgroundColor.toHSL().coerceAtMost(lightness = 67.0)
+    val solidBorderColor: Color get() = solidBackgroundColor
 }

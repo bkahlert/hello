@@ -1,7 +1,9 @@
-package com.bkahlert.hello
+package com.bkahlert.hello.ui
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.plugins.ErrorMessage
+import com.bkahlert.hello.Failure
+import com.bkahlert.hello.Response
+import com.bkahlert.hello.Success
 import com.bkahlert.kommons.fix.value
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Small

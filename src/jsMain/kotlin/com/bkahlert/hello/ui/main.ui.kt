@@ -1,5 +1,9 @@
-package com.bkahlert.hello.test
+package com.bkahlert.hello.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.bkahlert.hello.AppStylesheet
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.plugins.CurrentTask
@@ -8,11 +12,14 @@ import com.bkahlert.kommons.serialization.Named
 import com.clickup.api.TimeEntry
 import com.clickup.api.rest.ClickUpException
 import com.clickup.api.rest.ErrorInfo
+import com.semanticui.compose.view.Item
+import com.semanticui.compose.view.Items
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Header
 import org.jetbrains.compose.web.dom.Hr
+import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
-
 
 fun <T> response(value: T) = Either.Left<T, Throwable>(value)
 fun <T> failedResponse() = Either.Right<T, Throwable>(ClickUpException(
@@ -66,6 +73,29 @@ private val timeEntry by lazy {
 fun mainTest() {
     renderComposable("root") {
         Style(AppStylesheet)
+
+        val text by remember { mutableStateOf("Test") }
+        var checked by remember { mutableStateOf(false) }
+//        Switch(
+//            checked = checked,
+//            onCheckedChange = {
+//                checked = it
+//            }
+//        )
+//        // Igniting the game loop
+//        LaunchedEffect(Unit) {
+//            delay(1000)
+//            game.step()
+//        }
+
+        Items {
+            Item {
+                Header { Text("Timer") }
+                Div({ classes("content") }) {
+                    Text(text)
+                }
+            }
+        }
 
         Div {
             CurrentTask(response(null)) {
