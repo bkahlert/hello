@@ -120,3 +120,18 @@ fun Header(
         classes("header")
     }, content)
 }
+
+
+/**
+ * Creates a [SemanticUI content sub header](https://semantic-ui.com/elements/header.html#sub-headers).
+ */
+@Composable
+fun SubHeader(
+    attrs: SemanticAttrBuilder<HeaderElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<HeaderElement, HTMLDivElement>? = null,
+) {
+    Header({
+        attrs?.invoke(this)
+        classes("sub")
+    }, content)
+}

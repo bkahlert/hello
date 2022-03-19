@@ -228,4 +228,8 @@ enum class Engine(
      * [Image] consisting of the [caption] colored with [color].
      */
     val coloredImage: Image = svg(color)
+
+    companion object {
+        val Default: Engine = Google
+    }
 }

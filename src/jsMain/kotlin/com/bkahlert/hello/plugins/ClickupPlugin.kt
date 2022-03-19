@@ -19,11 +19,13 @@ import com.bkahlert.hello.plugins.clickup.ClickupState.Loaded.Activated.Activity
 import com.bkahlert.hello.plugins.clickup.ClickupState.Loaded.Activating
 import com.bkahlert.hello.plugins.clickup.ClickupState.Loading
 import com.bkahlert.hello.plugins.clickup.MetaIcon
+import com.bkahlert.hello.plugins.clickup.PomodoroTimer
 import com.bkahlert.hello.plugins.clickup.TaskIcon
 import com.bkahlert.hello.ui.ErrorMessage
 import com.bkahlert.hello.ui.textOverflow
 import com.bkahlert.hello.ui.visualize
 import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.fix.orNull
 import com.bkahlert.kommons.fix.value
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.toMoment
@@ -44,7 +46,6 @@ import com.semanticui.compose.Variation.Corner
 import com.semanticui.compose.Variation.Direction
 import com.semanticui.compose.Variation.Floating
 import com.semanticui.compose.Variation.Fluid
-import com.semanticui.compose.Variation.Inverted
 import com.semanticui.compose.Variation.Position.Bottom
 import com.semanticui.compose.Variation.Position.Right
 import com.semanticui.compose.Variation.Size.Mini
@@ -111,7 +112,6 @@ import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Em
-import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Li
@@ -125,15 +125,12 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.Ul
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGUseElement
-import kotlin.js.Date
 
 @Composable
 fun ClickUp(
-    profileState: ProfileState,
+    clickupState: ClickupState,
     onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit,
 ) {
-
-    H1 { Text(date.toTimeString()) }
 
     var selectedPomodoroType by remember { mutableStateOf(Pomodoro.Type.values().first()) }
 
@@ -203,6 +200,8 @@ fun ClickUp(
 
         is Activated -> {
             val selectedActivity = remember { mutableStateOf<Activity<*>?>(null) }
+
+            clickupState.runningTimeEntry?.also { it.orNull()?.let { PomodoroTimer(it) } }
 
             // pre-select always with running activity if any
             if (selectedActivity.value?.takeUnless { it is RunningTaskActivity } == null) {

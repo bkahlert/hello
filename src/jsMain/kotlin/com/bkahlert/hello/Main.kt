@@ -3,7 +3,6 @@ package com.bkahlert.hello
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.bkahlert.Brand
 import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
@@ -24,17 +23,14 @@ import com.bkahlert.hello.plugins.ClickUp
 import com.bkahlert.hello.plugins.ClickUpDeprecated
 import com.bkahlert.hello.plugins.clickup.ClickupState
 import com.bkahlert.hello.search.Engine
-import com.bkahlert.hello.search.Engine.Google
 import com.bkahlert.hello.search.Search
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
-import com.bkahlert.hello.ui.fontFamily
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
 import com.bkahlert.hello.ui.mainTest
 import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.runtime.LocalStorage
-import com.bkahlert.kommons.time.Now
 import com.clickup.api.rest.AccessToken
 import com.clickup.api.rest.ClickupClient
 import kotlinx.coroutines.flow.Flow
@@ -64,7 +60,6 @@ import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.backgroundImage
 import org.jetbrains.compose.web.css.backgroundSize
 import org.jetbrains.compose.web.css.border
-import org.jetbrains.compose.web.css.boxSizing
 import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.display
@@ -72,22 +67,18 @@ import org.jetbrains.compose.web.css.div
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flexDirection
 import org.jetbrains.compose.web.css.flexWrap
-import org.jetbrains.compose.web.css.fontSize
 import org.jetbrains.compose.web.css.gap
 import org.jetbrains.compose.web.css.gridTemplateAreas
 import org.jetbrains.compose.web.css.gridTemplateColumns
 import org.jetbrains.compose.web.css.gridTemplateRows
 import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.justifyContent
-import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.media
 import org.jetbrains.compose.web.css.mediaMinHeight
 import org.jetbrains.compose.web.css.mediaMinWidth
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
-import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.selectors.CSSSelector
 import org.jetbrains.compose.web.css.style
 import org.jetbrains.compose.web.css.transform
 import org.jetbrains.compose.web.css.unaryMinus
@@ -103,6 +94,8 @@ import org.w3c.dom.url.URL
 // TODO start tasks
 // TODO clock / timer of passed time
 // TODO detect updates
+// TODO loader animation on null Responses (not yet finished)
+// TODO semantic UI progress https://semantic-ui.com/modules/progress.html#attached at top of page for Pomodoro timer
 
 sealed interface AppState {
     object Loading : AppState
@@ -120,10 +113,10 @@ class AppModel(private val config: Config) {
 
     private val logger = simpleLogger()
 
-    private val _appState = MutableStateFlow<AppState>(AppState.Loading)
+    val _appState = MutableStateFlow<AppState>(AppState.Loading)
     val appState = _appState.asStateFlow()
 
-    private val _engine = MutableStateFlow(LocalStorage["engine", { Engine.valueOf(it) }] ?: Google)
+    private val _engine = MutableStateFlow(LocalStorage["engine", { Engine.valueOf(it) }] ?: Engine.Default)
     val engine = _engine.asStateFlow()
 
     fun change(engine: Engine) {
@@ -191,8 +184,6 @@ fun main() {
         val loadingState by appState.appState.collectAsState()
         val engine by appState.engine.collectAsState()
         val profileState by appState.clickupState.collectAsState(null)
-        val nowState = remember { mutableStateOf(Now) }
-        val now = nowState.value
 
         Grid({
             style {
@@ -224,10 +215,6 @@ fun main() {
                     gridArea(Search)
                 }
             }) {
-//                Search(value = "all engines (focussed)", allEngines = true)
-//                Search(value = "all engines", allEngines = true)
-//                Search(value = "single engine")
-//                Search(allEngines = true)
                 Search(
                     engine,
                     onEngineChange = appState::change,
@@ -252,7 +239,7 @@ fun main() {
             }) {
                 profileState?.also {
                     ClickUp(
-                        profileState = it,
+                        clickupState = it,
                         onConnect = { details ->
                             details(AppConfig.clickup.fallbackAccessToken, appState::configureClickUp)
                         },
@@ -316,47 +303,8 @@ object AppStylesheet : StyleSheet() {
     }
 
     init {
-        "html, body, #root" style {
+        id("root") style {
             overflow("hidden")
-            height(100.percent)
-            margin(0.px)
-            padding(0.px)
-            backgroundColor(Color.transparent)
-            backgroundImage("none")
-            fontFamily(Brand.fonts)
-        }
-
-        // `universal` can be used instead of "*": `universal style {}`
-        "*" style {
-//            fontSize(35.px)
-//            padding(0.px)
-        }
-
-        "*, ::after, ::before" style {
-            boxSizing("border-box")
-        }
-
-        // raw selector
-        "h1, h2, h3, h4, h5, h6" style {
-            property("font-family", "Arial, Helvetica, sans-serif")
-
-        }
-
-        // combined selector
-        type("A") + attr( // selects all tags <a> with href containing 'jetbrains'
-            name = "href",
-            value = "jetbrains",
-            operator = CSSSelector.Attribute.Operator.Equals
-        ) style {
-            fontSize(25.px)
-        }
-        // combined selector
-        type("A") + attr( // selects all tags <a> with href containing 'jetbrains'
-            name = "href",
-            value = "jetbrains",
-            operator = CSSSelector.Attribute.Operator.Equals
-        ) style {
-            fontSize(25.px)
         }
     }
 

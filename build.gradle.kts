@@ -67,21 +67,14 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
                 implementation("com.bkahlert.kommons:kommons:1.11.5")
-
-                // https://github.com/JetBrains/kotlin-wrappers
-//                fun kotlinWrapper(target: String): String = "org.jetbrains.kotlin-wrappers:kotlin-$target"
-//                val kotlinWrappersVersion = "1.0.1-pre.290-kotlin-1.6.10"
-//                implementation(project.dependencies.platform(kotlinWrapper("wrappers-bom:${kotlinWrappersVersion}")))
-//                implementation(kotlinWrapper("extensions")) { because("require") }
-//                implementation(npm("jsHue", ">= 2.1.1"))
             }
 
             languageSettings.apply {
                 optIn("kotlin.RequiresOptIn")
                 optIn("kotlin.ExperimentalUnsignedTypes")
+                optIn("kotlin.time.ExperimentalTime")
                 optIn("kotlin.contracts.ExperimentalContracts")
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
-                optIn("kotlinx.serialization.ExperimentalSerializationApi")
                 optIn("kotlinx.serialization.ExperimentalSerializationApi")
                 optIn("org.jetbrains.compose.web.ExperimentalComposeWebApi")
                 progressiveMode = true // false by default

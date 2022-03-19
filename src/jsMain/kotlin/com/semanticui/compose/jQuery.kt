@@ -11,6 +11,8 @@ external class jQuery(deep: Any?) {
     fun dropdown(options: Json = definedExternally): jQuery
     fun popup(options: Json = definedExternally): jQuery
     fun popup(behavior: String, vararg args: Any? = definedExternally): jQuery
+    fun transition(options: Json = definedExternally): jQuery
+    fun transition(behavior: String, vararg args: Any? = definedExternally): jQuery
 }
 
 /**
