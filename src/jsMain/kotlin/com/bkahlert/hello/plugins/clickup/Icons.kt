@@ -1,8 +1,8 @@
 package com.bkahlert.hello.plugins.clickup
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.plugins.clickup.ClickupState.Loaded.Activated.Activity
-import com.bkahlert.hello.plugins.clickup.ClickupState.Loaded.Activated.ActivityGroup.Meta
+import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated.Activity
+import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated.ActivityGroup.Meta
 import com.clickup.api.Task
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.element.Icon

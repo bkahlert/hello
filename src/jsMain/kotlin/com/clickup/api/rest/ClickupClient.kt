@@ -1,10 +1,12 @@
 package com.clickup.api.rest
 
+import com.bkahlert.hello.Failure
 import com.bkahlert.hello.JsonSerializer
+import com.bkahlert.hello.Response
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
+import com.bkahlert.hello.Success
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.runtime.LocalStorage
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.web.http.div
@@ -42,6 +44,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.Date
 
@@ -79,15 +82,15 @@ data class ClickupClient(
         onSuccess: (T) -> Unit,
         onFailure: (Throwable) -> Unit = {},
         block: suspend () -> T,
-    ): Either<T, Throwable> =
+    ): Response<T> =
         try {
             val success = block()
             onSuccess(success)
-            Either.Left(success)
+            Success(success)
         } catch (e: Exception) {
             logger.error("ClickUp error occurred", e)
             onFailure(e)
-            Either.Right(e)
+            Failure(e)
         }
 
     private sealed class Cache(
@@ -135,13 +138,13 @@ data class ClickupClient(
         return get(url, block).body<T>().also(cache::save)
     }
 
-    suspend fun getUser(onSuccess: (User) -> Unit = {}): Either<User, Throwable> =
+    suspend fun getUser(onSuccess: (User) -> Unit = {}): Response<User> =
         inBackground(onSuccess) {
             logger.debug("getting user")
             tokenClient.caching<Named<User>>(USER, clickUpUrl / "user").value
         }
 
-    suspend fun getTeams(onSuccess: (List<Team>) -> Unit = {}): Either<List<Team>, Throwable> =
+    suspend fun getTeams(onSuccess: (List<Team>) -> Unit = {}): Response<List<Team>> =
         inBackground(onSuccess) {
             logger.debug("getting teams")
             tokenClient.caching<Named<List<Team>>>(TEAMS, clickUpUrl / "team").value
@@ -168,7 +171,7 @@ data class ClickupClient(
         date_updated_lt: Date? = null,
         custom_fields: List<CustomFieldFilter>? = null,
         onSuccess: (List<Task>) -> Unit = {},
-    ): Either<List<Task>, Throwable> =
+    ): Response<List<Task>> =
         inBackground(onSuccess) {
             logger.debug("getting tasks for team=${team.name}")
             tokenClient.caching<Named<List<Task>>>(TASKS(team.id), clickUpUrl / "team" / team.id / "task") {
@@ -194,11 +197,20 @@ data class ClickupClient(
             }.value
         }
 
+    suspend fun getTask(
+        taskId: Task.ID,
+        onSuccess: (Task?) -> Unit = {},
+    ): Response<Task?> =
+        inBackground(onSuccess) {
+            logger.debug("getting task $taskId")
+            tokenClient.get(clickUpUrl / "task" / taskId).body()
+        }
+
     suspend fun getSpaces(
         team: Team,
         archived: Boolean = false,
         onSuccess: (List<Space>) -> Unit = {},
-    ): Either<List<Space>, Throwable> =
+    ): Response<List<Space>> =
         inBackground(onSuccess) {
             logger.debug("getting spaces for team=${team.name}")
             tokenClient.caching<Named<List<Space>>>(SPACES(team.id), clickUpUrl / "team" / team.id / "space") {
@@ -210,7 +222,7 @@ data class ClickupClient(
         space: Space,
         archived: Boolean = false,
         onSuccess: (List<ClickupList>) -> Unit = {},
-    ): Either<List<ClickupList>, Throwable> =
+    ): Response<List<ClickupList>> =
         inBackground(onSuccess) {
             logger.debug("getting lists for space=${space.name}")
             tokenClient.caching<Named<List<ClickupList>>>(SPACE_LISTS(space.id), clickUpUrl / "space" / space.id / "list") {
@@ -222,7 +234,7 @@ data class ClickupClient(
         space: Space,
         archived: Boolean = false,
         onSuccess: (List<Folder>) -> Unit = {},
-    ): Either<List<Folder>, Throwable> =
+    ): Response<List<Folder>> =
         inBackground(onSuccess) {
             logger.debug("getting folders for space=${space.name}")
             tokenClient.caching<Named<List<Folder>>>(FOLDERS(space.id), clickUpUrl / "space" / space.id / "folder") {
@@ -234,7 +246,7 @@ data class ClickupClient(
         folder: Folder,
         archived: Boolean = false,
         onSuccess: (List<ClickupList>) -> Unit = {},
-    ): Either<List<ClickupList>, Throwable> =
+    ): Response<List<ClickupList>> =
         inBackground(onSuccess) {
             logger.debug("getting lists for folder=${folder.name}")
             tokenClient.caching<Named<List<ClickupList>>>(FOLDER_LISTS(folder.id), clickUpUrl / "folder" / folder.id / "list") {
@@ -242,11 +254,21 @@ data class ClickupClient(
             }.value
         }
 
+    suspend fun getTimeEntry(
+        team: Team,
+        timeEntryID: TimeEntry.ID,
+        onSuccess: (TimeEntry?) -> Unit = {},
+    ): Response<TimeEntry?> =
+        inBackground(onSuccess) {
+            logger.debug("getting time entry $timeEntryID for team=${team.name}")
+            tokenClient.get(clickUpUrl / "team" / team.id / "time_entries" / timeEntryID).body<Named<TimeEntry?>>().value
+        }
+
     suspend fun getRunningTimeEntry(
         team: Team,
         assignee: User?,
         onSuccess: (TimeEntry?) -> Unit = {},
-    ): Either<TimeEntry?, Throwable> =
+    ): Response<TimeEntry?> =
         inBackground(onSuccess) {
             logger.debug("getting running time entry for team=${team.name} and assignee=${assignee?.username}")
             tokenClient.caching<Named<TimeEntry?>>(RUNNING_TIME_ENTRY(team.id), clickUpUrl / "team" / team.id / "time_entries" / "current") {
@@ -269,7 +291,7 @@ data class ClickupClient(
         billable: Boolean = false,
         vararg tags: Tag,
         onSuccess: (TimeEntry) -> Unit = {},
-    ): Either<TimeEntry, Throwable> =
+    ): Response<TimeEntry> =
         inBackground(onSuccess) {
             logger.debug("starting time entry of task=${taskId?.stringValue ?: "<no task>"} for team=${team.name}")
             RUNNING_TIME_ENTRY(team.id).evict()
@@ -282,10 +304,32 @@ data class ClickupClient(
     suspend fun stopTimeEntry(
         team: Team,
         onSuccess: (TimeEntry) -> Unit = {},
-    ): Either<TimeEntry, Throwable> =
+    ): Response<TimeEntry> =
         inBackground(onSuccess) {
             logger.debug("stopping time entry for team=${team.name}")
             RUNNING_TIME_ENTRY(team.id).evict()
             tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "stop").body<Named<TimeEntry>>().value
         }
+
+    suspend fun addTagsToTimeEntries(
+        team: Team,
+        timeEntryIDs: List<TimeEntry.ID>,
+        tags: List<Tag>,
+        onSuccess: (Unit) -> Unit = {},
+    ): Response<Unit> =
+        inBackground(onSuccess) {
+            logger.debug("adding tags $tags to time entries $timeEntryIDs for team=${team.name}")
+            RUNNING_TIME_ENTRY(team.id).evict()
+            tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "tags") {
+                contentType(ContentType.Application.Json)
+                setBody(AddTagsToTimeEntriesRequest(timeEntryIDs, tags))
+            }
+        }
+
+
+    @Serializable
+    private data class AddTagsToTimeEntriesRequest(
+        @SerialName("time_entry_ids") val timeEntryIDs: List<TimeEntry.ID>,
+        @SerialName("tags") val tags: List<Tag>,
+    )
 }

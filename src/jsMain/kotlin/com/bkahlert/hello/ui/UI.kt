@@ -10,7 +10,7 @@ import org.jetbrains.compose.web.dom.Small
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
-inline fun <T> Response<T>.visualize(
+inline fun <T> Response<T>?.visualize(
     showSpinner: Boolean = true,
     visualizeFailure: @Composable (Throwable) -> Unit = @Composable { ErrorMessage(it) },
     visualizeSuccess: (T) -> Unit,
@@ -25,7 +25,7 @@ inline fun <T> Response<T>.visualize(
 }
 
 @Composable
-fun <T : List<E>, E> Response<T>.visualizeEach(
+fun <T : List<E>, E> Response<T>?.visualizeEach(
     showSpinner: Boolean = true,
     visualizeFailure: @Composable (Throwable) -> Unit = @Composable { ErrorMessage(it) },
     visualizeSuccess: (E) -> Unit,

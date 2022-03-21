@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import com.bkahlert.hello.SimpleLogger
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticBuilder
-import com.semanticui.compose.Variation
 import com.semanticui.compose.collection.Header
 import com.semanticui.compose.collection.Message
 import com.semanticui.compose.collection.MessageElement
+import com.semanticui.compose.collection.MessageElementType.Error
 import com.semanticui.compose.module.Accordion
 import com.semanticui.compose.module.Dropdown
 import org.jetbrains.compose.web.dom.Pre
@@ -49,10 +49,7 @@ fun ErrorMessage(
     attrs: SemanticAttrBuilder<MessageElement, HTMLDivElement>? = null,
     content: SemanticBuilder<MessageElement, HTMLDivElement>? = null,
 ) {
-    Message({
-        attrs?.invoke(this)
-        variation(Variation.Error)
-    }, content)
+    Message(Error, attrs, content)
 }
 
 val Throwable.errorMessage: String get() = message ?: toString()

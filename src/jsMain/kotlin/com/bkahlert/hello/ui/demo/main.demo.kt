@@ -1,12 +1,7 @@
-package com.bkahlert.hello.ui
+package com.bkahlert.hello.ui.demo
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.AppStylesheet
-import com.bkahlert.hello.ui.demo.CurrentTaskDemo
-import com.bkahlert.hello.ui.demo.IdleDetectoryDemo
-import com.bkahlert.hello.ui.demo.PomodoroTimerDemo
-import com.bkahlert.hello.ui.demo.SearchDemo
-import com.bkahlert.hello.ui.demo.ViewModelDemo
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.margin
@@ -23,7 +18,8 @@ private fun Grid(
 ) {
     Div({
         attrs?.invoke(this)
-        classes("ui", "three", "column", "doubling", "grid", "container")
+//        classes("ui", "three", "column", "doubling", "grid", "container")
+        classes("ui", "two", "column", "doubling", "grid", "container")
     }, content)
 }
 
@@ -38,7 +34,7 @@ private fun Column(
     }, content)
 }
 
-fun mainTest() {
+fun main() {
 
     renderComposable("root") {
         Style(AppStylesheet)
@@ -46,13 +42,19 @@ fun mainTest() {
         Grid({
             style { margin(2.em) }
         }) {
+            Column { ClickupMenuDemo1() }
+            Column { ClickupMenuDemo2() }
+            Column {
+                PomodoroStarterDemo()
+                PomodoroTimerDemo()
+            }
+            Column { SemanticDemo() }
             Column {
                 ViewModelDemo()
+                MutableFlowStateDemo()
                 IdleDetectoryDemo()
                 SearchDemo()
             }
-            Column { CurrentTaskDemo() }
-            Column { PomodoroTimerDemo() }
         }
     }
 }

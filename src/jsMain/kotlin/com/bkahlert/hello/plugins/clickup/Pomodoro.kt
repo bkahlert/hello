@@ -1,9 +1,10 @@
-package com.bkahlert.hello.plugins
+package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.Brand
-import com.bkahlert.hello.plugins.Pomodoro.Type.Companion.duration
+import com.bkahlert.hello.plugins.clickup.Pomodoro.Type.Companion.duration
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.time.minus
 import com.clickup.api.Tag
 import com.clickup.api.TimeEntry
 import kotlin.time.Duration
@@ -18,6 +19,7 @@ data class Pomodoro(
     val timeEntryID: TimeEntry.ID,
     /** Duration of this session. */
     val duration: Duration,
+    val status: Status,
 ) {
     /**
      * Well-known [Pomodoro] types.
@@ -41,7 +43,7 @@ data class Pomodoro(
         /**
          * A [Tag] encoding this [Pomodoro.Type].
          */
-        val tag: Tag = Tag("${Type.TAG_PREFIX}${name.lowercase()}", tagColor, tagColor, null)
+        val tag: Tag = Tag("$TAG_PREFIX${name.lowercase()}", tagColor, tagColor, null)
 
         /**
          * Returns a [Tag] list containing all non-[Pomodoro] related tags of the
@@ -57,7 +59,6 @@ data class Pomodoro(
         companion object {
             private val TOMATO = RGB(0xff6347)
             private val TOMATO_SAUCE = RGB(0xb21807)
-            private const val TAG_PREFIX = "pomodoro-"
 
             /**
              * Extracts a [Pomodoro.duration] from `this` [Tag].
@@ -67,12 +68,9 @@ data class Pomodoro(
              * - pomodoro-<MINUTES>
              */
             val Tag.duration: Duration?
-                get() = name
-                    .takeIf { it.startsWith(TAG_PREFIX) }
-                    ?.removePrefix(TAG_PREFIX)
-                    ?.let { suffix ->
-                        suffix.toIntOrNull()?.minutes ?: enumValues<Type>().firstOrNull { type -> type.name.equals(suffix, ignoreCase = true) }?.duration
-                    }
+                get() = suffix?.let { suffix ->
+                    suffix.toIntOrNull()?.minutes ?: enumValues<Type>().firstOrNull { type -> type.name.equals(suffix, ignoreCase = true) }?.duration
+                }
 
             /**
              * The default type to use in cases
@@ -83,8 +81,34 @@ data class Pomodoro(
         }
     }
 
-    companion object {
+    enum class Status(val color: Color) {
+        Prepared(RGB(0x0e566c)), Running(RGB(0x794b02)), Aborted(RGB(0x912d2b)), Completed(RGB(0x1a531b));
 
+        val tag: Tag = Tag("$TAG_PREFIX${name.lowercase()}", color, color)
+
+        companion object {
+            fun of(tag: Tag): Status? = tag.suffix?.let { suffix -> values().firstOrNull { it.name.equals(suffix, ignoreCase = true) } }
+            fun of(tags: List<Tag>) = tags.firstNotNullOfOrNull { of(it) }
+            fun of(timeEntry: TimeEntry) = of(timeEntry.tags) ?: timeEntry.run {
+                @Suppress("SENSELESS_COMPARISON")
+                if (timeEntry.start == null) Prepared
+                else if (timeEntry.end == null) Running
+                else {
+                    val pomodoroDuration = tags.firstNotNullOfOrNull { it.duration } ?: Type.Default.duration
+                    if (timeEntry.end - timeEntry.start < pomodoroDuration) Aborted
+                    else Completed
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG_PREFIX = "pomodoro-"
+        private val Tag.suffix: String? get() = name.takeIf { it.startsWith(TAG_PREFIX) }?.removePrefix(TAG_PREFIX)
+
+        /**
+         * Formats a [Pomodoro.duration] in the form `hh:mm`.
+         */
         /**
          * Formats a [Pomodoro.duration] in the form `hh:mm`.
          */
@@ -101,9 +125,15 @@ data class Pomodoro(
          * by looking for a matching tag to determine the [Pomodoro.duration]
          * (default: duration of [Pomodoro.Type.Default]).
          */
+        /**
+         * Creates a based on an existing [TimeEntry]
+         * by looking for a matching tag to determine the [Pomodoro.duration]
+         * (default: duration of [Pomodoro.Type.Default]).
+         */
         fun of(timeEntry: TimeEntry): Pomodoro = Pomodoro(
             timeEntryID = timeEntry.id,
-            duration = timeEntry.tags.firstNotNullOfOrNull { it.duration } ?: Type.Default.duration
+            duration = timeEntry.tags.firstNotNullOfOrNull { it.duration } ?: Type.Default.duration,
+            status = Status.of(timeEntry)
         )
     }
 }

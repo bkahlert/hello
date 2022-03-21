@@ -69,8 +69,6 @@ interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : 
     val Fluid get() = Variation.Fluid
     val Floating get() = Variation.Floating
     val Borderless get() = Variation.Borderless
-    val Error get() = Variation.Error
-    val Negative get() = Variation.Negative
 
     class Icon(vararg names: String) : Variation(*names, "icon") {
         companion object : Variation("icon")
@@ -206,8 +204,6 @@ open class Variation(override vararg val classNames: String) : Modifier {
 
     object Floating : Variation("floating")
     object Borderless : Variation("borderless")
-    object Error : Variation("error")
-    object Negative : Variation("negative")
     class Icon(vararg names: String) : Variation(*names, "icon") {
         companion object : Variation("icon")
     }

@@ -1,9 +1,8 @@
 package com.bkahlert.hello.clickup
 
 import com.bkahlert.hello.deserialize
-import com.bkahlert.hello.plugins.CurrentTask
+import com.bkahlert.hello.plugins.clickup.PomodoroTimer
 import com.bkahlert.hello.ui.demo.JOHN
-import com.bkahlert.hello.ui.demo.response
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
@@ -112,7 +111,7 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
     @Test
     fun testDateFormat() = runTest {
         composition {
-            CurrentTask(response(jsons.first().deserialize<Named<TimeEntry>>().value))
+            PomodoroTimer(jsons.first().deserialize<Named<TimeEntry>>().value)
         }
 
         console.log(root.innerHTML)

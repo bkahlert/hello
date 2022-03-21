@@ -19,26 +19,20 @@ import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
-import com.bkahlert.hello.plugins.ClickUp
-import com.bkahlert.hello.plugins.ClickUpDeprecated
-import com.bkahlert.hello.plugins.clickup.ClickupState
+import com.bkahlert.hello.plugins.clickup.ClickupMenu
+import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Initializing
+import com.bkahlert.hello.plugins.clickup.ClickupModel
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Search
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
+import com.bkahlert.hello.ui.demo.main
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
-import com.bkahlert.hello.ui.mainTest
 import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.runtime.LocalStorage
-import com.clickup.api.rest.AccessToken
-import com.clickup.api.rest.ClickupClient
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
@@ -104,9 +98,9 @@ sealed interface AppState {
 }
 
 /** A response that did not arrive yet or either succeeded or failed. */
-typealias Response<T> = Either<out T, Throwable>?
-typealias Success<A, B> = Either.Left<A, B>
-typealias Failure<A, B> = Either.Right<A, B>
+typealias Response<T> = Either<out T, Throwable>
+typealias Success<T, E> = Either.Left<T, E>
+typealias Failure<T, E> = Either.Right<T, E>
 
 
 class AppModel(private val config: Config) {
@@ -128,40 +122,6 @@ class AppModel(private val config: Config) {
         if (appState.value != AppState.Loading) return
         _appState.update { AppState.Ready }
     }
-
-    // flow starts with access token
-    private val _clickupTokenState = MutableStateFlow(AccessToken.load())
-    fun configureClickUp(accessToken: AccessToken) {
-        logger.debug("setting access token")
-        _clickupTokenState.update { accessToken }
-    }
-
-    // save access token in locally
-    // if access token is missing use fallback if set
-    // result is saved
-    private val _savedClickupTokenState = _clickupTokenState
-        .onEach { it?.save() }
-        .map { it ?: config.clickup.fallbackAccessToken }
-
-    // mutable state to store a lambda that can update an existing profile state
-    private val _updateState = MutableStateFlow<(suspend (ClickupState) -> ClickupState)> { it }
-    private fun update(update: suspend (ClickupState) -> ClickupState) {
-        _updateState.update { update }
-    }
-
-    // actual profile state deducted from an initial one
-    // and update state applied to it
-    val clickupState: Flow<ClickupState> = _savedClickupTokenState
-        .combine(appState) { token, appState ->
-            if (appState == AppState.Loading) {
-                ClickupState.Loading
-            } else {
-                token?.let(::ClickupClient)?.let {
-                    ClickupState.of(it, it.getUser(), it.getTeams(), ::update)
-                } ?: ClickupState.Disconnected
-            }
-        }
-        .combine(_updateState) { profile, update -> update(profile) }
 }
 
 
@@ -174,7 +134,7 @@ fun main() {
     }
 
     if (AppConfig.uiOnly) {
-        mainTest()
+        main()
         return
     }
 
@@ -183,7 +143,8 @@ fun main() {
         val appState = remember { AppModel(AppConfig) }
         val loadingState by appState.appState.collectAsState()
         val engine by appState.engine.collectAsState()
-        val profileState by appState.clickupState.collectAsState(null)
+
+        val clickupModel: ClickupModel = remember { ClickupModel(AppConfig.clickup) }
 
         Grid({
             style {
@@ -237,20 +198,20 @@ fun main() {
                     padding(2.em, 2.em, 2.em, 0.em)
                 }
             }) {
-                profileState?.also {
-                    ClickUp(
-                        clickupState = it,
-                        onConnect = { details ->
-                            details(AppConfig.clickup.fallbackAccessToken, appState::configureClickUp)
-                        },
-                    )
-                    ClickUpDeprecated(
-                        clickupState = it,
-                        onConnect = { details ->
-                            details(AppConfig.clickup.fallbackAccessToken, appState::configureClickUp)
-                        },
-                    )
-                }
+                console.warn("MODEL ${clickupModel.hashCode()}: $clickupModel")
+                val clickupMenuState by clickupModel.menuState.collectAsState(Initializing)
+                // TODO delay until AppState.Ready
+                ClickupMenu(
+                    clickupMenuState,
+                    onConnect = { details ->
+                        details(AppConfig.clickup.fallbackAccessToken, clickupModel::configureClickUp)
+                    },
+                    onActivate = clickupModel::activate,
+                    onRefresh = clickupModel::refresh,
+                    onTimeEntryStart = clickupModel::startTimeEntry,
+                    onTimeEntryAbort = { _, tags -> clickupModel.abortTimeEntry(tags) },
+                    onTimeEntryComplete = { _, tags -> clickupModel.completeTimeEntry(tags) },
+                )
             }
             Div({
                 style {
@@ -263,7 +224,7 @@ fun main() {
                         CUSTOM_BACKGROUND_COLOR,
                         CUSTOM_BACKGROUND_COLOR.transparentize(0)))
                 }
-            }) { }
+            })
             Div({
                 style {
                     gridArea(Custom)

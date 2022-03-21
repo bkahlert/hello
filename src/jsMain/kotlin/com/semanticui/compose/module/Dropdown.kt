@@ -9,6 +9,7 @@ import com.semanticui.compose.SemanticDivElement
 import com.semanticui.compose.SemanticElement
 import com.semanticui.compose.SemanticElementScope
 import com.semanticui.compose.classNames
+import com.semanticui.compose.collection.MenuElement
 import com.semanticui.compose.dropdown
 import com.semanticui.compose.jQuery
 import com.semanticui.compose.module.Dropdown.Type
@@ -110,6 +111,21 @@ fun SemanticElementScope<DropdownElement, *>.DropdownText(
     SemanticDivElement({
         attrs?.invoke(this)
         classes("text")
+    }, content)
+}
+
+/**
+ * Creates a [SemanticUI dropdown menu](https://semantic-ui.com/modules/dropdown.html#dropdown).
+ */
+@Suppress("unused")
+@Composable
+fun SemanticElementScope<DropdownElement, *>.DropdownMenu(
+    attrs: SemanticAttrBuilder<MenuElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<MenuElement, HTMLDivElement>? = null,
+) {
+    SemanticDivElement({
+        attrs?.invoke(this)
+        classes("menu")
     }, content)
 }
 
