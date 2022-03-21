@@ -1,14 +1,14 @@
-package com.bkahlert.hello.ui.demo
+package com.bkahlert.hello.ui.demo.clickup
 
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.plugins.clickup.Pomodoro
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
 import com.bkahlert.kommons.time.minutes
-import com.clickup.api.ClickupList
 import com.clickup.api.Folder
 import com.clickup.api.Space
 import com.clickup.api.Task
+import com.clickup.api.TaskList
 import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.User
@@ -2355,7 +2355,7 @@ object ClickupFixtures {
         []
         """.trimIndent().deserialize()
     }
-    val SPACE1_FOLDER_LISTS: List<ClickupList> by lazy {
+    val SPACE1_FOLDER_LISTS: List<TaskList> by lazy {
         """
         [
             {
@@ -2438,12 +2438,12 @@ object ClickupFixtures {
         ]
         """.trimIndent().deserialize()
     }
-    val SPACE2_FOLDER_LISTS: List<ClickupList> by lazy {
+    val SPACE2_FOLDER_LISTS: List<TaskList> by lazy {
         """
         []
         """.trimIndent().deserialize()
     }
-    val SPACE1_FOLDERLESS_LISTS: List<ClickupList> by lazy {
+    val SPACE1_FOLDERLESS_LISTS: List<TaskList> by lazy {
         """
         [
             {
@@ -2509,7 +2509,7 @@ object ClickupFixtures {
         ]
         """.trimIndent().deserialize()
     }
-    val SPACE2_FOLDERLESS_LISTS: List<ClickupList> by lazy {
+    val SPACE2_FOLDERLESS_LISTS: List<TaskList> by lazy {
         """
         [
             {

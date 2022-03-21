@@ -14,13 +14,15 @@ import com.bkahlert.hello.Success
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
 import com.bkahlert.hello.ui.demo.ViewModelDemoStuff.TestViewModel
+import com.bkahlert.hello.ui.demo.clickup.TimeEntryFixtures
 import com.bkahlert.kommons.fix.value
 import com.bkahlert.kommons.math.isOdd
 import com.bkahlert.kommons.text.randomString
 import com.bkahlert.kommons.time.Now
 import com.clickup.api.Tag
-import com.clickup.api.Task.ID
+import com.clickup.api.TaskID
 import com.clickup.api.TimeEntry
+import com.clickup.api.TimeEntryID
 import com.semanticui.compose.element.Header
 import com.semanticui.compose.view.Item
 import com.semanticui.compose.view.Items
@@ -139,9 +141,9 @@ private object ViewModelDemoStuff {
         var timeEntry: TimeEntry? by mutableStateOf(TimeEntryFixtures.running())
             private set
 
-        fun start(taskID: ID?, type: Type) {
+        fun start(taskID: TaskID?, type: Type) {
             timeEntry = TimeEntryFixtures.running().copy(
-                id = TimeEntry.ID((taskID?.stringValue ?: "unknown") + "-${randomString()}"),
+                id = TimeEntryID((taskID?.stringValue ?: "unknown") + "-${randomString()}"),
                 start = Now,
                 end = null,
                 duration = Duration.ZERO,

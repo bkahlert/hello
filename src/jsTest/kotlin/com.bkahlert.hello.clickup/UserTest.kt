@@ -3,6 +3,7 @@ package com.bkahlert.hello.clickup
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.SerializerTest
 import com.clickup.api.User
+import com.clickup.api.UserID
 import io.ktor.http.Url
 
 class UserTest : SerializerTest<User>(User.serializer(),
@@ -22,7 +23,7 @@ class UserTest : SerializerTest<User>(User.serializer(),
     """.trimIndent() to user())
 
 fun user(
-    id: User.ID = User.ID(42),
+    id: UserID = UserID(42),
     username: String = "john.doe",
     email: String = "john.doe@example.com",
     color: Color? = Color("#ff0000"),
@@ -44,7 +45,7 @@ fun user(
 )
 
 fun otherUser(
-    id: User.ID = User.ID(53),
+    id: UserID = UserID(53),
     username: String = "jane.doe",
     email: String = "jane.doe@example.com",
     color: Color? = Color("#00ff00"),

@@ -13,42 +13,42 @@ import kotlinx.serialization.UseSerializers
 import kotlin.js.Date
 
 @Serializable
-data class ClickupList(
-    @SerialName("id") val id: ID,
+data class TaskList(
+    @SerialName("id") val id: TaskListID,
     @SerialName("name") val name: String,
     @SerialName("orderindex") val orderIndex: Int,
     @SerialName("content") val content: String?,
-    @SerialName("status") val status: Status?,
-    @SerialName("priority") val priority: Priority?,
+    @SerialName("status") val status: TaskListStatus?,
+    @SerialName("priority") val priority: TaskListPriority?,
     @SerialName("assignee") val assignee: Assignee?,
     @SerialName("task_count") val taskCount: Int?,
     @SerialName("due_date") val dueDate: Date?,
     @SerialName("start_dare") val startDate: Date?,
-    @SerialName("folder") val folder: Folder.Preview?,
-    @SerialName("space") val space: Space.Preview,
+    @SerialName("folder") val folder: FolderPreview?,
+    @SerialName("space") val space: SpacePreview,
     @SerialName("archived") val archived: Boolean,
     @SerialName("override_statuses") val overrideStatuses: Boolean?,
     @SerialName("permission_level") val permissionLevel: String,
-) {
-    @Serializable value class ID(override val id: String) : Identifier<String>
+)
 
-    @Serializable
-    data class Status(
-        @SerialName("status") val status: String,
-        @SerialName("color") val color: Color,
-        @SerialName("hide_label") val hideLabel: Boolean = false,
-    )
+@Serializable value class TaskListID(override val id: String) : Identifier<String>
 
-    @Serializable
-    data class Priority(
-        @SerialName("priority") val priority: String,
-        @SerialName("color") val color: Color,
-    )
+@Serializable
+data class TaskListStatus(
+    @SerialName("status") val status: String,
+    @SerialName("color") val color: Color,
+    @SerialName("hide_label") val hideLabel: Boolean = false,
+)
 
-    @Serializable
-    data class Preview(
-        @SerialName("id") val id: ID,
-        @SerialName("name") val name: String,
-        @SerialName("access") val access: Boolean,
-    )
-}
+@Serializable
+data class TaskListPriority(
+    @SerialName("priority") val priority: String,
+    @SerialName("color") val color: Color,
+)
+
+@Serializable
+data class TaskListPreview(
+    @SerialName("id") val id: TaskListID,
+    @SerialName("name") val name: String,
+    @SerialName("access") val access: Boolean,
+)

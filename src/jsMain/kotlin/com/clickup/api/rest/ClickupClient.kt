@@ -10,13 +10,19 @@ import com.bkahlert.hello.serialize
 import com.bkahlert.kommons.runtime.LocalStorage
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.web.http.div
-import com.clickup.api.ClickupList
 import com.clickup.api.Folder
+import com.clickup.api.FolderID
 import com.clickup.api.Space
+import com.clickup.api.SpaceID
 import com.clickup.api.Tag
 import com.clickup.api.Task
+import com.clickup.api.TaskID
+import com.clickup.api.TaskList
+import com.clickup.api.TaskListID
 import com.clickup.api.Team
+import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
+import com.clickup.api.TimeEntryID
 import com.clickup.api.User
 import com.clickup.api.rest.ClickUpException.Companion.wrapOrNull
 import com.clickup.api.rest.ClickupClient.Cache.FOLDERS
@@ -98,12 +104,12 @@ data class ClickupClient(
     ) {
         object USER : Cache("clickup-user")
         object TEAMS : Cache("clickup-teams")
-        data class RUNNING_TIME_ENTRY(val id: Team.ID) : Cache("clickup-running-time-entry-${id.stringValue}")
-        data class TASKS(val id: Team.ID) : Cache("clickup-team-tasks-${id.stringValue}")
-        data class SPACES(val id: Team.ID) : Cache("clickup-team-spaces-${id.stringValue}")
-        data class SPACE_LISTS(val id: Space.ID) : Cache("clickup-space-lists-${id.stringValue}")
-        data class FOLDERS(val id: Space.ID) : Cache("clickup-space-folders-${id.stringValue}")
-        data class FOLDER_LISTS(val id: Folder.ID) : Cache("clickup-folder-lists-${id.stringValue}")
+        data class RUNNING_TIME_ENTRY(val id: TeamID) : Cache("clickup-running-time-entry-${id.stringValue}")
+        data class TASKS(val id: TeamID) : Cache("clickup-team-tasks-${id.stringValue}")
+        data class SPACES(val id: TeamID) : Cache("clickup-team-spaces-${id.stringValue}")
+        data class SPACE_LISTS(val id: SpaceID) : Cache("clickup-space-lists-${id.stringValue}")
+        data class FOLDERS(val id: SpaceID) : Cache("clickup-space-folders-${id.stringValue}")
+        data class FOLDER_LISTS(val id: FolderID) : Cache("clickup-folder-lists-${id.stringValue}")
 
         private val logger = simpleLogger()
 
@@ -156,9 +162,9 @@ data class ClickupClient(
         order_by: String? = null,
         reverse: Boolean? = null,
         subtasks: Boolean? = null,
-        space_ids: List<Space.ID>? = null,
-        project_ids: List<Folder.ID>? = null,
-        list_ids: List<ClickupList.ID>? = null,
+        space_ids: List<SpaceID>? = null,
+        project_ids: List<FolderID>? = null,
+        list_ids: List<TaskListID>? = null,
         statuses: List<String>? = null,
         include_closed: Boolean? = null,
         assignees: List<String>? = null,
@@ -198,7 +204,7 @@ data class ClickupClient(
         }
 
     suspend fun getTask(
-        taskId: Task.ID,
+        taskId: TaskID,
         onSuccess: (Task?) -> Unit = {},
     ): Response<Task?> =
         inBackground(onSuccess) {
@@ -221,11 +227,11 @@ data class ClickupClient(
     suspend fun getLists(
         space: Space,
         archived: Boolean = false,
-        onSuccess: (List<ClickupList>) -> Unit = {},
-    ): Response<List<ClickupList>> =
+        onSuccess: (List<TaskList>) -> Unit = {},
+    ): Response<List<TaskList>> =
         inBackground(onSuccess) {
             logger.debug("getting lists for space=${space.name}")
-            tokenClient.caching<Named<List<ClickupList>>>(SPACE_LISTS(space.id), clickUpUrl / "space" / space.id / "list") {
+            tokenClient.caching<Named<List<TaskList>>>(SPACE_LISTS(space.id), clickUpUrl / "space" / space.id / "list") {
                 parameter("archived", archived)
             }.value
         }
@@ -245,18 +251,18 @@ data class ClickupClient(
     suspend fun getLists(
         folder: Folder,
         archived: Boolean = false,
-        onSuccess: (List<ClickupList>) -> Unit = {},
-    ): Response<List<ClickupList>> =
+        onSuccess: (List<TaskList>) -> Unit = {},
+    ): Response<List<TaskList>> =
         inBackground(onSuccess) {
             logger.debug("getting lists for folder=${folder.name}")
-            tokenClient.caching<Named<List<ClickupList>>>(FOLDER_LISTS(folder.id), clickUpUrl / "folder" / folder.id / "list") {
+            tokenClient.caching<Named<List<TaskList>>>(FOLDER_LISTS(folder.id), clickUpUrl / "folder" / folder.id / "list") {
                 parameter("archived", archived)
             }.value
         }
 
     suspend fun getTimeEntry(
         team: Team,
-        timeEntryID: TimeEntry.ID,
+        timeEntryID: TimeEntryID,
         onSuccess: (TimeEntry?) -> Unit = {},
     ): Response<TimeEntry?> =
         inBackground(onSuccess) {
@@ -278,7 +284,7 @@ data class ClickupClient(
 
     @Serializable
     data class StartTimeEntryRequest(
-        val tid: Task.ID?,
+        val tid: TaskID?,
         val description: String?,
         val billable: Boolean,
         val tags: List<Tag>,
@@ -286,7 +292,7 @@ data class ClickupClient(
 
     suspend fun startTimeEntry(
         team: Team,
-        taskId: Task.ID? = null,
+        taskId: TaskID? = null,
         description: String? = null,
         billable: Boolean = false,
         vararg tags: Tag,
@@ -313,7 +319,7 @@ data class ClickupClient(
 
     suspend fun addTagsToTimeEntries(
         team: Team,
-        timeEntryIDs: List<TimeEntry.ID>,
+        timeEntryIDs: List<TimeEntryID>,
         tags: List<Tag>,
         onSuccess: (Unit) -> Unit = {},
     ): Response<Unit> =
@@ -329,7 +335,7 @@ data class ClickupClient(
 
     @Serializable
     private data class AddTagsToTimeEntriesRequest(
-        @SerialName("time_entry_ids") val timeEntryIDs: List<TimeEntry.ID>,
+        @SerialName("time_entry_ids") val timeEntryIDs: List<TimeEntryID>,
         @SerialName("tags") val tags: List<Tag>,
     )
 }

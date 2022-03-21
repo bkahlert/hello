@@ -1,11 +1,12 @@
-import com.clickup.api.Team
-import com.clickup.api.User
 import com.bkahlert.hello.clickup.otherUser
 import com.bkahlert.hello.clickup.user
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.SerializerTest
+import com.clickup.api.Team
+import com.clickup.api.TeamID
+import com.clickup.api.User
 import io.ktor.http.Url
 
 class TeamTest : SerializerTest<Team>(Team.serializer(),
@@ -48,7 +49,7 @@ class TeamTest : SerializerTest<Team>(Team.serializer(),
     """.trimIndent() to team())
 
 fun team(
-    id: Team.ID = Team.ID("180"),
+    id: TeamID = TeamID("180"),
     name: String = "work group",
     color: Color = RGB("#0000ff"),
     avatar: Url = Url("https://example.com/work.png"),

@@ -13,29 +13,29 @@ import kotlin.js.Date
 
 @Serializable
 data class CheckList(
-    @SerialName("id") val id: ID,
-    @SerialName("task_id") val taskId: Task.ID,
+    @SerialName("id") val id: CheckListID,
+    @SerialName("task_id") val taskId: TaskID,
     @SerialName("name") val name: String,
     @SerialName("date_created") val dateCreated: Date?,
     @SerialName("orderindex") val orderIndex: Int?,
-    @SerialName("creator") val creator: User.ID,
+    @SerialName("creator") val creator: UserID,
     @SerialName("resolved") val resolvedCount: Int,
     @SerialName("unresolved") val unresolvedCount: Int,
-    @SerialName("items") val items: List<Item>,
-) {
-    @Serializable value class ID(override val id: String) : Identifier<String>
+    @SerialName("items") val items: List<CheckListItem>,
+)
 
-    @Serializable
-    data class Item(
-        @SerialName("id") val id: ID,
-        @SerialName("name") val name: String,
-        @SerialName("orderindex") val orderIndex: Int?,
-        @SerialName("assignee") val assignee: User.ID?,
-        @SerialName("resolved") val resolved: Boolean,
-        @SerialName("parent") val parent: ID?,
-        @SerialName("date_created") val dateCreated: Date?,
-        @SerialName("children") val children: List<Item>,
-    ) {
-        @Serializable value class ID(val id: String)
-    }
+@Serializable value class CheckListID(override val id: String) : Identifier<String>
+
+@Serializable
+data class CheckListItem(
+    @SerialName("id") val id: ID,
+    @SerialName("name") val name: String,
+    @SerialName("orderindex") val orderIndex: Int?,
+    @SerialName("assignee") val assignee: UserID?,
+    @SerialName("resolved") val resolved: Boolean,
+    @SerialName("parent") val parent: ID?,
+    @SerialName("date_created") val dateCreated: Date?,
+    @SerialName("children") val children: List<CheckListItem>,
+) {
+    @Serializable value class ID(val id: String)
 }

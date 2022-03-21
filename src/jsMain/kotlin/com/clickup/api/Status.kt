@@ -13,19 +13,19 @@ import kotlinx.serialization.UseSerializers
 
 @Serializable
 data class Status(
-    @SerialName("id") val id: ID,
+    @SerialName("id") val id: StatusID,
     @SerialName("status") val status: String,
     @SerialName("color") val color: Color,
     @SerialName("orderindex") val orderIndex: Int,
     @SerialName("type") val type: String,
-) {
-    @Serializable value class ID(override val id: String) : Identifier<String>
+)
 
-    @Serializable
-    data class Preview(
-        @SerialName("status") val status: String,
-        @SerialName("color") val color: Color,
-        @SerialName("orderindex") val orderIndex: Int,
-        @SerialName("type") val type: String,
-    )
-}
+@Serializable value class StatusID(override val id: String) : Identifier<String>
+
+@Serializable
+data class StatusPreview(
+    @SerialName("status") val status: String,
+    @SerialName("color") val color: Color,
+    @SerialName("orderindex") val orderIndex: Int,
+    @SerialName("type") val type: String,
+)

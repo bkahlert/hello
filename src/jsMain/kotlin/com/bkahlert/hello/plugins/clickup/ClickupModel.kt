@@ -1,19 +1,15 @@
 package com.bkahlert.hello.plugins.clickup
 
-import com.bkahlert.Brand
 import com.bkahlert.hello.ClickupConfig
 import com.bkahlert.hello.Failure
 import com.bkahlert.hello.Response
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.Success
+import com.bkahlert.hello.plugins.clickup.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Initializing
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated.Activity.RunningTaskActivity
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated.Activity.TaskActivity
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated.ActivityGroup.Meta
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activating
 import com.bkahlert.hello.ui.errorMessage
-import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.Either.Left
 import com.bkahlert.kommons.Either.Right
 import com.bkahlert.kommons.coroutines.flow.FlowUpdate
@@ -24,21 +20,20 @@ import com.bkahlert.kommons.fix.map
 import com.bkahlert.kommons.fix.or
 import com.bkahlert.kommons.fix.orNull
 import com.bkahlert.kommons.fix.value
-import com.bkahlert.kommons.time.Now
-import com.bkahlert.kommons.time.compareTo
-import com.bkahlert.kommons.time.toMoment
-import com.clickup.api.ClickupList
 import com.clickup.api.Folder
+import com.clickup.api.FolderID
 import com.clickup.api.Space
+import com.clickup.api.SpaceID
 import com.clickup.api.Tag
 import com.clickup.api.Task
+import com.clickup.api.TaskID
+import com.clickup.api.TaskList
 import com.clickup.api.Team
+import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.User
 import com.clickup.api.rest.AccessToken
 import com.clickup.api.rest.ClickupClient
-import com.clickup.api.rest.Identifier
-import io.ktor.http.Url
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -83,7 +78,7 @@ class ClickupModel(
         }
     }
 
-    fun activate(teamID: Team.ID) {
+    fun activate(teamID: TeamID) {
         logger.info("Activating $teamID")
         update { client, state ->
             if (state is ClickupMenuState.Loaded) {
@@ -123,7 +118,7 @@ class ClickupModel(
     }
 
     fun startTimeEntry(
-        taskID: Task.ID,
+        taskID: TaskID,
         tags: List<Tag>,
         billable: Boolean,
     ) {
@@ -263,99 +258,10 @@ sealed interface ClickupMenuState {
             val runningTimeEntry: Response<TimeEntry?>?,
             val tasks: Response<List<Task>>? = null,
             val spaces: Response<List<Space>>? = null,
-            val folders: Map<Space.ID, Response<List<Folder>>> = emptyMap(),
-            val spaceLists: Map<Space.ID, Response<List<ClickupList>>> = emptyMap(),
-            val folderLists: Map<Folder.ID, Response<List<ClickupList>>> = emptyMap(),
+            val folders: Map<SpaceID, Response<List<Folder>>> = emptyMap(),
+            val spaceLists: Map<SpaceID, Response<List<TaskList>>> = emptyMap(),
+            val folderLists: Map<FolderID, Response<List<TaskList>>> = emptyMap(),
         ) : Loaded(user, teams) {
-
-            data class ActivityGroup(
-                val name: List<Meta>,
-                val color: Color?,
-                val tasks: List<Activity<*>>,
-            ) {
-                data class Meta(
-                    val iconVariations: List<String>,
-                    val title: String,
-                    val text: String?,
-                ) {
-                    constructor(
-                        title: String,
-                        vararg iconVariations: String,
-                        text: String? = null,
-                    ) : this(iconVariations.asList(), title = title, text = text)
-                }
-            }
-
-            sealed interface Activity<ID : Identifier<*>> {
-                val id: ID?
-                val taskID: Task.ID?
-                val name: String
-                val color: Color?
-                val url: Url?
-                val meta: List<Meta>
-                val descriptions: Map<String, String?>
-                val tags: Set<Tag>
-
-                data class RunningTaskActivity(
-                    val timeEntry: TimeEntry,
-                    val task: Task? = null,
-                ) : Activity<TimeEntry.ID> {
-                    private val taskActivity: TaskActivity? = task?.let(::TaskActivity)
-                    override val id: TimeEntry.ID get() = timeEntry.id
-                    override val taskID: Task.ID? get() = task?.id
-                    override val name: String get() = timeEntry.task?.name ?: taskActivity?.name ?: "Timer running"
-                    override val color: Color? get() = timeEntry.task?.status?.color ?: taskActivity?.color
-                    override val url: Url? get() = timeEntry.url ?: timeEntry.taskUrl ?: taskActivity?.url
-                    override val meta: List<Meta>
-                        get() = buildList {
-                            if (timeEntry.billable) add(Meta("billable", "dollar"))
-                            taskActivity?.also { addAll(it.meta) }
-                        }
-                    override val descriptions: Map<String, String?>
-                        get() = buildMap {
-                            put("Timer", timeEntry.description.takeUnless { it.isBlank() })
-                            taskActivity?.also { putAll(it.descriptions) }
-                        }
-                    override val tags: Set<Tag>
-                        get() = buildSet {
-                            addAll(timeEntry.tags)
-                            taskActivity?.also { addAll(it.tags) }
-                        }
-                }
-
-                data class TaskActivity(
-                    val task: Task,
-                ) : Activity<Task.ID> {
-                    override val id: Task.ID get() = task.id
-                    override val taskID: Task.ID get() = task.id
-                    override val name: String get() = task.name
-                    override val color: Color get() = task.status.color
-                    override val url: Url? get() = task.url
-                    override val meta: List<Meta>
-                        get() = buildList {
-                            if (task.dateCreated != null) {
-                                add(Meta("created", "calendar", "alternate", "outline", text = task.dateCreated.toMoment()))
-                            }
-                            if (task.timeEstimate != null) {
-                                add(Meta("estimated time", "hourglass", "outline", text = task.timeEstimate.toMoment(false)))
-                            }
-                            if (task.timeSpent != null) {
-                                when (task.timeEstimate?.compareTo(task.timeSpent)) {
-                                    -1 -> add(Meta("spent time (critical)", "red", "stopwatch", text = task.timeSpent.toMoment(false)))
-                                    else -> add(Meta("spent time", "stopwatch", text = task.timeSpent.toMoment(false)))
-                                }
-                            }
-                            when (task.dueDate?.compareTo(Now)) {
-                                -1 -> add(Meta("due", "red", "calendar", "times", "outline", text = task.dueDate.toMoment(false)))
-                                +1 -> add(Meta("due", "calendar", "outline", text = task.dueDate.toMoment(false)))
-                                0 -> add(Meta("due", "yellow", "calendar", "outline", text = task.dueDate.toMoment(false)))
-                                else -> {}
-                            }
-                        }
-                    override val descriptions: Map<String, String?> get() = mapOf("Task" to task.description?.takeUnless { it.isBlank() })
-                    override val tags: Set<Tag> get() = task.tags.toSet()
-                }
-            }
 
             val runningActivity: RunningTaskActivity? by lazy {
                 val runningTimeEntry: TimeEntry? = runningTimeEntry?.orNull()
@@ -365,30 +271,19 @@ sealed interface ClickupMenuState {
                 }
             }
 
-            fun activity(id: String) = activities.firstNotNullOf { (_, _, activities) ->
-                activities.firstOrNull { it.id?.stringValue == id }
-            }
-
             val activities: List<ActivityGroup> by lazy {
 
                 buildList {
-                    runningActivity?.also {
-                        add(ActivityGroup(
-                            listOf(Meta("running timer", "stop", "circle", text = "Running")),
-                            Brand.colors.red,
-                            listOf(it),
-                        ))
-                    }
+                    runningActivity?.also { add(ActivityGroup.of(it)) }
 
                     val tasks: List<Task> = tasks?.orNull() ?: emptyList()
                     val spaces = spaces?.orNull() ?: emptyList()
 
                     tasks.groupBy { it.space.id }
                         .forEach { (spaceID, spaceTasks) ->
-                            val spaceMeta = Meta("project", "clone", text = spaces.firstOrNull { it.id == spaceID }?.name ?: "[no space name]")
+                            val space = spaces.firstOrNull { it.id == spaceID }
                             spaceTasks.groupBy { it.folder }
                                 .forEach { (folderPreview, folderTasks) ->
-                                    val folderMeta = if (folderPreview.hidden) null else Meta("folder", "folder", text = folderPreview.name)
                                     folderTasks.groupBy { it.list }
                                         .forEach { (listPreview, listTasks) ->
                                             val lists = when {
@@ -396,17 +291,9 @@ sealed interface ClickupMenuState {
                                                 else -> folderLists[folderPreview.id]
                                             }?.orNull() ?: emptyList()
 
-                                            val (listName, listColor) = lists
-                                                .firstOrNull { it.id == listPreview?.id }
-                                                ?.run { name to status?.color }
-                                                ?: ((listPreview?.name ?: "[no list]") to null)
-
-                                            val listMeta = Meta("list", "list", text = listName)
-                                            add(ActivityGroup(
-                                                listOfNotNull(spaceMeta, folderMeta, listMeta),
-                                                listColor,
-                                                listTasks.map { TaskActivity(it) },
-                                            ))
+                                            add(lists.firstOrNull { it.id == listPreview?.id }
+                                                ?.let { ActivityGroup.of(space, folderPreview, it, it.status?.color, listTasks) }
+                                                ?: ActivityGroup.of(space, folderPreview, listPreview, null, listTasks))
                                         }
                                 }
                         }

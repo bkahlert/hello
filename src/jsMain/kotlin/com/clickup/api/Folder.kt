@@ -12,7 +12,7 @@ import kotlinx.serialization.UseSerializers
 
 @Serializable
 data class Folder(
-    @SerialName("id") val id: ID,
+    @SerialName("id") val id: FolderID,
     @SerialName("name") val name: String,
     @SerialName("orderindex") val orderIndex: Int,
     @SerialName("override_statuses") val overrideStatuses: Boolean,
@@ -20,16 +20,16 @@ data class Folder(
     @SerialName("task_count") val taskCount: String,
     @SerialName("archived") val archived: Boolean,
     @SerialName("statuses") val statuses: List<Status>,
-    @SerialName("lists") val lists: List<ClickupList>,
+    @SerialName("lists") val lists: List<TaskList>,
     @SerialName("permission_level") val permissionLevel: String,
-) {
-    @Serializable value class ID(override val id: String) : Identifier<String>
+)
 
-    @Serializable
-    data class Preview(
-        @SerialName("id") val id: ID,
-        @SerialName("name") val name: String,
-        @SerialName("hidden") val hidden: Boolean,
-        @SerialName("access") val access: Boolean,
-    )
-}
+@Serializable value class FolderID(override val id: String) : Identifier<String>
+
+@Serializable
+data class FolderPreview(
+    @SerialName("id") val id: FolderID,
+    @SerialName("name") val name: String,
+    @SerialName("hidden") val hidden: Boolean,
+    @SerialName("access") val access: Boolean,
+)

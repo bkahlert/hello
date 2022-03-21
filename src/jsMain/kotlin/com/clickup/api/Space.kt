@@ -12,18 +12,18 @@ import kotlinx.serialization.UseSerializers
 
 @Serializable
 data class Space(
-    @SerialName("id") val id: ID,
+    @SerialName("id") val id: SpaceID,
     @SerialName("name") val name: String,
     @SerialName("private") val private: Boolean,
     @SerialName("statuses") val statuses: List<Status>,
     @SerialName("multiple_assignees") val multipleAssignees: Boolean,
-) {
-    @Serializable value class ID(override val id: String) : Identifier<String>
+)
 
-    @Serializable
-    data class Preview(
-        @SerialName("id") val id: ID,
-        @SerialName("name") val name: String?,
-        @SerialName("access") val access: Boolean?,
-    )
-}
+@Serializable value class SpaceID(override val id: String) : Identifier<String>
+
+@Serializable
+data class SpacePreview(
+    @SerialName("id") val id: SpaceID,
+    @SerialName("name") val name: String?,
+    @SerialName("access") val access: Boolean?,
+)

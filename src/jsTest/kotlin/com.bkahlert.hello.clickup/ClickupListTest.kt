@@ -1,16 +1,20 @@
 package com.bkahlert.hello.clickup
 
-import com.clickup.api.ClickupList.Priority
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.SerializerTest
 import com.clickup.api.Assignee
-import com.clickup.api.ClickupList
-import com.clickup.api.Folder
-import com.clickup.api.Space
+import com.clickup.api.FolderID
+import com.clickup.api.FolderPreview
+import com.clickup.api.SpaceID
+import com.clickup.api.SpacePreview
+import com.clickup.api.TaskList
+import com.clickup.api.TaskListID
+import com.clickup.api.TaskListPriority
+import com.clickup.api.TaskListStatus
 import io.ktor.http.Url
 import kotlin.js.Date
 
-class ClickupListTest : SerializerTest<ClickupList>(ClickupList.serializer(),
+class ClickupListTest : SerializerTest<TaskList>(TaskList.serializer(),
     // language=JSON
     """
         {
@@ -47,12 +51,12 @@ class ClickupListTest : SerializerTest<ClickupList>(ClickupList.serializer(),
 
 
 fun clickupList(
-    id: ClickupList.ID = ClickupList.ID("25510969"),
+    id: TaskListID = TaskListID("25510969"),
     name: String = "Professional",
     orderIndex: Int = 0,
     content: String? = null,
-    status: ClickupList.Status = ClickupList.Status("professional", Color("#02BCD4")),
-    priority: Priority? = null,
+    status: TaskListStatus = TaskListStatus("professional", Color("#02BCD4")),
+    priority: TaskListPriority? = null,
     assignee: Assignee = Assignee(
         color = Color("#4169E1"),
         username = "Björn Kahlert",
@@ -62,21 +66,21 @@ fun clickupList(
     taskCount: Int = 45,
     dueDate: Date? = null,
     startDate: Date? = null,
-    folder: Folder.Preview = Folder.Preview(
-        id = Folder.ID("11087491"),
+    folder: FolderPreview = FolderPreview(
+        id = FolderID("11087491"),
         name = "hidden",
         hidden = true,
         access = true
     ),
-    space: Space.Preview = Space.Preview(
-        Space.ID("4564985"),
+    space: SpacePreview = SpacePreview(
+        SpaceID("4564985"),
         "Personal",
         true
     ),
     archived: Boolean = false,
     overrideStatuses: Boolean = false,
     permissionLevel: String = "create",
-) = ClickupList(
+) = TaskList(
     id,
     name,
     orderIndex,

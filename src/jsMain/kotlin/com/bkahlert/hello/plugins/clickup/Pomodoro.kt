@@ -7,6 +7,7 @@ import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.time.minus
 import com.clickup.api.Tag
 import com.clickup.api.TimeEntry
+import com.clickup.api.TimeEntryID
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -16,7 +17,7 @@ import kotlin.time.Duration.Companion.seconds
  */
 data class Pomodoro(
     /** ID of the [TimeEntry] this session relates to. */
-    val timeEntryID: TimeEntry.ID,
+    val timeEntryID: TimeEntryID,
     /** Duration of this session. */
     val duration: Duration,
     val status: Status,

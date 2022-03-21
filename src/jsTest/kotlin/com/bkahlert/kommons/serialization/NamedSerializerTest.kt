@@ -1,7 +1,8 @@
 package com.bkahlert.kommons.serialization
 
-import com.clickup.api.User
 import com.bkahlert.hello.clickup.user
+import com.clickup.api.User
+import com.clickup.api.UserID
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.nullable
 
@@ -66,5 +67,5 @@ class NamedSerializerTest {
                     }
                 ]
             }
-        """.trimIndent() to Named.ofMultiple(listOf(user(), user(id = User.ID(43)))))
+        """.trimIndent() to Named.ofMultiple(listOf(user(), user(id = UserID(43)))))
 }

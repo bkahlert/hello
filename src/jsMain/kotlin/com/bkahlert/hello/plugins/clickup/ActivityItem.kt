@@ -2,7 +2,6 @@ package com.bkahlert.hello.plugins.clickup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated.Activity
 import com.bkahlert.hello.ui.textOverflow
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.jQuery

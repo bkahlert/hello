@@ -2,6 +2,11 @@ package com.bkahlert.hello.ui.demo
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.AppStylesheet
+import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownDemo
+import com.bkahlert.hello.ui.demo.clickup.ClickupMenuDemo1
+import com.bkahlert.hello.ui.demo.clickup.ClickupMenuDemo2
+import com.bkahlert.hello.ui.demo.clickup.PomodoroStarterDemo
+import com.bkahlert.hello.ui.demo.clickup.PomodoroTimerDemo
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.margin
@@ -44,6 +49,7 @@ fun main() {
         }) {
             Column { ClickupMenuDemo1() }
             Column { ClickupMenuDemo2() }
+            Column { ActivityDropdownDemo() }
             Column {
                 PomodoroStarterDemo()
                 PomodoroTimerDemo()

@@ -7,12 +7,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.Failure
 import com.bkahlert.hello.Success
+import com.bkahlert.hello.plugins.clickup.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Disconnected
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Failed
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Initializing
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated.Activity
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activating
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loading
 import com.bkahlert.hello.ui.ErrorMessage
@@ -20,13 +19,12 @@ import com.bkahlert.hello.ui.textOverflow
 import com.bkahlert.kommons.coroutines.flow.toStringAndHash
 import com.bkahlert.kommons.fix.value
 import com.clickup.api.Tag
-import com.clickup.api.Task
-import com.clickup.api.Team
+import com.clickup.api.TaskID
+import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.rest.AccessToken
 import com.semanticui.compose.State
 import com.semanticui.compose.Variation
-import com.semanticui.compose.Variation.Colored.Blue
 import com.semanticui.compose.Variation.Colored.Red
 import com.semanticui.compose.Variation.Columns.One
 import com.semanticui.compose.Variation.Position.Bottom
@@ -38,15 +36,8 @@ import com.semanticui.compose.collection.Menu
 import com.semanticui.compose.collection.SubMenu
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.IconGroup
-import com.semanticui.compose.element.Input
-import com.semanticui.compose.module.Divider
-import com.semanticui.compose.module.DropdownText
-import com.semanticui.compose.module.Header
-import com.semanticui.compose.module.InlineDropdown
 import com.semanticui.compose.view.Item
 import kotlinx.browser.window
-import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
@@ -65,17 +56,14 @@ import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.css.margin
-import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.minWidth
 import org.jetbrains.compose.web.css.padding
-import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.style
 import org.jetbrains.compose.web.css.whiteSpace
 import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
-import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 
@@ -147,7 +135,7 @@ fun LoadingClickupMenu() {
 @Composable
 fun ActivatingClickupMenu(
     state: Activating,
-    onActivate: (Team.ID) -> Unit = {},
+    onActivate: (TeamID) -> Unit = {},
 ) {
     Menu({ variation(Mini) }) {
         DropdownItem(state, { _, _, _ -> }, {
@@ -187,7 +175,7 @@ fun ActivatingClickupMenu(
 fun ActivatedClickupMenu(
     state: Activated,
     onRefresh: () -> Unit = {},
-    onTimeEntryStart: (Task.ID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
+    onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
     onTimeEntryAbort: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
     onTimeEntryComplete: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
 ) {
@@ -264,41 +252,6 @@ fun ActivatedClickupMenu(
                 onRefresh()
             }
             is Success -> {
-                DropdownItem(state, { value, _, _ ->
-                    selectedActivity = state.activity(value)
-                }, {
-                    variation(Borderless, Variation.Icon)
-                }) {
-                    Icon("stopwatch")
-                    SubMenu {
-
-                        Header { Text("Start new pomodoro") }
-                        Input({ variation(Variation.Icon("search")) }) {
-                            Input(InputType.Text) { placeholder("Search tasks...") }
-                            Icon("search")
-                        }
-                        Divider()
-
-                        tasks.value.groupBy { it.list }.forEach { (list, listTasks) ->
-                            Header({ variation(Blue) }) {
-                                Icon("list")
-                                Text(list?.name ?: "?")
-                            }  // TODO title or tooltip
-                            listTasks.forEach { task ->
-                                Item({
-                                    attr("data-value", task.id.stringValue)
-                                    style {
-                                        maxWidth(200.px)
-                                        textOverflow()
-                                    }
-                                }) {
-                                    TaskIcon(task)
-                                    Text(task.name)
-                                }
-                            }
-                        }
-                    }
-                }
                 LinkItem({
                     variation(Borderless)
                     if (selectedActivity == null) state(State.Disabled)
@@ -332,52 +285,8 @@ fun ActivatedClickupMenu(
                         minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
                     }
                 }) {
-                    selectedActivity?.also { TaskIcon(it) } ?: Icon({ variation(Inverted) })
-                    InlineDropdown(state, { value, _, _ ->
-                        selectedActivity = state.activity(value)
-                    }, {
-                        variation(Variation.Scrolling)
-                        style {
-                            flex(1, 1)
-                            minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
-                        }
-                    }) {
-                        DropdownText({
-                            style {
-                                maxWidth(100.percent)
-                                textOverflow()
-                            }
-                        }) {
-                            when (val task = selectedActivity) {
-                                null -> Text("Select task...")
-                                else -> Text(task.name)
-                            }
-                        }
-                        SubMenu({
-                            style { maxWidth(200.percent) }
-                        }) {
-                            Input({ variation(Variation.Icon("search")) }) {
-                                Input(InputType.Text) { placeholder("Search tasks...") }
-                                Icon("search")
-                            }
-
-                            state.activities.onEach { (meta, color, activities) ->
-                                Divider()
-                                Header({ style { color?.also { color(it) } } }) {
-                                    meta.forEachIndexed { index, meta ->
-                                        if (index > 0) Icon("inverted")
-                                        Icon({
-                                            title(meta.title)
-                                            style { classes(*meta.iconVariations.toTypedArray()) }
-                                        })
-                                        meta.text?.also { Text(it) }
-                                    }
-                                }
-                                activities.forEach { activity ->
-                                    ActivityItem(activity)
-                                }
-                            }
-                        }
+                    ActivityDropdown(state.activities, selectedActivity) {
+                        selectedActivity = it
                     }
                 }
 
@@ -431,9 +340,9 @@ fun FailedClickupMenu(
 fun ClickupMenu(
     state: ClickupMenuState,
     onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit = {},
-    onActivate: (Team.ID) -> Unit = {},
+    onActivate: (TeamID) -> Unit = {},
     onRefresh: () -> Unit = {},
-    onTimeEntryStart: (Task.ID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
+    onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
     onTimeEntryAbort: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
     onTimeEntryComplete: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
 ) {

@@ -1,12 +1,14 @@
-package com.bkahlert.hello.ui.demo
+package com.bkahlert.hello.ui.demo.clickup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.plugins.clickup.Pomodoro
+import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
+import com.bkahlert.hello.ui.demo.Demo
+import com.bkahlert.hello.ui.demo.Demos
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
 import com.clickup.api.Tag
@@ -17,7 +19,7 @@ import kotlin.time.Duration.Companion.days
 fun PomodoroTimerDemo() {
     Demos("Pomodoro Timer") {
         Demos("running") {
-            enumValues<Pomodoro.Type>().forEach { type ->
+            enumValues<Type>().forEach { type ->
                 Demo(type.name) {
                     var timeEntry by remember { mutableStateOf(TimeEntryFixtures.running(type = type)) }
                     PomodoroTimer(timeEntry, onComplete = { entry, tags ->

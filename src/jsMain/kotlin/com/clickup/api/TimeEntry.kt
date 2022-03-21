@@ -5,7 +5,6 @@ package com.clickup.api
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
-import com.clickup.api.Task.Preview
 import com.clickup.api.rest.Identifier
 import io.ktor.http.Url
 import kotlinx.serialization.SerialName
@@ -16,9 +15,9 @@ import kotlin.time.Duration
 
 @Serializable
 data class TimeEntry(
-    @SerialName("id") val id: ID,
-    @SerialName("task") val task: Preview?,
-    @SerialName("wid") val wid: Team.ID,
+    @SerialName("id") val id: TimeEntryID,
+    @SerialName("task") val task: TaskPreview?,
+    @SerialName("wid") val wid: TeamID,
     @SerialName("user") val user: User,
     @SerialName("billable") val billable: Boolean,
     @SerialName("start") val start: Date,
@@ -30,7 +29,8 @@ data class TimeEntry(
     @SerialName("at") val at: Date,
     @SerialName("task_url") val taskUrl: Url?,
 ) {
-    @Serializable value class ID(override val id: String) : Identifier<String>
 
     val url: Url? get() = taskUrl?.takeUnless { it.pathSegments.also { console.warn(it.joinToString("---")) }.lastOrNull() == "null" }
 }
+
+@Serializable value class TimeEntryID(override val id: String) : Identifier<String>

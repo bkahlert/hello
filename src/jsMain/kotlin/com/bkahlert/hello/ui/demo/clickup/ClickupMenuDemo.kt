@@ -1,21 +1,29 @@
-package com.bkahlert.hello.ui.demo
+package com.bkahlert.hello.ui.demo.clickup
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.Brand
+import com.bkahlert.Brand.colors
 import com.bkahlert.hello.Response
 import com.bkahlert.hello.plugins.clickup.ActivatedClickupMenu
 import com.bkahlert.hello.plugins.clickup.ActivatingClickupMenu
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState
+import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Failed
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activating
 import com.bkahlert.hello.plugins.clickup.DisconnectedClickupMenu
 import com.bkahlert.hello.plugins.clickup.FailedClickupMenu
 import com.bkahlert.hello.plugins.clickup.InitializingClickupMenu
 import com.bkahlert.hello.plugins.clickup.LoadingClickupMenu
+import com.bkahlert.hello.ui.demo.Demo
+import com.bkahlert.hello.ui.demo.Demos
+import com.bkahlert.hello.ui.demo.JOHN
+import com.bkahlert.hello.ui.demo.clickupException
+import com.bkahlert.hello.ui.demo.failedResponse
+import com.bkahlert.hello.ui.demo.response
 import com.clickup.api.Folder
 import com.clickup.api.Space
+import com.clickup.api.SpaceID
 import com.clickup.api.Tag
 import com.clickup.api.Task
+import com.clickup.api.TaskID
 import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.rest.AccessToken
@@ -39,14 +47,14 @@ fun ClickupMenuDemo1() {
             LoadingClickupMenu()
         }
         Demo("Failed") {
-            FailedClickupMenu(ClickupMenuState.Failed(clickupException))
+            FailedClickupMenu(Failed(clickupException))
         }
     }
 
     Demos("ClickUp Menu (Activating)") {
         Demo("multiple teams") {
             ActivatingClickupMenu(Activating(ClickupFixtures.USER,
-                listOf(ClickupFixtures.TEAM, ClickupFixtures.TEAM.copy(name = "Other Team", color = Brand.colors.green, avatar = Url(JOHN))))) {
+                listOf(ClickupFixtures.TEAM, ClickupFixtures.TEAM.copy(name = "Other Team", color = colors.green, avatar = Url(JOHN))))) {
                 console.info("Activating $it")
             }
         }
@@ -79,7 +87,7 @@ object ClickupMenuStateFixtures {
         runningTimeEntry: Response<TimeEntry?>? = response(TimeEntryFixtures.running()),
         tasks: Response<List<Task>>? = response(ClickupFixtures.TASKS),
         spaces: Response<List<Space>>? = response(ClickupFixtures.SPACES),
-        folders: Map<Space.ID, Response<List<Folder>>> = mapOf(
+        folders: Map<SpaceID, Response<List<Folder>>> = mapOf(
             ClickupFixtures.SPACES[0].id to response(ClickupFixtures.SPACE1_FOLDERS),
             ClickupFixtures.SPACES[1].id to response(ClickupFixtures.SPACE2_FOLDERS),
         ),
@@ -178,7 +186,7 @@ private val onRefresh: () -> Unit = {
     console.info("refreshing")
 }
 
-private val onTimeEntryStart: (Task.ID, List<Tag>, billable: Boolean) -> Unit = { task, tags, billable ->
+private val onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { task, tags, billable ->
     console.info("starting billable=$billable pomodoro $tags for $task")
 }
 

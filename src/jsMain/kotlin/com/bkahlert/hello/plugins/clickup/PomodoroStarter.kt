@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Companion.format
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.clickup.api.Tag
-import com.clickup.api.Task
+import com.clickup.api.TaskID
 import com.semanticui.compose.State.Disabled
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.module.Checkbox
@@ -24,10 +24,10 @@ import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun PomodoroStarter(
-    taskID: Task.ID?,
+    taskID: TaskID?,
     type: Type = Type.Default,
     billable: Boolean = false,
-    onStart: (Task.ID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
+    onStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
 ) {
     var selectedType by remember { mutableStateOf(type) }
     var selectedBillable by remember { mutableStateOf(billable) }
