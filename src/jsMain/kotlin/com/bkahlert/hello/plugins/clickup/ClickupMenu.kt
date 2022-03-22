@@ -1,28 +1,27 @@
 package com.bkahlert.hello.plugins.clickup
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import com.bkahlert.hello.Failure
-import com.bkahlert.hello.Success
+import com.bkahlert.hello.AppConfig
 import com.bkahlert.hello.plugins.clickup.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Disconnected
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Failed
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Initializing
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activating
+import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelected
+import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelecting
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loading
 import com.bkahlert.hello.ui.ErrorMessage
 import com.bkahlert.hello.ui.textOverflow
 import com.bkahlert.kommons.coroutines.flow.toStringAndHash
-import com.bkahlert.kommons.fix.value
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.rest.AccessToken
+import com.semanticui.compose.SemanticElementScope
 import com.semanticui.compose.State
 import com.semanticui.compose.Variation
 import com.semanticui.compose.Variation.Colored.Red
@@ -33,6 +32,7 @@ import com.semanticui.compose.Variation.Size.Mini
 import com.semanticui.compose.collection.DropdownItem
 import com.semanticui.compose.collection.LinkItem
 import com.semanticui.compose.collection.Menu
+import com.semanticui.compose.collection.MenuElement
 import com.semanticui.compose.collection.SubMenu
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.IconGroup
@@ -133,204 +133,123 @@ fun LoadingClickupMenu() {
 }
 
 @Composable
-fun ActivatingClickupMenu(
-    state: Activating,
+fun SemanticElementScope<MenuElement, *>.ClickupMenuTeamSelectingItems(
+    state: TeamSelecting,
     onActivate: (TeamID) -> Unit = {},
 ) {
-    Menu({ variation(Mini) }) {
-        DropdownItem(state, { _, _, _ -> }, {
-            variation(Borderless, Variation.Icon)
-        }) {
-            Icon("youtube")
-            SubMenu {
-                Item {
-                    Icon("sign-out")
-                    Text("Sign-out")
-                }
-            }
-        }
-        state.teams.forEach { (id, name, color, avatar, _) ->
-            LinkItem({
-                variation(Borderless)
-                onClick { onActivate(id) }
-            }) {
-                Img(src = avatar.toString()) {
-                    classes("ui", "avatar", "image")
-                }
-                Span { Text(name) }
-                Icon("grid", "layout", {
-                    style { color(color) }
-                })
-                Text(name)
+    DropdownItem(state, { _, _, _ -> }, {
+        variation(Borderless, Variation.Icon)
+    }) {
+        Icon("youtube")
+        SubMenu {
+            Item {
+                Icon("sign-out")
+                Text("Sign-out")
             }
         }
     }
-
-    if (state.teams.size == 1) {
-        onActivate(state.teams.first().id)
+    state.teams.forEach { (id, name, color, avatar, _) ->
+        LinkItem({
+            variation(Borderless)
+            onClick { onActivate(id) }
+        }) {
+            Img(src = avatar.toString()) {
+                classes("ui", "avatar", "image")
+            }
+            Span { Text(name) }
+            Icon("grid", "layout", {
+                style { color(color) }
+            })
+            Text(name)
+        }
     }
 }
 
 @Composable
-fun ActivatedClickupMenu(
-    state: Activated,
-    onRefresh: () -> Unit = {},
+fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
+    activityGroups: List<ActivityGroup>,
+    onSelect: (Selection) -> Unit = {},
     onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
     onTimeEntryAbort: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
     onTimeEntryComplete: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
 ) {
-    var selectedActivity by remember { mutableStateOf<Activity<*>?>(null) }
+    val selectedActivity: Activity<*>? = activityGroups.selected.firstOrNull()
 
-    // pre-select always with running activity if any
-    if (selectedActivity?.takeUnless { it is RunningTaskActivity } == null) {
-        selectedActivity = state.runningActivity
-    }
-
-    console.warn("currently running ${state.runningActivity}")
-
-    Menu({ variation(Mini) }) {
-        DropdownItem(state, { _, _, _ -> }, {
-            variation(Borderless, Variation.Icon)
-        }) {
-            Icon("youtube")
-            SubMenu {
-                Item {
-                    Icon("dropdown")
-                    Span({ classes("text") }) { Text("Switch Team") }
-                    SubMenu {
-                        Item {
-                            Icon("grid", "layout")
-                            Text("Team A")
-                        }
-                        Item {
-                            Icon("grid", "layout")
-                            Text("Team B")
-                        }
-                    }
-                }
-                Item {
-                    Icon("sign-out")
-                    Text("Sign-out")
-                }
-            }
-        }
-        when (val tasks = state.tasks) {
-            null -> {
-                DropdownItem(state, { _, _, _ -> }, {
-                    variation(Borderless, Variation.Icon)
-                    state(State.Loading, State.Disabled)
-                }) {
-                    Icon("stopwatch")
-                }
-
-                // TODO merge with success case
-                LinkItem({
-                    variation(Borderless)
-                    if (selectedActivity == null) state(State.Disabled)
-                }) {
-                    // TODO use visualize to simplify error handling
-                    when (state.runningTimeEntry) {
-                        null -> Icon("green", "play", "disabled")
-                        is Failure -> IconGroup {
-                            Icon("green", "play")
-                            Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
-                        }
-                        is Success -> {
-                            when (val runningTimeEntry = state.runningTimeEntry.value) {
-                                null -> {
-                                    PomodoroStarter(selectedActivity?.taskID, onStart = onTimeEntryStart)
-                                }
-                                else -> PomodoroTimer(
-                                    timeEntry = runningTimeEntry,
-                                    onAbort = onTimeEntryAbort,
-                                    onComplete = onTimeEntryComplete,
-                                )
-                            }
-                        }
-                    }
-                }
-                onRefresh()
-            }
-            is Success -> {
-                LinkItem({
-                    variation(Borderless)
-                    if (selectedActivity == null) state(State.Disabled)
-                }) {
-                    // TODO use visualize to simplify error handling
-                    when (state.runningTimeEntry) {
-                        null -> Icon("green", "play", "disabled")
-                        is Failure -> IconGroup {
-                            Icon("green", "play")
-                            Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
-                        }
-                        is Success -> {
-                            when (val runningTimeEntry = state.runningTimeEntry.value) {
-                                null -> {
-                                    PomodoroStarter(selectedActivity?.taskID, onStart = onTimeEntryStart)
-                                }
-                                else -> PomodoroTimer(
-                                    runningTimeEntry,
-                                    onAbort = onTimeEntryAbort,
-                                    onComplete = onTimeEntryComplete,
-                                )
-                            }
-                        }
-                    }
-                }
-                Item({
-                    variation(Borderless)
-                    if (selectedActivity == null) state(State.Disabled)
-                    style {
-                        flex(1, 1)
-                        minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
-                    }
-                }) {
-                    ActivityDropdown(state.activities, selectedActivity) {
-                        selectedActivity = it
-                    }
-                }
-
-                SubMenu({ variation(Direction.Right) }) {
-                    selectedActivity?.meta?.forEach {
-                        Item({ variation(Borderless) }) {
-                            MetaIcon(it)
-                        }
-                    }
-                }
-            }
-            is Failure -> DropdownItem(state, { _, _, _ -> }, {
-                variation(Borderless, Variation.Icon)
-            }) {
-                IconGroup {
-                    Icon("youtube")
-                    Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
-                }
+    DropdownItem(Unit, { _, _, _ -> }, { // TODO provide user and teams
+        variation(Borderless, Variation.Icon)
+    }) {
+        Icon("youtube")
+        SubMenu {
+            Item {
+                Icon("dropdown")
+                Span({ classes("text") }) { Text("Switch Team") }
                 SubMenu {
-                    ErrorMessage(tasks.value)
+                    Item {
+                        Icon("grid", "layout")
+                        Text("Team A")
+                    }
+                    Item {
+                        Icon("grid", "layout")
+                        Text("Team B")
+                    }
                 }
+            }
+            Item {
+                Icon("sign-out")
+                Text("Sign-out")
             }
         }
     }
+    LinkItem({
+        variation(Borderless)
+        if (selectedActivity == null) state(State.Disabled)
+    }) {
+        when (selectedActivity) {
+            is RunningTaskActivity -> {
+                PomodoroTimer(
+                    timeEntry = selectedActivity.timeEntry,
+                    onAbort = onTimeEntryAbort,
+                    onComplete = onTimeEntryComplete,
+                )
+            }
+            else -> {
+                PomodoroStarter(
+                    taskID = selectedActivity?.taskID,
+                    onStart = onTimeEntryStart
+                )
+            }
+        }
+    }
+    Item({
+        variation(Borderless)
+        if (selectedActivity == null) state(State.Disabled)
+        style {
+            flex(1, 1)
+            minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
+        }
+    }) {
+        ActivityDropdown(activityGroups) { onSelect(it) }
+    }
+
+    SubMenu({ variation(Direction.Right) }) { MetaItems(selectedActivity) }
 }
 
 @Composable
-fun FailedClickupMenu(
+fun SemanticElementScope<MenuElement, *>.ClickupMenuFailedItems(
     state: Failed,
 ) {
-    Menu({ variation(Mini) }) {
-        DropdownItem(state, { _, _, _ -> }, {
-            variation(Borderless, Floating, Variation.Icon)
-        }) {
-            IconGroup {
-                Icon("youtube")
-                Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
-            }
-            SubMenu {
-                ErrorMessage(state.exceptions.first())
-                Item {
-                    Icon("sign-out")
-                    Text("Sign-out")
-                }
+    DropdownItem(state, { _, _, _ -> }, {
+        variation(Borderless, Floating, Variation.Icon)
+    }) {
+        IconGroup {
+            Icon("youtube")
+            Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
+        }
+        SubMenu {
+            ErrorMessage(state.exceptions.first())
+            Item {
+                Icon("sign-out")
+                Text("Sign-out")
             }
         }
     }
@@ -338,31 +257,52 @@ fun FailedClickupMenu(
 
 @Composable
 fun ClickupMenu(
-    state: ClickupMenuState,
-    onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit = {},
-    onActivate: (TeamID) -> Unit = {},
-    onRefresh: () -> Unit = {},
-    onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
-    onTimeEntryAbort: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
-    onTimeEntryComplete: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
+    clickupModel: ClickupModel = remember { ClickupModel(AppConfig.clickup) },
 ) {
-    console.warn("STATE ${state.toStringAndHash()}")
-    when (state) {
+    val _state by clickupModel.menuState.collectAsState(Initializing)
+    console.warn("STATE ${_state.toStringAndHash()}")
+    when (val state = _state) {
         Initializing -> InitializingClickupMenu()
-        Disconnected -> DisconnectedClickupMenu(onConnect)
+        Disconnected -> DisconnectedClickupMenu({ details ->
+            details(AppConfig.clickup.fallbackAccessToken, clickupModel::configureClickUp)
+        })
         Loading -> LoadingClickupMenu()
-        is Activating -> ActivatingClickupMenu(
-            state = state,
-            onActivate = onActivate,
-        )
-        is Activated -> ActivatedClickupMenu(
-            state = state,
-            onRefresh = onRefresh,
-            onTimeEntryStart = onTimeEntryStart,
-            onTimeEntryAbort = onTimeEntryAbort,
-            onTimeEntryComplete = onTimeEntryComplete,
-        )
-        is Failed -> FailedClickupMenu(state)
+        is TeamSelecting -> {
+            Menu({ variation(Mini) }) {
+                ClickupMenuTeamSelectingItems(
+                    state = state,
+                    onActivate = clickupModel::activate,
+                )
+            }
+
+            DisposableEffect(state.teams) {
+                if (state.teams.size == 1) {
+                    clickupModel.activate(state.teams.first().id)
+                }
+                onDispose { }
+            }
+        }
+        is TeamSelected -> {
+            Menu({ variation(Mini) }) {
+                ClickupMenuActivityItems(
+                    activityGroups = state.activityGroups,
+                    onSelect = clickupModel::select,
+                    onTimeEntryStart = clickupModel::startTimeEntry,
+                    onTimeEntryAbort = { _, tags -> clickupModel.abortTimeEntry(tags) },
+                    onTimeEntryComplete = { _, tags -> clickupModel.completeTimeEntry(tags) },
+                )
+            }
+
+            DisposableEffect(state.selectedTeam) {
+                clickupModel.refresh()
+                onDispose { }
+            }
+        }
+        is Failed -> {
+            Menu({ variation(Mini) }) {
+                ClickupMenuFailedItems(state)
+            }
+        }
     }
 }
 

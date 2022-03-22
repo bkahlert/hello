@@ -4,10 +4,13 @@ import androidx.compose.runtime.Composable
 import com.bkahlert.Brand
 import com.bkahlert.hello.plugins.clickup.Activity
 import com.bkahlert.hello.plugins.clickup.Activity.RunningTaskActivity
+import com.bkahlert.hello.plugins.clickup.Activity.TaskActivity
 import com.bkahlert.hello.plugins.clickup.ActivityDropdown
 import com.bkahlert.hello.plugins.clickup.ActivityGroup
+import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
+import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownFixtures.withSelection
 import com.bkahlert.kommons.Color
 import com.clickup.api.FolderPreview
 import com.clickup.api.Space
@@ -28,8 +31,7 @@ fun ActivityDropdownDemo() {
             }
             Demo("Selection") {
                 ActivityDropdown(
-                    activityGroups = ActivityDropdownFixtures.ActivityGroups,
-                    selectedActivity = ActivityDropdownFixtures.ActivityGroups.first().tasks[2],
+                    activityGroups = ActivityDropdownFixtures.ActivityGroups.withSelection { index, _ -> index == 3 },
                     onSelect = onSelect,
                 )
             }
@@ -50,8 +52,7 @@ fun ActivityDropdownDemo() {
             }
             Demo("Selection") {
                 ActivityDropdown(
-                    activityGroups = ActivityDropdownFixtures.ActivityGroupsWithRunningActivity,
-                    selectedActivity = ActivityDropdownFixtures.ActivityGroupsWithRunningActivity[1].tasks[2],
+                    activityGroups = ActivityDropdownFixtures.ActivityGroupsWithRunningActivity.withSelection { index, _ -> index == 3 },
                     onSelect = onSelect,
                 )
             }
@@ -86,7 +87,22 @@ object ActivityDropdownFixtures {
         tasks: List<Task> = ClickupFixtures.TASKS,
         fromIndex: Int = 0,
         toIndex: Int = tasks.size,
-    ) = ActivityGroup.of(space, folder, list, color, tasks.subList(fromIndex, toIndex))
+        select: (Int, Task) -> Boolean = { _, _ -> false },
+    ): ActivityGroup {
+        val taskSubList = tasks.subList(fromIndex, toIndex)
+        return ActivityGroup.of(space, folder, list, color, taskSubList, taskSubList.filterIndexed(select).map { it.id })
+    }
+
+    fun List<ActivityGroup>.withSelection(select: (Int, Activity<*>) -> Boolean) =
+        map { group ->
+            group.copy(tasks = group.tasks.mapIndexed { index, activity ->
+                val selected = select(index, activity)
+                when (activity) {
+                    is RunningTaskActivity -> activity.copy(selected = selected)
+                    is TaskActivity -> activity.copy(selected = selected)
+                }
+            })
+        }
 
     val ActivityGroups: List<ActivityGroup> by lazy {
         listOf(
@@ -109,6 +125,6 @@ object ActivityDropdownFixtures {
     }
 }
 
-private val onSelect: (Activity<*>) -> Unit = {
+private val onSelect: (Selection) -> Unit = {
     console.info("selected $it")
 }

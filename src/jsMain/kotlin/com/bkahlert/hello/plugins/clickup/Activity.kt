@@ -8,6 +8,7 @@ import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
 import com.bkahlert.kommons.time.toMoment
 import com.clickup.api.FolderPreview
+import com.clickup.api.Identifier
 import com.clickup.api.Space
 import com.clickup.api.Tag
 import com.clickup.api.Task
@@ -16,7 +17,6 @@ import com.clickup.api.TaskList
 import com.clickup.api.TaskListPreview
 import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
-import com.clickup.api.rest.Identifier
 import io.ktor.http.Url
 
 /**
@@ -70,17 +70,19 @@ data class ActivityGroup(
 
         fun of(
             timeEntry: TimeEntry,
+            selected: Boolean,
             task: Task?,
-        ): ActivityGroup = of(RunningTaskActivity(timeEntry, task))
+        ): ActivityGroup = of(RunningTaskActivity(timeEntry, selected, task))
 
         fun of(
             tasks: List<Task>,
+            selected: Selection,
             color: Color?,
             vararg meta: Meta?,
         ): ActivityGroup = ActivityGroup(
             name = listOfNotNull(*meta),
             color = color,
-            tasks = tasks.map { TaskActivity(it) },
+            tasks = tasks.map { task -> TaskActivity(task, selected.contains(task.id)) },
         )
 
         fun of(
@@ -89,7 +91,8 @@ data class ActivityGroup(
             list: TaskList?,
             color: Color?,
             tasks: List<Task>,
-        ): ActivityGroup = of(tasks, color, Meta.of(space), Meta.of(folder.also { console.warn("$it") }).also { console.warn("$it") }, Meta.of(list))
+            selected: Selection,
+        ): ActivityGroup = of(tasks, selected, color, Meta.of(space), Meta.of(folder), Meta.of(list))
 
         fun of(
             space: Space?,
@@ -97,9 +100,19 @@ data class ActivityGroup(
             listPreview: TaskListPreview?,
             color: Color?,
             tasks: List<Task>,
-        ): ActivityGroup = of(tasks, color, Meta.of(space), Meta.of(folder), Meta.of(listPreview))
+            selected: Selection,
+        ): ActivityGroup = of(tasks, selected, color, Meta.of(space), Meta.of(folder), Meta.of(listPreview))
     }
 }
+
+/** Contains the selected activities. */
+val Iterable<ActivityGroup>.selected: List<Activity<*>>
+    get() = flatMap { group -> group.tasks.filter { activity -> activity.selected } }
+
+/** Contains the selected activities. */
+fun Iterable<ActivityGroup>.filter(selected: Selection): List<Activity<*>> =
+    flatMap { group -> group.tasks.filter { activity -> selected.contains(activity.id) } }
+
 
 /**
  * Visual presentation of a [Task] ([TaskActivity]) or a [TimeEntry] ([RunningTaskActivity]).
@@ -113,9 +126,11 @@ sealed interface Activity<ID : Identifier<*>> {
     val meta: List<Meta>
     val descriptions: Map<String, String?>
     val tags: Set<Tag>
+    val selected: Boolean
 
     data class RunningTaskActivity(
         val timeEntry: TimeEntry,
+        override val selected: Boolean = false,
         val task: Task? = null,
     ) : Activity<TimeEntryID> {
         private val taskActivity: TaskActivity? = task?.let(::TaskActivity)
@@ -143,6 +158,7 @@ sealed interface Activity<ID : Identifier<*>> {
 
     data class TaskActivity(
         val task: Task,
+        override val selected: Boolean = false,
     ) : Activity<TaskID> {
         override val id: TaskID get() = task.id
         override val taskID: TaskID get() = task.id

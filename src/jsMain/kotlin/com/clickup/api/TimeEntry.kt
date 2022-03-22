@@ -5,7 +5,6 @@ package com.clickup.api
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
-import com.clickup.api.rest.Identifier
 import io.ktor.http.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

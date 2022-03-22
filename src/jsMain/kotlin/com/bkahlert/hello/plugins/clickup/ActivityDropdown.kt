@@ -2,6 +2,7 @@ package com.bkahlert.hello.plugins.clickup
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.ui.textOverflow
+import com.clickup.api.Identifier
 import com.semanticui.compose.Variation
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.Input
@@ -25,16 +26,21 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 fun ActivityDropdown(
     activityGroups: List<ActivityGroup>,
-    selectedActivity: Activity<*>? = null,
-    onSelect: (Activity<*>) -> Unit = {},
+    onSelect: (Selection) -> Unit = {},
 ) {
-    selectedActivity?.also { TaskIcon(it) } ?: Icon({ variation(Inverted) })
+    val selectedActivity: Activity<*>? = activityGroups.selected.firstOrNull()
+
+    if (selectedActivity != null) {
+        ActivityIcon(selectedActivity)
+    } else {
+        Icon({ variation(Inverted) })
+    }
+
     InlineDropdown(
         key = activityGroups,
         onChange = { value, _, _ ->
-            onSelect(activityGroups.firstNotNullOf { (_, _, activities) ->
-                activities.firstOrNull { it.id?.stringValue == value }
-            })
+            val activityId = value.takeIf { it.isNotEmpty() }?.let { Identifier.of(it) }
+            onSelect(listOfNotNull(activityId))
         },
         attrs = {
             variation(Variation.Scrolling)
@@ -69,11 +75,7 @@ fun ActivityDropdown(
                 Header({ style { color?.also { color(it) } } }) {
                     meta.forEachIndexed { index, meta ->
                         if (index > 0) Icon("inverted")
-                        Icon({
-                            title(meta.title)
-                            style { classes(*meta.iconVariations.toTypedArray()) }
-                        })
-                        meta.text?.also { Text(it) }
+                        MetaIcon(meta)
                     }
                 }
                 activities.forEach { activity ->

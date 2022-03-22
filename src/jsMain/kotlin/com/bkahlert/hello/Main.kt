@@ -20,8 +20,6 @@ import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
 import com.bkahlert.hello.plugins.clickup.ClickupMenu
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Initializing
-import com.bkahlert.hello.plugins.clickup.ClickupModel
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Search
 import com.bkahlert.hello.ui.ViewportDimension
@@ -30,10 +28,12 @@ import com.bkahlert.hello.ui.demo.DebugUI
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
 import com.bkahlert.kommons.Either
-import com.bkahlert.kommons.runtime.LocalStorage
+import com.bkahlert.kommons.runtime.getEnum
+import com.bkahlert.kommons.runtime.setEnum
 import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.Modal
 import kotlinx.browser.document
+import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -113,11 +113,11 @@ class AppModel(private val config: Config) {
     val _appState = MutableStateFlow<AppState>(AppState.Loading)
     val appState = _appState.asStateFlow()
 
-    private val _engine = MutableStateFlow(LocalStorage["engine", { Engine.valueOf(it) }] ?: Engine.Default)
+    private val _engine = MutableStateFlow(localStorage.getEnum("engine") ?: Engine.Default)
     val engine = _engine.asStateFlow()
 
     fun change(engine: Engine) {
-        LocalStorage["engine"] = engine
+        localStorage.setEnum("engine", engine)
         _engine.update { engine }
     }
 
@@ -156,8 +156,6 @@ fun main() {
         val appState = remember { AppModel(AppConfig) }
         val loadingState by appState.appState.collectAsState()
         val engine by appState.engine.collectAsState()
-
-        val clickupModel: ClickupModel = remember { ClickupModel(AppConfig.clickup) }
 
         Grid({
             style {
@@ -211,20 +209,11 @@ fun main() {
                     padding(2.em, 2.em, 2.em, 0.em)
                 }
             }) {
-                console.warn("MODEL ${clickupModel.hashCode()}: $clickupModel")
-                val clickupMenuState by clickupModel.menuState.collectAsState(Initializing)
                 // TODO delay until AppState.Ready
-                ClickupMenu(
-                    clickupMenuState,
-                    onConnect = { details ->
-                        details(AppConfig.clickup.fallbackAccessToken, clickupModel::configureClickUp)
-                    },
-                    onActivate = clickupModel::activate,
-                    onRefresh = clickupModel::refresh,
-                    onTimeEntryStart = clickupModel::startTimeEntry,
-                    onTimeEntryAbort = { _, tags -> clickupModel.abortTimeEntry(tags) },
-                    onTimeEntryComplete = { _, tags -> clickupModel.completeTimeEntry(tags) },
-                )
+                when (loadingState) {
+//                    is AppState.Loading -> {}
+                    else -> ClickupMenu()
+                }
             }
             Div({
                 style {

@@ -7,9 +7,10 @@ import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.Success
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import com.bkahlert.kommons.runtime.LocalStorage
+import com.bkahlert.kommons.runtime.remove
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.web.http.div
+import com.bkahlert.kommons.web.http.url
 import com.clickup.api.Folder
 import com.clickup.api.FolderID
 import com.clickup.api.Space
@@ -24,6 +25,7 @@ import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
 import com.clickup.api.User
+import com.clickup.api.div
 import com.clickup.api.rest.ClickUpException.Companion.wrapOrNull
 import com.clickup.api.rest.ClickupClient.Cache.FOLDERS
 import com.clickup.api.rest.ClickupClient.Cache.FOLDER_LISTS
@@ -50,15 +52,23 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.browser.localStorage
+import kotlinx.browser.window
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.w3c.dom.get
+import org.w3c.dom.set
 import kotlin.js.Date
 
 data class ClickupClient(
     private val accessToken: AccessToken,
 ) {
-    //    val clickUpUrl = "https://api.clickup.com/api/v2"
-    val clickUpUrl = Url("http://localhost:8080/api/v2")
+    val clickUpUrl =
+        if (window.location.url.host == "localhost") {
+            Url("http://localhost:8080/api/v2")
+        } else {
+            Url("https://api.clickup.com/api/v2")
+        }
 
     private val logger = simpleLogger()
 
@@ -113,15 +123,16 @@ data class ClickupClient(
 
         private val logger = simpleLogger()
 
-        inline fun <reified T> load(): T? = LocalStorage[key]
+        inline fun <reified T> load(): T? = localStorage[key]
             ?.runCatching { deserialize<T>()?.also { logger.debug("successfully loaded cached response for $key") } }
             ?.onFailure { logger.warn("failed to load cached response for $key", it) }
             ?.getOrNull()
 
+        // TODO move to ClickupStorage
         inline fun <reified T> save(value: T) {
             logger.debug("caching response for $key")
             kotlin.runCatching {
-                LocalStorage[key] = value.serialize()
+                localStorage[key] = value.serialize()
                 logger.debug("successfully cached response for $key")
             }.onFailure {
                 logger.warn("failed to cache response for $key")
@@ -129,7 +140,7 @@ data class ClickupClient(
         }
 
         fun evict() {
-            LocalStorage.remove(key)
+            localStorage.remove(key)
             logger.debug("removed cache entry for $key")
         }
     }

@@ -17,7 +17,7 @@ fun ActivityItem(
 ) {
     Item({
         attr("data-text", activity.name)
-        attr("data-value", activity.id?.stringValue ?: "")
+        attr("data-value", activity.id?.typedStringValue ?: "")
         attr("data-variation", "mini")
         attr("data-offset", "0")
         attr("data-position", "left center")
@@ -27,7 +27,7 @@ fun ActivityItem(
         }
         attrs?.invoke(this)
     }) {
-        TaskIcon(activity)
+        ActivityIcon(activity)
         Text(activity.name)
         DisposableEffect(activity) {
             jQuery(scopeElement).popup()
