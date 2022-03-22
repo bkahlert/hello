@@ -1,19 +1,16 @@
 package com.bkahlert.hello.ui.demo
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.AppStylesheet
 import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownDemo
 import com.bkahlert.hello.ui.demo.clickup.ClickupMenuDemo1
 import com.bkahlert.hello.ui.demo.clickup.ClickupMenuDemo2
 import com.bkahlert.hello.ui.demo.clickup.PomodoroStarterDemo
 import com.bkahlert.hello.ui.demo.clickup.PomodoroTimerDemo
-import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 
 @Composable
@@ -39,28 +36,24 @@ private fun Column(
     }, content)
 }
 
-fun main() {
-
-    renderComposable("root") {
-        Style(AppStylesheet)
-
-        Grid({
-            style { margin(2.em) }
-        }) {
-            Column { ClickupMenuDemo1() }
-            Column { ClickupMenuDemo2() }
-            Column { ActivityDropdownDemo() }
-            Column {
-                PomodoroStarterDemo()
-                PomodoroTimerDemo()
-            }
-            Column { SemanticDemo() }
-            Column {
-                ViewModelDemo()
-                MutableFlowStateDemo()
-                IdleDetectoryDemo()
-                SearchDemo()
-            }
+@Composable
+fun DebugUI() {
+    Grid({
+        style { margin(2.em) }
+    }) {
+        Column { ClickupMenuDemo1() }
+        Column { ClickupMenuDemo2() }
+        Column { ActivityDropdownDemo() }
+        Column {
+            PomodoroStarterDemo()
+            PomodoroTimerDemo()
+        }
+        Column { SemanticDemo() }
+        Column {
+            ViewModelDemo()
+            MutableFlowStateDemo()
+            IdleDetectoryDemo()
+            SearchDemo()
         }
     }
 }

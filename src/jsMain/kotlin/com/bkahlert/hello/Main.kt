@@ -26,11 +26,14 @@ import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Search
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
-import com.bkahlert.hello.ui.demo.main
+import com.bkahlert.hello.ui.demo.DebugUI
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
 import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.runtime.LocalStorage
+import com.semanticui.compose.module.Content
+import com.semanticui.compose.module.Modal
+import kotlinx.browser.document
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -133,9 +136,19 @@ fun main() {
         it.coloredImage
     }
 
-    if (AppConfig.uiOnly) {
-        main()
-        return
+    DebugMode.enable(document) {
+        Modal(
+            {
+                +Fullscreen
+                +Long
+            },
+            "blurring" to true,
+            "closable" to false,
+        ) {
+            Content {
+                DebugUI()
+            }
+        }
     }
 
     renderComposable("root") {

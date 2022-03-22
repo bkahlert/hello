@@ -13,6 +13,8 @@ external class jQuery(deep: Any?) {
     fun popup(behavior: String, vararg args: Any? = definedExternally): jQuery
     fun transition(options: Json = definedExternally): jQuery
     fun transition(behavior: String, vararg args: Any? = definedExternally): jQuery
+    fun modal(options: Json = definedExternally): jQuery
+    fun modal(behavior: String, vararg args: Any? = definedExternally): jQuery
 }
 
 /**
@@ -31,3 +33,10 @@ fun jQuery.dropdown(vararg options: Pair<String, Any?>) = dropdown(json(*options
  * @see <a href="https://semantic-ui.com/modules/popup.html#initializing-a-popup">Initializing</a>
  */
 fun jQuery.popup(vararg options: Pair<String, Any?>) = dropdown(json(*options).also { console.log(this, it) })
+
+
+/**
+ * An interface to interact with a [SemanticUI modal](https://semantic-ui.com/modules/modal.html)
+ * using the specified [options].
+ */
+fun jQuery.modal(vararg options: Pair<String, Any?>) = modal(json(*options).also { console.log(this, it) })

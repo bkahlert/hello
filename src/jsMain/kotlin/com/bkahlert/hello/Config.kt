@@ -14,7 +14,6 @@ private external val _devConfig: dynamic
 
 @Serializable
 data class Config(
-    @SerialName("ui-only") val uiOnly: Boolean = false,
     @SerialName("clickup") val clickup: ClickupConfig = ClickupConfig(),
 )
 

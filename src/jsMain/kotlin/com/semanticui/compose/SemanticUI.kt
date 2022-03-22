@@ -80,6 +80,8 @@ interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : 
     val Padded get() = Variation.Padded
     val Emphasis get() = Variation.Emphasis
     val Clearing get() = Variation.Clearing
+    val Fullscreen get() = Variation.Fullscreen
+    val Long get() = Variation.Long
 }
 
 interface SemanticElementScope<out TSemantic : SemanticElement, out TElement : Element> : ElementScope<TElement> {
@@ -226,6 +228,8 @@ open class Variation(override vararg val classNames: String) : Modifier {
     }
 
     object Clearing : Variation("clearing")
+    object Fullscreen : Variation("fullscreen")
+    object Long : Variation("long")
 }
 
 sealed class State(override vararg val classNames: String) : Modifier {
