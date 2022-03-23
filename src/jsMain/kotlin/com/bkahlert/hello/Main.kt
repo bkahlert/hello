@@ -142,7 +142,7 @@ fun main() {
                 +Fullscreen
                 +Long
             },
-            "blurring" to true,
+            "blurring" to false, // true will blur popups inside the debug mode, too
             "closable" to false,
         ) {
             Content {

@@ -170,6 +170,12 @@ sealed interface Activity<ID : Identifier<*>> {
                 if (task.dateCreated != null) {
                     add(Meta("created", "calendar", "alternate", "outline", text = task.dateCreated.toMoment()))
                 }
+                when (task.dueDate?.compareTo(Now)) {
+                    -1 -> add(Meta("due", "red", "calendar", "times", "outline", text = task.dueDate.toMoment(false)))
+                    +1 -> add(Meta("due", "calendar", "outline", text = task.dueDate.toMoment(false)))
+                    0 -> add(Meta("due", "yellow", "calendar", "outline", text = task.dueDate.toMoment(false)))
+                    else -> {}
+                }
                 if (task.timeEstimate != null) {
                     add(Meta("estimated time", "hourglass", "outline", text = task.timeEstimate.toMoment(false)))
                 }
@@ -178,12 +184,6 @@ sealed interface Activity<ID : Identifier<*>> {
                         -1 -> add(Meta("spent time (critical)", "red", "stopwatch", text = task.timeSpent.toMoment(false)))
                         else -> add(Meta("spent time", "stopwatch", text = task.timeSpent.toMoment(false)))
                     }
-                }
-                when (task.dueDate?.compareTo(Now)) {
-                    -1 -> add(Meta("due", "red", "calendar", "times", "outline", text = task.dueDate.toMoment(false)))
-                    +1 -> add(Meta("due", "calendar", "outline", text = task.dueDate.toMoment(false)))
-                    0 -> add(Meta("due", "yellow", "calendar", "outline", text = task.dueDate.toMoment(false)))
-                    else -> {}
                 }
             }
         override val descriptions: Map<String, String?> get() = mapOf("Task" to task.description?.takeUnless { it.isBlank() })

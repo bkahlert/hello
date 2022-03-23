@@ -59,7 +59,7 @@ fun Activity<*>.popupHtml(): String = buildString {
     append("""<div class="description">""")
     when (descriptions.size) {
         0 -> append("—")
-        1 -> append(descriptions.entries.first().value ?: "—")
+        1 -> append(descriptions.entries.first().value?.asHTML() ?: "—")
         else -> {
             append("""<div class="ui list">""")
             descriptions.forEach { (name, text) ->
@@ -67,7 +67,7 @@ fun Activity<*>.popupHtml(): String = buildString {
                 append("""<div class="sub header">""")
                 append(name)
                 append("""</div><div class="content">""")
-                append(text ?: "—")
+                append(text?.asHTML() ?: "—")
                 append("""</div>""")
             }
             append("""</div>""")
@@ -82,4 +82,8 @@ fun Activity<*>.popupHtml(): String = buildString {
     append("""</div>""")
     append("""</div>""")
     append("""</div>""")
+}
+
+private fun String.asHTML(): String {
+    return replace("\n", "<br>")
 }

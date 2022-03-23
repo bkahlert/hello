@@ -3,21 +3,24 @@ package com.bkahlert.hello.ui.demo.clickup
 import androidx.compose.runtime.Composable
 import com.bkahlert.Brand.colors
 import com.bkahlert.hello.Response
-import com.bkahlert.hello.plugins.clickup.ActivatedClickupMenu
-import com.bkahlert.hello.plugins.clickup.ActivatingClickupMenu
+import com.bkahlert.hello.plugins.clickup.ClickupMenuActivityItems
+import com.bkahlert.hello.plugins.clickup.ClickupMenuFailedItems
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Failed
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activated
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.Activating
+import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelected
+import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelecting
+import com.bkahlert.hello.plugins.clickup.ClickupMenuTeamSelectingItems
 import com.bkahlert.hello.plugins.clickup.DisconnectedClickupMenu
-import com.bkahlert.hello.plugins.clickup.FailedClickupMenu
 import com.bkahlert.hello.plugins.clickup.InitializingClickupMenu
 import com.bkahlert.hello.plugins.clickup.LoadingClickupMenu
+import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
 import com.bkahlert.hello.ui.demo.JOHN
 import com.bkahlert.hello.ui.demo.clickupException
 import com.bkahlert.hello.ui.demo.failedResponse
 import com.bkahlert.hello.ui.demo.response
+import com.bkahlert.kommons.fix.map
+import com.bkahlert.kommons.fix.orNull
 import com.clickup.api.Folder
 import com.clickup.api.Space
 import com.clickup.api.SpaceID
@@ -27,6 +30,7 @@ import com.clickup.api.TaskID
 import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.rest.AccessToken
+import com.semanticui.compose.collection.Menu
 import io.ktor.http.Url
 
 @Composable
@@ -47,25 +51,33 @@ fun ClickupMenuDemo1() {
             LoadingClickupMenu()
         }
         Demo("Failed") {
-            FailedClickupMenu(Failed(clickupException))
+            Menu({ +Size.Mini }) {
+                ClickupMenuFailedItems(Failed(clickupException))
+            }
         }
     }
 
     Demos("ClickUp Menu (Activating)") {
         Demo("multiple teams") {
-            ActivatingClickupMenu(Activating(ClickupFixtures.USER,
-                listOf(ClickupFixtures.TEAM, ClickupFixtures.TEAM.copy(name = "Other Team", color = colors.green, avatar = Url(JOHN))))) {
-                console.info("Activating $it")
+            Menu({ +Size.Mini }) {
+                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.USER,
+                    listOf(ClickupFixtures.TEAM, ClickupFixtures.TEAM.copy(name = "Other Team", color = colors.green, avatar = Url(JOHN))))) {
+                    console.info("Activating $it")
+                }
             }
         }
         Demo("single team") {
-            ActivatingClickupMenu(Activating(ClickupFixtures.USER, listOf(ClickupFixtures.TEAM))) {
-                console.info("Activating $it")
+            Menu({ +Size.Mini }) {
+                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.USER, listOf(ClickupFixtures.TEAM))) {
+                    console.info("Activating $it")
+                }
             }
         }
         Demo("no team") {
-            ActivatingClickupMenu(Activating(ClickupFixtures.USER, emptyList())) {
-                console.info("Activating $it")
+            Menu({ +Size.Mini }) {
+                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.USER, emptyList())) {
+                    console.info("Activating $it")
+                }
             }
         }
     }
@@ -75,10 +87,11 @@ object ClickupMenuStateFixtures {
     fun justActivated(
         team: Team = ClickupFixtures.TEAM,
         runningTimeEntry: Response<TimeEntry?>? = response(TimeEntryFixtures.running()),
-    ) = Activated(
+    ) = TeamSelected(
         user = ClickupFixtures.USER,
         teams = listOf(team),
-        activeTeam = team,
+        selectedTeam = team,
+        selected = listOfNotNull(runningTimeEntry?.map { it?.id }?.orNull()),
         runningTimeEntry = runningTimeEntry,
     )
 
@@ -91,10 +104,11 @@ object ClickupMenuStateFixtures {
             ClickupFixtures.SPACES[0].id to response(ClickupFixtures.SPACE1_FOLDERS),
             ClickupFixtures.SPACES[1].id to response(ClickupFixtures.SPACE2_FOLDERS),
         ),
-    ): Activated = Activated(
+    ): TeamSelected = TeamSelected(
         user = ClickupFixtures.USER,
         teams = listOf(team),
-        activeTeam = team,
+        selectedTeam = team,
+        selected = listOfNotNull(runningTimeEntry?.map { it?.id }?.orNull()),
         runningTimeEntry = runningTimeEntry,
         tasks = tasks,
         spaces = spaces,
@@ -114,76 +128,100 @@ fun ClickupMenuDemo2() {
 
     Demos("ClickUp Menu (Just Activated)") {
         Demo("Unknown time entry status") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.justActivated(
-                runningTimeEntry = null
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
+                    runningTimeEntry = null
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("Failed time entry request") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.justActivated(
-                runningTimeEntry = failedResponse()
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
+                    runningTimeEntry = failedResponse()
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("Running time entry") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.justActivated(
-                runningTimeEntry = response(TimeEntryFixtures.running())
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
+                    runningTimeEntry = response(TimeEntryFixtures.running())
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("No running time entry") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.justActivated(
-                runningTimeEntry = response(null)
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
+                    runningTimeEntry = response(null)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
     }
 
     Demos("ClickUp Menu (Activated & Refreshed)") {
         Demo("Unknown time entry status") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.activatedAndRefreshed(
-                runningTimeEntry = null
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                    runningTimeEntry = null
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("Failed time entry request") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.activatedAndRefreshed(
-                runningTimeEntry = failedResponse()
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                    runningTimeEntry = failedResponse()
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("Running time entry") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.activatedAndRefreshed(
-                runningTimeEntry = response(TimeEntryFixtures.running())
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                    runningTimeEntry = response(TimeEntryFixtures.running())
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("No running time entry") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.activatedAndRefreshed(
-                runningTimeEntry = response(null)
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                    runningTimeEntry = response(null)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
     }
 
     Demos("ClickUp Menu (Activated & Refresh Failed)") {
         Demo("Failed to request tasks") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.activatedAndRefreshed(
-                tasks = failedResponse()
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                    tasks = failedResponse()
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("Failed to spaces") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.activatedAndRefreshed(
-                spaces = failedResponse()
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                    spaces = failedResponse()
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("Incomplete spaces") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.activatedAndRefreshed(
-                spaces = response(ClickupFixtures.SPACES.subList(0, 1))
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                    spaces = response(ClickupFixtures.SPACES.subList(0, 1))
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
         Demo("Folders missing") {
-            ActivatedClickupMenu(ClickupMenuStateFixtures.activatedAndRefreshed(
-                folders = emptyMap(),
-            ), onRefresh, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            Menu({ +Size.Mini }) {
+                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                    folders = emptyMap(),
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+            }
         }
     }
 }
 
-private val onRefresh: () -> Unit = {
-    console.info("refreshing")
+private val onSelect: (selected: Selection) -> Unit = {
+    console.info("selected $it")
 }
 
 private val onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { task, tags, billable ->

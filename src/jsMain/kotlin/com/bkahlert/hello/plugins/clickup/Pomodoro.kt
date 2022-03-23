@@ -62,6 +62,20 @@ data class Pomodoro(
             private val TOMATO_SAUCE = RGB(0xb21807)
 
             /**
+             * Extracts a [Pomodoro.Type] from `this` [Tag].
+             *
+             * Matches the following tag names:
+             * - pomodoro-<NAME>
+             * - pomodoro-<MINUTES>
+             */
+            fun of(tag: Tag): Pomodoro.Type? = tag.suffix?.let { suffix ->
+                when (val minutes = suffix.toLongOrNull()) {
+                    null -> enumValues<Type>().firstOrNull { type -> type.name.equals(suffix, ignoreCase = true) }
+                    else -> enumValues<Type>().firstOrNull { type -> type.duration.inWholeMinutes == minutes }
+                }
+            }
+
+            /**
              * Extracts a [Pomodoro.duration] from `this` [Tag].
              *
              * Matches the following tag names:
@@ -121,11 +135,6 @@ data class Pomodoro(
             return if (isNegative()) "-$absoluteString" else absoluteString
         }
 
-        /**
-         * Creates a based on an existing [TimeEntry]
-         * by looking for a matching tag to determine the [Pomodoro.duration]
-         * (default: duration of [Pomodoro.Type.Default]).
-         */
         /**
          * Creates a based on an existing [TimeEntry]
          * by looking for a matching tag to determine the [Pomodoro.duration]

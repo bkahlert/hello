@@ -10,7 +10,7 @@ import org.w3c.dom.HTMLDivElement
 interface ContainerElement : SemanticElement
 
 /**
- * Creates a [SemanticUI content container](https://semantic-ui.com/elements/container.html).
+ * Creates a [SemanticUI container](https://semantic-ui.com/elements/container.html).
  */
 @Composable
 fun Container(
@@ -26,7 +26,7 @@ fun Container(
 
 
 /**
- * Creates a [SemanticUI content sub container](https://semantic-ui.com/elements/container.html).
+ * Creates a [SemanticUI text container](https://semantic-ui.com/elements/container.html).
  */
 @Composable
 fun TextContainer(

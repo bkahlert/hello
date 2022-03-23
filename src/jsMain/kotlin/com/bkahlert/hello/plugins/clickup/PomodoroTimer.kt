@@ -8,18 +8,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Companion.format
+import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Aborted
+import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Completed
+import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Prepared
+import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Running
+import com.bkahlert.hello.ui.DimmingLoader
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
 import com.clickup.api.Tag
 import com.clickup.api.TimeEntry
 import com.semanticui.compose.element.Icon
+import com.semanticui.compose.jQuery
 import kotlinx.browser.window
 import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.fontWeight
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
-import kotlin.random.Random
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -29,24 +34,42 @@ fun PomodoroTimer(
     onAbort: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
     onComplete: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
     fps: Double = 15.0,
+    progressIndicating: Boolean = true,
 ) {
-
-    var tick by remember { mutableStateOf(0) }
+    var tick: Long by remember(timeEntry) { mutableStateOf(0L) }
     val pomodoro = Pomodoro.of(timeEntry)
     val status = pomodoro.status
     val passed = tick.let { Now - timeEntry.start }
     val remaining = pomodoro.duration - passed
+    val progress = (passed / pomodoro.duration).coerceAtMost(1.0)
     val ended = timeEntry.end != null
 
-    if (!ended && remaining < Duration.ZERO) {
-        LaunchedEffect(timeEntry) {
-            onComplete(timeEntry, listOf(Pomodoro.Status.Completed.tag))
+    if (progressIndicating) {
+        Div({
+            classes("ui", "top", "attached", "indicating", "progress")
+            attr("data-value", "${passed.inWholeSeconds}")
+            attr("data-total", "${pomodoro.duration.inWholeSeconds}")
+        }) {
+            Div({ classes("bar") })
+            DisposableEffect(tick) {
+                when (status) {
+                    Prepared -> jQuery(scopeElement).progress("remove active")
+                    // supposed to work with data-value, but not always working (see Debug Mode F4)
+                    Running -> jQuery(scopeElement).progress("set percent", "${progress * 100.0}")
+                    Aborted -> jQuery(scopeElement).progress("set error")
+                    Completed -> jQuery(scopeElement).progress("set success")
+                }
+                onDispose { jQuery(scopeElement).progress("remove active") }
+            }
         }
     }
 
+    var abortingOrClosing by remember(timeEntry) { mutableStateOf(false) }
+    DimmingLoader({ abortingOrClosing })
+
     if (ended) {
         Div {
-            if (status == Pomodoro.Status.Aborted) {
+            if (status == Aborted) {
                 Icon("red", "times", "circle")
                 Span({
                     style {
@@ -67,8 +90,13 @@ fun PomodoroTimer(
     } else {
         Div {
             Icon("red", "stop", "circle", {
-                +Link
-                onClick { onAbort(timeEntry, listOf(Pomodoro.Status.Aborted.tag)) }
+                if (!abortingOrClosing) {
+                    +Link
+                    onClick {
+                        abortingOrClosing = true
+                        onAbort(timeEntry, listOf(Aborted.tag))
+                    }
+                }
             })
             Span({
                 style {
@@ -77,11 +105,20 @@ fun PomodoroTimer(
             }) { Text(remaining.format()) }
         }
 
-        DisposableEffect(timeEntry) {
-            val timeout = 1.seconds / fps
-            // avoid flickering by initially waiting one second
-            val handle: Int = window.setInterval({ tick = Random.nextInt() }, timeout = timeout.inWholeMilliseconds.toInt())
-            onDispose { window.clearInterval(handle) }
+        if (remaining < 0.5.seconds) {
+            LaunchedEffect(timeEntry) {
+                abortingOrClosing = true
+                onComplete(timeEntry, listOf(Completed.tag))
+            }
+        }
+
+        if (!abortingOrClosing) {
+            DisposableEffect(timeEntry) {
+                val timeout = 1.seconds / fps
+                // avoid flickering by initially waiting one second
+                val handle: Int = window.setInterval({ tick++ }, timeout = timeout.inWholeMilliseconds.toInt())
+                onDispose { window.clearInterval(handle) }
+            }
         }
     }
 }

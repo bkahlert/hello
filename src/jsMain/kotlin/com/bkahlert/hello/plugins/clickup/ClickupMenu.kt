@@ -81,7 +81,7 @@ fun InitializingClickupMenu() {
 fun DisconnectedClickupMenu(
     onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit = {},
 ) {
-    Menu({ variation(Mini) }) {
+    Menu({ +Size.Mini }) {
         DropdownItem(Unit, { _, _, _ -> }, { variation(Borderless, Variation.Icon) }) {
             Icon("youtube")
             SubMenu {
@@ -210,6 +210,7 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
                     timeEntry = selectedActivity.timeEntry,
                     onAbort = onTimeEntryAbort,
                     onComplete = onTimeEntryComplete,
+                    progressIndicating = false,
                 )
             }
             else -> {
@@ -231,7 +232,7 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
         ActivityDropdown(activityGroups) { onSelect(it) }
     }
 
-    SubMenu({ variation(Direction.Right) }) { MetaItems(selectedActivity) }
+    SubMenu({ variation(Direction.Right) }) { MetaItems(selectedActivity?.meta?.reversed()) }
 }
 
 @Composable
@@ -268,7 +269,7 @@ fun ClickupMenu(
         })
         Loading -> LoadingClickupMenu()
         is TeamSelecting -> {
-            Menu({ variation(Mini) }) {
+            Menu({ +Size.Mini }) {
                 ClickupMenuTeamSelectingItems(
                     state = state,
                     onActivate = clickupModel::activate,
@@ -283,7 +284,7 @@ fun ClickupMenu(
             }
         }
         is TeamSelected -> {
-            Menu({ variation(Mini) }) {
+            Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(
                     activityGroups = state.activityGroups,
                     onSelect = clickupModel::select,
@@ -299,7 +300,7 @@ fun ClickupMenu(
             }
         }
         is Failed -> {
-            Menu({ variation(Mini) }) {
+            Menu({ +Size.Mini }) {
                 ClickupMenuFailedItems(state)
             }
         }

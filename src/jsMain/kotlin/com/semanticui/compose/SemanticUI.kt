@@ -81,7 +81,15 @@ interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : 
     val Emphasis get() = Variation.Emphasis
     val Clearing get() = Variation.Clearing
     val Fullscreen get() = Variation.Fullscreen
+    val Length get() = Variation.Length
     val Long get() = Variation.Long
+
+    val Active get() = State.Active
+    val Indeterminate get() = State.Indeterminate
+    val Focus get() = State.Focus
+    val Loading get() = State.Loading
+    val Disabled get() = State.Disabled
+    val Error get() = State.Error
 }
 
 interface SemanticElementScope<out TSemantic : SemanticElement, out TElement : Element> : ElementScope<TElement> {
@@ -229,10 +237,22 @@ open class Variation(override vararg val classNames: String) : Modifier {
 
     object Clearing : Variation("clearing")
     object Fullscreen : Variation("fullscreen")
+
+    object Length : Variation() {
+        val Full = Variation("full")
+        val VeryLong = Variation("very", "long")
+        val Long = Variation("long")
+        val Medium = Variation("medium")
+        val Short = Variation("short")
+        val VeryShort = Variation("very", "short")
+    }
+
     object Long : Variation("long")
 }
 
 sealed class State(override vararg val classNames: String) : Modifier {
+    object Active : State("active")
+    object Indeterminate : State("indeterminate")
     object Focus : State("focus")
     object Loading : State("loading")
     object Disabled : State("disabled")

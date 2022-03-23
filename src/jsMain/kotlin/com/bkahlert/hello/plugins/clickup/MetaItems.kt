@@ -4,14 +4,13 @@ import androidx.compose.runtime.Composable
 import com.semanticui.compose.view.Item
 
 /**
- * Presentation of the meta information
- * of the specified [Activity].
+ * Presentation of the specified [meta] information.
  */
 @Composable
 fun MetaItems(
-    activity: Activity<*>?,
+    meta: List<Meta>?,
 ) {
-    activity?.meta?.forEach {
+    meta?.forEach {
         Item({ variation(Borderless) }) {
             MetaIcon(it)
         }

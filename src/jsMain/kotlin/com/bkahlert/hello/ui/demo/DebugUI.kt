@@ -48,7 +48,10 @@ fun DebugUI() {
             PomodoroStarterDemo()
             PomodoroTimerDemo()
         }
-        Column { SemanticDemo() }
+        Column {
+            SemanticDemo()
+            DimmingLoaderDemo()
+        }
         Column {
             ViewModelDemo()
             MutableFlowStateDemo()
