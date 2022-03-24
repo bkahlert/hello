@@ -5,6 +5,8 @@ package com.clickup.api
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
+import com.bkahlert.kommons.time.Now
+import com.bkahlert.kommons.time.minus
 import io.ktor.http.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -21,14 +23,14 @@ data class TimeEntry(
     @SerialName("billable") val billable: Boolean,
     @SerialName("start") val start: Date,
     @SerialName("end") val end: Date?,
-    @SerialName("duration") val duration: Duration,
     @SerialName("description") val description: String,
     @SerialName("tags") val tags: List<Tag>,
     @SerialName("source") val source: String?,
-    @SerialName("at") val at: Date,
     @SerialName("task_url") val taskUrl: Url?,
 ) {
-
+    val duration: Duration? get() = end?.let { it - start }
+    val passed: Duration get() = Now - start
+    val ended: Boolean get() = end != null
     val url: Url? get() = taskUrl?.takeUnless { it.pathSegments.also { console.warn(it.joinToString("---")) }.lastOrNull() == "null" }
 }
 

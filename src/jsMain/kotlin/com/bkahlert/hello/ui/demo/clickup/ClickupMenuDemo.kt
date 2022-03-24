@@ -16,6 +16,7 @@ import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
 import com.bkahlert.hello.ui.demo.JOHN
+import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
 import com.bkahlert.hello.ui.demo.clickupException
 import com.bkahlert.hello.ui.demo.failedResponse
 import com.bkahlert.hello.ui.demo.response
@@ -60,22 +61,22 @@ fun ClickupMenuDemo1() {
     Demos("ClickUp Menu (Activating)") {
         Demo("multiple teams") {
             Menu({ +Size.Mini }) {
-                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.USER,
-                    listOf(ClickupFixtures.TEAM, ClickupFixtures.TEAM.copy(name = "Other Team", color = colors.green, avatar = Url(JOHN))))) {
+                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.User,
+                    listOf(ClickupFixtures.Team, ClickupFixtures.Team.copy(name = "Other Team", color = colors.green, avatar = Url(JOHN))))) {
                     console.info("Activating $it")
                 }
             }
         }
         Demo("single team") {
             Menu({ +Size.Mini }) {
-                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.USER, listOf(ClickupFixtures.TEAM))) {
+                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.User, listOf(ClickupFixtures.Team))) {
                     console.info("Activating $it")
                 }
             }
         }
         Demo("no team") {
             Menu({ +Size.Mini }) {
-                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.USER, emptyList())) {
+                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.User, emptyList())) {
                     console.info("Activating $it")
                 }
             }
@@ -85,10 +86,10 @@ fun ClickupMenuDemo1() {
 
 object ClickupMenuStateFixtures {
     fun justActivated(
-        team: Team = ClickupFixtures.TEAM,
-        runningTimeEntry: Response<TimeEntry?>? = response(TimeEntryFixtures.running()),
+        team: Team = ClickupFixtures.Team,
+        runningTimeEntry: Response<TimeEntry?>? = response(ClickupFixtures.TimeEntry.running()),
     ) = TeamSelected(
-        user = ClickupFixtures.USER,
+        user = ClickupFixtures.User,
         teams = listOf(team),
         selectedTeam = team,
         selected = listOfNotNull(runningTimeEntry?.map { it?.id }?.orNull()),
@@ -96,16 +97,16 @@ object ClickupMenuStateFixtures {
     )
 
     fun activatedAndRefreshed(
-        team: Team = ClickupFixtures.TEAM,
-        runningTimeEntry: Response<TimeEntry?>? = response(TimeEntryFixtures.running()),
-        tasks: Response<List<Task>>? = response(ClickupFixtures.TASKS),
+        team: Team = ClickupFixtures.Team,
+        runningTimeEntry: Response<TimeEntry?>? = response(ClickupFixtures.TimeEntry.running()),
+        tasks: Response<List<Task>>? = response(ClickupFixtures.Tasks),
         spaces: Response<List<Space>>? = response(ClickupFixtures.SPACES),
         folders: Map<SpaceID, Response<List<Folder>>> = mapOf(
-            ClickupFixtures.SPACES[0].id to response(ClickupFixtures.SPACE1_FOLDERS),
-            ClickupFixtures.SPACES[1].id to response(ClickupFixtures.SPACE2_FOLDERS),
+            ClickupFixtures.SPACES[0].id to response(ClickupFixtures.Space1Folders),
+            ClickupFixtures.SPACES[1].id to response(ClickupFixtures.Space2Folders),
         ),
     ): TeamSelected = TeamSelected(
-        user = ClickupFixtures.USER,
+        user = ClickupFixtures.User,
         teams = listOf(team),
         selectedTeam = team,
         selected = listOfNotNull(runningTimeEntry?.map { it?.id }?.orNull()),
@@ -114,11 +115,11 @@ object ClickupMenuStateFixtures {
         spaces = spaces,
         folders = folders,
         spaceLists = mapOf(
-            ClickupFixtures.SPACES[0].id to response(ClickupFixtures.SPACE1_FOLDERLESS_LISTS),
-            ClickupFixtures.SPACES[1].id to response(ClickupFixtures.SPACE2_FOLDERLESS_LISTS),
+            ClickupFixtures.SPACES[0].id to response(ClickupFixtures.Space1FolderlessLists),
+            ClickupFixtures.SPACES[1].id to response(ClickupFixtures.Space2FolderlessLists),
         ),
         folderLists = mapOf(
-            ClickupFixtures.SPACE1_FOLDERS[0].id to response(ClickupFixtures.SPACE1_FOLDER_LISTS),
+            ClickupFixtures.Space1Folders[0].id to response(ClickupFixtures.Space1FolderLists),
         ),
     )
 }
@@ -131,28 +132,28 @@ fun ClickupMenuDemo2() {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
                     runningTimeEntry = null
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Failed time entry request") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
                     runningTimeEntry = failedResponse()
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Running time entry") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
-                    runningTimeEntry = response(TimeEntryFixtures.running())
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                    runningTimeEntry = response(ClickupFixtures.TimeEntry.running())
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("No running time entry") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
                     runningTimeEntry = response(null)
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
     }
@@ -162,28 +163,28 @@ fun ClickupMenuDemo2() {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     runningTimeEntry = null
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Failed time entry request") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     runningTimeEntry = failedResponse()
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Running time entry") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
-                    runningTimeEntry = response(TimeEntryFixtures.running())
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                    runningTimeEntry = response(ClickupFixtures.TimeEntry.running())
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("No running time entry") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     runningTimeEntry = response(null)
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
     }
@@ -193,28 +194,28 @@ fun ClickupMenuDemo2() {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     tasks = failedResponse()
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Failed to spaces") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     spaces = failedResponse()
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Incomplete spaces") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     spaces = response(ClickupFixtures.SPACES.subList(0, 1))
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Folders missing") {
             Menu({ +Size.Mini }) {
                 ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     folders = emptyMap(),
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryAbort, onTimeEntryComplete)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
     }
@@ -228,10 +229,6 @@ private val onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = {
     console.info("starting billable=$billable pomodoro $tags for $task")
 }
 
-private val onTimeEntryAbort: (TimeEntry, List<Tag>) -> Unit = { timeEntry, tags ->
-    console.info("aborting $timeEntry with $tags")
-}
-
-private val onTimeEntryComplete: (TimeEntry, List<Tag>) -> Unit = { timeEntry, tags ->
-    console.info("completing $timeEntry with $tags")
+private val onTimeEntryStop: (TimeEntry, List<Tag>) -> Unit = { timeEntry, tags ->
+    console.info("stopping $timeEntry with $tags")
 }

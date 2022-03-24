@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Companion.format
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
+import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.DimmingLoader
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
@@ -28,6 +29,7 @@ fun PomodoroStarter(
     type: Type = Type.Default,
     billable: Boolean = false,
     onStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
+    acousticFeedback: AcousticFeedback = AcousticFeedback.NoFeedback,
 ) {
     var selectedType by remember { mutableStateOf(type) }
     var selectedBillable by remember { mutableStateOf(billable) }

@@ -13,6 +13,7 @@ import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Initializing
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelected
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelecting
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loading
+import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.ErrorMessage
 import com.bkahlert.hello.ui.textOverflow
 import com.bkahlert.kommons.asAvatar
@@ -297,8 +298,7 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
     activityGroups: List<ActivityGroup>,
     onSelect: (Selection) -> Unit = {},
     onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
-    onTimeEntryAbort: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
-    onTimeEntryComplete: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
+    onTimeEntryStop: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
 ) {
     val selectedActivity: Activity<*>? = activityGroups.selected.firstOrNull()
 
@@ -310,15 +310,16 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
             is RunningTaskActivity -> {
                 PomodoroTimer(
                     timeEntry = selectedActivity.timeEntry,
-                    onAbort = onTimeEntryAbort,
-                    onComplete = onTimeEntryComplete,
+                    onStop = onTimeEntryStop,
                     progressIndicating = false,
+                    acousticFeedback = AcousticFeedback.PomodoroFeedback,
                 )
             }
             else -> {
                 PomodoroStarter(
                     taskID = selectedActivity?.taskID,
-                    onStart = onTimeEntryStart
+                    onStart = onTimeEntryStart,
+                    acousticFeedback = AcousticFeedback.PomodoroFeedback,
                 )
             }
         }
@@ -366,9 +367,9 @@ fun ClickupMenu(
     console.warn("STATE ${_state.toStringAndHash()}")
     when (val state = _state) {
         Initializing -> InitializingClickupMenu()
-        Disconnected -> DisconnectedClickupMenu({ details ->
+        Disconnected -> DisconnectedClickupMenu { details ->
             details(AppConfig.clickup.fallbackAccessToken, clickupModel::configureClickUp)
-        })
+        }
         Loading -> LoadingClickupMenu()
         is TeamSelecting -> {
             Menu({ +Size.Mini }) {
@@ -398,8 +399,7 @@ fun ClickupMenu(
                     activityGroups = state.activityGroups,
                     onSelect = clickupModel::select,
                     onTimeEntryStart = clickupModel::startTimeEntry,
-                    onTimeEntryAbort = { _, tags -> clickupModel.abortTimeEntry(tags) },
-                    onTimeEntryComplete = { _, tags -> clickupModel.completeTimeEntry(tags) },
+                    onTimeEntryStop = { _, tags -> clickupModel.stopTimeEntry(tags) },
                 )
             }
 

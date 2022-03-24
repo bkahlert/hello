@@ -10,6 +10,8 @@ import com.bkahlert.hello.serialize
 import com.bkahlert.kommons.dom.iterator
 import com.bkahlert.kommons.dom.remove
 import com.bkahlert.kommons.serialization.Named
+import com.bkahlert.kommons.time.Now
+import com.bkahlert.kommons.time.minus
 import com.bkahlert.kommons.web.http.div
 import com.bkahlert.kommons.web.http.url
 import com.clickup.api.Folder
@@ -35,7 +37,6 @@ import com.clickup.api.rest.ClickupClient.Cache.SPACES
 import com.clickup.api.rest.ClickupClient.Cache.SPACE_LISTS
 import com.clickup.api.rest.ClickupClient.Cache.TASKS
 import com.clickup.api.rest.ClickupClient.Cache.TEAMS
-import com.clickup.api.rest.ClickupClient.Cache.USER
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
@@ -55,11 +56,10 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import org.w3c.dom.get
 import org.w3c.dom.set
 import kotlin.js.Date
+import kotlin.time.Duration.Companion.minutes
 
 data class ClickupClient(
     private val accessToken: AccessToken,
@@ -109,6 +109,7 @@ data class ClickupClient(
             onFailure(e)
             Failure(e)
         }
+
 
     private sealed class Cache(
         private val key: String,
@@ -171,7 +172,7 @@ data class ClickupClient(
     suspend fun getUser(onSuccess: (User) -> Unit = {}): Response<User> =
         inBackground(onSuccess) {
             logger.debug("getting user")
-            tokenClient.caching<Named<User>>(USER, clickUpUrl / "user").value
+            tokenClient.caching<Named<User>>(Cache.USER, clickUpUrl / "user").value
         }
 
     suspend fun getTeams(onSuccess: (List<Team>) -> Unit = {}): Response<List<Team>> =
@@ -306,14 +307,6 @@ data class ClickupClient(
             }.value
         }
 
-    @Serializable
-    data class StartTimeEntryRequest(
-        val tid: TaskID?,
-        val description: String?,
-        val billable: Boolean,
-        val tags: List<Tag>,
-    )
-
     suspend fun startTimeEntry(
         team: Team,
         taskId: TaskID? = null,
@@ -327,7 +320,7 @@ data class ClickupClient(
             RUNNING_TIME_ENTRY(team.id).evict()
             tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "start") {
                 contentType(ContentType.Application.Json)
-                setBody(StartTimeEntryRequest(taskId, description, billable, tags.toList()))
+                setBody(StartTimeEntryRequest(Now - 5.minutes, taskId, description, billable, tags.toList()))
             }.body<Named<TimeEntry>>().value
         }
 
@@ -355,11 +348,4 @@ data class ClickupClient(
                 setBody(AddTagsToTimeEntriesRequest(timeEntryIDs, tags))
             }
         }
-
-
-    @Serializable
-    private data class AddTagsToTimeEntriesRequest(
-        @SerialName("time_entry_ids") val timeEntryIDs: List<TimeEntryID>,
-        @SerialName("tags") val tags: List<Tag>,
-    )
 }

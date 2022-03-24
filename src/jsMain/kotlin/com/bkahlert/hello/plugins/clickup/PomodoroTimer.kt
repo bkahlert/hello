@@ -12,9 +12,8 @@ import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Aborted
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Completed
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Prepared
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Running
+import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.DimmingLoader
-import com.bkahlert.kommons.time.Now
-import com.bkahlert.kommons.time.minus
 import com.clickup.api.Tag
 import com.clickup.api.TimeEntry
 import com.semanticui.compose.element.Icon
@@ -31,18 +30,17 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun PomodoroTimer(
     timeEntry: TimeEntry,
-    onAbort: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
-    onComplete: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
+    onStop: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
     fps: Double = 15.0,
     progressIndicating: Boolean = true,
+    acousticFeedback: AcousticFeedback = AcousticFeedback.NoFeedback,
 ) {
     var tick: Long by remember(timeEntry) { mutableStateOf(0L) }
     val pomodoro = Pomodoro.of(timeEntry)
     val status = pomodoro.status
-    val passed = tick.let { Now - timeEntry.start }
+    val passed = tick.let { timeEntry.passed }
     val remaining = pomodoro.duration - passed
     val progress = (passed / pomodoro.duration).coerceAtMost(1.0)
-    val ended = timeEntry.end != null
 
     if (progressIndicating) {
         Div({
@@ -64,10 +62,10 @@ fun PomodoroTimer(
         }
     }
 
-    var abortingOrClosing by remember(timeEntry) { mutableStateOf(false) }
-    DimmingLoader({ abortingOrClosing })
+    var stopping by remember(timeEntry) { mutableStateOf(false) }
+    DimmingLoader({ stopping })
 
-    if (ended) {
+    if (timeEntry.ended) {
         Div {
             if (status == Aborted) {
                 Icon("red", "times", "circle")
@@ -90,11 +88,11 @@ fun PomodoroTimer(
     } else {
         Div {
             Icon("red", "stop", "circle", {
-                if (!abortingOrClosing) {
+                if (!stopping) {
                     +Link
                     onClick {
-                        abortingOrClosing = true
-                        onAbort(timeEntry, listOf(Aborted.tag))
+                        stopping = true
+                        onStop(timeEntry, listOf(Aborted.tag))
                     }
                 }
             })
@@ -107,12 +105,13 @@ fun PomodoroTimer(
 
         if (remaining < 0.5.seconds) {
             LaunchedEffect(timeEntry) {
-                abortingOrClosing = true
-                onComplete(timeEntry, listOf(Completed.tag))
+                stopping = true
+                acousticFeedback.completed.play()
+                onStop(timeEntry, listOf(Completed.tag))
             }
         }
 
-        if (!abortingOrClosing) {
+        if (!stopping) {
             DisposableEffect(timeEntry) {
                 val timeout = 1.seconds / fps
                 // avoid flickering by initially waiting one second

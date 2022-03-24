@@ -23,6 +23,7 @@ import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Text
 
+// TODO show task_url
 @Composable
 fun ActivityDropdown(
     activityGroups: List<ActivityGroup>,

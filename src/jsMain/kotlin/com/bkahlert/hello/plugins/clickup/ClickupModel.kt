@@ -41,6 +41,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
+// TODO handle all errors correclty => remote all orNull calls
+
 class ClickupModel(
     private val config: ClickupConfig,
     storage: Storage,
@@ -89,10 +91,10 @@ class ClickupModel(
                 val previousSelection = clickup.selections[team]
                 logger.debug("Previous selection for team ${team.id}: $previousSelection")
                 val runningTimeEntry = client.getRunningTimeEntry(team, state.user)
-                val runningTimeEntryId = runningTimeEntry.map { it?.id }.orNull()
+                val runningTimeEntryId = runningTimeEntry.map { it?.id }
                 logger.debug("Running time entry: $runningTimeEntryId")
                 val selectedActivityIds = buildList {
-                    runningTimeEntryId?.also { add(it) }
+                    runningTimeEntryId.map { it?.also(::add) }
                     addAll(previousSelection)
                 }
                 logger.debug("Selecting: $selectedActivityIds")
@@ -159,11 +161,11 @@ class ClickupModel(
         }
     }
 
-    fun abortTimeEntry(
+    fun stopTimeEntry(
         tags: List<Tag>,
     ) {
         update { client, state ->
-            logger.info("aborting time entry")
+            logger.info("stopping time entry")
             when (state) {
                 is TeamSelected -> {
                     when (val stopResponse = client.stopTimeEntry(state.selectedTeam)) {
@@ -223,30 +225,6 @@ class ClickupModel(
                         is Failure -> {
                             console.error("failed to stop time entry", stopResponse.value.errorMessage)
                             state.copy(runningTimeEntry = stopResponse)
-                        }
-                    }
-                }
-                else -> state.also { logger.error("Failed to stop time entry; unexpected state $state") }
-            }
-        }
-    }
-
-    fun completeTimeEntry(
-        tags: List<Tag>,
-    ) {
-        update { client, state ->
-            logger.info("completing time entry")
-            when (state) {
-                is TeamSelected -> {
-                    // TODO
-                    when (val response = client.stopTimeEntry(state.selectedTeam)) {
-                        is Success -> {
-                            console.log("stopped", response.value)
-                            state.copy(runningTimeEntry = response)
-                        }
-                        is Failure -> {
-                            console.error("failed to stop", response.value.errorMessage)
-                            state.copy(runningTimeEntry = response)
                         }
                     }
                 }

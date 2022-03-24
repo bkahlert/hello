@@ -27,7 +27,7 @@ fun PomodoroStarterDemo() {
     }
 }
 
-private val taskID = ClickupFixtures.TASKS.first().id
+private val taskID = ClickupFixtures.Tasks.first().id
 
 private val onStart: (TaskID, List<Tag>, Boolean) -> Unit = { task, tags, billable ->
     console.info("starting billable=$billable pomodoro $tags for $task")

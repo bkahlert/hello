@@ -10,6 +10,9 @@ import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
+import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.aborted
+import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.completed
+import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
 import com.clickup.api.Tag
@@ -27,53 +30,40 @@ fun PomodoroTimerDemo() {
                 Demo(type.name) {
                     val scope = rememberCoroutineScope()
                     var timeEntry by remember {
-                        mutableStateOf(TimeEntryFixtures.running(
-                            start = Now,
-                            type = type,
-                        ))
+                        mutableStateOf(ClickupFixtures.TimeEntry.running(start = Now,
+                            type = type))
                     }
                     PomodoroTimer(
                         timeEntry = timeEntry,
-                        onAbort = { entry, tags ->
-                            onAbort(entry, tags)
+                        onStop = { entry, tags ->
+                            onStop(entry, tags)
                             scope.launch {
                                 delay(5.seconds)
                                 timeEntry = entry.copy(end = Now, tags = entry.tags + tags)
                             }
                         },
-                        onComplete = { entry, tags ->
-                            onComplete(entry, tags)
-                            scope.launch {
-                                delay(5.seconds)
-                                timeEntry = entry.copy(end = Now, tags = entry.tags + tags)
-                            }
-                        }
                     )
                 }
             }
             Demo("unknown type") {
-                PomodoroTimer(TimeEntryFixtures.running(type = null), onAbort, onComplete)
+                PomodoroTimer(ClickupFixtures.TimeEntry.running(type = null), onStop)
             }
         }
         Demo("aborted") {
-            PomodoroTimer(TimeEntryFixtures.aborted(), onAbort, onComplete)
+            PomodoroTimer(ClickupFixtures.TimeEntry.aborted(), onStop)
         }
         Demo("completed") {
-            PomodoroTimer(TimeEntryFixtures.completed(), onAbort, onComplete)
+            PomodoroTimer(ClickupFixtures.TimeEntry.completed(), onStop)
         }
         Demo("completed and exceeded") {
-            PomodoroTimer(TimeEntryFixtures.completed(start = Now - 1.days), onAbort, onComplete)
+            PomodoroTimer(ClickupFixtures.TimeEntry.completed(start = Now - 1.days), onStop)
         }
         Demo("exceeded") {
-            PomodoroTimer(TimeEntryFixtures.running(start = Now - 1.days), onAbort, onComplete)
+            PomodoroTimer(ClickupFixtures.TimeEntry.running(start = Now - 1.days), onStop)
         }
     }
 }
 
-private val onAbort: (TimeEntry, List<Tag>) -> Unit = { timeEntry, tags ->
-    console.info("aborting $timeEntry with $tags")
-}
-
-private val onComplete: (TimeEntry, List<Tag>) -> Unit = { timeEntry, tags ->
-    console.info("completing $timeEntry with $tags")
+private val onStop: (TimeEntry, List<Tag>) -> Unit = { timeEntry, tags ->
+    console.info("stopping $timeEntry with $tags")
 }

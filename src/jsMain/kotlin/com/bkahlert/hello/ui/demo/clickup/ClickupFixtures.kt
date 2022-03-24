@@ -14,48 +14,8 @@ import com.clickup.api.TimeEntry
 import com.clickup.api.User
 import kotlin.js.Date
 
-object TimeEntryFixtures {
-    private val RUNNING by lazy { ClickupFixtures.TIME_ENTRY }
-
-    fun running(
-        start: Date = Now - 3.5.minutes,
-        type: Pomodoro.Type? = null,
-    ) = RUNNING.let {
-        it.copy(
-            start = start,
-            tags = type?.addTag(it.tags) ?: it.tags
-        )
-    }
-
-    fun aborted(
-        start: Date = Now - Pomodoro.Type.Default.duration / 2,
-        end: Date = Now,
-        type: Pomodoro.Type? = Pomodoro.Type.Default,
-    ) = RUNNING.let {
-        it.copy(
-            start = start,
-            end = end,
-            duration = end - start,
-            tags = type?.addTag(it.tags) ?: it.tags
-        )
-    }
-
-    fun completed(
-        start: Date = Now - Pomodoro.Type.Default.duration,
-        end: Date = Now,
-        type: Pomodoro.Type? = Pomodoro.Type.Default,
-    ) = RUNNING.let {
-        it.copy(
-            start = start,
-            end = end,
-            duration = end - start,
-            tags = type?.addTag(it.tags) ?: it.tags
-        )
-    }
-}
-
 object ClickupFixtures {
-    val USER: User by lazy {
+    val User: User by lazy {
         """
         {
             "id": 4687596,
@@ -70,7 +30,7 @@ object ClickupFixtures {
         }
         """.trimIndent().deserialize()
     }
-    val TEAM: Team by lazy {
+    val Team: Team by lazy {
         """
         {
             "id": "2576831",
@@ -92,7 +52,7 @@ object ClickupFixtures {
         }
         """.trimIndent().deserialize()
     }
-    val TASKS: List<Task> by lazy {
+    val Tasks: List<Task> by lazy {
         """
         [
             {
@@ -2256,7 +2216,7 @@ object ClickupFixtures {
         ]
         """.trimIndent().deserialize()
     }
-    val SPACE1_FOLDERS: List<Folder> by lazy {
+    val Space1Folders: List<Folder> by lazy {
         """
         [
             {
@@ -2350,12 +2310,12 @@ object ClickupFixtures {
         ]
         """.trimIndent().deserialize()
     }
-    val SPACE2_FOLDERS: List<Folder> by lazy {
+    val Space2Folders: List<Folder> by lazy {
         """
         []
         """.trimIndent().deserialize()
     }
-    val SPACE1_FOLDER_LISTS: List<TaskList> by lazy {
+    val Space1FolderLists: List<TaskList> by lazy {
         """
         [
             {
@@ -2438,12 +2398,12 @@ object ClickupFixtures {
         ]
         """.trimIndent().deserialize()
     }
-    val SPACE2_FOLDER_LISTS: List<TaskList> by lazy {
+    val Space2FolderLists: List<TaskList> by lazy {
         """
         []
         """.trimIndent().deserialize()
     }
-    val SPACE1_FOLDERLESS_LISTS: List<TaskList> by lazy {
+    val Space1FolderlessLists: List<TaskList> by lazy {
         """
         [
             {
@@ -2509,7 +2469,7 @@ object ClickupFixtures {
         ]
         """.trimIndent().deserialize()
     }
-    val SPACE2_FOLDERLESS_LISTS: List<TaskList> by lazy {
+    val Space2FolderlessLists: List<TaskList> by lazy {
         """
         [
             {
@@ -2599,7 +2559,7 @@ object ClickupFixtures {
         ]
         """.trimIndent().deserialize()
     }
-    val TIME_ENTRY: TimeEntry by lazy {
+    val TimeEntry: TimeEntry by lazy {
         """
         {
             "id": "2876109920259311585",
@@ -2640,4 +2600,32 @@ object ClickupFixtures {
         }
         """.trimIndent().deserialize()
     }
+
+    fun TimeEntry.running(
+        start: Date = Now - 3.5.minutes,
+        type: Pomodoro.Type? = null,
+    ) = copy(
+        start = start,
+        tags = type?.addTag(tags) ?: tags
+    )
+
+    fun TimeEntry.aborted(
+        start: Date = Now - Pomodoro.Type.Default.duration / 2,
+        end: Date = Now,
+        type: Pomodoro.Type? = Pomodoro.Type.Default,
+    ) = copy(
+        start = start,
+        end = end,
+        tags = type?.addTag(tags) ?: tags
+    )
+
+    fun TimeEntry.completed(
+        start: Date = Now - Pomodoro.Type.Default.duration,
+        end: Date = Now,
+        type: Pomodoro.Type? = Pomodoro.Type.Default,
+    ) = copy(
+        start = start,
+        end = end,
+        tags = type?.addTag(tags) ?: tags
+    )
 }

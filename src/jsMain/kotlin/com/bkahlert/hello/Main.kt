@@ -134,7 +134,6 @@ class AppModel(
     }
 }
 
-
 fun main() {
 
     // trigger creation to avoid flickering

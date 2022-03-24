@@ -14,7 +14,8 @@ import com.bkahlert.hello.Success
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
 import com.bkahlert.hello.ui.demo.ViewModelDemoStuff.TestViewModel
-import com.bkahlert.hello.ui.demo.clickup.TimeEntryFixtures
+import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures
+import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
 import com.bkahlert.kommons.fix.value
 import com.bkahlert.kommons.math.isOdd
 import com.bkahlert.kommons.text.randomString
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -47,13 +47,9 @@ fun ViewModelDemo() {
             testViewModel.timeEntry?.also {
                 PomodoroTimer(
                     timeEntry = it,
-                    onAbort = { timeEntry, tags ->
-                        console.info("aborting $timeEntry with $tags")
-                        testViewModel.abort(it, tags)
-                    },
-                    onComplete = { timeEntry, tags ->
-                        console.info("completing $timeEntry with $tags")
-                        testViewModel.complete(it, tags)
+                    onStop = { timeEntry, tags ->
+                        console.info("stopping $timeEntry with $tags")
+                        testViewModel.stop(it, tags)
                     },
                 )
             }
@@ -138,30 +134,20 @@ private object ViewModelDemoStuff {
             }
         }
 
-        var timeEntry: TimeEntry? by mutableStateOf(TimeEntryFixtures.running())
+        var timeEntry: TimeEntry? by mutableStateOf(ClickupFixtures.TimeEntry.running())
             private set
 
         fun start(taskID: TaskID?, type: Type) {
-            timeEntry = TimeEntryFixtures.running().copy(
+            timeEntry = ClickupFixtures.TimeEntry.running(start = Now).copy(
                 id = TimeEntryID((taskID?.stringValue ?: "unknown") + "-${randomString()}"),
-                start = Now,
-                end = null,
-                duration = Duration.ZERO,
-                tags = type.addTag(TimeEntryFixtures.running().tags).also { console.log("$it") },
-                source = "String?",
-                at = Now,
+                tags = type.addTag(ClickupFixtures.TimeEntry.running().tags).also { console.log("$it") },
             )
             logger.info("Time entry $timeEntry started")
         }
 
-        fun abort(timeEntry: TimeEntry, tags: List<Tag>) {
+        fun stop(timeEntry: TimeEntry, tags: List<Tag>) {
             this.timeEntry = null
-            logger.info("Time entry $timeEntry aborted with $tags")
-        }
-
-        fun complete(timeEntry: TimeEntry, tags: List<Tag>) {
-//        this.timeEntry = timeEntry.copy(end = Now)
-            logger.info("Time entry $timeEntry completed with $tags")
+            logger.info("Time entry $timeEntry stopped with $tags")
         }
     }
 
