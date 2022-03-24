@@ -15,12 +15,18 @@ import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelecting
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loading
 import com.bkahlert.hello.ui.ErrorMessage
 import com.bkahlert.hello.ui.textOverflow
+import com.bkahlert.kommons.asAvatar
+import com.bkahlert.kommons.backgroundImage
 import com.bkahlert.kommons.coroutines.flow.toStringAndHash
+import com.bkahlert.kommons.dom.InMemoryStorage
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
+import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
+import com.clickup.api.User
 import com.clickup.api.rest.AccessToken
+import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticElementScope
 import com.semanticui.compose.State
 import com.semanticui.compose.Variation
@@ -37,6 +43,7 @@ import com.semanticui.compose.collection.SubMenu
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.IconGroup
 import com.semanticui.compose.view.Item
+import com.semanticui.compose.view.ItemElement
 import kotlinx.browser.window
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
@@ -45,6 +52,9 @@ import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.backgroundColor
+import org.jetbrains.compose.web.css.backgroundPosition
+import org.jetbrains.compose.web.css.backgroundRepeat
+import org.jetbrains.compose.web.css.backgroundSize
 import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
 import org.jetbrains.compose.web.css.color
@@ -56,7 +66,10 @@ import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.css.margin
+import org.jetbrains.compose.web.css.marginLeft
+import org.jetbrains.compose.web.css.marginRight
 import org.jetbrains.compose.web.css.minWidth
+import org.jetbrains.compose.web.css.opacity
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.style
@@ -66,6 +79,7 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
+import org.w3c.dom.HTMLDivElement
 
 @Composable
 fun InitializingClickupMenu() {
@@ -166,6 +180,119 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuTeamSelectingItems(
 }
 
 @Composable
+fun SemanticElementScope<MenuElement, *>.ClickupMenuMainItems(
+    user: User,
+    teams: List<Team>,
+    selectedTeam: Team?,
+    onTeamSelect: (TeamID) -> Unit = {},
+    onRefresh: () -> Unit = { },
+) {
+
+    DropdownItem(Unit, { _, _, _ -> }, {
+        +Borderless + Icon
+        style {
+            backgroundImage(user.profilePicture.asAvatar())
+            backgroundSize("2.5em")
+            backgroundRepeat("no-repeat")
+            backgroundPosition("center")
+        }
+    }) {
+
+        if (selectedTeam != null) {
+            Img(src = user.profilePicture.toString()) {
+                classes("ui", "avatar", "image")
+                style { opacity(0) }
+            }
+        } else {
+            Icon("youtube")
+        }
+        SubMenu {
+            TeamSelectionItems(teams, selectedTeam, onTeamSelect)
+            LinkItem({
+                onClick { onRefresh() }
+            }) {
+                Icon("sync")
+                Text("Refresh")
+            }
+            LinkItem({
+                onClick {
+                    console.warn("Sign out not implemented but clicked")
+                }
+            }) {
+                Icon("sign-out")
+                Text("Sign-out")
+            }
+        }
+    }
+}
+
+@Composable
+fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
+    teams: List<Team>,
+    selectedTeam: Team?,
+    onTeamSelect: (TeamID) -> Unit,
+) {
+    when (teams.size) {
+        0 -> {
+            Item {
+                Icon("dropdown")
+                Span({ classes("text") }) { Text("Switch Team") }
+            }
+        }
+        1 -> {
+            val team = teams.first()
+            TeamItem(
+                team = team,
+                onClick = { onTeamSelect(team.id) }
+            ) {
+                if (team.id == selectedTeam?.id) +Disabled + Active
+            }
+        }
+        else -> Item {
+            Icon("dropdown")
+            Span({ classes("text") }) { Text("Switch Team") }
+            SubMenu {
+                teams.forEach { team ->
+                    TeamItem(
+                        team = team,
+                        onClick = { onTeamSelect(team.id) }
+                    ) {
+                        if (team.id == selectedTeam?.id) +Disabled + Active
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SemanticElementScope<MenuElement, *>.TeamItem(
+    team: Team,
+    onClick: () -> Unit,
+    attrs: SemanticAttrBuilder<ItemElement, HTMLDivElement>? = null,
+) {
+    LinkItem({
+        attrs?.invoke(this)
+        onClick { onClick() }
+    }) {
+        Div({
+            classes("ui", "image")
+            style {
+                marginLeft((-5).px)
+                marginRight(2.px)
+            }
+        }) {
+            Img(src = team.avatar.toString()) {
+                classes("ui", "avatar", "image")
+            }
+        }
+        Span({ style { property("padding-right", "3em") } }) {
+            Text(team.name)
+        }
+    }
+}
+
+@Composable
 fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
     activityGroups: List<ActivityGroup>,
     onSelect: (Selection) -> Unit = {},
@@ -175,31 +302,6 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
 ) {
     val selectedActivity: Activity<*>? = activityGroups.selected.firstOrNull()
 
-    DropdownItem(Unit, { _, _, _ -> }, { // TODO provide user and teams
-        variation(Borderless, Variation.Icon)
-    }) {
-        Icon("youtube")
-        SubMenu {
-            Item {
-                Icon("dropdown")
-                Span({ classes("text") }) { Text("Switch Team") }
-                SubMenu {
-                    Item {
-                        Icon("grid", "layout")
-                        Text("Team A")
-                    }
-                    Item {
-                        Icon("grid", "layout")
-                        Text("Team B")
-                    }
-                }
-            }
-            Item {
-                Icon("sign-out")
-                Text("Sign-out")
-            }
-        }
-    }
     LinkItem({
         variation(Borderless)
         if (selectedActivity == null) state(State.Disabled)
@@ -258,7 +360,7 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuFailedItems(
 
 @Composable
 fun ClickupMenu(
-    clickupModel: ClickupModel = remember { ClickupModel(AppConfig.clickup) },
+    clickupModel: ClickupModel = remember { ClickupModel(AppConfig.clickup, InMemoryStorage()) },
 ) {
     val _state by clickupModel.menuState.collectAsState(Initializing)
     console.warn("STATE ${_state.toStringAndHash()}")
@@ -272,19 +374,26 @@ fun ClickupMenu(
             Menu({ +Size.Mini }) {
                 ClickupMenuTeamSelectingItems(
                     state = state,
-                    onActivate = clickupModel::activate,
+                    onActivate = clickupModel::selectTeam,
                 )
             }
 
             DisposableEffect(state.teams) {
                 if (state.teams.size == 1) {
-                    clickupModel.activate(state.teams.first().id)
+                    clickupModel.selectTeam(state.teams.first().id)
                 }
                 onDispose { }
             }
         }
         is TeamSelected -> {
             Menu({ +Size.Mini }) {
+                ClickupMenuMainItems(
+                    user = state.user,
+                    teams = state.teams,
+                    selectedTeam = state.selectedTeam,
+                    onTeamSelect = clickupModel::selectTeam,
+                    onRefresh = { clickupModel.refresh(force = true) },
+                )
                 ClickupMenuActivityItems(
                     activityGroups = state.activityGroups,
                     onSelect = clickupModel::select,

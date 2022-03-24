@@ -16,6 +16,7 @@ import com.bkahlert.kommons.coroutines.flow.FlowUpdate
 import com.bkahlert.kommons.coroutines.flow.FlowUpdate.Companion.applyUpdates
 import com.bkahlert.kommons.coroutines.flow.FlowUpdate.Companion.extend
 import com.bkahlert.kommons.coroutines.flow.toStringAndHash
+import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.fix.map
 import com.bkahlert.kommons.fix.or
 import com.bkahlert.kommons.fix.orNull
@@ -34,22 +35,21 @@ import com.clickup.api.TimeEntry
 import com.clickup.api.User
 import com.clickup.api.rest.AccessToken
 import com.clickup.api.rest.ClickupClient
-import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
-
 class ClickupModel(
     private val config: ClickupConfig,
-    private val storage: ClickupStorage = ClickupStorage(localStorage),
+    storage: Storage,
 ) {
+    private val clickup = ClickupStorage(storage)
 
     private val logger = simpleLogger()
 
-    private val clickupToken = MutableStateFlow(storage.accessToken)
+    private val clickupToken = MutableStateFlow(clickup.`access-token`)
 
     fun configureClickUp(accessToken: AccessToken) {
         logger.debug("setting access token")
@@ -60,7 +60,7 @@ class ClickupModel(
     // if access token is missing use fallback if set
     // result is saved
     private val savedClickupToken = clickupToken
-        .onEach { it?.also { storage.accessToken = it } }
+        .onEach { it?.also { clickup.`access-token` = it } }
         .map { it ?: config.fallbackAccessToken }
 
     private val clickupClient = savedClickupToken
@@ -81,12 +81,12 @@ class ClickupModel(
         }
     }
 
-    fun activate(teamID: TeamID) {
+    fun selectTeam(teamID: TeamID) {
         logger.info("Activating $teamID")
         update { client, state ->
             if (state is ClickupMenuState.Loaded) { // TODO for all update calls, provide requireState function
                 val team = state.teams.first { it.id == teamID }
-                val previousSelection = storage.selections[team]
+                val previousSelection = clickup.selections[team]
                 logger.debug("Previous selection for team ${team.id}: $previousSelection")
                 val runningTimeEntry = client.getRunningTimeEntry(team, state.user)
                 val runningTimeEntryId = runningTimeEntry.map { it?.id }.orNull()
@@ -101,9 +101,12 @@ class ClickupModel(
         }
     }
 
-    fun refresh() {
+    fun refresh(force: Boolean = false) {
         logger.info("Refreshing ${menuState.toStringAndHash()}")
         update { client, state ->
+            if (force) {
+                client.clearCache()
+            }
             when (state) {
                 is TeamSelected -> {
                     val tasks = client.getTasks(state.selectedTeam)
@@ -134,7 +137,7 @@ class ClickupModel(
             when (state) {
                 is TeamSelected -> {
                     logger.debug("Storing new selection $selection team ${state.selectedTeam.id}")
-                    storage.selections[state.selectedTeam] = selection
+                    clickup.selections[state.selectedTeam] = selection
                     state.copy(selected = selection)
                 }
                 else -> state.also { logger.error("Failed to select activity; unexpected state $state") }

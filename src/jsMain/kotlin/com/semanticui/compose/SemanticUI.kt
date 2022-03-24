@@ -70,9 +70,8 @@ interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : 
     val Floating get() = Variation.Floating
     val Borderless get() = Variation.Borderless
 
-    class Icon(vararg names: String) : Variation(*names, "icon") {
-        companion object : Variation("icon")
-    }
+    val Icon get() = Variation.Icon.Companion
+    fun Icon(vararg names: String) = Variation.Icon(*names)
 
     val Transparent get() = Variation.Transparent
     val Scrolling get() = Variation.Scrolling

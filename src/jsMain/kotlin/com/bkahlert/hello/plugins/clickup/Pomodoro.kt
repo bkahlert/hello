@@ -1,13 +1,20 @@
+@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
+
 package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.Brand
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type.Companion.duration
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.UrlSerializer
 import com.bkahlert.kommons.time.minus
 import com.clickup.api.Tag
 import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -15,6 +22,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * A Pomodoro session of the given [duration] related to the given [timeEntryID].
  */
+@Serializable
 data class Pomodoro(
     /** ID of the [TimeEntry] this session relates to. */
     val timeEntryID: TimeEntryID,
@@ -26,6 +34,7 @@ data class Pomodoro(
      * Well-known [Pomodoro] types.
      */
     @Suppress("RemoveRedundantQualifierName")
+    @Serializable
     enum class Type(
         /** Amount of time a [Pomodoro] of this type takes. */
         val duration: Duration,

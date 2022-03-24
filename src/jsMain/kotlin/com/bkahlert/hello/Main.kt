@@ -20,6 +20,7 @@ import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
 import com.bkahlert.hello.plugins.clickup.ClickupMenu
+import com.bkahlert.hello.plugins.clickup.ClickupModel
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Search
 import com.bkahlert.hello.ui.ViewportDimension
@@ -28,8 +29,10 @@ import com.bkahlert.hello.ui.demo.DebugUI
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
 import com.bkahlert.kommons.Either
-import com.bkahlert.kommons.runtime.getEnum
-import com.bkahlert.kommons.runtime.setEnum
+import com.bkahlert.kommons.dom.InMemoryStorage
+import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
+import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.dom.default
 import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.Modal
 import kotlinx.browser.document
@@ -106,18 +109,22 @@ typealias Success<T, E> = Either.Left<T, E>
 typealias Failure<T, E> = Either.Right<T, E>
 
 
-class AppModel(private val config: Config) {
+class AppModel(
+    private val config: Config,
+    storage: Storage = InMemoryStorage(),
+) {
+    private var recentlyUsedEngine by storage default Engine.Default
 
     private val logger = simpleLogger()
 
     val _appState = MutableStateFlow<AppState>(AppState.Loading)
     val appState = _appState.asStateFlow()
 
-    private val _engine = MutableStateFlow(localStorage.getEnum("engine") ?: Engine.Default)
+    private val _engine = MutableStateFlow(recentlyUsedEngine)
     val engine = _engine.asStateFlow()
 
     fun change(engine: Engine) {
-        localStorage.setEnum("engine", engine)
+        recentlyUsedEngine = engine
         _engine.update { engine }
     }
 
@@ -136,7 +143,10 @@ fun main() {
         it.coloredImage
     }
 
-    DebugMode.enable(document) {
+    DebugMode(
+        eventTarget = document,
+        storage = localStorage.scoped("debug"),
+    ) {
         Modal(
             {
                 +Fullscreen
@@ -153,9 +163,11 @@ fun main() {
 
     renderComposable("root") {
         Style(AppStylesheet)
-        val appState = remember { AppModel(AppConfig) }
+        val appState = remember { AppModel(AppConfig, localStorage.scoped("hello")) }
         val loadingState by appState.appState.collectAsState()
         val engine by appState.engine.collectAsState()
+
+        val clickupModel = remember { ClickupModel(AppConfig.clickup, localStorage.scoped("clickup")) }
 
         Grid({
             style {
@@ -212,7 +224,7 @@ fun main() {
                 // TODO delay until AppState.Ready
                 when (loadingState) {
 //                    is AppState.Loading -> {}
-                    else -> ClickupMenu()
+                    else -> ClickupMenu(clickupModel)
                 }
             }
             Div({

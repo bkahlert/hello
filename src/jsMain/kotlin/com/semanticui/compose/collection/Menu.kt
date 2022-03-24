@@ -37,8 +37,8 @@ fun Menu(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<MenuElement, *>.SubMenu(
-    attrs: SemanticAttrBuilder<ItemElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilder<MenuElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<MenuElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)

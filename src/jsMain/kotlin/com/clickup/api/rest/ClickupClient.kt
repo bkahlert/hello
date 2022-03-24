@@ -7,7 +7,8 @@ import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.Success
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import com.bkahlert.kommons.runtime.remove
+import com.bkahlert.kommons.dom.iterator
+import com.bkahlert.kommons.dom.remove
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.web.http.div
 import com.bkahlert.kommons.web.http.url
@@ -132,7 +133,7 @@ data class ClickupClient(
         inline fun <reified T> save(value: T) {
             logger.debug("caching response for $key")
             kotlin.runCatching {
-                localStorage[key] = value.serialize()
+                localStorage[key] = value.serialize(pretty = false)
                 logger.debug("successfully cached response for $key")
             }.onFailure {
                 logger.warn("failed to cache response for $key")
@@ -153,6 +154,18 @@ data class ClickupClient(
         val cached = cache.load<T>()
         if (cached != null) return cached
         return get(url, block).body<T>().also(cache::save)
+    }
+
+    fun clearCache() {
+        // TODO move cache and make clearing simpler
+        logger.debug("clearing cache")
+        for ((key, _) in localStorage) {
+            logger.debug("delete $key?")
+            if (key.startsWith("clickup-")) {
+                logger.debug("deleting $key")
+                localStorage.remove(key)
+            }
+        }
     }
 
     suspend fun getUser(onSuccess: (User) -> Unit = {}): Response<User> =
@@ -210,7 +223,7 @@ data class ClickupClient(
                 parameter("date_updated_gt", date_updated_gt)
                 parameter("date_updated_lt", date_updated_lt)
                 custom_fields?.forEach { parameter("custom_fields", it) }
-                custom_fields?.forEach { parameter("custom_fields", it.serialize()) }
+                custom_fields?.forEach { parameter("custom_fields", it.serialize(pretty = false)) }
             }.value
         }
 
