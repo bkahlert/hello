@@ -1,17 +1,15 @@
 package com.bkahlert.kommons.coroutines.flow
 
+import com.bkahlert.hello.SimpleLogger
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.kommons.coroutines.flow.FlowUpdate.Companion.applyUpdates
 import com.bkahlert.kommons.coroutines.flow.FlowUpdate.Companion.extend
 import com.bkahlert.kommons.coroutines.flow.FlowUpdate.Companion.reset
-import com.bkahlert.kommons.text.truncateEnd
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-
-fun Any?.toStringAndHash() = "${this?.let { it::class.simpleName }}@${this.hashCode()}: ${toString().truncateEnd(150)}"
 
 /**
  * This helper allows conditionally mapping a [Flow].
@@ -36,10 +34,9 @@ sealed interface FlowUpdate<T> {
      */
     data class Update<T>(private val transform: suspend (T) -> T) : FlowUpdate<T> {
         override suspend fun apply(value: T): T {
-            logger.warn("APPLY TRANSFORM\n    BY: ${this.toStringAndHash()}\n    VALUE: ${value.toStringAndHash()}")
-            return transform(value).also {
-                logger.warn("APPLY TRANSFORM COMPLETED\n    BY: ${this.toStringAndHash()}\n    RESULT: ${it.toStringAndHash()}")
-            }
+            logger { trace("APPLY TRANSFORM\n    BY: $it\n    VALUE: $value") }
+            return transform(value)
+                .logger { trace("APPLY TRANSFORM COMPLETED\n    BY: ${this@Update}\n    RESULT: $it") }
         }
 
         override fun <R : T> map(transform: suspend (T) -> R): FlowUpdate<R> {
@@ -52,10 +49,9 @@ sealed interface FlowUpdate<T> {
      */
     data class Updated<T>(private val value: T) : FlowUpdate<T> {
         override suspend fun apply(value: T): T {
-            logger.warn("APPLY TRANSFORM\n    BY: ${this.toStringAndHash()}\n    VALUE: ${value.toStringAndHash()}\n    STORED VALUE: ${this.value.toStringAndHash()}")
-            return this.value.also {
-                logger.warn("APPLY TRANSFORM COMPLETED\n    BY: ${this.toStringAndHash()}\n    RESULT: ${it.toStringAndHash()}")
-            }
+            logger { trace("APPLY TRANSFORM\n    BY: $it\n    VALUE: $value\n    STORED VALUE: ${it.value}") }
+            return this.value
+                .logger { trace("APPLY TRANSFORM COMPLETED\n    BY: ${this@Updated}\n    RESULT: $it") }
         }
 
         override fun <R : T> map(transform: suspend (T) -> R): FlowUpdate<R> =
@@ -63,7 +59,9 @@ sealed interface FlowUpdate<T> {
     }
 
     companion object {
-        private val logger = simpleLogger()
+        private val logger: SimpleLogger = simpleLogger()
+        private val LoggingEnabled: Boolean = false
+        private fun <T> T.logger(block: SimpleLogger.(T) -> Unit): T = also { if (LoggingEnabled) logger.block(it) }
 
         private val INIT = Update<Any?> { it }
 
@@ -77,9 +75,8 @@ sealed interface FlowUpdate<T> {
         /**
          * Returns a flow update that applies no transformation.
          */
-        fun <T> init(): Update<T> = INIT.unsafeCast<Update<T>>().also {
-            logger.warn("INIT UPDATE\n    INSTANCE: ${it.toStringAndHash()}")
-        }
+        fun <T> init(): Update<T> = INIT.unsafeCast<Update<T>>()
+            .logger { trace("INIT UPDATE\n    INSTANCE: $it") }
 
         /**
          * Applies the (accumulated) transformation (see [extend] and [reset]) to the elements
@@ -90,11 +87,14 @@ sealed interface FlowUpdate<T> {
          * - each transformation is only applied once.
          */
         fun <T, R : T> MutableStateFlow<FlowUpdate<T>>.applyUpdates(flow: Flow<R>): Flow<T> {
-            logger.warn("APPLY UPDATES\n    BY: ${this.toStringAndHash()}\n    FLOW UPDATE: ${value.toStringAndHash()}\n    FLOW: ${flow.toStringAndHash()}")
+            logger { trace("APPLY UPDATES\n    BY: $it\n    FLOW UPDATE: $value\n    FLOW: $flow") }
             return combine(flow, FlowUpdate<T>::apply)
                 .onEach { updated ->
-                    logger.warn("APPLY UPDATES\n    BY: ${this.toStringAndHash()}\n    RESULT: ${updated.toStringAndHash()}")
-                    update { Updated(updated).also { logger.warn("APPLY UPDATES COMPLETED\n    BY: ${this.toStringAndHash()}\n    STORED: ${it.toStringAndHash()}") } }
+                    logger { trace("APPLY UPDATES\n    BY: $it\n    RESULT: $updated") }
+                    update {
+                        Updated(updated)
+                            .logger { trace("APPLY UPDATES COMPLETED\n    BY: ${this@applyUpdates}\n    STORED: $it") }
+                    }
                 }
         }
 
@@ -103,12 +103,12 @@ sealed interface FlowUpdate<T> {
          * to the result of the original flow update.
          */
         fun <T, R : T> MutableStateFlow<FlowUpdate<T>>.extend(transform: suspend (T) -> R) {
-            logger.warn("EXTENDING\n    BY: ${this.toStringAndHash()}\n    FLOW UPDATE: ${value.toStringAndHash()}\n    TRANSFORM: ${transform.toStringAndHash()}")
+            logger { trace("EXTENDING\n    BY: $it\n    FLOW UPDATE: $value\n    TRANSFORM: $transform") }
             update {
-                logger.warn("EXTENDING\n    BY: ${this.toStringAndHash()}\n    OLD: ${it.toStringAndHash()}")
-                val map: FlowUpdate<T> = it.map(transform)
-                logger.warn("EXTENDING COMPLETED\n    BY: ${this.toStringAndHash()}\n    NEW: ${map.toStringAndHash()}")
-                map
+                logger { trace("EXTENDING\n    BY: ${this@extend}\n    OLD: $it") }
+                val mapped: FlowUpdate<T> = it.map(transform)
+                logger { trace("EXTENDING COMPLETED\n    BY: ${this@extend}\n    NEW: $mapped") }
+                mapped
             }
         }
 
@@ -117,7 +117,7 @@ sealed interface FlowUpdate<T> {
          * any transformation.
          */
         fun <T> MutableStateFlow<FlowUpdate<T>>.reset() {
-            logger.warn("RESETTING\n    BY: ${this.toStringAndHash()}\n    FLOW UPDATE: ${value.toStringAndHash()}")
+            logger { trace("RESETTING\n    BY: ${this@reset}\n    FLOW UPDATE: $value") }
             update { init() }
         }
     }

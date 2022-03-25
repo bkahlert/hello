@@ -16,9 +16,7 @@ import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loading
 import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.ErrorMessage
 import com.bkahlert.hello.ui.textOverflow
-import com.bkahlert.kommons.asAvatar
-import com.bkahlert.kommons.backgroundImage
-import com.bkahlert.kommons.coroutines.flow.toStringAndHash
+import com.bkahlert.kommons.SVGImage
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
@@ -32,7 +30,6 @@ import com.semanticui.compose.SemanticElementScope
 import com.semanticui.compose.State
 import com.semanticui.compose.Variation
 import com.semanticui.compose.Variation.Colored.Red
-import com.semanticui.compose.Variation.Columns.One
 import com.semanticui.compose.Variation.Position.Bottom
 import com.semanticui.compose.Variation.Position.Right
 import com.semanticui.compose.Variation.Size.Mini
@@ -43,6 +40,8 @@ import com.semanticui.compose.collection.MenuElement
 import com.semanticui.compose.collection.SubMenu
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.IconGroup
+import com.semanticui.compose.element.Loader
+import com.semanticui.compose.module.Dimmer
 import com.semanticui.compose.view.Item
 import com.semanticui.compose.view.ItemElement
 import kotlinx.browser.window
@@ -50,16 +49,15 @@ import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.LineStyle
+import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.backgroundColor
-import org.jetbrains.compose.web.css.backgroundPosition
-import org.jetbrains.compose.web.css.backgroundRepeat
-import org.jetbrains.compose.web.css.backgroundSize
 import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
 import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.display
+import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex
 import org.jetbrains.compose.web.css.fontSize
 import org.jetbrains.compose.web.css.fontWeight
@@ -70,7 +68,6 @@ import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.marginLeft
 import org.jetbrains.compose.web.css.marginRight
 import org.jetbrains.compose.web.css.minWidth
-import org.jetbrains.compose.web.css.opacity
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.style
@@ -134,16 +131,11 @@ fun DisconnectedClickupMenu(
 
 @Composable
 fun LoadingClickupMenu() {
-    Menu({
-        variation(Mini, Fluid, One)
-        classes("item")
-    }) {
-        DropdownItem(Unit, { _, _, _ -> }, {
-            variation(Borderless, Variation.Icon)
-            state(State.Loading, State.Disabled)
-        }) {
-            Icon("youtube")
-        }
+    Menu({ +Mini + Fluid }) {
+        Dimmer({
+            +Inverted
+            +Active
+        }) { Loader({ +Mini }) }
     }
 }
 
@@ -189,23 +181,9 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuMainItems(
     onRefresh: () -> Unit = { },
 ) {
 
-    DropdownItem(Unit, { _, _, _ -> }, {
-        +Borderless + Icon
-        style {
-            backgroundImage(user.profilePicture.asAvatar())
-            backgroundSize("2.5em")
-            backgroundRepeat("no-repeat")
-            backgroundPosition("center")
-        }
-    }) {
-
-        if (selectedTeam != null) {
-            Img(src = user.profilePicture.toString()) {
-                classes("ui", "avatar", "image")
-                style { opacity(0) }
-            }
-        } else {
-            Icon("youtube")
+    DropdownItem(Unit, { _, _, _ -> }, { +Borderless }) {
+        Img(src = user.profilePicture.toString(), alt = "User ${user.username}") {
+            classes("avatar")
         }
         SubMenu {
             TeamSelectionItems(teams, selectedTeam, onTeamSelect)
@@ -294,6 +272,30 @@ fun SemanticElementScope<MenuElement, *>.TeamItem(
 }
 
 @Composable
+fun SemanticElementScope<MenuElement, *>.ClickMenuLoadingActivityItems(
+    activityGroups: Result<List<ActivityGroup>>?,
+    onSelect: (Selection) -> Unit,
+    onTimeEntryStart: (TaskID, List<Tag>, Boolean) -> Unit,
+    onTimeEntryStop: (TimeEntry, List<Tag>) -> Unit,
+) {
+    if (activityGroups != null) activityGroups.fold(
+        {
+            ClickupMenuActivityItems(
+                activityGroups = it,
+                onSelect = onSelect,
+                onTimeEntryStart = onTimeEntryStart,
+                onTimeEntryStop = onTimeEntryStop,
+            )
+        },
+        {
+            ErrorMessage(it)
+        },
+    ) else {
+        Text("Loading...")
+    }
+}
+
+@Composable
 fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
     activityGroups: List<ActivityGroup>,
     onSelect: (Selection) -> Unit = {},
@@ -303,7 +305,7 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
     val selectedActivity: Activity<*>? = activityGroups.selected.firstOrNull()
 
     LinkItem({
-        variation(Borderless)
+        +Borderless
         if (selectedActivity == null) state(State.Disabled)
     }) {
         when (selectedActivity) {
@@ -350,7 +352,7 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuFailedItems(
             Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
         }
         SubMenu {
-            ErrorMessage(state.exceptions.first())
+            ErrorMessage(state.exception)
             Item {
                 Icon("sign-out")
                 Text("Sign-out")
@@ -363,8 +365,10 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuFailedItems(
 fun ClickupMenu(
     clickupModel: ClickupModel = remember { ClickupModel(AppConfig.clickup, InMemoryStorage()) },
 ) {
+    Style(ClickupStyleSheet)
+
     val _state by clickupModel.menuState.collectAsState(Initializing)
-    console.warn("STATE ${_state.toStringAndHash()}")
+    console.info("ClickUp menu in state ${_state::class.simpleName}")
     when (val state = _state) {
         Initializing -> InitializingClickupMenu()
         Disconnected -> DisconnectedClickupMenu { details ->
@@ -372,7 +376,7 @@ fun ClickupMenu(
         }
         Loading -> LoadingClickupMenu()
         is TeamSelecting -> {
-            Menu({ +Size.Mini }) {
+            Menu({ +Mini }) {
                 ClickupMenuTeamSelectingItems(
                     state = state,
                     onActivate = clickupModel::selectTeam,
@@ -387,7 +391,7 @@ fun ClickupMenu(
             }
         }
         is TeamSelected -> {
-            Menu({ +Size.Mini }) {
+            Menu({ +Mini }) {
                 ClickupMenuMainItems(
                     user = state.user,
                     teams = state.teams,
@@ -395,7 +399,7 @@ fun ClickupMenu(
                     onTeamSelect = clickupModel::selectTeam,
                     onRefresh = { clickupModel.refresh(force = true) },
                 )
-                ClickupMenuActivityItems(
+                ClickMenuLoadingActivityItems(
                     activityGroups = state.activityGroups,
                     onSelect = clickupModel::select,
                     onTimeEntryStart = clickupModel::startTimeEntry,
@@ -470,5 +474,23 @@ fun Tag(
 
 @Suppress("PublicApiImplicitType")
 object ClickupStyleSheet : StyleSheet() {
+    private val size = 512
+    private val profilePictureMask = SVGImage(
+        //language=SVG
+        """
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="$size" height="$size">
+                <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#ffffff"/>
+            </svg>
+        """.trimIndent())
 
+    init {
+        ".ui.menu .item > img:not(.ui).avatar" style {
+            property("mask-image", """url('${profilePictureMask.dataURI}')""")
+            property("mask-position", "center")
+            property("mask-size", "100%")
+            property("mask-repeat", "no-repeat")
+            width(2.2.em)
+            margin((-.5).em, 0.em);
+        }
+    }
 }

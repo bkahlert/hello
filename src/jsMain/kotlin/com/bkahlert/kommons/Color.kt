@@ -2,6 +2,7 @@ package com.bkahlert.kommons
 
 import com.bkahlert.Brand.colors
 import com.bkahlert.hello.ui.fmod
+import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.math.toHexadecimalString
 import com.bkahlert.kommons.serialization.ColorSerializer
 import com.bkahlert.kommons.serialization.HslSerializer
@@ -9,6 +10,8 @@ import com.bkahlert.kommons.serialization.RgbSerializer
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.web.css.CSSAngleValue
 import org.jetbrains.compose.web.css.CSSColorValue
+import org.jetbrains.compose.web.css.StyleScope
+import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.hsl
 import org.jetbrains.compose.web.css.hsla
 import org.jetbrains.compose.web.css.rgba
@@ -260,3 +263,6 @@ fun Color.HSL.coerceAtMost(
     l = lightness?.let { l.coerceAtMost(it) } ?: l,
     a = alpha?.let { a.coerceAtMost(it) } ?: a,
 )
+
+fun StyleScope.backgroundColor(rgb: Int) =
+    backgroundColor(RGB(rgb))

@@ -7,16 +7,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.Failure
-import com.bkahlert.hello.Response
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.Success
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
 import com.bkahlert.hello.ui.demo.ViewModelDemoStuff.TestViewModel
 import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures
 import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
-import com.bkahlert.kommons.fix.value
 import com.bkahlert.kommons.math.isOdd
 import com.bkahlert.kommons.text.randomString
 import com.bkahlert.kommons.time.Now
@@ -89,7 +85,7 @@ fun ViewModelDemo() {
 }
 
 private object ViewModelDemoStuff {
-    suspend fun restCall(): Response<String> {
+    suspend fun restCall(): Result<String> {
         delay(500)
         return when (Now.getMilliseconds().isOdd) {
             true -> response("rest response at ${Now.toTimeString()}")
@@ -112,23 +108,20 @@ private object ViewModelDemoStuff {
                 copy(
                     text = newText,
                     items = flow {
-                        val response = restCall()
-                        when (response) {
-                            is Success -> {
-                                emit(response.value)
+                        restCall().fold(
+                            {
+                                emit(it)
                                 delay(200)
-                                emit("${response.value} - #1")
+                                emit("$it - #1")
                                 delay(200)
-                                emit("${response.value} - #2")
+                                emit("$it - #2")
                                 delay(200)
-                                emit("${response.value} - #3")
+                                emit("$it - #3")
                                 delay(200)
-                                emit("${response.value} - #4")
-                            }
-                            is Failure -> {
-                                emit("failure")
-                            }
-                        }
+                                emit("$it - #4")
+                            },
+                            { emit("failure") }
+                        )
                     }
                 )
             }

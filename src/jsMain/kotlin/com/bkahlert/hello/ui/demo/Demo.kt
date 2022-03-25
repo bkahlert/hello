@@ -1,8 +1,6 @@
 package com.bkahlert.hello.ui.demo
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.Failure
-import com.bkahlert.hello.Success
 import com.clickup.api.rest.ClickUpException
 import com.clickup.api.rest.ErrorInfo
 import com.semanticui.compose.SemanticAttrBuilder
@@ -47,8 +45,8 @@ val clickupException = ClickUpException(
     ErrorInfo("something went wrong", "TEST-1234"), RuntimeException("underlying problem")
 )
 
-fun <T> response(value: T) = Success<T, Throwable>(value)
-fun <T> failedResponse(exception: Throwable = clickupException): Failure<T, Throwable> = Failure(exception)
+fun <T> response(value: T) = Result.success(value)
+fun <T> failedResponse(exception: Throwable = clickupException) = Result.failure<T>(exception)
 
 @Suppress("SpellCheckingInspection", "JsonStandardCompliance")
 const val SPACER = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAA" +

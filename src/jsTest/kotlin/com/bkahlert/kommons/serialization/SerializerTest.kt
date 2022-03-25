@@ -24,7 +24,7 @@ abstract class SerializerTest<T>(
 
     @Test fun serialize() {
         mappings.forEach { (serialized, deserialized) ->
-            deserialized.serialize(serializer) shouldBe serialized
+            deserialized.serialize(serializer, pretty = true) shouldBe serialized
         }
     }
 }

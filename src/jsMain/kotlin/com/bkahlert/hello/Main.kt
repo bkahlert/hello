@@ -28,7 +28,6 @@ import com.bkahlert.hello.ui.center
 import com.bkahlert.hello.ui.demo.DebugUI
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
-import com.bkahlert.kommons.Either
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
@@ -102,11 +101,6 @@ sealed interface AppState {
     object Ready : AppState
     object FullLoaded : AppState
 }
-
-/** A response that did not arrive yet or either succeeded or failed. */
-typealias Response<T> = Either<out T, Throwable>
-typealias Success<T, E> = Either.Left<T, E>
-typealias Failure<T, E> = Either.Right<T, E>
 
 
 class AppModel(
@@ -281,6 +275,7 @@ object AppStylesheet : StyleSheet() {
             overflow("hidden")
         }
     }
+
 
     val helloGridContainer by style {
         display(DisplayStyle.Grid)

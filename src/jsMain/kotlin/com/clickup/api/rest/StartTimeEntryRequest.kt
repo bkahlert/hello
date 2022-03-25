@@ -9,11 +9,9 @@ import com.clickup.api.Tag
 import com.clickup.api.TaskID
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import kotlin.js.Date
 
 @Serializable
 data class StartTimeEntryRequest(
-    val start: Date?,
     val tid: TaskID?,
     val description: String?,
     val billable: Boolean,

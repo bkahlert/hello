@@ -22,10 +22,20 @@
         progress: false,
       },
       open: false,
+      // see https://github.com/chimurai/http-proxy-middleware#proxycontext-config
       proxy: {
         '/api': {
-          'target': 'https://api.clickup.com',
-          'secure': false,
+          target: 'https://api.clickup.com',
+          secure: false,
+        },
+        '/attachments': {
+          target: 'https://attachments.clickup.com',
+          changeOrigin: true,
+          ws: true,
+          pathRewrite: {
+            '^/attachments': '/',
+          },
+          secure: false,
         },
       }
     })

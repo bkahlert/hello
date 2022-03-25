@@ -7,9 +7,9 @@ import com.bkahlert.hello.search.Search
 @Composable
 fun SearchDemo() {
     Demos("Search") {
-        Demo("not empty + full search + focus") {
-            Search(engine = Engine.Default, query = "all engines (focussed)", fullSearch = true)
-        }
+//        Demo("not empty + full search + focus") {
+//            Search(engine = Engine.Default, query = "all engines (focussed)", fullSearch = true)
+//        }
         Demo("not empty + full search") {
             Search(engine = Engine.Default, query = "all engines", fullSearch = true)
         }

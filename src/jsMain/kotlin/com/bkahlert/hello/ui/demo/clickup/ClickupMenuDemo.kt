@@ -2,8 +2,7 @@ package com.bkahlert.hello.ui.demo.clickup
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.Brand.colors
-import com.bkahlert.hello.Response
-import com.bkahlert.hello.plugins.clickup.ClickupMenuActivityItems
+import com.bkahlert.hello.plugins.clickup.ClickMenuLoadingActivityItems
 import com.bkahlert.hello.plugins.clickup.ClickupMenuFailedItems
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Failed
 import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelected
@@ -20,8 +19,6 @@ import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
 import com.bkahlert.hello.ui.demo.clickupException
 import com.bkahlert.hello.ui.demo.failedResponse
 import com.bkahlert.hello.ui.demo.response
-import com.bkahlert.kommons.fix.map
-import com.bkahlert.kommons.fix.orNull
 import com.clickup.api.Folder
 import com.clickup.api.Space
 import com.clickup.api.SpaceID
@@ -87,21 +84,21 @@ fun ClickupMenuDemo1() {
 object ClickupMenuStateFixtures {
     fun justActivated(
         team: Team = ClickupFixtures.Team,
-        runningTimeEntry: Response<TimeEntry?>? = response(ClickupFixtures.TimeEntry.running()),
+        runningTimeEntry: Result<TimeEntry?>? = response(ClickupFixtures.TimeEntry.running()),
     ) = TeamSelected(
         user = ClickupFixtures.User,
         teams = listOf(team),
         selectedTeam = team,
-        selected = listOfNotNull(runningTimeEntry?.map { it?.id }?.orNull()),
+        selected = listOfNotNull(runningTimeEntry?.map { it?.id }?.getOrNull()),
         runningTimeEntry = runningTimeEntry,
     )
 
     fun activatedAndRefreshed(
         team: Team = ClickupFixtures.Team,
-        runningTimeEntry: Response<TimeEntry?>? = response(ClickupFixtures.TimeEntry.running()),
-        tasks: Response<List<Task>>? = response(ClickupFixtures.Tasks),
-        spaces: Response<List<Space>>? = response(ClickupFixtures.SPACES),
-        folders: Map<SpaceID, Response<List<Folder>>> = mapOf(
+        runningTimeEntry: Result<TimeEntry?>? = response(ClickupFixtures.TimeEntry.running()),
+        tasks: Result<List<Task>>? = response(ClickupFixtures.Tasks),
+        spaces: Result<List<Space>>? = response(ClickupFixtures.SPACES),
+        folders: Map<SpaceID, Result<List<Folder>>> = mapOf(
             ClickupFixtures.SPACES[0].id to response(ClickupFixtures.Space1Folders),
             ClickupFixtures.SPACES[1].id to response(ClickupFixtures.Space2Folders),
         ),
@@ -109,7 +106,7 @@ object ClickupMenuStateFixtures {
         user = ClickupFixtures.User,
         teams = listOf(team),
         selectedTeam = team,
-        selected = listOfNotNull(runningTimeEntry?.map { it?.id }?.orNull()),
+        selected = listOfNotNull(runningTimeEntry?.map { it?.id }?.getOrNull()),
         runningTimeEntry = runningTimeEntry,
         tasks = tasks,
         spaces = spaces,
@@ -130,28 +127,28 @@ fun ClickupMenuDemo2() {
     Demos("ClickUp Menu (Just Activated)") {
         Demo("Unknown time entry status") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.justActivated(
                     runningTimeEntry = null
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Failed time entry request") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.justActivated(
                     runningTimeEntry = failedResponse()
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Running time entry") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.justActivated(
                     runningTimeEntry = response(ClickupFixtures.TimeEntry.running())
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("No running time entry") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.justActivated(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.justActivated(
                     runningTimeEntry = response(null)
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
@@ -161,28 +158,28 @@ fun ClickupMenuDemo2() {
     Demos("ClickUp Menu (Activated & Refreshed)") {
         Demo("Unknown time entry status") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     runningTimeEntry = null
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Failed time entry request") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     runningTimeEntry = failedResponse()
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Running time entry") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     runningTimeEntry = response(ClickupFixtures.TimeEntry.running())
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("No running time entry") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     runningTimeEntry = response(null)
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
@@ -192,28 +189,28 @@ fun ClickupMenuDemo2() {
     Demos("ClickUp Menu (Activated & Refresh Failed)") {
         Demo("Failed to request tasks") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     tasks = failedResponse()
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Failed to spaces") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     spaces = failedResponse()
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Incomplete spaces") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     spaces = response(ClickupFixtures.SPACES.subList(0, 1))
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
         }
         Demo("Folders missing") {
             Menu({ +Size.Mini }) {
-                ClickupMenuActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
                     folders = emptyMap(),
                 ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
             }
