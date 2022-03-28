@@ -37,11 +37,13 @@ private fun Column(
 }
 
 @Composable
-fun DebugUI() {
+fun DebugUI(
+    context: String,
+) {
     Grid({
         style { margin(2.em) }
     }) {
-        Column { ClickupMenuDemo1() }
+        Column { ClickupMenuDemo1(context) }
         Column { ClickupMenuDemo2() }
         Column { ActivityDropdownDemo() }
         Column {
@@ -56,7 +58,7 @@ fun DebugUI() {
             ViewModelDemo()
             MutableFlowStateDemo()
             IdleDetectoryDemo()
-            SearchDemo()
+//            SearchDemo()
         }
     }
 }

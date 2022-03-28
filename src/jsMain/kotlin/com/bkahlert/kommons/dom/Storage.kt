@@ -125,6 +125,9 @@ inline fun <reified E : Enum<E>> Storage.getEnum(key: String): E? = get(key)?.le
 /** Variant of [Storage.set] that serializes the enum [E] instance using its [Enum.name]. */
 inline fun <reified E : Enum<E>> Storage.setEnum(key: String, value: E?): Unit = set(key, value?.name)
 
+/** Removes all items from this storage. */
+fun Storage.clear(): Unit = keys.forEach { set(it, null) }
+
 /**
  * Delegates the property to `this` [Storage] by using the property name
  * as the key and the serialization of the [Serializable] value

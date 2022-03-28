@@ -8,6 +8,8 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.ElementScope
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 interface SemanticElement {
     fun classes(states: List<State>, variations: List<Variation>): List<String>
@@ -23,9 +25,28 @@ typealias SemanticAttrBuilder<S, T> = SemanticAttrsScope<S, T>.() -> Unit
 typealias SemanticBuilder<S, T> = @Composable SemanticElementScope<S, T>.() -> Unit
 
 interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : AttrsScope<TElement> {
+    val settings: MutableMap<String, Any?>
+    val callbacks: MutableMap<String, Any?>
+
     companion object {
         fun <TSemantic : SemanticElement, TElement : Element> of(attrsScope: AttrsScope<TElement>): SemanticAttrsScope<TSemantic, TElement> =
-            object : SemanticAttrsScope<TSemantic, TElement>, AttrsScope<TElement> by attrsScope {}
+            DelegatingSemanticAttrsScope(attrsScope)
+
+        inline infix fun <reified V> Companion.or(default: V): ReadWriteProperty<SemanticAttrsScope<*, *>, V> =
+            object : ReadWriteProperty<SemanticAttrsScope<*, *>, V> {
+                override fun getValue(thisRef: SemanticAttrsScope<*, *>, property: KProperty<*>): V =
+                    (thisRef.settings[property.name] as? V) ?: default
+
+                override fun setValue(thisRef: SemanticAttrsScope<*, *>, property: KProperty<*>, value: V) {
+                    thisRef.settings[property.name] = value
+                }
+            }
+
+        private data class DelegatingSemanticAttrsScope<TSemantic : SemanticElement, TElement : Element>(
+            private val delegate: AttrsScope<TElement>,
+            override val settings: MutableMap<String, Any?> = mutableMapOf(),
+            override val callbacks: MutableMap<String, Any?> = mutableMapOf(),
+        ) : SemanticAttrsScope<TSemantic, TElement>, AttrsScope<TElement> by delegate
     }
 
     fun variation(vararg variation: Variation) {
@@ -51,6 +72,7 @@ interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : 
         return other
     }
 
+    val Inline get() = Variation.Inline
     val Fitted get() = Variation.Fitted
     val Compact get() = Variation.Compact
     val Size get() = Variation.Size
@@ -78,10 +100,13 @@ interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : 
     val Attached get() = Variation.Attached
     val Padded get() = Variation.Padded
     val Emphasis get() = Variation.Emphasis
+    val Basic get() = Variation.Basic
     val Clearing get() = Variation.Clearing
     val Fullscreen get() = Variation.Fullscreen
     val Length get() = Variation.Length
     val Long get() = Variation.Long
+
+    val Actions get() = Variation.Actions
 
     val Active get() = State.Active
     val Indeterminate get() = State.Indeterminate
@@ -136,6 +161,7 @@ inline val Array<out Modifier>.classNames: Array<out String>
 
 
 open class Variation(override vararg val classNames: String) : Modifier {
+    object Inline : Variation("inline")
     object Fitted : Variation("fitted")
     object Compact : Variation("compact")
     object Size {
@@ -228,8 +254,11 @@ open class Variation(override vararg val classNames: String) : Modifier {
     }
 
     object Padded : Variation("padded")
+
+    object Basic : Variation("basic")
+
     object Emphasis {
-        val Primary = Variation()
+        val Primary = Variation("primary")
         val Secondary = Variation("secondary")
         val Tertiary = Variation("tertiary")
     }
@@ -247,6 +276,14 @@ open class Variation(override vararg val classNames: String) : Modifier {
     }
 
     object Long : Variation("long")
+    object Actions : Variation() {
+        val Approve = Variation("approve")
+        val Positive = Variation("positive")
+        val Ok = Variation("ok")
+        val Deny = Variation("deny")
+        val Negative = Variation("Negative")
+        val Cancel = Variation("Cancel")
+    }
 }
 
 sealed class State(override vararg val classNames: String) : Modifier {

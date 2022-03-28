@@ -2,15 +2,14 @@ package com.bkahlert.hello
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
-import com.bkahlert.Brand
+import com.bkahlert.hello.DebugModeState.Active
+import com.bkahlert.hello.DebugModeState.Inactive
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.plugins.clickup.Pomodoro
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.default
-import com.bkahlert.kommons.dom.provideDelegate
-import com.clickup.api.Tag
 import kotlinx.browser.document
+import kotlinx.dom.addClass
 import org.jetbrains.compose.web.dom.DOMScope
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
@@ -29,60 +28,80 @@ class DebugMode(
     private val key: String = "F4",
     disableOnEscape: Boolean = true,
     storage: Storage = InMemoryStorage(),
+    private val onStateChange: (DebugModeState) -> Unit = {},
     private val content: @Composable (DOMScope<HTMLDivElement>.() -> Unit),
 ) {
-    private val logger = simpleLogger()
-    private var active: Boolean by storage default false
-    private var rootAndComposition: Pair<HTMLDivElement, Composition>? = null
+    private var initial by storage default false
 
-    // TODO remove
-    var xyz: String by storage default "init"
-    var xyz123: String? by storage
-    var test: Tag? by storage
-    var nullablePomodoroType: Pomodoro.Type? by storage
-    var pomodoroType: Pomodoro.Type by storage default Pomodoro.Type.Default
+    var state: DebugModeState = Inactive
+        private set(value) {
+            if (field != value) {
+                field = value
+                onStateChange(value)
+            }
+        }
+
+    var active: Boolean
+        get() = state is Active
+        set(value) {
+            initial = value
+            state = when (val current = state) {
+                is Active -> {
+                    if (value) {
+                        current
+                    } else {
+                        Logger.debug("Debug mode disabled")
+                        current.composition.dispose()
+                        checkNotNull(current.root.parentElement) { "missing root container" }.removeChild(current.root)
+                        Inactive
+                    }
+                }
+                is Inactive -> {
+                    if (value) {
+                        Logger.debug("Debug mode enabled")
+                        val body = checkNotNull(document.body) { "missing body tag" }
+                        val root = (document.createElement("div") as HTMLDivElement).apply {
+                            addClass("debug-mode")
+                        }
+                        val composition = renderComposable(root = root, content = content)
+                        body.append(root)
+                        Active(root, composition)
+                    } else {
+                        current
+                    }
+                }
+            }
+        }
 
     init {
-        xyz = "sss"
-        xyz123 = "023 09230ß"
-        test = Tag("name", Brand.colors.blue)
-        nullablePomodoroType = Pomodoro.Type.Debug
-        pomodoroType = Pomodoro.Type.Pro
+        Logger.debug("Setting up debug mode")
         val callback: (Event) -> Unit = when (disableOnEscape) {
             true -> {
-                {
-                    val pressed = (it as KeyboardEvent).key
-                    if (pressed == key) toggle(false)
-                    else if (pressed.equals("Escape", ignoreCase = true)) toggle(true)
+                { event ->
+                    val pressed = (event as KeyboardEvent).key
+                    if (pressed == key) active = !active
+                    else if (pressed.equals("Escape", ignoreCase = true)) active = false
                 }
             }
             else -> {
-                { if ((it as KeyboardEvent).key == key) toggle(false) }
+                { event ->
+                    if ((event as KeyboardEvent).key == key) active = !active
+                }
             }
         }
         eventTarget.addEventListener("keydown", callback)
-        if (active) toggle(false)
+        active = initial
     }
 
-    private fun toggle(escapePressed: Boolean) {
-        rootAndComposition = when (val current = rootAndComposition) {
-            null -> {
-                if (escapePressed) return
-                logger.debug("Debug mode enabled")
-                active = true
-                val body = checkNotNull(document.body) { "missing body tag" }
-                val root = document.createElement("div") as HTMLDivElement
-                val composition = renderComposable(root = root, content = content)
-                body.append(root)
-                root to composition
-            }
-            else -> {
-                logger.debug("Debug mode disabled")
-                active = false
-                current.second.dispose()
-                checkNotNull(current.first.parentElement) { "missing root container" }.removeChild(current.first)
-                null
-            }
-        }
+    companion object {
+        private val Logger = simpleLogger()
     }
+}
+
+sealed class DebugModeState {
+    object Inactive : DebugModeState()
+    data class Active(
+        val root: HTMLDivElement,
+        val composition: Composition,
+    ) : DebugModeState()
 }

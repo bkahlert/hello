@@ -2,6 +2,7 @@ package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.dom.clear
 import com.bkahlert.kommons.dom.getSerializable
 import com.bkahlert.kommons.dom.provideDelegate
 import com.bkahlert.kommons.dom.setSerializable
@@ -11,10 +12,10 @@ import com.clickup.api.TeamID
 import com.clickup.api.rest.AccessToken
 
 /**
- * [Storage] for [ClickupModel] settings that
+ * [Storage] for [ClickUpModel] settings that
  * delegates to the specified [storage] with keys prefixed with the specified [prefix].
  */
-class ClickupStorage(private val storage: Storage) {
+class ClickUpStorage(private val storage: Storage) {
 
     /** Access token to use. */
     @JsName("accessToken")
@@ -22,6 +23,12 @@ class ClickupStorage(private val storage: Storage) {
 
     /** The most recent selections by the user. */
     val selections = Selections(storage.scoped("selection"))
+
+    val cache = storage.scoped("cache")
+
+    fun clear() {
+        storage.clear()
+    }
 }
 
 class Selections(private val storage: Storage) {

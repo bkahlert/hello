@@ -1,6 +1,7 @@
-package com.bkahlert.hello.plugins.clickup
+package com.bkahlert.hello.plugins.clickup.menu
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.ui.textOverflow
 import com.clickup.api.Identifier
 import com.semanticui.compose.Variation

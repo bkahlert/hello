@@ -5,6 +5,8 @@ import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticBuilder
 import com.semanticui.compose.SemanticDivElement
 import com.semanticui.compose.SemanticElement
+import org.jetbrains.compose.web.dom.ContentBuilder
+import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.H3
@@ -12,6 +14,7 @@ import org.jetbrains.compose.web.dom.H4
 import org.jetbrains.compose.web.dom.H5
 import org.jetbrains.compose.web.dom.H6
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLHeadingElement
 
 interface HeaderElement : SemanticElement
@@ -119,6 +122,21 @@ fun Header(
         attrs?.invoke(this)
         classes("header")
     }, content)
+}
+
+/**
+ * Creates a [SemanticUI icon header](https://semantic-ui.com/elements/header.html#icon-headers).
+ */
+@Composable
+fun IconHeader(
+    icon: String,
+    attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
+) {
+    Header({ classes("icon") }) {
+        Icon(icon, { attrs?.invoke(this) })
+        Div({ classes("content") }, content)
+    }
 }
 
 

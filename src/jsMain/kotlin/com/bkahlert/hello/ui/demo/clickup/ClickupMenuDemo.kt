@@ -1,16 +1,22 @@
 package com.bkahlert.hello.ui.demo.clickup
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import com.bkahlert.Brand.colors
 import com.bkahlert.hello.plugins.clickup.ClickMenuLoadingActivityItems
-import com.bkahlert.hello.plugins.clickup.ClickupMenuFailedItems
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Failed
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelected
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelecting
+import com.bkahlert.hello.plugins.clickup.ClickUpMenu
+import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelected
+import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelecting
+import com.bkahlert.hello.plugins.clickup.ClickUpState.Failed
 import com.bkahlert.hello.plugins.clickup.ClickupMenuTeamSelectingItems
+import com.bkahlert.hello.plugins.clickup.ConnectingClickupMenu
 import com.bkahlert.hello.plugins.clickup.DisconnectedClickupMenu
+import com.bkahlert.hello.plugins.clickup.FailedClickupMenu
 import com.bkahlert.hello.plugins.clickup.InitializingClickupMenu
-import com.bkahlert.hello.plugins.clickup.LoadingClickupMenu
 import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
@@ -19,6 +25,7 @@ import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
 import com.bkahlert.hello.ui.demo.clickupException
 import com.bkahlert.hello.ui.demo.failedResponse
 import com.bkahlert.hello.ui.demo.response
+import com.bkahlert.kommons.time.seconds
 import com.clickup.api.Folder
 import com.clickup.api.Space
 import com.clickup.api.SpaceID
@@ -30,28 +37,52 @@ import com.clickup.api.TimeEntry
 import com.clickup.api.rest.AccessToken
 import com.semanticui.compose.collection.Menu
 import io.ktor.http.Url
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun ClickupMenuDemo1() {
+fun ClickupMenuDemo1(
+    context: String,
+) {
 
     Demos("ClickUp Menu (Not Activated)") {
         Demo("Initializing") {
             InitializingClickupMenu()
         }
         Demo("Disconnected") {
-            DisconnectedClickupMenu { details ->
-                details(AccessToken("most recently used access token")) {
-                    console.info("using $it")
-                }
+            val scope = rememberCoroutineScope()
+            var connecting by remember { mutableStateOf(false) }
+            if (connecting) {
+                ConnectingClickupMenu()
+            } else {
+                DisconnectedClickupMenu(
+                    onConnect = {
+                        console.info("connecting with $it")
+                        connecting = true
+                        scope.launch {
+                            delay(2.5.seconds)
+                            connecting = false
+                        }
+                    },
+                )
             }
         }
-        Demo("Loading") {
-            LoadingClickupMenu()
+        Demo("Connecting") {
+            ConnectingClickupMenu()
         }
         Demo("Failed") {
-            Menu({ +Size.Mini }) {
-                ClickupMenuFailedItems(Failed(clickupException))
-            }
+            val scope = rememberCoroutineScope()
+            val accessToken = AccessToken("pk_123_ABC")
+            var failure by remember { mutableStateOf(Failed(accessToken, clickupException)) }
+            FailedClickupMenu(
+                state = failure,
+                onConnect = {
+                    console.info("connecting with $it")
+                    scope.launch {
+                        failure = Failed(accessToken, IllegalStateException("only a demo"))
+                    }
+                },
+            )
         }
     }
 

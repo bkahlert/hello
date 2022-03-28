@@ -2,10 +2,8 @@ package com.clickup.api.rest
 
 import com.bkahlert.hello.JsonSerializer
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import com.bkahlert.kommons.dom.iterator
-import com.bkahlert.kommons.dom.remove
+import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.web.http.div
 import com.bkahlert.kommons.web.http.url
@@ -19,19 +17,11 @@ import com.clickup.api.TaskID
 import com.clickup.api.TaskList
 import com.clickup.api.TaskListID
 import com.clickup.api.Team
-import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
 import com.clickup.api.User
 import com.clickup.api.div
 import com.clickup.api.rest.ClickUpException.Companion.wrapOrNull
-import com.clickup.api.rest.ClickupClient.Cache.FOLDERS
-import com.clickup.api.rest.ClickupClient.Cache.FOLDER_LISTS
-import com.clickup.api.rest.ClickupClient.Cache.RUNNING_TIME_ENTRY
-import com.clickup.api.rest.ClickupClient.Cache.SPACES
-import com.clickup.api.rest.ClickupClient.Cache.SPACE_LISTS
-import com.clickup.api.rest.ClickupClient.Cache.TASKS
-import com.clickup.api.rest.ClickupClient.Cache.TEAMS
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
@@ -49,14 +39,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.browser.localStorage
 import kotlinx.browser.window
-import org.w3c.dom.get
-import org.w3c.dom.set
 import kotlin.js.Date
 
 data class ClickupClient(
-    private val accessToken: AccessToken,
+    val accessToken: AccessToken,
+    private val cacheStorage: Storage,
 ) {
     val host = window.location.url.host
     val clickUpUrl =
@@ -72,7 +60,7 @@ data class ClickupClient(
         logger.debug("initializing ClickUp client with access token")
     }
 
-    private val tokenClient by lazy {
+    private val restClient by lazy {
         HttpClient(Js) {
             install(ContentNegotiation) {
                 json(JsonSerializer)
@@ -100,73 +88,27 @@ data class ClickupClient(
         logger.error("ClickUp error occurred", it)
     }
 
-
-    private sealed class Cache(
-        private val key: String,
-    ) {
-        object USER : Cache("clickup-user")
-        object TEAMS : Cache("clickup-teams")
-        data class RUNNING_TIME_ENTRY(val id: TeamID) : Cache("clickup-running-time-entry-${id.stringValue}")
-        data class TASKS(val id: TeamID) : Cache("clickup-team-tasks-${id.stringValue}")
-        data class SPACES(val id: TeamID) : Cache("clickup-team-spaces-${id.stringValue}")
-        data class SPACE_LISTS(val id: SpaceID) : Cache("clickup-space-lists-${id.stringValue}")
-        data class FOLDERS(val id: SpaceID) : Cache("clickup-space-folders-${id.stringValue}")
-        data class FOLDER_LISTS(val id: FolderID) : Cache("clickup-folder-lists-${id.stringValue}")
-
-        private val logger = simpleLogger()
-
-        inline fun <reified T> load(): T? = localStorage[key]
-            ?.runCatching { deserialize<T>()?.also { logger.debug("successfully loaded cached response for $key") } }
-            ?.onFailure { logger.warn("failed to load cached response for $key", it) }
-            ?.getOrNull()
-
-        // TODO move to ClickupStorage
-        inline fun <reified T> save(value: T) {
-            logger.debug("caching response for $key")
-            kotlin.runCatching {
-                localStorage[key] = value.serialize(pretty = false)
-                logger.debug("successfully cached response for $key")
-            }.onFailure {
-                logger.warn("failed to cache response for $key")
-            }.getOrNull()
-        }
-
-        fun evict() {
-            localStorage.remove(key)
-            logger.debug("removed cache entry for $key")
-        }
-    }
+    private val cache = Cache(cacheStorage)
 
     private suspend inline fun <reified T> HttpClient.caching(
-        cache: Cache,
+        provideAccessor: Cache.() -> Cache.Accessor,
         url: Url,
         block: HttpRequestBuilder.() -> Unit = {},
     ): T {
-        val cached = cache.load<T>()
+        val accessor = cache.provideAccessor()
+        val cached = accessor.load<T>()
         if (cached != null) return cached
-        return get(url, block).body<T>().also(cache::save)
-    }
-
-    fun clearCache() {
-        // TODO move cache and make clearing simpler
-        logger.debug("clearing cache")
-        for ((key, _) in localStorage) {
-            logger.debug("delete $key?")
-            if (key.startsWith("clickup-")) {
-                logger.debug("deleting $key")
-                localStorage.remove(key)
-            }
-        }
+        return get(url, block).body<T>().also(accessor::save)
     }
 
     suspend fun getUser(): Result<User> =
         runLogging("getting user") {
-            tokenClient.caching<Named<User>>(Cache.USER, clickUpUrl / "user").value
+            restClient.caching<Named<User>>({ forUser() }, clickUpUrl / "user").value
         }
 
     suspend fun getTeams(): Result<List<Team>> =
         runLogging("getting teams") {
-            tokenClient.caching<Named<List<Team>>>(TEAMS, clickUpUrl / "team").value
+            restClient.caching<Named<List<Team>>>({ forTeams() }, clickUpUrl / "team").value
         }
 
     suspend fun getTasks(
@@ -191,7 +133,7 @@ data class ClickupClient(
         custom_fields: List<CustomFieldFilter>? = null,
     ): Result<List<Task>> =
         runLogging("getting tasks for team=${team.name}") {
-            tokenClient.caching<Named<List<Task>>>(TASKS(team.id), clickUpUrl / "team" / team.id / "task") {
+            restClient.caching<Named<List<Task>>>({ forTasks(team.id) }, clickUpUrl / "team" / team.id / "task") {
                 parameter("page", page)
                 parameter("order_by", order_by)
                 parameter("reverse", reverse)
@@ -218,7 +160,7 @@ data class ClickupClient(
         taskId: TaskID,
     ): Result<Task?> =
         runLogging("getting task $taskId") {
-            tokenClient.get(clickUpUrl / "task" / taskId).body()
+            restClient.get(clickUpUrl / "task" / taskId).body()
         }
 
     suspend fun getSpaces(
@@ -226,7 +168,7 @@ data class ClickupClient(
         archived: Boolean = false,
     ): Result<List<Space>> =
         runLogging("getting spaces for team=${team.name}") {
-            tokenClient.caching<Named<List<Space>>>(SPACES(team.id), clickUpUrl / "team" / team.id / "space") {
+            restClient.caching<Named<List<Space>>>({ forSpaces(team.id) }, clickUpUrl / "team" / team.id / "space") {
                 parameter("archived", archived)
             }.value
         }
@@ -236,7 +178,7 @@ data class ClickupClient(
         archived: Boolean = false,
     ): Result<List<TaskList>> =
         runLogging("getting lists for space=${space.name}") {
-            tokenClient.caching<Named<List<TaskList>>>(SPACE_LISTS(space.id), clickUpUrl / "space" / space.id / "list") {
+            restClient.caching<Named<List<TaskList>>>({ forSpaceLists(space.id) }, clickUpUrl / "space" / space.id / "list") {
                 parameter("archived", archived)
             }.value
         }
@@ -246,7 +188,7 @@ data class ClickupClient(
         archived: Boolean = false,
     ): Result<List<Folder>> =
         runLogging("getting folders for space=${space.name}") {
-            tokenClient.caching<Named<List<Folder>>>(FOLDERS(space.id), clickUpUrl / "space" / space.id / "folder") {
+            restClient.caching<Named<List<Folder>>>({ forFolders(space.id) }, clickUpUrl / "space" / space.id / "folder") {
                 parameter("archived", archived)
             }.value
         }
@@ -256,7 +198,7 @@ data class ClickupClient(
         archived: Boolean = false,
     ): Result<List<TaskList>> =
         runLogging("getting lists for folder=${folder.name}") {
-            tokenClient.caching<Named<List<TaskList>>>(FOLDER_LISTS(folder.id), clickUpUrl / "folder" / folder.id / "list") {
+            restClient.caching<Named<List<TaskList>>>({ forFolderLists(folder.id) }, clickUpUrl / "folder" / folder.id / "list") {
                 parameter("archived", archived)
             }.value
         }
@@ -266,7 +208,7 @@ data class ClickupClient(
         timeEntryID: TimeEntryID,
     ): Result<TimeEntry?> =
         runLogging("getting time entry $timeEntryID for team=${team.name}") {
-            tokenClient.get(clickUpUrl / "team" / team.id / "time_entries" / timeEntryID).body<Named<TimeEntry?>>().value
+            restClient.get(clickUpUrl / "team" / team.id / "time_entries" / timeEntryID).body<Named<TimeEntry?>>().value
         }
 
     suspend fun getRunningTimeEntry(
@@ -274,7 +216,7 @@ data class ClickupClient(
         assignee: User?,
     ): Result<TimeEntry?> =
         runLogging("getting running time entry for team=${team.name} and assignee=${assignee?.username}") {
-            tokenClient.caching<Named<TimeEntry?>>(RUNNING_TIME_ENTRY(team.id), clickUpUrl / "team" / team.id / "time_entries" / "current") {
+            restClient.caching<Named<TimeEntry?>>({ forRunningTimeEntry(team.id) }, clickUpUrl / "team" / team.id / "time_entries" / "current") {
                 parameter("assignee", assignee?.id?.stringValue)
             }.value
         }
@@ -287,8 +229,8 @@ data class ClickupClient(
         vararg tags: Tag,
     ): Result<TimeEntry> =
         runLogging("starting time entry of task=${taskId?.stringValue ?: "<no task>"} for team=${team.name}") {
-            RUNNING_TIME_ENTRY(team.id).evict()
-            tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "start") {
+            cache.forRunningTimeEntry(team.id).evict()
+            restClient.post(clickUpUrl / "team" / team.id / "time_entries" / "start") {
                 contentType(ContentType.Application.Json)
                 setBody(StartTimeEntryRequest(taskId, description, billable, tags.toList()))
             }.body<Named<TimeEntry>>().value
@@ -298,8 +240,8 @@ data class ClickupClient(
         team: Team,
     ): Result<TimeEntry> =
         runLogging("stopping time entry for team=${team.name}") {
-            RUNNING_TIME_ENTRY(team.id).evict()
-            tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "stop").body<Named<TimeEntry>>().value
+            cache.forRunningTimeEntry(team.id).evict()
+            restClient.post(clickUpUrl / "team" / team.id / "time_entries" / "stop").body<Named<TimeEntry>>().value
         }
 
     suspend fun addTagsToTimeEntries(
@@ -308,8 +250,8 @@ data class ClickupClient(
         tags: List<Tag>,
     ): Result<Unit> =
         runLogging("adding tags $tags to time entries $timeEntryIDs for team=${team.name}") {
-            RUNNING_TIME_ENTRY(team.id).evict()
-            tokenClient.post(clickUpUrl / "team" / team.id / "time_entries" / "tags") {
+            cache.forRunningTimeEntry(team.id).evict()
+            restClient.post(clickUpUrl / "team" / team.id / "time_entries" / "tags") {
                 contentType(ContentType.Application.Json)
                 setBody(AddTagsToTimeEntriesRequest(timeEntryIDs, tags))
             }

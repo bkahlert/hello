@@ -29,6 +29,7 @@ import org.jetbrains.compose.web.css.position
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.whiteSpace
 import org.jetbrains.compose.web.css.width
+import org.w3c.dom.HTMLElement
 
 /**
  * Truncates overflowing text using the specified [marker].
@@ -50,8 +51,7 @@ fun StyleScope.textOverflow(
 /**
  * Visually hides affected elements.
  *
- * Screenreaders treat these elements like any other
- * visual element.
+ * Screen readers treat these elements like any other visual element.
  *
  * @see <a href="https://css-tricks.com/html-inputs-and-labels-a-love-story/">HTML Inputs and Labels: A Love Story</a>
  */
@@ -64,6 +64,27 @@ fun StyleScope.visuallyHidden() {
     borderWidth(0.px)
     overflow("hidden")
     whiteSpace("nowrap")
+}
+
+/**
+ * Visually hides this [HTMLElement].
+ *
+ * Screen readers treat these elements like any other visual element.
+ *
+ * @see <a href="https://css-tricks.com/html-inputs-and-labels-a-love-story/">HTML Inputs and Labels: A Love Story</a>
+ */
+fun HTMLElement.hideVisually() {
+    style.apply {
+        position = "absolute"
+        width = "1px"
+        height = "1px"
+        padding = "0"
+        clip = "rect(1px, 1px, 1px, 1px)"
+        borderWidth = "0"
+        overflowX = "hidden"
+        overflowY = "hidden"
+        whiteSpace = "nowrap"
+    }
 }
 
 /**

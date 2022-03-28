@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
+import org.jetbrains.kotlin.gradle.targets.js.webpack.WebpackDevtool
 
 plugins {
     kotlin("multiplatform") version "1.6.10"
@@ -38,7 +39,7 @@ kotlin {
                         devtool = null
                     }
                     DEVELOPMENT -> {
-                        devtool = "eval-source-map"
+                        devtool = WebpackDevtool.EVAL_SOURCE_MAP
                         cssSupport.enabled = true
                         // main config in webpack.config.d directory
                     }

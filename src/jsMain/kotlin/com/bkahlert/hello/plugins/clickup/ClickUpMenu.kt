@@ -4,20 +4,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.bkahlert.hello.AppConfig
-import com.bkahlert.hello.plugins.clickup.Activity.RunningTaskActivity
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Disconnected
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Failed
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Initializing
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelected
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loaded.TeamSelecting
-import com.bkahlert.hello.plugins.clickup.ClickupMenuState.Loading
+import androidx.compose.runtime.setValue
+import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelected
+import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelecting
+import com.bkahlert.hello.plugins.clickup.ClickUpState.Disconnected
+import com.bkahlert.hello.plugins.clickup.ClickUpState.Failed
+import com.bkahlert.hello.plugins.clickup.ClickUpState.Paused
+import com.bkahlert.hello.plugins.clickup.menu.Activity
+import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
+import com.bkahlert.hello.plugins.clickup.menu.ActivityDropdown
+import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
+import com.bkahlert.hello.plugins.clickup.menu.ConfigurationModal
+import com.bkahlert.hello.plugins.clickup.menu.ErrorItem
+import com.bkahlert.hello.plugins.clickup.menu.MetaItems
+import com.bkahlert.hello.plugins.clickup.menu.selected
 import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.ErrorMessage
 import com.bkahlert.hello.ui.textOverflow
-import com.bkahlert.kommons.SVGImage
-import com.bkahlert.kommons.dom.InMemoryStorage
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
 import com.clickup.api.Team
@@ -29,9 +34,6 @@ import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticElementScope
 import com.semanticui.compose.State
 import com.semanticui.compose.Variation
-import com.semanticui.compose.Variation.Colored.Red
-import com.semanticui.compose.Variation.Position.Bottom
-import com.semanticui.compose.Variation.Position.Right
 import com.semanticui.compose.Variation.Size.Mini
 import com.semanticui.compose.collection.DropdownItem
 import com.semanticui.compose.collection.LinkItem
@@ -39,25 +41,20 @@ import com.semanticui.compose.collection.Menu
 import com.semanticui.compose.collection.MenuElement
 import com.semanticui.compose.collection.SubMenu
 import com.semanticui.compose.element.Icon
-import com.semanticui.compose.element.IconGroup
-import com.semanticui.compose.element.Loader
-import com.semanticui.compose.module.Dimmer
 import com.semanticui.compose.view.Item
 import com.semanticui.compose.view.ItemElement
-import kotlinx.browser.window
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.Style
-import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
 import org.jetbrains.compose.web.css.color
+import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.display
-import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex
 import org.jetbrains.compose.web.css.fontSize
 import org.jetbrains.compose.web.css.fontWeight
@@ -67,6 +64,7 @@ import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.marginLeft
 import org.jetbrains.compose.web.css.marginRight
+import org.jetbrains.compose.web.css.marginTop
 import org.jetbrains.compose.web.css.minWidth
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
@@ -83,59 +81,104 @@ import org.w3c.dom.HTMLDivElement
 fun InitializingClickupMenu() {
     Div({
         classes("ui", "placeholder", "fluid")
-        style { height(33.4.px) }
+        style {
+            height(33.4.px)
+            marginTop(1.cssRem)
+        }
     }) {
-        Div({ classes("line") })
+        Div({
+            classes("line")
+            style { height(0.px) }
+        })
     }
 }
 
 @Composable
 fun DisconnectedClickupMenu(
-    onConnect: (details: (defaultAccessToken: AccessToken?, callback: (AccessToken) -> Unit) -> Unit) -> Unit = {},
+    onConnect: (AccessToken) -> Unit = {},
 ) {
-    Menu({ +Size.Mini }) {
-        DropdownItem(Unit, { _, _, _ -> }, { variation(Borderless, Variation.Icon) }) {
-            Icon("youtube")
-            SubMenu {
-                Item({
-                    +Link
-                    onClick {
-                        onConnect { defaultAccessToken, callback ->
-                            // TODO https://semantic-ui.com/modules/modal.html
-                            val accessToken = window.prompt("""
-                                    Currently, OAuth2 is not supported yet.
-                                    
-                                    To use this feature at its current state,
-                                    please enter your personal ClickUp API token.
-                                    
-                                    More information can be found on https://clickup.com/api
-                                    """.trimIndent(), defaultAccessToken?.token ?: "")
-                            if (accessToken != null) callback(AccessToken(accessToken))
-                        }
-                        it.preventDefault()
-                    }
-                }) {
-                    Icon("sign-in")
-                    Text("Sign-in")
-                }
-            }
-        }
-        DropdownItem(Unit, { _, _, _ -> }, {
-            variation(Borderless, Variation.Icon)
-            state(State.Disabled)
+    var configuring by remember { mutableStateOf(false) }
+
+    if (configuring) {
+        ConfigurationModal(
+            onConnect = {
+                configuring = false
+                onConnect(it)
+            },
+            onCancel = { configuring = false },
+        )
+    }
+
+    Menu({
+        +Size.Mini + Fluid
+        if (configuring) +Disabled
+        classes("one", "item")
+    }) {
+        LinkItem({
+            onClick { configuring = true }
         }) {
-            Icon("stopwatch")
+            Img(src = "clickup-icon.svg", alt = "ClickUp") { classes("mini") }
+            Text("Connect to ClickUp")
+        }
+    }
+}
+
+
+@Composable
+fun ConnectingClickupMenu() {
+    Menu({
+        +Size.Mini + Fluid
+        classes("one", "item")
+    }) {
+        LinkItem({
+            +Disabled
+            onClick {
+                it.preventDefault()
+            }
+        }) {
+            Icon("circle", "notch", { +Loading })
+            Text("Connecting ...")
         }
     }
 }
 
 @Composable
-fun LoadingClickupMenu() {
-    Menu({ +Mini + Fluid }) {
-        Dimmer({
-            +Inverted
-            +Active
-        }) { Loader({ +Mini }) }
+fun FailedClickupMenu(
+    state: Failed,
+    onConnect: (AccessToken) -> Unit,
+) {
+    Menu({ +Size.Mini }) {
+
+        var configuring by remember { mutableStateOf(false) }
+
+        if (configuring) {
+            ConfigurationModal(
+                onConnect = {
+                    configuring = false
+                    onConnect(it)
+                },
+                onCancel = { configuring = false },
+            )
+        }
+
+        val exception = state.exception
+        ErrorItem(exception)
+        SubMenu({ variation(Direction.Right) }) {
+            LinkItem({
+                onClick {
+                    onConnect(state.accessToken)
+                }
+            }) {
+                Text("Retry")
+            }
+            LinkItem({
+                onClick {
+                    configuring = true
+                }
+            }) {
+                Text("Reconfigure")
+            }
+        }
     }
 }
 
@@ -178,7 +221,8 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuMainItems(
     teams: List<Team>,
     selectedTeam: Team?,
     onTeamSelect: (TeamID) -> Unit = {},
-    onRefresh: () -> Unit = { },
+    onRefresh: () -> Unit = {},
+    onSignOut: () -> Unit = {},
 ) {
 
     DropdownItem(Unit, { _, _, _ -> }, { +Borderless }) {
@@ -194,9 +238,7 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuMainItems(
                 Text("Refresh")
             }
             LinkItem({
-                onClick {
-                    console.warn("Sign out not implemented but clicked")
-                }
+                onClick { onSignOut() }
             }) {
                 Icon("sign-out")
                 Text("Sign-out")
@@ -341,80 +383,62 @@ fun SemanticElementScope<MenuElement, *>.ClickupMenuActivityItems(
 }
 
 @Composable
-fun SemanticElementScope<MenuElement, *>.ClickupMenuFailedItems(
-    state: Failed,
-) {
-    DropdownItem(state, { _, _, _ -> }, {
-        variation(Borderless, Floating, Variation.Icon)
-    }) {
-        IconGroup {
-            Icon("youtube")
-            Icon("exclamation", "circle", { variation(Red, Bottom, Right, Corner) })
-        }
-        SubMenu {
-            ErrorMessage(state.exception)
-            Item {
-                Icon("sign-out")
-                Text("Sign-out")
-            }
-        }
-    }
-}
-
-@Composable
-fun ClickupMenu(
-    clickupModel: ClickupModel = remember { ClickupModel(AppConfig.clickup, InMemoryStorage()) },
+fun ClickUpMenu(
+    model: ClickUpModel = remember { ClickUpModel() },
 ) {
     Style(ClickupStyleSheet)
 
-    val _state by clickupModel.menuState.collectAsState(Initializing)
+    val _state by model.menuState.collectAsState(Paused)
     console.info("ClickUp menu in state ${_state::class.simpleName}")
-    when (val state = _state) {
-        Initializing -> InitializingClickupMenu()
-        Disconnected -> DisconnectedClickupMenu { details ->
-            details(AppConfig.clickup.fallbackAccessToken, clickupModel::configureClickUp)
-        }
-        Loading -> LoadingClickupMenu()
-        is TeamSelecting -> {
-            Menu({ +Mini }) {
-                ClickupMenuTeamSelectingItems(
+
+    var loading by remember(_state) { mutableStateOf(false) }
+    if (loading) {
+        ConnectingClickupMenu()
+    } else {
+        when (val state = _state) {
+            Paused -> InitializingClickupMenu()
+            Disconnected -> DisconnectedClickupMenu {
+                loading = true
+                model.connect(it)
+            }
+            is Failed -> {
+                FailedClickupMenu(
                     state = state,
-                    onActivate = clickupModel::selectTeam,
-                )
-            }
-
-            DisposableEffect(state.teams) {
-                if (state.teams.size == 1) {
-                    clickupModel.selectTeam(state.teams.first().id)
+                ) {
+                    loading = true
+                    model.connect(it)
                 }
-                onDispose { }
             }
-        }
-        is TeamSelected -> {
-            Menu({ +Mini }) {
-                ClickupMenuMainItems(
-                    user = state.user,
-                    teams = state.teams,
-                    selectedTeam = state.selectedTeam,
-                    onTeamSelect = clickupModel::selectTeam,
-                    onRefresh = { clickupModel.refresh(force = true) },
-                )
-                ClickMenuLoadingActivityItems(
-                    activityGroups = state.activityGroups,
-                    onSelect = clickupModel::select,
-                    onTimeEntryStart = clickupModel::startTimeEntry,
-                    onTimeEntryStop = { _, tags -> clickupModel.stopTimeEntry(tags) },
-                )
+            is TeamSelecting -> {
+                Menu({ +Mini }) {
+                    ClickupMenuTeamSelectingItems(
+                        state = state,
+                        onActivate = model::selectTeam,
+                    )
+                }
             }
+            is TeamSelected -> {
+                Menu({ +Mini }) {
+                    ClickupMenuMainItems(
+                        user = state.user,
+                        teams = state.teams,
+                        selectedTeam = state.selectedTeam,
+                        onTeamSelect = model::selectTeam,
+                        onRefresh = { model.refresh(force = true) },
+                        onSignOut = { model.signOut() },
+                    )
+                    ClickMenuLoadingActivityItems(
+                        activityGroups = state.activityGroups,
+                        onSelect = model::select,
+                        onTimeEntryStart = model::startTimeEntry,
+                        onTimeEntryStop = { _, tags -> model.stopTimeEntry(tags) },
+                    )
+                }
 
-            DisposableEffect(state.selectedTeam) {
-                clickupModel.refresh()
-                onDispose { }
-            }
-        }
-        is Failed -> {
-            Menu({ +Size.Mini }) {
-                ClickupMenuFailedItems(state)
+                DisposableEffect(state.selectedTeam) {
+                    model.refresh()
+                    onDispose { }
+                }
             }
         }
     }
@@ -467,30 +491,6 @@ fun Tag(
             }
         }) {
             Text(tag.name)
-        }
-    }
-}
-
-
-@Suppress("PublicApiImplicitType")
-object ClickupStyleSheet : StyleSheet() {
-    private val size = 512
-    private val profilePictureMask = SVGImage(
-        //language=SVG
-        """
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="$size" height="$size">
-                <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#ffffff"/>
-            </svg>
-        """.trimIndent())
-
-    init {
-        ".ui.menu .item > img:not(.ui).avatar" style {
-            property("mask-image", """url('${profilePictureMask.dataURI}')""")
-            property("mask-position", "center")
-            property("mask-size", "100%")
-            property("mask-repeat", "no-repeat")
-            width(2.2.em)
-            margin((-.5).em, 0.em);
         }
     }
 }

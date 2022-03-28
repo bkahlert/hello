@@ -1,4 +1,4 @@
-package com.bkahlert.hello.plugins.clickup
+package com.bkahlert.hello.plugins.clickup.menu
 
 import androidx.compose.runtime.Composable
 import com.semanticui.compose.SemanticAttrBuilder

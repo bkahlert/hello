@@ -2,12 +2,12 @@ package com.bkahlert.hello.ui.demo.clickup
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.Brand
-import com.bkahlert.hello.plugins.clickup.Activity
-import com.bkahlert.hello.plugins.clickup.Activity.RunningTaskActivity
-import com.bkahlert.hello.plugins.clickup.Activity.TaskActivity
-import com.bkahlert.hello.plugins.clickup.ActivityDropdown
-import com.bkahlert.hello.plugins.clickup.ActivityGroup
 import com.bkahlert.hello.plugins.clickup.Selection
+import com.bkahlert.hello.plugins.clickup.menu.Activity
+import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
+import com.bkahlert.hello.plugins.clickup.menu.Activity.TaskActivity
+import com.bkahlert.hello.plugins.clickup.menu.ActivityDropdown
+import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
 import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownFixtures.withSelection

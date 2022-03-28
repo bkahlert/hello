@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import com.bkahlert.Brand
+import com.bkahlert.hello.AppState.Loading
 import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
 import com.bkahlert.hello.AppStylesheet.GRADIENT_HEIGHT
 import com.bkahlert.hello.AppStylesheet.Grid.Custom
@@ -19,8 +20,8 @@ import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.links.Link
 import com.bkahlert.hello.links.Links
-import com.bkahlert.hello.plugins.clickup.ClickupMenu
-import com.bkahlert.hello.plugins.clickup.ClickupModel
+import com.bkahlert.hello.plugins.clickup.ClickUpMenu
+import com.bkahlert.hello.plugins.clickup.ClickUpModel
 import com.bkahlert.hello.search.Engine
 import com.bkahlert.hello.search.Search
 import com.bkahlert.hello.ui.ViewportDimension
@@ -34,6 +35,9 @@ import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.default
 import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.Modal
+import com.semanticui.compose.module.blurring
+import com.semanticui.compose.module.onHide
+import com.semanticui.compose.module.onVisible
 import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -103,15 +107,12 @@ sealed interface AppState {
 }
 
 
-class AppModel(
-    private val config: Config,
-    storage: Storage = InMemoryStorage(),
-) {
+class AppModel(storage: Storage = InMemoryStorage()) {
     private var recentlyUsedEngine by storage default Engine.Default
 
     private val logger = simpleLogger()
 
-    val _appState = MutableStateFlow<AppState>(AppState.Loading)
+    private val _appState = MutableStateFlow<AppState>(Loading)
     val appState = _appState.asStateFlow()
 
     private val _engine = MutableStateFlow(recentlyUsedEngine)
@@ -123,7 +124,7 @@ class AppModel(
     }
 
     fun searchReady() {
-        if (appState.value != AppState.Loading) return
+        if (appState.value != Loading) return
         _appState.update { AppState.Ready }
     }
 }
@@ -140,27 +141,38 @@ fun main() {
         eventTarget = document,
         storage = localStorage.scoped("debug"),
     ) {
-        Modal(
-            {
-                +Fullscreen
-                +Long
-            },
-            "blurring" to false, // true will blur popups inside the debug mode, too
-            "closable" to false,
-        ) {
-            Content {
-                DebugUI()
+
+        Modal(Unit, {
+            +Fullscreen
+            +Long
+            blurring = false // true will blur popups inside the debug mode, too
+
+            onVisible = { console.info("debug mode modal -> onVisible") }
+
+            onHide = {
+                console.info("debug mode modal -> onHide")
+                false
             }
+        }) {
+            Content {
+                DebugUI(".debug-mode")
+            }
+
         }
     }
 
     renderComposable("root") {
         Style(AppStylesheet)
-        val appState = remember { AppModel(AppConfig, localStorage.scoped("hello")) }
-        val loadingState by appState.appState.collectAsState()
-        val engine by appState.engine.collectAsState()
+        val appModel = remember { AppModel(localStorage.scoped("hello")) }
+        val loadingState by appModel.appState.collectAsState()
+        val engine by appModel.engine.collectAsState()
 
-        val clickupModel = remember { ClickupModel(AppConfig.clickup, localStorage.scoped("clickup")) }
+        @Suppress("SpellCheckingInspection")
+        val clickupModel = remember { ClickUpModel(localStorage.scoped("clickup")) }
+        when (loadingState) {
+//            is Loading -> {} // TODO
+            else -> clickupModel.unpause()
+        }
 
         Grid({
             style {
@@ -194,8 +206,8 @@ fun main() {
             }) {
                 Search(
                     engine,
-                    onEngineChange = appState::change,
-                    onReady = appState::searchReady,
+                    onEngineChange = appModel::change,
+                    onReady = appModel::searchReady,
                 )
             }
             Div({
@@ -217,7 +229,7 @@ fun main() {
                 // TODO delay until AppState.Ready
                 when (loadingState) {
 //                    is AppState.Loading -> {}
-                    else -> ClickupMenu(clickupModel)
+                    else -> ClickUpMenu(clickupModel)
                 }
             }
             Div({

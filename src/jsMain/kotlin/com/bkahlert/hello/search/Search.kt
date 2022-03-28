@@ -12,9 +12,8 @@ import com.bkahlert.hello.ui.fontFamily
 import com.bkahlert.hello.ui.visuallyHidden
 import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.backgroundImage
-import com.bkahlert.kommons.browser.delayed
-import com.bkahlert.kommons.browser.openInNewTab
-import com.bkahlert.kommons.browser.openInSameTab
+import com.bkahlert.kommons.dom.openInNewTab
+import com.bkahlert.kommons.dom.openInSameTab
 import com.bkahlert.kommons.time.seconds
 import com.bkahlert.kommons.web.dom.Toggle
 import com.bkahlert.kommons.web.http.toUrlOrNull
@@ -110,7 +109,7 @@ fun Search(
     val onFocusChange: (Boolean) -> Unit = { hasFocus ->
         focusState = hasFocus
         if (hasFocus) {
-            delayed(1.seconds) { onReady() }
+            window.setTimeout({ onReady() }, 1.seconds.inWholeMilliseconds.toInt())
         }
     }
 

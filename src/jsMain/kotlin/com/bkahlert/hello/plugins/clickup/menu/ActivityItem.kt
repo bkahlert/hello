@@ -1,10 +1,11 @@
-package com.bkahlert.hello.plugins.clickup
+package com.bkahlert.hello.plugins.clickup.menu
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import com.bkahlert.hello.ui.textOverflow
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.jQuery
+import com.semanticui.compose.popup
 import com.semanticui.compose.view.Item
 import com.semanticui.compose.view.ItemElement
 import org.jetbrains.compose.web.dom.Text
@@ -30,7 +31,7 @@ fun ActivityItem(
         ActivityIcon(activity)
         Text(activity.name)
         DisposableEffect(activity) {
-            jQuery(scopeElement).popup()
+            jQuery(scopeElement).popup("lastResort" to true)
             onDispose {
                 jQuery(scopeElement).popup("destroy")
             }

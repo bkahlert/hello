@@ -47,7 +47,7 @@ fun Dropdown(
                 "action" to "activate",
                 "onChange" to onChange,
             )
-            onDispose { }
+            onDispose { } // TODO maybe unregister onChange here
         }
     }
 }

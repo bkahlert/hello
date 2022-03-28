@@ -104,7 +104,7 @@ fun PomodoroTimer(
         }
 
         if (remaining < 0.5.seconds) {
-            LaunchedEffect(timeEntry) {
+            LaunchedEffect(timeEntry) { // TODO likely start with a remembered coroutine
                 stopping = true
                 acousticFeedback.completed.play()
                 onStop(timeEntry, listOf(Completed.tag))

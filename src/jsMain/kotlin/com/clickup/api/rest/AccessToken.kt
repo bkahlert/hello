@@ -9,10 +9,14 @@ value class AccessToken(
     val token: String,
 ) {
     init {
-        require(token.isNotBlank()) { "token must not be empty / blank" }
+        require(REGEX.matches(token)) { "token must match $REGEX" }
     }
 
     fun configue(context: HttpRequestBuilder) {
         context.headers[HttpHeaders.Authorization] = token
+    }
+
+    companion object {
+        val REGEX = Regex("pk_\\d+_\\w+")
     }
 }

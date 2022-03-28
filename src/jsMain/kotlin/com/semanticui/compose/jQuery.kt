@@ -27,22 +27,19 @@ external class jQuery(deep: Any?) {
  */
 fun jQuery.dropdown(vararg options: Pair<String, Any?>) = dropdown(json(*options))
 
-
 /**
  * An interface to interact with a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html)
  * using the specified [options].
  *
  * @see <a href="https://semantic-ui.com/modules/popup.html#initializing-a-popup">Initializing</a>
  */
-fun jQuery.popup(vararg options: Pair<String, Any?>) = dropdown(json(*options))
-
+fun jQuery.popup(vararg options: Pair<String, Any?>) = popup(json(*options))
 
 /**
  * An interface to interact with a [SemanticUI modal](https://semantic-ui.com/modules/modal.html)
  * using the specified [options].
  */
 fun jQuery.modal(vararg options: Pair<String, Any?>) = modal(json(*options))
-
 
 /**
  * An interface to interact with a [SemanticUI progress](https://semantic-ui.com/modules/progress.html)

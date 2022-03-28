@@ -6,9 +6,9 @@ import com.bkahlert.kommons.text.truncateEnd
 import kotlinx.browser.document
 import org.w3c.dom.HTMLAudioElement
 
-@JsModule("./pomodoro-completed.mp3")
-@JsNonModule
-private external val pomodoroCompleted: String
+//@JsModule("./pomodoro-completed.mp3")
+//@JsNonModule
+//private external val pomodoroCompleted: String
 
 /** An acoustic signal */
 fun interface SoundEffect {
@@ -57,7 +57,8 @@ interface AcousticFeedback {
 
         /** Acoustic feedback for [Pomodoro] tasks. */
         val PomodoroFeedback: AcousticFeedback = object : AcousticFeedback {
-            override val completed: SoundEffect = DataSoundEffect(pomodoroCompleted)
+            override val completed: SoundEffect = NoSoundEffect
+//            override val completed: SoundEffect = DataSoundEffect(pomodoroCompleted)
         }
     }
 }

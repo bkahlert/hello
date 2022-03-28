@@ -1,8 +1,9 @@
-package com.bkahlert.hello.plugins.clickup
+package com.bkahlert.hello.plugins.clickup.menu
 
 import com.bkahlert.Brand.colors
-import com.bkahlert.hello.plugins.clickup.Activity.RunningTaskActivity
-import com.bkahlert.hello.plugins.clickup.Activity.TaskActivity
+import com.bkahlert.hello.plugins.clickup.Selection
+import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
+import com.bkahlert.hello.plugins.clickup.menu.Activity.TaskActivity
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
