@@ -1,4 +1,6 @@
 import org.jetbrains.compose.compose
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
 
@@ -93,6 +95,12 @@ kotlin {
         }
     }
 }
+
+rootProject.plugins.withType<NodeJsRootPlugin> {
+    rootProject.the<NodeJsRootExtension>().nodeVersion = "16.0.0"
+}
+
+
 
 tasks.withType<Test> {
     useJUnitPlatform()
