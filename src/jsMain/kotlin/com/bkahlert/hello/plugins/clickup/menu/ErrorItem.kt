@@ -5,7 +5,6 @@ import androidx.compose.runtime.DisposableEffect
 import com.bkahlert.hello.ui.errorMessage
 import com.clickup.api.rest.ClickUpException
 import com.semanticui.compose.SemanticElementScope
-import com.semanticui.compose.Variation
 import com.semanticui.compose.Variation.Colored
 import com.semanticui.compose.collection.MenuElement
 import com.semanticui.compose.element.Icon
@@ -38,10 +37,11 @@ fun SemanticElementScope<MenuElement, *>.ErrorItem(
                 <i class="${(icon + iconVariation.classNames).joinToString(" ")} icon"></i>
                 ${exception.errorMessage}
             """.trimIndent())
+        onMouseEnter { jQuery(it.target).popup("lastResort" to true).popup("show") }
     }) {
         IconGroup {
             Icon("cloud", { +Disabled })
-            Icon({ classes(*icon);variation(iconVariation, Variation.Position.Bottom, Variation.Position.Right, Corner) })
+            Icon({ classes(*icon);variation(iconVariation, Position.Bottom, Position.Right, Corner) })
         }
         Span({
             style {
@@ -54,7 +54,6 @@ fun SemanticElementScope<MenuElement, *>.ErrorItem(
             Text("Something went wrong")
         }
         DisposableEffect(exception) {
-            jQuery(scopeElement).popup("lastResort" to true)
             onDispose {
                 jQuery(scopeElement).popup("destroy")
             }

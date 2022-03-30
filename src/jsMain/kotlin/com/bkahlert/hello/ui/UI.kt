@@ -11,10 +11,14 @@ inline fun <T> Result<T>?.visualize(
     visualizeFailure: @Composable (Throwable) -> Unit = @Composable { ErrorMessage(it) },
     visualizeSuccess: (T) -> Unit,
 ) {
-    this?.fold(
-        { visualizeSuccess(it) },
-        { visualizeFailure(it) }
-    ) ?: run { if (showSpinner) Div { Small { Text("Loading...") } } }
+    if (this != null) {
+        fold(
+            { visualizeSuccess(it) },
+            { visualizeFailure(it) }
+        )
+    } else {
+        if (showSpinner) Div { Small { Text("Loading...") } }
+    }
 }
 
 @Composable
@@ -23,10 +27,12 @@ fun <T : List<E>, E> Result<T>?.visualizeEach(
     visualizeFailure: @Composable (Throwable) -> Unit = @Composable { ErrorMessage(it) },
     visualizeSuccess: (E) -> Unit,
 ) {
-    this?.fold(
-        { it.forEach(visualizeSuccess) },
-        { visualizeFailure(it) }
-    ) ?: run {
+    if (this != null) {
+        fold(
+            { it.forEach(visualizeSuccess) },
+            { visualizeFailure(it) }
+        )
+    } else {
         if (showSpinner) Div { Small { Text("Loading...") } }
     }
 }

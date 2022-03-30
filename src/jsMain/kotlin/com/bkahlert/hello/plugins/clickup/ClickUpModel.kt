@@ -18,20 +18,21 @@ import com.clickup.api.TaskID
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.rest.AccessToken
-import com.clickup.api.rest.ClickupClient
+import com.clickup.api.rest.ClickUpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlin.time.measureTime
 
+/** [ClickUpState] wrapper to keep [AccessToken] resp. [ClickUpClient] out of reach. */
 sealed class InternalState(
     open val state: ClickUpState,
 ) {
-    object Paused : InternalState(ClickUpState.Paused)
+    object Initializing : InternalState(ClickUpState.Paused)
     object Disconnected : InternalState(ClickUpState.Disconnected)
 
     data class Connected(
-        val client: ClickupClient,
+        val client: ClickUpClient,
         override val state: ClickUpState.Connected,
     ) : InternalState(state)
 
@@ -40,11 +41,14 @@ sealed class InternalState(
     ) : InternalState(state)
 }
 
-class ClickUpModel(storage: Storage = InMemoryStorage()) {
+class ClickUpModel(
+    initialState: InternalState = InternalState.Initializing,
+    storage: Storage = InMemoryStorage(),
+) {
     private val logger = simpleLogger()
     private val storage = ClickUpStorage(storage)
 
-    private val internalState = MutableStateFlow<InternalState>(InternalState.Paused)
+    private val internalState = MutableStateFlow(initialState)
     private val internalStateUpdate = FlowUpdate<InternalState>()
     val menuState: Flow<ClickUpState> = internalStateUpdate
         .applyUpdates(internalState)
@@ -60,14 +64,14 @@ class ClickUpModel(storage: Storage = InMemoryStorage()) {
         }
     }
 
-    fun unpause() {
+    fun initialize() {
         val token = storage.`access-token`
-        if (internalState.value is InternalState.Paused && token != null) {
+        if (internalState.value is InternalState.Initializing && token != null) {
             connect(token)
         } else {
-            update("un-pausing") { internal ->
+            update("initializing") { internal ->
                 when (internal) {
-                    is InternalState.Paused -> {
+                    is InternalState.Initializing -> {
                         InternalState.Disconnected
                     }
                     else -> {
@@ -81,12 +85,12 @@ class ClickUpModel(storage: Storage = InMemoryStorage()) {
 
     fun connect(accessToken: AccessToken) {
         update("connecting") {
-            val client = ClickupClient(accessToken, this.storage.cache)
+            val client = ClickUpClient(accessToken, storage.cache)
             val userResult = client.getUser()
             val teamsResult = client.getTeams()
             combine(userResult, teamsResult, Connected::TeamSelecting)
-                .map { InternalState.Connected(client, it) }
-                .getOrElse { InternalState.Failed(Failed(client.accessToken, it)) }
+                .map { state -> InternalState.Connected(client.also { storage.`access-token` = it.accessToken }, state) }
+                .getOrElse { state -> InternalState.Failed(Failed(client.accessToken, state)) }
         }
     }
 
@@ -98,7 +102,7 @@ class ClickUpModel(storage: Storage = InMemoryStorage()) {
     }
 
     fun selectTeam(teamID: TeamID) {
-        update("activating $teamID") { internal ->
+        update("selecting team $teamID") { internal ->
             if (internal is InternalState.Connected) { // TODO for all update calls, provide requireState function
                 val (client, state) = internal
                 val team = state.teams.first { it.id == teamID }
@@ -134,6 +138,7 @@ class ClickUpModel(storage: Storage = InMemoryStorage()) {
                                 .getOrElse { InternalState.Failed(Failed(client.accessToken, it)) }
                         }
                         is TeamSelected -> {
+                            val runningTimeEntry = client.getRunningTimeEntry(state.selectedTeam, state.user)
                             val tasks = client.getTasks(state.selectedTeam)
                             val spaces = client.getSpaces(state.selectedTeam)
                             val folders = spaces.map { it.associate { space -> space.id to client.getFolders(space) } }.getOrDefault(emptyMap())
@@ -148,6 +153,7 @@ class ClickUpModel(storage: Storage = InMemoryStorage()) {
                                 }
                             }
                             val refreshedState = state.copy(
+                                runningTimeEntry = runningTimeEntry,
                                 tasks = tasks,
                                 spaces = spaces,
                                 folders = folders,
@@ -254,7 +260,7 @@ class ClickUpModel(storage: Storage = InMemoryStorage()) {
     private suspend fun updateTasks(
         state: TeamSelected,
         taskId: TaskID?,
-        client: ClickupClient,
+        client: ClickUpClient,
         stopResponse: TimeEntry,
     ): Result<List<Task>> {
         return state.tasks?.getOrNull()?.let { cachedTasks ->

@@ -10,6 +10,8 @@ import com.semanticui.compose.module.Dropdown
 import com.semanticui.compose.module.DropdownElement
 import com.semanticui.compose.view.ItemElement
 import io.ktor.client.fetch.ArrayLike
+import org.jetbrains.compose.web.dom.A
+import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
@@ -49,6 +51,7 @@ fun SemanticElementScope<MenuElement, *>.SubMenu(
 
 /**
  * Creates a [SemanticUI link item](https://semantic-ui.com/collections/menu.html#link-item).
+ * @see [AnkerItem]
  */
 @Suppress("unused")
 @Composable
@@ -60,6 +63,23 @@ fun SemanticElementScope<MenuElement, *>.LinkItem(
         attrs?.invoke(this)
         classes("link", "item")
     }, content)
+}
+
+/**
+ * Creates a [SemanticUI link item](https://semantic-ui.com/collections/menu.html#link-item).
+ * @see [LinkItem]
+ */
+@Suppress("unused")
+@Composable
+fun SemanticElementScope<MenuElement, *>.AnkerItem(
+    href: String? = null,
+    attrs: SemanticAttrBuilder<ItemElement, HTMLAnchorElement>? = null,
+    content: SemanticBuilder<ItemElement, HTMLAnchorElement>? = null,
+) {
+    SemanticElement({
+        attrs?.invoke(this)
+        classes("item")
+    }, content) { a, c -> A(href, a, c) }
 }
 
 

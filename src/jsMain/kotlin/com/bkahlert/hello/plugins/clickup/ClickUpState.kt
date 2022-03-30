@@ -14,7 +14,6 @@ import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.User
 import com.clickup.api.rest.AccessToken
-import kotlin.time.measureTime
 
 /**
  * State of a [ClickUpMenu]
@@ -72,12 +71,11 @@ sealed class ClickUpState {
             val activityGroups: Result<List<ActivityGroup>>? by lazy {
 
                 runningActivity.let { runningActivityResult ->
-                    if (runningActivityResult == null || tasks == null || spaces == null) return@lazy null
+                    if (runningActivityResult == null) return@lazy null
                     runningActivityResult.mapCatching { runningActivity ->
                         buildList {
-                            measureTime {
-                                if (runningActivity != null) add(ActivityGroup.of(runningActivity))
-
+                            if (runningActivity != null) add(ActivityGroup.of(runningActivity))
+                            if (tasks != null && spaces != null) {
                                 combine(tasks, spaces) { tasks, spaces ->
                                     tasks.groupBy { it.space.id }
                                         .forEach { (spaceID, spaceTasks) ->
@@ -113,7 +111,7 @@ sealed class ClickUpState {
                                                 }
                                         }
                                 }
-                            }.also { logger.debug("Preparation of activity groups took $it") }
+                            }
                         }
                     }
                 }

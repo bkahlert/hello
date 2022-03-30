@@ -8,10 +8,10 @@ import com.semanticui.compose.view.Item
  */
 @Composable
 fun MetaItems(
-    meta: List<Meta>?,
+    meta: List<Meta>,
 ) {
-    meta?.forEach {
-        Item({ variation(Borderless) }) {
+    meta.forEach {
+        Item({ +Borderless }) {
             MetaIcon(it)
         }
     }

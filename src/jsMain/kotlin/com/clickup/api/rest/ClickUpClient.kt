@@ -42,7 +42,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.browser.window
 import kotlin.js.Date
 
-data class ClickupClient(
+data class ClickUpClient(
     val accessToken: AccessToken,
     private val cacheStorage: Storage,
 ) {

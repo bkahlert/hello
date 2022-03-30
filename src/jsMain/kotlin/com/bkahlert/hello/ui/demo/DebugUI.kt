@@ -2,8 +2,8 @@ package com.bkahlert.hello.ui.demo
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownDemo
-import com.bkahlert.hello.ui.demo.clickup.ClickupMenuDemo1
-import com.bkahlert.hello.ui.demo.clickup.ClickupMenuDemo2
+import com.bkahlert.hello.ui.demo.clickup.ClickUpMenuDemo1
+import com.bkahlert.hello.ui.demo.clickup.ClickUpMenuDemo2
 import com.bkahlert.hello.ui.demo.clickup.PomodoroStarterDemo
 import com.bkahlert.hello.ui.demo.clickup.PomodoroTimerDemo
 import org.jetbrains.compose.web.css.em
@@ -37,14 +37,12 @@ private fun Column(
 }
 
 @Composable
-fun DebugUI(
-    context: String,
-) {
+fun DebugUI() {
     Grid({
         style { margin(2.em) }
     }) {
-        Column { ClickupMenuDemo1(context) }
-        Column { ClickupMenuDemo2() }
+        Column { ClickUpMenuDemo1() }
+        Column { ClickUpMenuDemo2() }
         Column { ActivityDropdownDemo() }
         Column {
             PomodoroStarterDemo()

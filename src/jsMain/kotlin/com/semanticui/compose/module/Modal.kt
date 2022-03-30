@@ -29,10 +29,19 @@ import org.w3c.dom.HTMLElement
 interface ModalElement : SemanticElement
 
 // true will blur popups inside the debug mode, too
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.blurring: Boolean by SemanticAttrsScope or false
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.closable: Boolean by SemanticAttrsScope or true
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.allowMultiple: Boolean by SemanticAttrsScope or false
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.context: String by SemanticAttrsScope or "body"
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.blurring: Boolean? by SemanticAttrsScope or null
+
+/** When `true`, the first form input inside the modal will receive focus when shown. Set this to `false` to prevent this behavior. */
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.autofocus: Boolean? by SemanticAttrsScope or null
+
+/** Setting to `false` will not allow you to close the modal by clicking on the dimmer. */
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.closable: Boolean? by SemanticAttrsScope or null
+
+/** If set to `true` will not close other visible modals when opening a new one. */
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.allowMultiple: Boolean? by SemanticAttrsScope or null
+
+/** Selector or [jQuery] object specifying the area to dim. */
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.context: String? by SemanticAttrsScope or null
 
 /**
  * Is called when a modal starts to show.

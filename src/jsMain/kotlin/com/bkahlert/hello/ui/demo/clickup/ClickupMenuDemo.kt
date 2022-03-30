@@ -7,17 +7,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.bkahlert.Brand.colors
-import com.bkahlert.hello.plugins.clickup.ClickMenuLoadingActivityItems
-import com.bkahlert.hello.plugins.clickup.ClickUpMenu
+import com.bkahlert.hello.plugins.clickup.ActivityItems
 import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelected
 import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelecting
 import com.bkahlert.hello.plugins.clickup.ClickUpState.Failed
-import com.bkahlert.hello.plugins.clickup.ClickupMenuTeamSelectingItems
-import com.bkahlert.hello.plugins.clickup.ConnectingClickupMenu
-import com.bkahlert.hello.plugins.clickup.DisconnectedClickupMenu
-import com.bkahlert.hello.plugins.clickup.FailedClickupMenu
-import com.bkahlert.hello.plugins.clickup.InitializingClickupMenu
+import com.bkahlert.hello.plugins.clickup.ConnectingClickUpMenu
+import com.bkahlert.hello.plugins.clickup.DisconnectedClickUpMenu
+import com.bkahlert.hello.plugins.clickup.FailedItems
+import com.bkahlert.hello.plugins.clickup.InitializingClickUpMenu
 import com.bkahlert.hello.plugins.clickup.Selection
+import com.bkahlert.hello.plugins.clickup.TeamSelectingItems
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
 import com.bkahlert.hello.ui.demo.JOHN
@@ -41,21 +40,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun ClickupMenuDemo1(
-    context: String,
-) {
+fun ClickUpMenuDemo1() {
 
-    Demos("ClickUp Menu (Not Activated)") {
+    Demos("ClickUp Menu (Not Connected)") {
         Demo("Initializing") {
-            InitializingClickupMenu()
+            InitializingClickUpMenu()
         }
         Demo("Disconnected") {
             val scope = rememberCoroutineScope()
             var connecting by remember { mutableStateOf(false) }
             if (connecting) {
-                ConnectingClickupMenu()
+                ConnectingClickUpMenu()
             } else {
-                DisconnectedClickupMenu(
+                DisconnectedClickUpMenu(
                     onConnect = {
                         console.info("connecting with $it")
                         connecting = true
@@ -68,28 +65,30 @@ fun ClickupMenuDemo1(
             }
         }
         Demo("Connecting") {
-            ConnectingClickupMenu()
+            ConnectingClickUpMenu()
         }
         Demo("Failed") {
             val scope = rememberCoroutineScope()
             val accessToken = AccessToken("pk_123_ABC")
             var failure by remember { mutableStateOf(Failed(accessToken, clickupException)) }
-            FailedClickupMenu(
-                state = failure,
-                onConnect = {
-                    console.info("connecting with $it")
-                    scope.launch {
-                        failure = Failed(accessToken, IllegalStateException("only a demo"))
-                    }
-                },
-            )
+            Menu({ +Size.Mini + Dimmable }) {
+                FailedItems(
+                    state = failure,
+                    onConnect = {
+                        console.info("connecting with $it")
+                        scope.launch {
+                            failure = Failed(accessToken, IllegalStateException("only a demo"))
+                        }
+                    },
+                )
+            }
         }
     }
 
-    Demos("ClickUp Menu (Activating)") {
+    Demos("ClickUp Menu (Connected / Team Selection)") {
         Demo("multiple teams") {
             Menu({ +Size.Mini }) {
-                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.User,
+                TeamSelectingItems(TeamSelecting(ClickupFixtures.User,
                     listOf(ClickupFixtures.Team, ClickupFixtures.Team.copy(name = "Other Team", color = colors.green, avatar = Url(JOHN))))) {
                     console.info("Activating $it")
                 }
@@ -97,14 +96,14 @@ fun ClickupMenuDemo1(
         }
         Demo("single team") {
             Menu({ +Size.Mini }) {
-                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.User, listOf(ClickupFixtures.Team))) {
+                TeamSelectingItems(TeamSelecting(ClickupFixtures.User, listOf(ClickupFixtures.Team))) {
                     console.info("Activating $it")
                 }
             }
         }
         Demo("no team") {
             Menu({ +Size.Mini }) {
-                ClickupMenuTeamSelectingItems(TeamSelecting(ClickupFixtures.User, emptyList())) {
+                TeamSelectingItems(TeamSelecting(ClickupFixtures.User, emptyList())) {
                     console.info("Activating $it")
                 }
             }
@@ -112,8 +111,9 @@ fun ClickupMenuDemo1(
     }
 }
 
-object ClickupMenuStateFixtures {
-    fun justActivated(
+
+object ClickUpStateFixtures {
+    fun partiallyLoaded(
         team: Team = ClickupFixtures.Team,
         runningTimeEntry: Result<TimeEntry?>? = response(ClickupFixtures.TimeEntry.running()),
     ) = TeamSelected(
@@ -124,7 +124,7 @@ object ClickupMenuStateFixtures {
         runningTimeEntry = runningTimeEntry,
     )
 
-    fun activatedAndRefreshed(
+    fun fullyLoaded(
         team: Team = ClickupFixtures.Team,
         runningTimeEntry: Result<TimeEntry?>? = response(ClickupFixtures.TimeEntry.running()),
         tasks: Result<List<Task>>? = response(ClickupFixtures.Tasks),
@@ -153,97 +153,97 @@ object ClickupMenuStateFixtures {
 }
 
 @Composable
-fun ClickupMenuDemo2() {
+fun ClickUpMenuDemo2() {
 
-    Demos("ClickUp Menu (Just Activated)") {
+    Demos("ClickUp Menu (Connected / Partially Loaded)") {
         Demo("Unknown time entry status") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.justActivated(
+                ActivityItems(ClickUpStateFixtures.partiallyLoaded(
                     runningTimeEntry = null
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
         Demo("Failed time entry request") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.justActivated(
+                ActivityItems(ClickUpStateFixtures.partiallyLoaded(
                     runningTimeEntry = failedResponse()
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
         Demo("Running time entry") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.justActivated(
+                ActivityItems(ClickUpStateFixtures.partiallyLoaded(
                     runningTimeEntry = response(ClickupFixtures.TimeEntry.running())
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
         Demo("No running time entry") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.justActivated(
+                ActivityItems(ClickUpStateFixtures.partiallyLoaded(
                     runningTimeEntry = response(null)
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
     }
 
-    Demos("ClickUp Menu (Activated & Refreshed)") {
+    Demos("ClickUp Menu (Connected / Fully Loaded)") {
         Demo("Unknown time entry status") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ActivityItems(ClickUpStateFixtures.fullyLoaded(
                     runningTimeEntry = null
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
         Demo("Failed time entry request") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ActivityItems(ClickUpStateFixtures.fullyLoaded(
                     runningTimeEntry = failedResponse()
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
         Demo("Running time entry") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ActivityItems(ClickUpStateFixtures.fullyLoaded(
                     runningTimeEntry = response(ClickupFixtures.TimeEntry.running())
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
         Demo("No running time entry") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ActivityItems(ClickUpStateFixtures.fullyLoaded(
                     runningTimeEntry = response(null)
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
     }
 
-    Demos("ClickUp Menu (Activated & Refresh Failed)") {
-        Demo("Failed to request tasks") {
+    Demos("ClickUp Menu (Special Cases)") {
+        Demo("Failed tasks request") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ActivityItems(ClickUpStateFixtures.fullyLoaded(
                     tasks = failedResponse()
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
-        Demo("Failed to spaces") {
+        Demo("Failed spaces request") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ActivityItems(ClickUpStateFixtures.fullyLoaded(
                     spaces = failedResponse()
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
         Demo("Incomplete spaces") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ActivityItems(ClickUpStateFixtures.fullyLoaded(
                     spaces = response(ClickupFixtures.SPACES.subList(0, 1))
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
         Demo("Folders missing") {
             Menu({ +Size.Mini }) {
-                ClickMenuLoadingActivityItems(ClickupMenuStateFixtures.activatedAndRefreshed(
+                ActivityItems(ClickUpStateFixtures.fullyLoaded(
                     folders = emptyMap(),
-                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop)
+                ).activityGroups, onSelect, onTimeEntryStart, onTimeEntryStop, onRetry)
             }
         }
     }
@@ -259,4 +259,8 @@ private val onTimeEntryStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = {
 
 private val onTimeEntryStop: (TimeEntry, List<Tag>) -> Unit = { timeEntry, tags ->
     console.info("stopping $timeEntry with $tags")
+}
+
+private val onRetry: () -> Unit = {
+    console.info("retrying")
 }

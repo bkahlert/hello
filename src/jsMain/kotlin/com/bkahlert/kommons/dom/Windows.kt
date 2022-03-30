@@ -8,20 +8,22 @@ import io.ktor.util.toMap
 import org.w3c.dom.Location
 import org.w3c.dom.Window
 
-
 inline fun Window.open(
     url: Url,
     target: String? = null,
     features: String? = null,
-): Window? =
-    url.toString().let { stringUrl ->
-        target?.let {
-            open(stringUrl, target)
-            features?.let {
-                open(stringUrl, target, features)
-            }
-        } ?: open(stringUrl)
+): Window? {
+    val urlString = url.toString()
+    return if (target != null) {
+        if (features != null) {
+            open(urlString, target, features)
+        } else {
+            open(urlString, target)
+        }
+    } else {
+        open(urlString)
     }
+}
 
 inline fun Window.openInSameTab(
     url: Url,

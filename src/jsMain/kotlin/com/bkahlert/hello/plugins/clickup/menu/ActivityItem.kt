@@ -23,15 +23,13 @@ fun ActivityItem(
         attr("data-offset", "0")
         attr("data-position", "left center")
         attr("data-html", activity.popupHtml())
-        style {
-            textOverflow()
-        }
+        style { textOverflow() }
+        onMouseEnter { jQuery(it.target).popup("lastResort" to true).popup("show") }
         attrs?.invoke(this)
     }) {
         ActivityIcon(activity)
         Text(activity.name)
         DisposableEffect(activity) {
-            jQuery(scopeElement).popup("lastResort" to true)
             onDispose {
                 jQuery(scopeElement).popup("destroy")
             }

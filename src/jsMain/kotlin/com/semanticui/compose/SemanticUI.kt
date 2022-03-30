@@ -107,6 +107,7 @@ interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : 
     val Long get() = Variation.Long
 
     val Actions get() = Variation.Actions
+    val Dimmable get() = Variation.Dimmable
 
     val Active get() = State.Active
     val Indeterminate get() = State.Indeterminate
@@ -284,6 +285,8 @@ open class Variation(override vararg val classNames: String) : Modifier {
         val Negative = Variation("Negative")
         val Cancel = Variation("Cancel")
     }
+
+    object Dimmable : Variation("dimmable")
 }
 
 sealed class State(override vararg val classNames: String) : Modifier {

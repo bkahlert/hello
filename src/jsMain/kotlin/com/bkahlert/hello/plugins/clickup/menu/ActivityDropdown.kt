@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.ui.textOverflow
 import com.clickup.api.Identifier
-import com.semanticui.compose.Variation
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.Input
 import com.semanticui.compose.module.Divider
@@ -24,7 +23,6 @@ import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Text
 
-// TODO show task_url
 @Composable
 fun ActivityDropdown(
     activityGroups: List<ActivityGroup>,
@@ -45,7 +43,7 @@ fun ActivityDropdown(
             onSelect(listOfNotNull(activityId))
         },
         attrs = {
-            variation(Variation.Scrolling)
+            +Scrolling
             style {
                 flex(1, 1)
                 minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
@@ -67,7 +65,7 @@ fun ActivityDropdown(
         DropdownMenu({
             style { maxWidth(200.percent) }
         }) {
-            Input({ variation(Variation.Icon("search")) }) {
+            Input({ +Icon("search") }) {
                 Input(Text) { placeholder("Search tasks...") }
                 Icon("search")
             }

@@ -35,9 +35,8 @@ import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.default
 import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.Modal
+import com.semanticui.compose.module.autofocus
 import com.semanticui.compose.module.blurring
-import com.semanticui.compose.module.onHide
-import com.semanticui.compose.module.onVisible
 import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -146,16 +145,10 @@ fun main() {
             +Fullscreen
             +Long
             blurring = false // true will blur popups inside the debug mode, too
-
-            onVisible = { console.info("debug mode modal -> onVisible") }
-
-            onHide = {
-                console.info("debug mode modal -> onHide")
-                false
-            }
+            autofocus = false
         }) {
             Content {
-                DebugUI(".debug-mode")
+                DebugUI()
             }
 
         }
@@ -168,10 +161,10 @@ fun main() {
         val engine by appModel.engine.collectAsState()
 
         @Suppress("SpellCheckingInspection")
-        val clickupModel = remember { ClickUpModel(localStorage.scoped("clickup")) }
+        val clickupModel = remember { ClickUpModel(storage = localStorage.scoped("clickup")) }
         when (loadingState) {
 //            is Loading -> {} // TODO
-            else -> clickupModel.unpause()
+            else -> clickupModel.initialize()
         }
 
         Grid({
