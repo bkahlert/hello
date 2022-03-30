@@ -9,11 +9,13 @@ import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.marginRight
+import org.jetbrains.compose.web.css.marginTop
+import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.rgba
 import org.jetbrains.compose.web.css.width
 
 @Suppress("PublicApiImplicitType")
-object ClickupStyleSheet : StyleSheet() {
+object ClickUpStyleSheet : StyleSheet() {
     private val size = 512
     private val profilePictureMask = SVGImage(
         //language=SVG
@@ -29,6 +31,10 @@ object ClickupStyleSheet : StyleSheet() {
     }
 
     init {
+        ".ui.menu:first-child:last-child" style {
+            marginTop(0.px)
+        }
+
         ".ui.menu .item > img:not(.ui).mini" style {
             miniMenuImage()
         }

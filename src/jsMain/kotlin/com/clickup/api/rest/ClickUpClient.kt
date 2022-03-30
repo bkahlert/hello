@@ -6,7 +6,6 @@ import com.bkahlert.hello.serialize
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.web.http.div
-import com.bkahlert.kommons.web.http.url
 import com.clickup.api.Folder
 import com.clickup.api.FolderID
 import com.clickup.api.Space
@@ -39,20 +38,13 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.browser.window
 import kotlin.js.Date
 
 data class ClickUpClient(
     val accessToken: AccessToken,
     private val cacheStorage: Storage,
 ) {
-    val host = window.location.url.host
-    val clickUpUrl =
-        if (host == "localhost" || host.startsWith("10.100.14")) {
-            Url("http://$host:8080/api/v2")
-        } else {
-            Url("https://api.clickup.com/api/v2")
-        }
+    val clickUpUrl = Url("/api.clickup.com/api/v2")
 
     private val logger = simpleLogger()
 

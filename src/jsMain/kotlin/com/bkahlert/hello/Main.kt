@@ -52,7 +52,6 @@ import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.JustifyContent
-import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.alignContent
@@ -61,8 +60,6 @@ import org.jetbrains.compose.web.css.and
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.backgroundImage
 import org.jetbrains.compose.web.css.backgroundSize
-import org.jetbrains.compose.web.css.border
-import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.div
@@ -81,7 +78,6 @@ import org.jetbrains.compose.web.css.mediaMinWidth
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.style
 import org.jetbrains.compose.web.css.transform
 import org.jetbrains.compose.web.css.unaryMinus
 import org.jetbrains.compose.web.css.vh
@@ -206,11 +202,6 @@ fun main() {
             Div({
                 style {
                     gridArea(Plugins)
-                    border {
-                        width(1.px)
-                        style(LineStyle.Solid)
-                        color(Color.magenta)
-                    }
                     display(DisplayStyle.Flex)
                     flexWrap(FlexWrap.Nowrap)
                     flexDirection(FlexDirection.Column)
@@ -290,7 +281,7 @@ object AppStylesheet : StyleSheet() {
         height(100.vh)
         gap(0.px, 0.px)
 
-        gridTemplateColumns("1fr 1fr")
+        gridTemplateColumns("1fr 2fr")
         gridTemplateRows("0 10fr 7fr 1fr 0 0")
         gridTemplateAreas(
             "$Header $Header",
@@ -312,10 +303,8 @@ object AppStylesheet : StyleSheet() {
             self style {
                 // minmax enforces cell content to not consume more space
                 // https://css-tricks.com/preventing-a-grid-blowout/
-//                gridTemplateColumns("1fr 1fr 1fr minmax(0, 1fr)") TODO restore
-//                gridTemplateRows("$HEADER_HEIGHT 80px 0 0 1fr")  TODO restore
-                gridTemplateColumns("1fr 1fr 1fr minmax(0, 3fr)")
-                gridTemplateRows("$HEADER_HEIGHT 640px 0 0 1fr")
+                gridTemplateColumns("1fr 1fr 1fr minmax(0, 2fr)")
+                gridTemplateRows("$HEADER_HEIGHT 80px 0 0 1fr")
                 gridTemplateAreas(
                     "$Header $Header $Header $Header",
                     "$Links $Search $Search $Plugins",

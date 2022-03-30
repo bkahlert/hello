@@ -416,75 +416,76 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
 fun ClickUpMenu(
     model: ClickUpModel = remember { ClickUpModel() },
 ) {
-    Style(ClickupStyleSheet)
+    Style(ClickUpStyleSheet)
 
-    val _state by model.menuState.collectAsState(Paused)
-    console.info("ClickUp menu in state ${_state::class.simpleName}")
+    Div {
+        val _state by model.menuState.collectAsState(Paused)
+        console.info("ClickUp menu in state ${_state::class.simpleName}")
 
-    var loading by remember(_state) { mutableStateOf(false) }
-    if (loading) {
-        ConnectingClickUpMenu()
-    } else {
-        when (val state = _state) {
-            Paused -> InitializingClickUpMenu()
-            Disconnected -> DisconnectedClickUpMenu {
-                loading = true
-                model.connect(it)
-            }
-            is Failed -> {
-                Menu({ +Size.Mini + Dimmable }) {
-                    FailedItems(
-                        state = state,
-                    ) {
-                        loading = true
-                        model.connect(it)
+        var loading by remember(_state) { mutableStateOf(false) }
+        if (loading) {
+            ConnectingClickUpMenu()
+        } else {
+            when (val state = _state) {
+                Paused -> InitializingClickUpMenu()
+                Disconnected -> DisconnectedClickUpMenu {
+                    loading = true
+                    model.connect(it)
+                }
+                is Failed -> {
+                    Menu({ +Size.Mini + Dimmable }) {
+                        FailedItems(
+                            state = state,
+                        ) {
+                            loading = true
+                            model.connect(it)
+                        }
                     }
                 }
-            }
-            is TeamSelecting -> {
-                Menu({ +Size.Mini + Dimmable }) {
-                    TeamSelectingItems(
-                        state = state,
-                        onActivate = model::selectTeam,
-                    )
+                is TeamSelecting -> {
+                    Menu({ +Size.Mini + Dimmable }) {
+                        TeamSelectingItems(
+                            state = state,
+                            onActivate = model::selectTeam,
+                        )
+                    }
                 }
-            }
-            is TeamSelected -> {
-                Menu({ +Size.Mini + Dimmable }) {
-                    var refreshing by remember(state) { mutableStateOf(false) }
-                    DimmingLoader({ refreshing })
-                    MainItems(
-                        user = state.user,
-                        teams = state.teams,
-                        selectedTeam = state.selectedTeam,
-                        onTeamSelect = model::selectTeam,
-                        onRefresh = {
-                            refreshing = true
-                            model.refresh(force = true)
-                        },
-                        onSignOut = { model.signOut() },
-                    )
-                    ActivityItems(
-                        activityGroupsResult = state.activityGroups,
-                        onSelect = model::select,
-                        onTimeEntryStart = model::startTimeEntry,
-                        onTimeEntryStop = { _, tags -> model.stopTimeEntry(tags) },
-                        onRetry = {
-                            refreshing = true
-                            model.refresh(force = true)
-                        },
-                    )
-                }
+                is TeamSelected -> {
+                    Menu({ +Size.Mini + Dimmable }) {
+                        var refreshing by remember(state) { mutableStateOf(false) }
+                        DimmingLoader({ refreshing })
+                        MainItems(
+                            user = state.user,
+                            teams = state.teams,
+                            selectedTeam = state.selectedTeam,
+                            onTeamSelect = model::selectTeam,
+                            onRefresh = {
+                                refreshing = true
+                                model.refresh(force = true)
+                            },
+                            onSignOut = { model.signOut() },
+                        )
+                        ActivityItems(
+                            activityGroupsResult = state.activityGroups,
+                            onSelect = model::select,
+                            onTimeEntryStart = model::startTimeEntry,
+                            onTimeEntryStop = { _, tags -> model.stopTimeEntry(tags) },
+                            onRetry = {
+                                refreshing = true
+                                model.refresh(force = true)
+                            },
+                        )
+                    }
 
-                DisposableEffect(state.selectedTeam) {
-                    model.refresh()
-                    onDispose { }
+                    DisposableEffect(state.selectedTeam) {
+                        model.refresh()
+                        onDispose { }
+                    }
                 }
             }
         }
     }
 }
-
 
 // TODO try to use instead of semantic tags
 @Composable

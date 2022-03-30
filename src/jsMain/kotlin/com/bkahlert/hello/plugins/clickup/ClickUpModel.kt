@@ -15,6 +15,7 @@ import com.bkahlert.kommons.fix.combine
 import com.clickup.api.Tag
 import com.clickup.api.Task
 import com.clickup.api.TaskID
+import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.rest.AccessToken
@@ -89,7 +90,11 @@ class ClickUpModel(
             val userResult = client.getUser()
             val teamsResult = client.getTeams()
             combine(userResult, teamsResult, Connected::TeamSelecting)
-                .map { state -> InternalState.Connected(client.also { storage.`access-token` = it.accessToken }, state) }
+                .map { state ->
+                    storage.`access-token` = client.accessToken
+                    if (state.teams.size == 1) internalSelectTeam(client, state, state.teams.first())
+                    else InternalState.Connected(client, state)
+                }
                 .getOrElse { state -> InternalState.Failed(Failed(client.accessToken, state)) }
         }
     }
@@ -106,21 +111,29 @@ class ClickUpModel(
             if (internal is InternalState.Connected) { // TODO for all update calls, provide requireState function
                 val (client, state) = internal
                 val team = state.teams.first { it.id == teamID }
-                val previousSelection = storage.selections[team]
-                logger.debug("Previous selection for team ${team.id}: $previousSelection")
-                val runningTimeEntry = client.getRunningTimeEntry(team, state.user)
-                val runningTimeEntryId = runningTimeEntry.map { it?.id }
-                logger.debug("Running time entry: $runningTimeEntryId")
-                val selectedActivityIds = buildList {
-                    runningTimeEntryId.onSuccess { it?.also(::add) }
-                    addAll(previousSelection)
-                }
-                logger.debug("Selecting: $selectedActivityIds")
-                InternalState.Connected(client, TeamSelected(state.user, state.teams, team, selectedActivityIds, runningTimeEntry))
+                internalSelectTeam(client, state, team)
             } else {
                 internal.also { logger.error("Failed to activate; unexpected state ${internal.state}") }
             }
         }
+    }
+
+    private suspend fun internalSelectTeam(
+        client: ClickUpClient,
+        state: Connected,
+        team: Team,
+    ): InternalState.Connected {
+        val previousSelection = storage.selections[team]
+        logger.debug("Previous selection for team ${team.id}: $previousSelection")
+        val runningTimeEntry = client.getRunningTimeEntry(team, state.user)
+        val runningTimeEntryId = runningTimeEntry.map { it?.id }
+        logger.debug("Running time entry: $runningTimeEntryId")
+        val selectedActivityIds = buildList {
+            runningTimeEntryId.onSuccess { it?.also(::add) }
+            addAll(previousSelection)
+        }
+        logger.debug("Selecting: $selectedActivityIds")
+        return InternalState.Connected(client, TeamSelected(state.user, state.teams, team, selectedActivityIds, runningTimeEntry))
     }
 
     fun refresh(force: Boolean = false) {
