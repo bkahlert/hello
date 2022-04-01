@@ -1,5 +1,6 @@
 package com.bkahlert.hello.plugins.clickup.menu
 
+import com.bkahlert.Brand
 import com.bkahlert.Brand.colors
 import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
@@ -8,17 +9,8 @@ import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
 import com.bkahlert.kommons.time.toMoment
-import com.clickup.api.FolderPreview
-import com.clickup.api.Identifier
-import com.clickup.api.Space
-import com.clickup.api.Tag
-import com.clickup.api.Task
-import com.clickup.api.TaskID
-import com.clickup.api.TaskList
-import com.clickup.api.TaskListPreview
-import com.clickup.api.TimeEntry
-import com.clickup.api.TimeEntryID
-import io.ktor.http.Url
+import com.clickup.api.*
+import io.ktor.http.*
 
 /**
  * Some king of icon like meta information
@@ -41,7 +33,8 @@ data class Meta(
         fun of(space: Space?): Meta = Meta("project", "clone", text = space?.name ?: "[no space name]")
 
         /** A meta describing the specified [folderPreview]. */
-        fun of(folderPreview: FolderPreview?): Meta? = folderPreview?.takeUnless { it.hidden }?.let { Meta("folder", "folder", text = it.name) }
+        fun of(folderPreview: FolderPreview?): Meta? =
+            folderPreview?.takeUnless { it.hidden }?.let { Meta("folder", "folder", text = it.name) }
 
         /** A meta describing the specified [list]. */
         fun of(list: TaskList?): Meta? = list?.let { Meta("list", "list", text = it.name) }
@@ -137,9 +130,11 @@ sealed interface Activity<ID : Identifier<*>> {
         private val taskActivity: TaskActivity? = task?.let(::TaskActivity)
         override val id: TimeEntryID get() = timeEntry.id
         override val taskID: TaskID? get() = task?.id
-        override val name: String get() = timeEntry.task?.name ?: taskActivity?.name ?: "Timer running"
-        override val color: Color? get() = timeEntry.task?.status?.color ?: taskActivity?.color
-        override val url: Url? get() = timeEntry.url ?: timeEntry.taskUrl ?: taskActivity?.url
+        override val name: String
+            get() = timeEntry.task?.name ?: taskActivity?.name ?: "— Timer with no associated task —"
+        override val color: Color?
+            get() = timeEntry.task?.status?.color ?: taskActivity?.color ?: Brand.colors.white.transparentize(1.0)
+        override val url: Url? get() = timeEntry.url ?: timeEntry.url ?: taskActivity?.url
         override val meta: List<Meta>
             get() = buildList {
                 if (timeEntry.billable) add(Meta("billable", "dollar"))
@@ -182,7 +177,14 @@ sealed interface Activity<ID : Identifier<*>> {
                 }
                 if (task.timeSpent != null) {
                     when (task.timeEstimate?.compareTo(task.timeSpent)) {
-                        -1 -> add(Meta("spent time (critical)", "red", "stopwatch", text = task.timeSpent.toMoment(false)))
+                        -1 -> add(
+                            Meta(
+                                "spent time (critical)",
+                                "red",
+                                "stopwatch",
+                                text = task.timeSpent.toMoment(false)
+                            )
+                        )
                         else -> add(Meta("spent time", "stopwatch", text = task.timeSpent.toMoment(false)))
                     }
                 }

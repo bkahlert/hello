@@ -7,7 +7,7 @@ import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
-import io.ktor.http.Url
+import io.ktor.http.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -31,7 +31,8 @@ data class TimeEntry(
     val duration: Duration? get() = end?.let { it - start }
     val passed: Duration get() = Now - start
     val ended: Boolean get() = end != null
-    val url: Url? get() = taskUrl?.takeUnless { it.pathSegments.also { console.warn(it.joinToString("---")) }.lastOrNull() == "null" }
+    val url: Url? get() = taskUrl?.takeUnless { it.pathSegments.lastOrNull() == "null" }
 }
 
-@Serializable value class TimeEntryID(override val id: String) : Identifier<String>
+@Serializable
+value class TimeEntryID(override val id: String) : Identifier<String>
