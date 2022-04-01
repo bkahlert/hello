@@ -41,15 +41,6 @@
             '^/api.clickup.com': '/',
           },
         },
-        '/attachments': {
-          target: 'https://attachments.clickup.com',
-          changeOrigin: true,
-          ws: true,
-          pathRewrite: {
-            '^/attachments': '/',
-          },
-          secure: false,
-        },
       }
     })
   }

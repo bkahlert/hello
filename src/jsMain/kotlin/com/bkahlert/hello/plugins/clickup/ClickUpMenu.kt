@@ -55,7 +55,6 @@ import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
 import org.jetbrains.compose.web.css.color
-import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex
@@ -67,7 +66,6 @@ import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.marginLeft
 import org.jetbrains.compose.web.css.marginRight
-import org.jetbrains.compose.web.css.marginTop
 import org.jetbrains.compose.web.css.minWidth
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.paddingRight
@@ -84,17 +82,18 @@ import org.w3c.dom.Window
 
 @Composable
 fun InitializingClickUpMenu() {
-    Div({
-        classes("ui", "placeholder", "fluid")
-        style {
-            height(33.4.px)
-            marginTop(1.cssRem)
-        }
-    }) {
-        Div({
-            classes("line")
-            style { height(0.px) }
+
+    Menu({ +Size.Mini + Dimmable }) {
+        DimmingLoader({ true }, loaderAttrs = {
+            +Size.Mini
+            +Indeterminate
         })
+        LinkItem({
+            +Borderless
+            +Disabled
+        }) {
+            Text(" ")
+        }
     }
 }
 
@@ -375,7 +374,6 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
                     AnkerItem(url.toString(), {
                         style { paddingRight(.6.em) }
                         onClick {
-                            // TODO open with reverse proxy
                             @Suppress("SpellCheckingInspection")
                             val features = "popup=1,innerWidth=900,innerHeight=1200,top=400"
                             val openedWindow = taskWindow?.takeUnless { (window, _) -> window.closed }?.let { (openedWindow, openedUrl) ->

@@ -7,7 +7,7 @@ import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
-import io.ktor.http.*
+import io.ktor.http.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
