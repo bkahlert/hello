@@ -6,6 +6,8 @@ import com.semanticui.compose.SemanticBuilder
 import com.semanticui.compose.SemanticDivElement
 import com.semanticui.compose.SemanticElement
 import com.semanticui.compose.SemanticElementType
+import org.jetbrains.compose.web.dom.A
+import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
 
 interface ButtonElement : SemanticElement
@@ -46,6 +48,23 @@ fun Button(
     content: SemanticBuilder<ButtonElement, HTMLDivElement>? = null,
 ) {
     Button(null, attrs, content)
+}
+
+/**
+ * Creates a [SemanticUI button](https://semantic-ui.com/elements/button.html)
+ * based on an anchor tag.
+ */
+@Composable
+fun AnkerButton(
+    href: String? = null,
+    attrs: SemanticAttrBuilder<ButtonElement, HTMLAnchorElement>? = null,
+    content: SemanticBuilder<ButtonElement, HTMLAnchorElement>? = null,
+) {
+    SemanticElement({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("button")
+    }, content) { a, c -> A(href, a, c) }
 }
 
 interface ButtonGroupElement : SemanticElement

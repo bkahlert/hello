@@ -18,8 +18,6 @@ import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.links.Header
-import com.bkahlert.hello.links.Link
-import com.bkahlert.hello.links.Links
 import com.bkahlert.hello.plugins.clickup.ClickUpMenu
 import com.bkahlert.hello.plugins.clickup.ClickUpModel
 import com.bkahlert.hello.search.Engine
@@ -33,6 +31,10 @@ import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.default
+import com.semanticui.compose.element.AnkerButton
+import com.semanticui.compose.element.ButtonGroupElementType.Icon
+import com.semanticui.compose.element.Buttons
+import com.semanticui.compose.element.Icon
 import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.Modal
 import com.semanticui.compose.module.autofocus
@@ -182,10 +184,10 @@ fun main() {
                     center()
                 }
             }) {
-                Links {
-                    Link("https://start.me/p/4K6MOy/dashboard", "start.me", "web.svg")
-                    Link("https://home.bkahlert.com", "home", "home.svg")
-                    Link("https://clickup.com/", "clickup", "clickup.svg")
+                Buttons(Icon, { +Basic }) {
+                    AnkerButton("https://start.me/p/4K6MOy/dashboard") { Icon("globe") }
+                    AnkerButton("https://home.bkahlert.com") { Icon("home") }
+                    AnkerButton("https://github.com/bkahlert") { Icon("github") }
                 }
             }
             Div({
