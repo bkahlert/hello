@@ -108,7 +108,7 @@ fun Modal(
             val insertionPoint = checkNotNull(scopeElement.parentElement) { "missing parent" } to scopeElement.nextSibling
             val jQueryElement = jQuery(scopeElement)
             jQueryElement
-                .modal(*(scope.settings + scope.callbacks).pairArray)
+                .modal(*scope.settings.pairArray)
                 .modal("show")
             val invisiblePlaceholder = (document.createElement("span") as HTMLElement).apply { hideVisually() }
             insertionPoint.first.insertBefore(invisiblePlaceholder, insertionPoint.second)

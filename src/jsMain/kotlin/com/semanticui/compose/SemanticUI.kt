@@ -11,6 +11,36 @@ import org.w3c.dom.HTMLDivElement
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+/**
+ * A semantic UI element of the form `<div class="ui $classes">$content</div>` that
+ * can be used as a fallback for not yet implemented Semantic UI features. */
+@Composable
+fun UI(
+    vararg classes: String,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
+) {
+    Div({
+        attrs?.invoke(this)
+        classes("ui", *classes)
+    }, content)
+}
+
+/**
+ * A semantic UI element of the form `<div class="$classes">$content</div>` that
+ * can be used as a fallback for not yet implemented Semantic UI features. */
+@Composable
+fun Semantic(
+    vararg classes: String,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
+) {
+    Div({
+        attrs?.invoke(this)
+        classes(*classes)
+    }, content)
+}
+
 interface SemanticElement {
     fun classes(states: List<State>, variations: List<Variation>): List<String>
 }
@@ -26,12 +56,12 @@ typealias SemanticBuilder<S, T> = @Composable SemanticElementScope<S, T>.() -> U
 
 interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : AttrsScope<TElement> {
     val settings: MutableMap<String, Any?>
-    val callbacks: MutableMap<String, Any?>
 
     companion object {
         fun <TSemantic : SemanticElement, TElement : Element> of(attrsScope: AttrsScope<TElement>): SemanticAttrsScope<TSemantic, TElement> =
             DelegatingSemanticAttrsScope(attrsScope)
 
+        /** Delegate to handle custom settings. */
         inline infix fun <reified V> Companion.or(default: V): ReadWriteProperty<SemanticAttrsScope<*, *>, V> =
             object : ReadWriteProperty<SemanticAttrsScope<*, *>, V> {
                 override fun getValue(thisRef: SemanticAttrsScope<*, *>, property: KProperty<*>): V =
@@ -45,7 +75,6 @@ interface SemanticAttrsScope<TSemantic : SemanticElement, TElement : Element> : 
         private data class DelegatingSemanticAttrsScope<TSemantic : SemanticElement, TElement : Element>(
             private val delegate: AttrsScope<TElement>,
             override val settings: MutableMap<String, Any?> = mutableMapOf(),
-            override val callbacks: MutableMap<String, Any?> = mutableMapOf(),
         ) : SemanticAttrsScope<TSemantic, TElement>, AttrsScope<TElement> by delegate
     }
 
@@ -138,6 +167,16 @@ fun <TSemantic : SemanticElement, TElement : Element> SemanticElement(
 }
 
 @Composable
+fun <TSemantic : SemanticElement, TElement : Element> SemanticElement(
+    attrs: SemanticAttrBuilder<TSemantic, TElement>? = null,
+    invoke: @Composable (AttrBuilderContext<TElement>?) -> Unit,
+) {
+    invoke {
+        attrs?.invoke(SemanticAttrsScope.of(this))
+    }
+}
+
+@Composable
 fun <TSemantic : SemanticElement> SemanticDivElement(
     attrs: SemanticAttrBuilder<TSemantic, HTMLDivElement>? = null,
     content: SemanticBuilder<TSemantic, HTMLDivElement>? = null,
@@ -162,6 +201,7 @@ inline val Array<out Modifier>.classNames: Array<out String>
 
 
 open class Variation(override vararg val classNames: String) : Modifier {
+    object Avatar : Variation("avatar")
     object Inline : Variation("inline")
     object Fitted : Variation("fitted")
     object Compact : Variation("compact")
@@ -205,6 +245,12 @@ open class Variation(override vararg val classNames: String) : Modifier {
     object Circular : Variation("circular")
     object Bordered : Variation("bordered")
     object Inverted : Variation("inverted")
+    object Horizontal : Variation("horizontal")
+    object Selection : Variation("selection")
+    object Animated : Variation("animated")
+    object Relaxed : Variation("relaxed")
+    object Divided : Variation("divided")
+    object Celled : Variation("celled")
 
     object Corner : Variation("corner")
 
@@ -236,10 +282,25 @@ open class Variation(override vararg val classNames: String) : Modifier {
         val Justified = Variation("justified")
     }
 
+    object VerticallyAligned : Variation("aligned") {
+        val Top = Variation("top", *classNames)
+        val Middle = Variation("middle", *classNames)
+        val Bottom = Variation("bottom", *classNames)
+    }
+
+    object Floated : Variation("floated") {
+        val Right = Variation("right", *classNames)
+    }
+
+    object Centered : Variation("centered")
+    object Spaced : Variation("spaced")
     object Fluid : Variation("fluid")
+    object Rounded : Variation("rounded")
 
     object Floating : Variation("floating")
     object Borderless : Variation("borderless")
+    object Labeled : Variation("labeled")
+    object Action : Variation("action")
     class Icon(vararg names: String) : Variation(*names, "icon") {
         companion object : Variation("icon")
     }
@@ -291,6 +352,7 @@ open class Variation(override vararg val classNames: String) : Modifier {
 
 sealed class State(override vararg val classNames: String) : Modifier {
     object Active : State("active")
+    object Hidden : State("hidden")
     object Indeterminate : State("indeterminate")
     object Focus : State("focus")
     object Loading : State("loading")

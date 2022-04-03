@@ -12,10 +12,10 @@ fun MetaIcon(
     meta: Meta,
     attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
 ) {
-    Icon({
+    Icon {
         title(meta.title)
         attrs?.invoke(this)
         style { classes(*meta.iconVariations.toTypedArray()) }
-    })
+    }
     meta.text?.also { Text(it) }
 }

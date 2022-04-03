@@ -33,7 +33,7 @@ fun ActivityDropdown(
     if (selectedActivity != null) {
         ActivityIcon(selectedActivity)
     } else {
-        Icon({ variation(Inverted) })
+        Icon { +Inverted }
     }
 
     InlineDropdown(

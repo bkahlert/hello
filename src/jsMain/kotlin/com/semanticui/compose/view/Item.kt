@@ -29,8 +29,8 @@ fun Item(
  */
 @Composable
 fun Items(
-    attrs: SemanticAttrBuilder<ItemElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilder<ItemsElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<ItemsElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")

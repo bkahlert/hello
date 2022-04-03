@@ -7,6 +7,7 @@ import com.bkahlert.hello.DebugModeState.Inactive
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.dom.body
 import com.bkahlert.kommons.dom.default
 import kotlinx.browser.document
 import kotlinx.dom.addClass
@@ -24,7 +25,7 @@ import org.w3c.dom.events.KeyboardEvent
  * on the specified [eventTarget].
  */
 class DebugMode(
-    private val eventTarget: EventTarget = document,
+    private val eventTarget: EventTarget = document.body(),
     private val key: String = "F4",
     disableOnEscape: Boolean = true,
     storage: Storage = InMemoryStorage(),
@@ -78,14 +79,18 @@ class DebugMode(
         val callback: (Event) -> Unit = when (disableOnEscape) {
             true -> {
                 { event ->
-                    val pressed = (event as KeyboardEvent).key
-                    if (pressed == key) active = !active
-                    else if (pressed.equals("Escape", ignoreCase = true)) active = false
+                    if (event.target == eventTarget) {
+                        val pressed = (event as KeyboardEvent).key
+                        if (pressed == key) active = !active
+                        else if (pressed.equals("Escape", ignoreCase = true)) active = false
+                    }
                 }
             }
             else -> {
                 { event ->
-                    if ((event as KeyboardEvent).key == key) active = !active
+                    if (event.target == eventTarget) {
+                        if ((event as KeyboardEvent).key == key) active = !active
+                    }
                 }
             }
         }

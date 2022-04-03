@@ -1,6 +1,8 @@
 package com.bkahlert.hello.ui.demo
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.kommons.SVGImage
+import com.bkahlert.kommons.test.SvgFixture
 import com.clickup.api.rest.ClickUpException
 import com.clickup.api.rest.ErrorInfo
 import com.semanticui.compose.SemanticAttrBuilder
@@ -35,6 +37,7 @@ fun Demos(
     Segments(SegmentElementType.Raised, attrs) {
         Header({
             +Attached.Top
+            +Inverted
             style { property("border-bottom-width", "0") }
         }) { Text(name) }
         content?.invoke(this)
@@ -95,3 +98,8 @@ const val JOHN = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAA" +
     "2oYN85HVVvST0ZmRqc/P7X+9IYNp9eferlG9SE9OnLLhfAiGfiER2dG67LzdJGZKh8fn/AtW" +
     "dlZOu/saJXqpKpIBuHpWd6QbF2k6ih0uJCp04FYlxWpGsspb9u0+1Qb8ry982zjzk0nFhD8B" +
     "SFQiZbgWV9tAAAAAElFTkSuQmCC"
+
+object ImageFixtures {
+    val KommonsLogo: SVGImage by lazy { SVGImage(SvgFixture.data.decodeToString()) }
+    val Avatar: String get() = JOHN
+}

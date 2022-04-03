@@ -40,12 +40,12 @@ fun SemanticElementScope<MenuElement, *>.ErrorItem(
         onMouseEnter { jQuery(it.target).popup("lastResort" to true).popup("show") }
     }) {
         IconGroup {
-            Icon("cloud", { +Disabled })
-            Icon({ classes(*icon);variation(iconVariation, Position.Bottom, Position.Right, Corner) })
+            Icon("cloud") { +Disabled }
+            Icon { classes(*icon);variation(iconVariation, Position.Bottom, Position.Right, Corner) }
         }
         Span({
             style {
-                marginLeft(0.25.em)
+                marginLeft(0.5.em)
                 textDecoration("underline")
                 textDecorationStyle("dotted")
                 cursor("help")

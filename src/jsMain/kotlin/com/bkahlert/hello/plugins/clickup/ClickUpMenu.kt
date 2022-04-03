@@ -138,7 +138,7 @@ fun ConnectingClickUpMenu() {
             +Borderless
             +Disabled
         }) {
-            Icon("circle", "notch", { +Loading })
+            Icon("circle", "notch") { +Loading }
             Text("Connecting ...")
         }
     }
@@ -318,7 +318,7 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
         +Borderless
         +Disabled
     }) {
-        Icon("circle", "notch", { +Loading })
+        Icon("circle", "notch") { +Loading }
         Text("Loading ...")
     }
 } else {
@@ -363,7 +363,7 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
                     +Borderless
                     +Disabled
                 }) {
-                    Icon("circle", "notch", { +Loading })
+                    Icon("circle", "notch") { +Loading }
                     Text("Loading ...")
                 }
             } else {
@@ -393,9 +393,9 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
                         }
                         target(Blank)
                     }) {
-                        Icon("external", "alternate", {
+                        Icon("external", "alternate") {
                             title("Open on ClickUp")
-                        })
+                        }
                     }
                 }
             }

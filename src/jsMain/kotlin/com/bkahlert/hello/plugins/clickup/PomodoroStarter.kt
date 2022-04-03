@@ -38,7 +38,7 @@ fun PomodoroStarter(
     if (taskID != null) {
         var starting by remember(taskID) { mutableStateOf(false) }
         DimmingLoader({ starting })
-        Icon("green", icon, {
+        Icon("green", icon) {
             if (!starting) {
                 +Link
                 onClick {
@@ -46,7 +46,7 @@ fun PomodoroStarter(
                     onStart(taskID, listOf(selectedType.tag), selectedBillable)
                 }
             }
-        })
+        }
     } else {
         Icon("green", icon, "disabled")
     }
@@ -69,7 +69,7 @@ fun PomodoroStarter(
                             Icon("green", "dollar")
                             Text("Billable")
                         } else {
-                            Icon("green", "dollar", { +Disabled })
+                            Icon("green", "dollar") { +Disabled }
                             Text("Non-Billable")
                         }
                     }

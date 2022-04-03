@@ -13,6 +13,81 @@
     <script src="semantic/dist/semantic.min.js"></script>
 </head>
 <body>
+<div class="ui segments">
+    <div class="ui segment">
+    <span>
+  Show me posts by
+  <div class="ui inline multiple floating dropdown">
+            <input type="hidden" name="person" value="af,dz">
+    <div class="text default">no engine selected</div>
+    <i class="dropdown icon"></i>
+    <div class="menu">
+            <div class="ui toggle checkbox input">
+  <input type="checkbox" name="all-engines">
+  <label>All Engines</label>
+</div>
+        <div class="divider"></div>
+        <div class="header"><i class="search icon"></i>Add Search Engine</div>
+    <div class="scrolling menu">
+                <div class="item" data-value="af"><i class="af flag"></i>Afghanistan</div>
+                <div class="item" data-value="ax"><i class="ax flag"></i>Aland Islands</div>
+                <div class="item" data-value="al"><i class="al flag"></i>Albania</div>
+                <div class="item" data-value="dz"><i class="dz flag"></i>Algeria</div>
+                <div class="item" data-value="as"><i class="as flag"></i>American Samoa</div>
+                <div class="item" data-value="ad"><i class="ad flag"></i>Andorra</div>
+    </div>
+    </div>
+  </div>
+</span>
+
+        <div class="ui two column grid">
+            <div class="column">
+                <div class="ui raised segment">
+                    <a class="ui red ribbon label">Overview</a>
+                    <span>Account Details</span>
+                    <p></p>
+                    <a class="ui blue ribbon label">Community</a> User Reviews
+                    <p></p>
+                </div>
+            </div>
+            <div class="column">
+                <div class="ui segment">
+                    <a class="ui orange right ribbon label">Specs</a>
+                    <p></p>
+                    <a class="ui teal right ribbon label">Reviews</a>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="ui search">
+            <div class="ui icon input">
+                <input class="prompt" type="text" placeholder="Common passwords...">
+                <i class="search icon"></i>
+                <div class="floating ui red label">22</div>
+                <div class="floating ui blue label">22</div>
+            </div>
+        </div>
+        <script>
+          const dropdown = jQuery('.dropdown')
+            .dropdown({
+              message: { count: '{count}/6 engine(s) selected' },
+              onChange: (value, text) => { console.log('selected ' + value)},
+              placeholder: 'no engine selected',
+              useLabels: false,
+            })
+          jQuery(dropdown).find('[name=all-engines]').change(() => {
+            // console.log(dropdown.find('[name=person]').val('af,ax,al,dz,as,ad'))
+            // console.log(dropdown.dropdown('refresh'))
+
+            // console.log(dropdown.dropdown('clear'))
+
+            console.log(dropdown.dropdown('set exactly', ['af', 'ax', 'al', 'dz', 'as', 'ad']))
+          })
+        </script>
+    </div>
+</div>
 <div id="root"></div>
 <script src="hello.js"></script>
 </body>

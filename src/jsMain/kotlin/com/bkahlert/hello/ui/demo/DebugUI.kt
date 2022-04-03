@@ -41,7 +41,14 @@ fun DebugUI() {
     Grid({
         style { margin(2.em) }
     }) {
-        Column { ClickUpMenuDemo1() }
+        Column {
+            SearchDemo()
+        }
+        return@Grid
+        Column {
+            SearchDemo()
+            ClickUpMenuDemo1()
+        }
         Column { ClickUpMenuDemo2() }
         Column { ActivityDropdownDemo() }
         Column {
@@ -56,7 +63,6 @@ fun DebugUI() {
             ViewModelDemo()
             MutableFlowStateDemo()
             IdleDetectoryDemo()
-//            SearchDemo()
         }
     }
 }

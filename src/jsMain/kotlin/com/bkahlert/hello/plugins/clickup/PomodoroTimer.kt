@@ -87,7 +87,7 @@ fun PomodoroTimer(
         }
     } else {
         Div {
-            Icon("red", "stop", "circle", {
+            Icon("red", "stop", "circle") {
                 if (!stopping) {
                     +Link
                     onClick {
@@ -95,7 +95,7 @@ fun PomodoroTimer(
                         onStop(timeEntry, listOf(Aborted.tag))
                     }
                 }
-            })
+            }
             Span({
                 style {
                     fontWeight(700)

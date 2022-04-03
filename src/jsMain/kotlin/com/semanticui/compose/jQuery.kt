@@ -9,6 +9,7 @@ import kotlin.js.json
 external class jQuery(deep: Any?) {
     fun accordion(options: Json = definedExternally): jQuery
     fun dropdown(options: Json = definedExternally): jQuery
+    fun dropdown(behavior: String, vararg args: Any? = definedExternally): jQuery
     fun popup(options: Json = definedExternally): jQuery
     fun popup(behavior: String, vararg args: Any? = definedExternally): jQuery
     fun transition(options: Json = definedExternally): jQuery
@@ -17,6 +18,10 @@ external class jQuery(deep: Any?) {
     fun modal(behavior: String, vararg args: Any? = definedExternally): jQuery
     fun progress(options: Json = definedExternally): jQuery
     fun progress(behavior: String, vararg args: Any? = definedExternally): jQuery
+
+    fun attr(propertyName: String, value: Any?): jQuery
+    fun children(selector: String = definedExternally): jQuery
+    fun css(propertyName: String, value: Any?): jQuery
 }
 
 /**
@@ -46,3 +51,10 @@ fun jQuery.modal(vararg options: Pair<String, Any?>) = modal(json(*options))
  * using the specified [options].
  */
 fun jQuery.progress(vararg options: Pair<String, Any?>) = progress(json(*options))
+
+/**
+ * Helper function to convert collections to something that jQuery / Semantic UI
+ * accepts as an array.
+ */
+fun <T> Iterable<T>.toJsonArray(transform: (T) -> String = { it.toString() }): Array<String> =
+    map { transform(it) }.toTypedArray()

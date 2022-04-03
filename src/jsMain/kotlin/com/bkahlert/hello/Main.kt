@@ -20,8 +20,9 @@ import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.plugins.clickup.ClickUpMenu
 import com.bkahlert.hello.plugins.clickup.ClickUpModel
-import com.bkahlert.hello.search.Engine
-import com.bkahlert.hello.search.Search
+import com.bkahlert.hello.search.PasteHandlingMultiSearchInput
+import com.bkahlert.hello.search.SearchEngine
+import com.bkahlert.hello.search.SearchThing
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
 import com.bkahlert.hello.ui.demo.DebugUI
@@ -39,7 +40,6 @@ import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.Modal
 import com.semanticui.compose.module.autofocus
 import com.semanticui.compose.module.blurring
-import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -105,19 +105,19 @@ sealed interface AppState {
 
 
 class AppModel(storage: Storage = InMemoryStorage()) {
-    private var recentlyUsedEngine by storage default Engine.Default
+    private var recentlyUsedSearchEngine by storage default SearchEngine.Default
 
     private val logger = simpleLogger()
 
     private val _appState = MutableStateFlow<AppState>(Loading)
     val appState = _appState.asStateFlow()
 
-    private val _engine = MutableStateFlow(recentlyUsedEngine)
+    private val _engine = MutableStateFlow(recentlyUsedSearchEngine)
     val engine = _engine.asStateFlow()
 
-    fun change(engine: Engine) {
-        recentlyUsedEngine = engine
-        _engine.update { engine }
+    fun change(searchEngine: SearchEngine) {
+        recentlyUsedSearchEngine = searchEngine
+        _engine.update { searchEngine }
     }
 
     fun searchReady() {
@@ -129,13 +129,12 @@ class AppModel(storage: Storage = InMemoryStorage()) {
 fun main() {
 
     // trigger creation to avoid flickering
-    Engine.values().forEach {
+    SearchEngine.values().forEach {
         it.grayscaleImage
         it.coloredImage
     }
 
     DebugMode(
-        eventTarget = document,
         storage = localStorage.scoped("debug"),
     ) {
 
@@ -154,14 +153,16 @@ fun main() {
 
     renderComposable("root") {
         Style(AppStylesheet)
+
         val appModel = remember { AppModel(localStorage.scoped("hello")) }
         val loadingState by appModel.appState.collectAsState()
         val engine by appModel.engine.collectAsState()
 
         @Suppress("SpellCheckingInspection")
         val clickupModel = remember { ClickUpModel(storage = localStorage.scoped("clickup")) }
+        console.warn("START")
         when (loadingState) {
-//            is Loading -> {} // TODO
+            is Loading -> {}
             else -> clickupModel.initialize()
         }
 
@@ -193,19 +194,27 @@ fun main() {
             Div({
                 style {
                     gridArea(Search)
+                    display(DisplayStyle.Flex)
+                    flexDirection(FlexDirection.Column)
+                    alignContent(AlignContent.Center)
+                    justifyContent(JustifyContent.Center)
+                    padding(2.em, 2.em, 2.em, 0.em)
                 }
             }) {
-                Search(
-                    engine,
-                    onEngineChange = appModel::change,
-                    onReady = appModel::searchReady,
-                )
+                if (false) {
+                    SearchThing(
+                        engine,
+                        onEngineChange = appModel::change,
+                        onReady = appModel::searchReady,
+                    )
+                } else {
+                    PasteHandlingMultiSearchInput()
+                }
             }
             Div({
                 style {
                     gridArea(Plugins)
                     display(DisplayStyle.Flex)
-                    flexWrap(FlexWrap.Nowrap)
                     flexDirection(FlexDirection.Column)
                     alignContent(AlignContent.Center)
                     justifyContent(JustifyContent.Center)
@@ -237,6 +246,7 @@ fun main() {
                 }
             }) {
                 when (loadingState) {
+                    AppState.Ready -> Custom(URL("https://start.me/p/0PBMOo/dkb"))
                     AppState.FullLoaded -> Custom(URL("https://start.me/p/0PBMOo/dkb"))
                     else -> Custom(null)
                 }

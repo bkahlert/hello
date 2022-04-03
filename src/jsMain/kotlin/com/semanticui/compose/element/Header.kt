@@ -134,7 +134,7 @@ fun IconHeader(
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     Header({ classes("icon") }) {
-        Icon(icon, { attrs?.invoke(this) })
+        Icon(icon) { attrs?.invoke(this) }
         Div({ classes("content") }, content)
     }
 }

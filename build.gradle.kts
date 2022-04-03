@@ -101,18 +101,18 @@ rootProject.plugins.withType<NodeJsRootPlugin> {
     rootProject.the<NodeJsRootExtension>().nodeVersion = "16.0.0"
 }
 
+tasks {
+    withType<Test> {
+        useJUnitPlatform()
+    }
 
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
-val deploy by tasks.registering {
-    dependsOn(tasks.named("jsBrowserProductionWebpack"))
-    doLast {
-        ssh.runSessions {
-            session(vaults["ssh-remotes.yml", "remotes", "default"]) {
-                put(buildDir.resolve("distributions").listFiles(), "./")
+    val deploy by registering {
+        dependsOn(named("jsBrowserProductionWebpack"))
+        doLast {
+            ssh.runSessions {
+                session(vaults["ssh-remotes.yml", "remotes", "default"]) {
+                    put(buildDir.resolve("distributions").listFiles(), "./")
+                }
             }
         }
     }

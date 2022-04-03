@@ -6,5 +6,5 @@ import org.jetbrains.compose.web.css.color
 
 @Composable
 fun ActivityIcon(activity: Activity<*>) {
-    Icon("square", { activity.color?.also { style { color(it) } } })
+    Icon("square") { activity.color?.also { style { color(it) } } }
 }

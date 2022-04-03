@@ -1,5 +1,6 @@
 package com.bkahlert.kommons.dom
 
+import com.bkahlert.kommons.compose.data
 import io.ktor.http.Url
 import kotlinx.dom.addClass
 import kotlinx.dom.hasClass
@@ -47,3 +48,13 @@ fun Document.body(): HTMLBodyElement = getOrCreate({ body as? HTMLBodyElement })
 fun Element.toggleClass(cssClass: String): Boolean =
     if (hasClass(cssClass)) removeClass(cssClass)
     else addClass(cssClass)
+
+/**
+ * [data] gets arbitrary `data` attribute of the Element.
+ */
+fun Element.data(dataAttr: String): String? = getAttribute("data-$dataAttr")
+
+/**
+ * [data] adds arbitrary `data` attribute to the Element.
+ */
+fun Element.data(dataAttr: String, value: String) = setAttribute("data-$dataAttr", value)

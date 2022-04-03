@@ -14,13 +14,19 @@ import com.bkahlert.kommons.Color.RGB
 import com.bkahlert.kommons.backgroundImage
 import com.bkahlert.kommons.dom.openInNewTab
 import com.bkahlert.kommons.dom.openInSameTab
+import com.bkahlert.kommons.text.randomString
 import com.bkahlert.kommons.time.seconds
 import com.bkahlert.kommons.web.dom.Toggle
 import com.bkahlert.kommons.web.http.toUrlOrNull
+import com.semanticui.compose.element.Icon
+import com.semanticui.compose.module.Checkbox
+import com.semanticui.compose.module.CheckboxElementType.Toggle
 import io.ktor.http.Url
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.AutoComplete
+import org.jetbrains.compose.web.attributes.InputType.Checkbox
+import org.jetbrains.compose.web.attributes.InputType.Text
 import org.jetbrains.compose.web.attributes.autoComplete
 import org.jetbrains.compose.web.attributes.autoFocus
 import org.jetbrains.compose.web.attributes.maxLength
@@ -28,8 +34,9 @@ import org.jetbrains.compose.web.attributes.name
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.Color
-import org.jetbrains.compose.web.css.DisplayStyle
+import org.jetbrains.compose.web.css.DisplayStyle.Companion.Flex
 import org.jetbrains.compose.web.css.FlexDirection
+import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.StyleScope
 import org.jetbrains.compose.web.css.alignItems
@@ -47,6 +54,7 @@ import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex
 import org.jetbrains.compose.web.css.fontSize
 import org.jetbrains.compose.web.css.height
+import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.marginLeft
 import org.jetbrains.compose.web.css.marginTop
 import org.jetbrains.compose.web.css.maxWidth
@@ -58,20 +66,22 @@ import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Em
+import org.jetbrains.compose.web.dom.Input
+import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.SearchInput
 import org.jetbrains.compose.web.dom.Span
+import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
 @Composable
-fun Search(
-    engine: Engine,
+fun SearchThing(
+    searchEngine: SearchEngine,
+    onEngineChange: (SearchEngine) -> Unit = {},
+    allAtOnce: Boolean = false,
+    onAllAtOnceChange: (Boolean) -> Unit = {},
     query: String? = null,
-    fullSearch: Boolean = false,
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    onEngineChange: (Engine) -> Unit = {},
-    onFullSearchChange: (Boolean) -> Unit = {},
-    onReady: () -> Unit = {},
+    onQueryChange: (String) -> Unit = {},
     onSearch: (String, List<Url>) -> Unit = { _, urls ->
         if (urls.size == 1) window.openInSameTab(urls.first())
         else urls.forEach(window::openInNewTab)
@@ -80,27 +90,63 @@ fun Search(
         value.toUrlOrNull()
             ?.let { window.openInSameTab(it) }
     },
+    onReady: () -> Unit = {},
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
 ) {
+    val id = randomString()
+
+    Div({
+        classes("ui", "search")
+        style {
+            display(Flex)
+            alignItems(AlignItems.Center)
+            justifyContent(JustifyContent.Center)
+        }
+    }) {
+        Div({
+            classes("ui", "icon", "input")
+            style { flex("1") }
+        }) {
+            Input(Text) {
+                id(id)
+                classes("prompt")
+                placeholder("Search...")
+            }
+            Icon("search")
+        }
+        Label(id) { Text(searchEngine.name) }
+        Checkbox(Toggle, { style { marginLeft(1.em) } }) {
+            Input(Checkbox) {
+                name("all-at-once")
+                checked(allAtOnce)
+                onChange { onAllAtOnceChange(it.value) }
+            }
+            Label {
+                Text("all at once")
+            }
+        }
+    }
+
     val color = RGB("#5f6368")
 
     val spacerInput = "spacer-input"
 
     var inputState by remember { mutableStateOf(query ?: "") }
 
-    var engineState by remember { mutableStateOf(engine) }
+    var engineState by remember { mutableStateOf(searchEngine) }
 
     @Suppress("NAME_SHADOWING")
-    val onEngineChange: (Engine) -> Unit = {
+    val onEngineChange: (SearchEngine) -> Unit = {
         engineState = it
         onEngineChange(it)
     }
 
-    var fullSearchState by remember { mutableStateOf(fullSearch) }
+    var fullSearchState by remember { mutableStateOf(allAtOnce) }
 
     @Suppress("NAME_SHADOWING")
     val onFullSearchChange: (Boolean) -> Unit = {
         fullSearchState = it
-        onFullSearchChange(it)
+        onAllAtOnceChange(it)
     }
 
     var focusState by remember { mutableStateOf(false) }
@@ -115,7 +161,7 @@ fun Search(
 
     @Suppress("NAME_SHADOWING")
     val onSearch: () -> Unit = {
-        onSearch(inputState, Engine.values()
+        onSearch(inputState, SearchEngine.values()
             .filter { fullSearchState || it == engineState }
             .map { it.url(inputState) })
     }
@@ -142,7 +188,7 @@ fun Search(
                 backgroundColor(Color.transparent)
                 backgroundImage("url(rainbow-gradient.svg)")
 
-                display(DisplayStyle.Flex)
+                display(Flex)
                 height(44.px)
                 border(1.px, LineStyle.Solid, color)
                 property("box-shadow", "none")
@@ -185,7 +231,7 @@ fun Search(
                     }
                     backgroundSize("100% 45%")
 
-                    display(DisplayStyle.Flex)
+                    display(Flex)
                     property("box-shadow", "none")
                     borderRadius(24.px)
                     property("margin", "0 auto")
@@ -196,13 +242,13 @@ fun Search(
                 Div({
                     style {
                         flex("1")
-                        display(DisplayStyle.Flex)
+                        display(Flex)
                         padding(0.px, 8.px, 0.px, 14.px)
                     }
                 }) {
                     Div({
                         style {
-                            display(DisplayStyle.Flex)
+                            display(Flex)
                             alignItems(AlignItems.Center)
                             paddingRight(7.px)
                             marginTop(1.px)
@@ -290,7 +336,7 @@ fun Search(
 
         Toggle(
             label = "1",
-            checkedLabel = Engine.values().size.toString()
+            checkedLabel = SearchEngine.values().size.toString()
         ) {
             style {
                 property("flex", "0 auto")

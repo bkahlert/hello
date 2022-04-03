@@ -10,22 +10,6 @@ import org.w3c.dom.HTMLElement
 interface IconElement : SemanticElement
 
 /**
- * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition).
- *
- * @see <a href="https://semantic-ui.com/elements/icon.html#/icon">Icons</a>
- */
-@Composable
-fun Icon(
-    attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
-    content: SemanticBuilder<IconElement, HTMLElement>? = null,
-) {
-    SemanticElement({
-        attrs?.invoke(this)
-        classes("icon")
-    }, content) { a, c -> I(a, c) }
-}
-
-/**
  * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition)
  * using the specified [name].
  *
@@ -33,53 +17,30 @@ fun Icon(
  */
 @Composable
 fun Icon(
-    name: String,
+    vararg name: String,
     attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
-    content: SemanticBuilder<IconElement, HTMLElement>? = null,
 ) {
-    SemanticElement({
+    SemanticElement<IconElement, HTMLElement>({
         attrs?.invoke(this)
-        classes(name, "icon")
-    }, content) { a, c -> I(a, c) }
+        classes(*name, "icon")
+    }) { a, c -> I(a, c) }
 }
 
 /**
  * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition)
- * using the specified [name1] and [name2].
+ * using the specified [names].
  *
  * @see <a href="https://semantic-ui.com/elements/icon.html#/icon">Icons</a>
  */
 @Composable
 fun Icon(
-    name1: String,
-    name2: String,
+    names: List<String>,
     attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
-    content: SemanticBuilder<IconElement, HTMLElement>? = null,
 ) {
-    SemanticElement({
+    SemanticElement<IconElement, HTMLElement>({
         attrs?.invoke(this)
-        classes(name1, name2, "icon")
-    }, content) { a, c -> I(a, c) }
-}
-
-/**
- * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition)
- * using the specified [name1], [name2] and [name3].
- *
- * @see <a href="https://semantic-ui.com/elements/icon.html#/icon">Icons</a>
- */
-@Composable
-fun Icon(
-    name1: String,
-    name2: String,
-    name3: String,
-    attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
-    content: SemanticBuilder<IconElement, HTMLElement>? = null,
-) {
-    SemanticElement({
-        attrs?.invoke(this)
-        classes(name1, name2, name3, "icon")
-    }, content) { a, c -> I(a, c) }
+        classes(*names.toTypedArray(), "icon")
+    }) { a, c -> I(a, c) }
 }
 
 /**
