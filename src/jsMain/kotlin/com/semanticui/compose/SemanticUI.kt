@@ -153,36 +153,35 @@ interface SemanticElementScope<out TSemantic : SemanticElement, out TElement : E
     }
 }
 
+/**
+ * Creates a [TSemantic] representing element with
+ * the specified [attrs] and
+ * the specified [content]
+ * based on the [TElement]
+ * built using the specified [builder].
+ */
 @Composable
 fun <TSemantic : SemanticElement, TElement : Element> SemanticElement(
     attrs: SemanticAttrBuilder<TSemantic, TElement>? = null,
     content: SemanticBuilder<TSemantic, TElement>? = null,
-    invoke: @Composable (AttrBuilderContext<TElement>?, ContentBuilder<TElement>?) -> Unit,
-) {
-    invoke({
-        attrs?.invoke(SemanticAttrsScope.of(this))
-    }, {
-        content?.invoke(SemanticElementScope.of(this))
-    })
-}
+    builder: @Composable (AttrBuilderContext<TElement>?, ContentBuilder<TElement>?) -> Unit,
+) = builder({
+    attrs?.invoke(SemanticAttrsScope.of(this))
+}, {
+    content?.invoke(SemanticElementScope.of(this))
+})
 
-@Composable
-fun <TSemantic : SemanticElement, TElement : Element> SemanticElement(
-    attrs: SemanticAttrBuilder<TSemantic, TElement>? = null,
-    invoke: @Composable (AttrBuilderContext<TElement>?) -> Unit,
-) {
-    invoke {
-        attrs?.invoke(SemanticAttrsScope.of(this))
-    }
-}
-
+/**
+ * Creates a [TSemantic] representing element with
+ * the specified [attrs] and
+ * the specified [content]
+ * based on a [HTMLDivElement].
+ */
 @Composable
 fun <TSemantic : SemanticElement> SemanticDivElement(
     attrs: SemanticAttrBuilder<TSemantic, HTMLDivElement>? = null,
     content: SemanticBuilder<TSemantic, HTMLDivElement>? = null,
-) {
-    SemanticElement(attrs, content) { a, c -> Div(a, c) }
-}
+) = SemanticElement(attrs, content) { a, c -> Div(a, c) }
 
 interface Modifier {
     val classNames: Array<out String>

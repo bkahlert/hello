@@ -14,10 +14,11 @@ import com.clickup.api.TaskID
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.module.Checkbox
 import com.semanticui.compose.module.CheckboxElementType.Toggle
-import com.semanticui.compose.module.DropdownMenu
-import com.semanticui.compose.module.DropdownText
 import com.semanticui.compose.module.InlineDropdown
-import com.semanticui.compose.view.Item
+import com.semanticui.compose.module.Item
+import com.semanticui.compose.module.Menu
+import com.semanticui.compose.module.Text
+import com.semanticui.compose.module.onChange
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
@@ -50,11 +51,12 @@ fun PomodoroStarter(
     } else {
         Icon("green", icon, "disabled")
     }
-    InlineDropdown(taskID,
-        { value, _, _ -> selectedType = enumValueOf(value) }) {
-        DropdownText { Text(selectedType.duration.format()) }
+    InlineDropdown(taskID, {
+        onChange = { value -> selectedType = enumValueOf(value) }
+    }) {
+        Text { Text(selectedType.duration.format()) }
         Icon("dropdown")
-        DropdownMenu {
+        Menu {
             Item({
                 attr("data-value", selectedType.name)
                 attr("data-text", selectedType.duration.format())

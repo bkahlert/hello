@@ -18,7 +18,7 @@ interface AccordionElement : SemanticElement
 
 /**
  * Creates a [SemanticUI icon](https://semantic-ui.com/modules/accordion.html#/definition)
- * using the specified [key] to determine if the visual representation needs to be updated.
+ * using the specified [key] to determine if the visual representation needs to be re-created.
  */
 @Composable
 fun Accordion(

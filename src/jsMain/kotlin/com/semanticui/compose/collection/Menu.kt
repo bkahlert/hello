@@ -9,11 +9,9 @@ import com.semanticui.compose.SemanticElementScope
 import com.semanticui.compose.module.Dropdown
 import com.semanticui.compose.module.DropdownElement
 import com.semanticui.compose.view.ItemElement
-import io.ktor.client.fetch.ArrayLike
 import org.jetbrains.compose.web.dom.A
 import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLElement
 
 interface MenuElement : SemanticElement
 
@@ -89,12 +87,10 @@ fun SemanticElementScope<MenuElement, *>.AnkerItem(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<MenuElement, *>.DropdownItem(
-    key: Any?,
-    onChange: (value: String, text: String, selectedItem: ArrayLike<HTMLElement>) -> Unit = { _, _, _ -> },
     attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
     content: SemanticBuilder<DropdownElement, HTMLDivElement>? = null,
 ) {
-    Dropdown(key, onChange, {
+    Dropdown({
         attrs?.invoke(this)
         classes("item")
     }, content)

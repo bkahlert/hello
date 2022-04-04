@@ -1,38 +1,46 @@
 package com.bkahlert.hello.search
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.compose.data
-import com.bkahlert.kommons.dom.data
-import com.semanticui.compose.Semantic
 import com.semanticui.compose.SemanticAttrBuilder
-import com.semanticui.compose.UI
-import com.semanticui.compose.dropdown
 import com.semanticui.compose.element.Button
 import com.semanticui.compose.element.Icon
+import com.semanticui.compose.element.Item
 import com.semanticui.compose.element.ListElement
 import com.semanticui.compose.element.horizontal
-import com.semanticui.compose.jQuery
 import com.semanticui.compose.module.Checkbox
 import com.semanticui.compose.module.CheckboxElementType.Toggle
+import com.semanticui.compose.module.Divider
+import com.semanticui.compose.module.Header
+import com.semanticui.compose.module.InlineMultipleDropdown
+import com.semanticui.compose.module.Item
+import com.semanticui.compose.module.Menu
+import com.semanticui.compose.module.MultipleDropdownState
+import com.semanticui.compose.module.MultipleDropdownStateImpl
+import com.semanticui.compose.module.Text
+import com.semanticui.compose.module.debug
+import com.semanticui.compose.module.message
+import com.semanticui.compose.module.placeholder
+import com.semanticui.compose.module.scrolling
+import com.semanticui.compose.module.useLabels
 import com.semanticui.compose.toJsonArray
-import com.semanticui.compose.view.Item
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.name
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.alignItems
+import org.jetbrains.compose.web.css.backgroundImage
+import org.jetbrains.compose.web.css.backgroundRepeat
+import org.jetbrains.compose.web.css.backgroundSize
 import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex
 import org.jetbrains.compose.web.css.fontWeight
+import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.left
 import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.css.margin
@@ -41,23 +49,22 @@ import org.jetbrains.compose.web.css.marginRight
 import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.minWidth
 import org.jetbrains.compose.web.css.paddingBottom
-import org.jetbrains.compose.web.css.paddingRight
 import org.jetbrains.compose.web.css.paddingTop
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.whiteSpace
+import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
-import kotlin.js.json
 import com.semanticui.compose.element.List as SemanticList
 
 @Stable
-interface SearchEngineSelectState {
-    var selectedEngines: List<SearchEngine>
+interface SearchEngineSelectState : MultipleDropdownState {
     val availableEngines: List<SearchEngine>
+    var selectedEngines: List<SearchEngine>
 
     var selectedEngineNames: Array<String>
         get() = selectedEngines.toJsonArray { it.name }
@@ -78,26 +85,28 @@ interface SearchEngineSelectState {
 }
 
 class SearchEngineSelectStateImpl(
-    selectedEngines: List<SearchEngine>,
     availableEngines: List<SearchEngine> = emptyList(),
-) : SearchEngineSelectState {
-    private var _selectedEngines by mutableStateOf(selectedEngines)
+    selectedEngines: List<SearchEngine> = emptyList(),
+    private val toString: (SearchEngine) -> String = { it.name },
+    private val fromString: (String) -> SearchEngine = run {
+        val mappings: Map<String, SearchEngine> = availableEngines.associateBy { it.name }
+        val y: (String) -> SearchEngine = { mappings.getValue(it) }
+        y
+    },
+) : SearchEngineSelectState, MultipleDropdownState by MultipleDropdownStateImpl(
+    availableEngines.map { toString(it) },
+    selectedEngines.map { toString(it) },
+) {
     override var selectedEngines: List<SearchEngine>
-        get() = if (_allEngines) availableEngines else _selectedEngines
+        get() = selectedValues.map { fromString(it) }
         set(value) {
-            _selectedEngines = value
-            if (!availableEngines.all { _selectedEngines.contains(it) }) {
-                _allEngines = false
-            }
+            selectedValues = value.map { toString(it) }
         }
-    override val availableEngines by mutableStateOf(availableEngines)
 
-    private var _allEngines by mutableStateOf(false)
-    override var allEngines: Boolean
-        get() = _allEngines || availableEngines.all { _selectedEngines.contains(it) }
-        set(value) {
-            _allEngines = value && !availableEngines.all { _selectedEngines.contains(it) }
-        }
+    override val availableEngines: List<SearchEngine>
+        get() = availableValues.map { fromString(it) }
+
+    override var allEngines: Boolean by ::allValues
 }
 
 @Composable
@@ -109,8 +118,8 @@ fun rememberSearchEngineSelectState(
     val availableEngines = engines.toList()
     return remember(selectedEngines, availableEngines) {
         SearchEngineSelectStateImpl(
-            selectedEngines = selectedEngines,
             availableEngines = availableEngines,
+            selectedEngines = selectedEngines,
         )
     }
 }
@@ -130,15 +139,29 @@ fun SearchEngineSelect(
         }
         attrs?.invoke(this)
     }) {
-        state.selectedEngines.forEach { engine ->
-            Item({
-                style {
-                    flex("0 1 auto")
-                    minWidth(0.px)
-                    marginLeft(0.px)
+        if (state.allEngines) {
+            Item {
+                Div({
+                    style {
+                        backgroundImage("url(rainbow-gradient.svg)");
+                        backgroundRepeat("no-repeat")
+                        backgroundSize("contain")
+                        width(2.em)
+                        height(2.em)
+                    }
+                })
+            }
+        } else {
+            state.selectedEngines.forEach { engine ->
+                Item({
+                    style {
+                        flex("0 1 auto")
+                        minWidth(0.px)
+                        marginLeft(0.px)
+                    }
+                }) {
+                    ClosableSearchEngineButton(engine) { state.selectedEngines -= engine }
                 }
-            }) {
-                ClosableSearchEngineButton(engine) { state.selectedEngines -= engine }
             }
         }
         Item({
@@ -156,14 +179,16 @@ fun SearchEngineDropdown(
     state: SearchEngineSelectState = rememberSearchEngineSelectState(),
     debug: Boolean = false,
 ) {
-    UI("floating", "inline", "multiple", "dropdown", attrs = {
-        style {
-            paddingRight(.35714286.em)
-        }
+    InlineMultipleDropdown(state, {
+        this.debug = debug
+        message = mapOf("count" to "{count}/${state.availableEngines.size} engine(s) selected")
+        placeholder = "no engine selected"
+        useLabels = false
     }) {
         Input(Hidden) { name("engine");value(state.selectedEnginesValue) }
-        Semantic("text", "default", attrs = { style { display(DisplayStyle.None) } }) { Text("no engines selected") }
-        Semantic(attrs = {
+        // it's virtually impossible to provide a custom text its always updated by SemanticUI, even with a custom action
+        Text({ classes("default");style { display(DisplayStyle.None) } }) { Text("no engines selected") }
+        Div({
             style { // = text class
                 display(DisplayStyle.InlineBlock)
                 fontWeight(700)
@@ -178,21 +203,21 @@ fun SearchEngineDropdown(
             }
         }
         Icon("dropdown")
-        Semantic("menu") {
+        Menu {
             Checkbox(Toggle, { classes("input") }) {
                 Input(Checkbox) {
                     tabIndex(0)
                     checked(state.allEngines)
                     onChange { state.allEngines = !state.allEngines }
                 }
-                Label { Text("All Engines at Once") }
+                Label { Text("All Engines") }
             }
-            Semantic("divider")
-            Semantic("header") {
+            Divider()
+            Header {
                 Icon("search")
                 Text("Select Search Engines")
             }
-            Semantic("scrolling", "menu") {
+            Menu({ +scrolling }) {
                 state.availableEngines.forEach { engine ->
                     Item({
                         data("value", engine.name)
@@ -204,28 +229,6 @@ fun SearchEngineDropdown(
             }
         }
 
-        DisposableEffect(state) {
-            jQuery(scopeElement)
-                .dropdown(
-                    "message" to json("count" to "{count}/${state.availableEngines.size} engine(s) selected"),
-                    "onChange" to fun(value: String) {
-                        if (scopeElement.data("muted") == null) {
-                            if (debug) console.log("selection changed by dropdown to $value")
-                            state.selectedEnginesValue = value
-                        }
-                    },
-                    "placeholder" to "no engine selected",
-                    "useLabels" to false,
-                )
-            onDispose { }
-        }
-        DisposableEffect(state.selectedEngines) {
-            jQuery(scopeElement)
-                .attr("data-muted", true)
-                .dropdown("set exactly", state.selectedEngineNames)
-                .attr("data-muted", null)
-            onDispose { }
-        }
     }
 
     if (debug) {

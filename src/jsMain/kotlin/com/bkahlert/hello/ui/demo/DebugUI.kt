@@ -20,7 +20,6 @@ private fun Grid(
 ) {
     Div({
         attrs?.invoke(this)
-//        classes("ui", "three", "column", "doubling", "grid", "container")
         classes("ui", "two", "column", "doubling", "grid", "container")
     }, content)
 }
@@ -41,10 +40,6 @@ fun DebugUI() {
     Grid({
         style { margin(2.em) }
     }) {
-        Column {
-            SearchDemo()
-        }
-        return@Grid
         Column {
             SearchDemo()
             ClickUpMenuDemo1()

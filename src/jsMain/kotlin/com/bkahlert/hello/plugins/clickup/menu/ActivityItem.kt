@@ -4,17 +4,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import com.bkahlert.hello.ui.textOverflow
 import com.semanticui.compose.SemanticAttrBuilder
+import com.semanticui.compose.SemanticElementScope
 import com.semanticui.compose.jQuery
+import com.semanticui.compose.module.DropdownMenuElement
+import com.semanticui.compose.module.DropdownMenuItemElement
+import com.semanticui.compose.module.Item
 import com.semanticui.compose.popup
-import com.semanticui.compose.view.Item
-import com.semanticui.compose.view.ItemElement
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 
+@Suppress("unused")
 @Composable
-fun ActivityItem(
+fun SemanticElementScope<DropdownMenuElement, *>.ActivityItem(
     activity: Activity<*>,
-    attrs: SemanticAttrBuilder<ItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilder<DropdownMenuItemElement, HTMLDivElement>? = null,
 ) {
     Item({
         attr("data-text", activity.name)

@@ -39,7 +39,7 @@ import com.semanticui.compose.collection.Menu
 import com.semanticui.compose.collection.MenuElement
 import com.semanticui.compose.collection.SubMenu
 import com.semanticui.compose.element.Icon
-import com.semanticui.compose.view.Item
+import com.semanticui.compose.module.Menu
 import com.semanticui.compose.view.ItemElement
 import io.ktor.http.Url
 import kotlinx.browser.window
@@ -199,7 +199,10 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectingItems(
         }
     }
     if (state.teams.isEmpty()) {
-        Item({ +Borderless }) {
+        LinkItem({
+            +Borderless
+            +Disabled
+        }) {
             Span {
                 Text("No teams found")
             }
@@ -217,7 +220,7 @@ fun SemanticElementScope<MenuElement, *>.MainItems(
     onSignOut: () -> Unit = {},
 ) {
 
-    DropdownItem(Unit, { _, _, _ -> }, { +Borderless }) {
+    DropdownItem({ +Borderless }) {
         Img(src = user.profilePicture.toString(), alt = "User ${user.username}") {
             classes("avatar")
         }
@@ -247,7 +250,7 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
 ) {
     when (teams.size) {
         0 -> {
-            Item {
+            LinkItem({ +Disabled }) {
                 Icon("dropdown")
                 Span({ classes("text") }) { Text("Switch Team") }
             }
@@ -261,10 +264,10 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
                 if (team.id == selectedTeam?.id) +Disabled + Active
             }
         }
-        else -> Item {
+        else -> DropdownItem {
             Icon("dropdown")
             Span({ classes("text") }) { Text("Switch Team") }
-            SubMenu {
+            Menu {
                 teams.forEach { team ->
                     TeamItem(
                         team = team,
@@ -346,9 +349,9 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
                 }
             }
         }
-        Item({
+        LinkItem({
             +Borderless
-            if (selectedActivity == null) +Disabled
+            if (selectedActivity == null) classes("disabled")
             style {
                 flex(1, 1)
                 minWidth("0") // https://css-tricks.com/flexbox-truncated-text/

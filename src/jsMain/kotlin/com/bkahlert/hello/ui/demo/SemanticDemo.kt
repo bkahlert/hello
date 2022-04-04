@@ -40,8 +40,8 @@ import com.semanticui.compose.module.CheckboxElementType.Slider
 import com.semanticui.compose.module.CheckboxElementType.Toggle
 import com.semanticui.compose.module.Dimmer
 import com.semanticui.compose.module.Dropdown
-import com.semanticui.compose.module.DropdownMenu
-import com.semanticui.compose.module.DropdownText
+import com.semanticui.compose.module.Menu
+import com.semanticui.compose.module.Text
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Text
 import org.jetbrains.compose.web.attributes.name
@@ -115,10 +115,10 @@ fun SemanticDemo() {
                         Input({ +Position.Right + action + Position.Left + icon }) {
                             Icon("search")
                             AnyInput("Search...")
-                            Dropdown(Unit, { _, _, _ -> }, { +Basic + Floating; classes("button") }) {
-                                DropdownText { Text("This Page") }
+                            Dropdown({ +Basic + Floating; classes("button") }) {
+                                Text { Text("This Page") }
                                 Icon("dropdown")
-                                DropdownMenu {
+                                Menu {
                                     Item { Text("This Organization") }
                                     Item { Text("Entire Size") }
                                 }

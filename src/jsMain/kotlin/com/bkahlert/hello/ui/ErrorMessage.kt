@@ -16,12 +16,6 @@ import org.w3c.dom.HTMLDivElement
 
 private val logger = SimpleLogger("error-message-test")
 
-@Composable
-fun ErrorMessage(
-    message: String,
-) {
-    ErrorMessage { Text(message) }
-}
 
 @Composable
 fun ErrorMessage(

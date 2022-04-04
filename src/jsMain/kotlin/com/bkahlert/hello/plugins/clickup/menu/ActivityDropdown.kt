@@ -7,10 +7,11 @@ import com.clickup.api.Identifier
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.Input
 import com.semanticui.compose.module.Divider
-import com.semanticui.compose.module.DropdownMenu
-import com.semanticui.compose.module.DropdownText
 import com.semanticui.compose.module.Header
 import com.semanticui.compose.module.InlineDropdown
+import com.semanticui.compose.module.Menu
+import com.semanticui.compose.module.Text
+import com.semanticui.compose.module.onChange
 import org.jetbrains.compose.web.attributes.InputType.Text
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.css.color
@@ -37,20 +38,20 @@ fun ActivityDropdown(
     }
 
     InlineDropdown(
-        key = activityGroups,
-        onChange = { value, _, _ ->
-            val activityId = value.takeIf { it.isNotEmpty() }?.let { Identifier.of(it) }
-            onSelect(listOfNotNull(activityId))
-        },
-        attrs = {
+        activityGroups,
+        {
             +Scrolling
             style {
                 flex(1, 1)
                 minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
             }
-        }
+            onChange = { value ->
+                val activityId = value.takeIf { it.isNotEmpty() }?.let { Identifier.of(it) }
+                onSelect(listOfNotNull(activityId))
+            }
+        },
     ) {
-        DropdownText({
+        Text({
             style {
                 maxWidth(100.percent)
                 textOverflow()
@@ -62,7 +63,7 @@ fun ActivityDropdown(
                 else -> Text(task.name)
             }
         }
-        DropdownMenu({
+        Menu({
             style { maxWidth(200.percent) }
         }) {
             Input({ +Icon("search") }) {
