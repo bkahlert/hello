@@ -4,8 +4,8 @@ import com.bkahlert.hello.JsonSerializer
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.serialize
 import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.dom.div
 import com.bkahlert.kommons.serialization.Named
-import com.bkahlert.kommons.web.http.div
 import com.clickup.api.Folder
 import com.clickup.api.FolderID
 import com.clickup.api.Space

@@ -1,6 +1,6 @@
 package com.clickup.api
 
-import com.bkahlert.kommons.web.http.div
+import com.bkahlert.kommons.dom.div
 import io.ktor.http.Url
 import kotlin.reflect.KClass
 

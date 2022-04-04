@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.dom.openInNewTab
 import com.bkahlert.kommons.dom.openInSameTab
-import com.bkahlert.kommons.web.http.toUrlOrNull
+import com.bkahlert.kommons.dom.toUrlOrNull
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticBuilder
 import com.semanticui.compose.UI
@@ -56,9 +56,9 @@ fun rememberSearchInputState(
 @Composable
 fun SearchInput(
     state: SearchInputState = rememberSearchInputState(),
+    attrs: SemanticAttrBuilder<InputElement, HTMLDivElement>? = null,
     onSearch: ((String) -> Unit)? = { console.info("onSearch($it)") },
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
-    attrs: SemanticAttrBuilder<InputElement, HTMLDivElement>? = null,
     content: SemanticBuilder<InputElement, HTMLDivElement>? = null,
 ) {
     UI("search") {
@@ -116,38 +116,36 @@ fun rememberMultiSearchInputState(
 @Composable
 fun MultiSearchInput(
     state: MultiSearchInputState = rememberMultiSearchInputState(),
+    attrs: SemanticAttrBuilder<InputElement, HTMLDivElement>? = null,
     onSearch: ((String, List<SearchEngine>) -> Unit)? = { query, engines -> console.log("onSearch($query; $engines)") },
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
-    attrs: SemanticAttrBuilder<InputElement, HTMLDivElement>? = null,
     content: SemanticBuilder<InputElement, HTMLDivElement>? = null,
 ) {
-
-    SearchInput(
-        onSearch = { query -> onSearch?.invoke(query, state.selectedEngines) },
-        onPaste = onPaste,
-        attrs = {
-            attrs?.invoke(this)
-            +fluid
-            title("Press ↑ or ↓ to switch the search engine")
-            onKeyDown { event ->
-                when (event.code) {
-                    "ArrowUp" -> {
-                        if (!event.defaultPrevented) state.prev()
-                    }
-                    "ArrowDown" -> if (!event.defaultPrevented) state.next()
-                    "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = true
+    SearchInput(state, {
+        attrs?.invoke(this)
+        +fluid
+        title("Press ↑ or ↓ to switch the search engine")
+        onKeyDown { event ->
+            when (event.code) {
+                "ArrowUp" -> {
+                    if (!event.defaultPrevented) state.prev()
                 }
-            }
-            onKeyUp { event ->
-                when (event.code) {
-                    "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = false
-                }
-            }
-            onBlur {
-                // TODO
-                state.allEngines = false
+                "ArrowDown" -> if (!event.defaultPrevented) state.next()
+                "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = true
             }
         }
+        onKeyUp { event ->
+            when (event.code) {
+                "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = false
+            }
+        }
+        onBlur {
+            // TODO
+            state.allEngines = false
+        }
+    },
+        onSearch = { query -> onSearch?.invoke(query, state.selectedEngines) },
+        onPaste = onPaste
     ) {
         content?.invoke(this)
 
@@ -162,10 +160,8 @@ fun MultiSearchInput(
                 alignItems(AlignItems.Center)
             }
         }) {
-
             SearchEngineSelect(state) { +Size.Mini }
         }
-
     }
 }
 

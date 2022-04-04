@@ -1,12 +1,9 @@
 package com.bkahlert.hello.search
 
-import com.bkahlert.Brand
 import com.bkahlert.hello.search.SearchEngine.Google
 import com.bkahlert.hello.ui.fmod
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.Color.RGB
-import com.bkahlert.kommons.Image
-import com.bkahlert.kommons.SVGImage
 import io.ktor.http.Url
 
 /**
@@ -220,28 +217,6 @@ enum class SearchEngine(
      * The [SearchEngine] following this one among the specified [engines].
      */
     fun next(engines: List<SearchEngine>) = (engines + engines).windowed(2).firstNotNullOf { (current, next) -> next.takeIf { current == this } }
-
-    private fun svg(color: Color): SVGImage = SVGImage(
-        //language=SVG
-        """
-        <svg fill="none" xmlns="http://www.w3.org/2000/svg">
-            <text dominant-baseline="middle" 
-                  dy="0.67em" 
-                  font-family="${Brand.fontFamily}" 
-                  font-size="90vh" 
-                  fill="$color">$caption</text>
-        </svg>
-        """.trimIndent())
-
-    /**
-     * [Image] consisting of the [caption] with no colors.
-     */
-    val grayscaleImage: Image = svg(color.textColor)
-
-    /**
-     * [Image] consisting of the [caption] colored with [color].
-     */
-    val coloredImage: Image = svg(color)
 
     companion object {
         val Default: SearchEngine = Google

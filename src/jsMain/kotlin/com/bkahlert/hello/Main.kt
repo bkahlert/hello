@@ -22,7 +22,6 @@ import com.bkahlert.hello.plugins.clickup.ClickUpMenu
 import com.bkahlert.hello.plugins.clickup.ClickUpModel
 import com.bkahlert.hello.search.PasteHandlingMultiSearchInput
 import com.bkahlert.hello.search.SearchEngine
-import com.bkahlert.hello.search.SearchThing
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
 import com.bkahlert.hello.ui.demo.DebugUI
@@ -128,16 +127,9 @@ class AppModel(storage: Storage = InMemoryStorage()) {
 
 fun main() {
 
-    // trigger creation to avoid flickering
-    SearchEngine.values().forEach {
-        it.grayscaleImage
-        it.coloredImage
-    }
-
     DebugMode(
         storage = localStorage.scoped("debug"),
     ) {
-
         Modal(Unit, {
             +Fullscreen
             +Long
@@ -158,9 +150,7 @@ fun main() {
         val loadingState by appModel.appState.collectAsState()
         val engine by appModel.engine.collectAsState()
 
-        @Suppress("SpellCheckingInspection")
-        val clickupModel = remember { ClickUpModel(storage = localStorage.scoped("clickup")) }
-        console.warn("START")
+        @Suppress("SpellCheckingInspection") val clickupModel = remember { ClickUpModel(storage = localStorage.scoped("clickup")) }
         when (loadingState) {
             is Loading -> {}
             else -> clickupModel.initialize()
@@ -198,18 +188,10 @@ fun main() {
                     flexDirection(FlexDirection.Column)
                     alignContent(AlignContent.Center)
                     justifyContent(JustifyContent.Center)
-                    padding(2.em, 2.em, 2.em, 0.em)
+                    padding(2.em)
                 }
             }) {
-                if (false) {
-                    SearchThing(
-                        engine,
-                        onEngineChange = appModel::change,
-                        onReady = appModel::searchReady,
-                    )
-                } else {
-                    PasteHandlingMultiSearchInput()
-                }
+                PasteHandlingMultiSearchInput()
             }
             Div({
                 style {

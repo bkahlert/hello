@@ -43,8 +43,7 @@ var <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.onChange: ((S
 @Suppress("unused") val <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.scrolling: Variation.Scrolling get() = Variation.Scrolling
 
 /**
- * Creates a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html#/definition)
- * using the specified [key] to determine if the visual representation needs to be re-created.
+ * Creates a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html#/definition).
  */
 @Composable
 fun Dropdown(
@@ -105,12 +104,6 @@ var <TSemantic : MultipleDropdownElement> SemanticAttrsScope<TSemantic, *>.useLa
 interface MultipleDropdownState {
     val availableValues: List<String>
     var selectedValues: List<String>
-
-    var selectedValuesArray: Array<String>
-        get() = selectedValues.toJsonArray()
-        set(value) {
-            selectedValues = value.toList()
-        }
 
     var selectedValuesString: String
         get() = selectedValues.joinToString(",")
@@ -197,7 +190,7 @@ fun InlineMultipleDropdown(
         DisposableEffect(state.selectedValues) {
             jQuery(scopeElement)
                 .attr("data-muted", true)
-                .dropdown("set exactly", state.selectedValuesArray)
+                .dropdown("set exactly", state.selectedValues.toJsonArray())
                 .attr("data-muted", null)
             onDispose { }
         }
