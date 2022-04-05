@@ -327,14 +327,17 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
 } else {
     activityGroupsResult.fold({ activityGroups ->
         val selectedActivity = activityGroups.selected.firstOrNull()
+        var clicked by remember(selectedActivity) { mutableStateOf(false) }
         LinkItem({
             +Borderless
             if (selectedActivity == null) +Disabled
+            onClick { clicked = !it.defaultPrevented }
         }) {
             when (selectedActivity) {
                 is RunningTaskActivity -> {
                     PomodoroTimer(
                         timeEntry = selectedActivity.timeEntry,
+                        stop = { clicked },
                         onStop = onTimeEntryStop,
                         progressIndicating = false,
                         acousticFeedback = AcousticFeedback.PomodoroFeedback,
@@ -343,6 +346,7 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
                 else -> {
                     PomodoroStarter(
                         taskID = selectedActivity?.taskID,
+                        start = { clicked },
                         onStart = onTimeEntryStart,
                         acousticFeedback = AcousticFeedback.PomodoroFeedback,
                     )

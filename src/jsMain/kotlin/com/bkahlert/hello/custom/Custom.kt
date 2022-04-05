@@ -11,6 +11,7 @@ import com.bkahlert.hello.custom.Sandbox.Companion.sandbox
 import com.bkahlert.hello.ui.Spinner
 import com.bkahlert.kommons.backgroundImage
 import com.bkahlert.kommons.text.joinLinesToString
+import io.ktor.http.Url
 import org.jetbrains.compose.web.ExperimentalComposeWebApi
 import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.CSSBuilder
@@ -27,13 +28,12 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Iframe
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLIFrameElement
-import org.w3c.dom.url.URL
 
 // TODO https://semantic-ui.com/modules/embed.html
 
 @Composable
 fun Custom(
-    url: URL? = null,
+    url: Url? = null,
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
 ) {
     Style(CustomStyleSheet)
@@ -101,7 +101,7 @@ fun CSSBuilder.spinner() {
     backgroundPosition("center center")
 }
 
-fun AttrsScope<HTMLIFrameElement>.src(url: URL) {
+fun AttrsScope<HTMLIFrameElement>.src(url: Url) {
     attr("src", url.toString())
 }
 

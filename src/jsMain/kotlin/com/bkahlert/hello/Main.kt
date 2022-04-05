@@ -1,11 +1,13 @@
 package com.bkahlert.hello
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import com.bkahlert.Brand
-import com.bkahlert.hello.AppState.Loading
 import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
 import com.bkahlert.hello.AppStylesheet.GRADIENT_HEIGHT
 import com.bkahlert.hello.AppStylesheet.Grid.Custom
@@ -15,22 +17,19 @@ import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Margin
 import com.bkahlert.hello.AppStylesheet.Grid.Plugins
 import com.bkahlert.hello.AppStylesheet.Grid.Search
-import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.plugins.clickup.ClickUpMenu
 import com.bkahlert.hello.plugins.clickup.ClickUpModel
-import com.bkahlert.hello.search.PasteHandlingMultiSearchInput
-import com.bkahlert.hello.search.SearchEngine
+import com.bkahlert.hello.search.SearchFeature
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
 import com.bkahlert.hello.ui.demo.DebugUI
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
-import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
-import com.bkahlert.kommons.dom.Storage
-import com.bkahlert.kommons.dom.default
+import com.bkahlert.kommons.dom.url
+import com.bkahlert.kommons.time.seconds
 import com.semanticui.compose.element.AnkerButton
 import com.semanticui.compose.element.ButtonGroupElementType.Icon
 import com.semanticui.compose.element.Buttons
@@ -39,10 +38,11 @@ import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.Modal
 import com.semanticui.compose.module.autofocus
 import com.semanticui.compose.module.blurring
+import io.ktor.http.Url
 import kotlinx.browser.localStorage
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.browser.window
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.CSSBuilder
@@ -85,10 +85,11 @@ import org.jetbrains.compose.web.css.vh
 import org.jetbrains.compose.web.css.vw
 import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.AttrBuilderContext
+import org.jetbrains.compose.web.dom.DOMScope
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.url.URL
+import org.w3c.dom.HTMLElement
 
 // TODO start tasks
 // TODO clock / timer of passed time
@@ -96,32 +97,138 @@ import org.w3c.dom.url.URL
 // TODO loader animation on null Responses (not yet finished)
 // TODO semantic UI progress https://semantic-ui.com/modules/progress.html#attached at top of page for Pomodoro timer
 
-sealed interface AppState {
-    object Loading : AppState
-    object Ready : AppState
-    object FullLoaded : AppState
+interface Feature {
+    val name: String
+    val loaded: Boolean
+    val content: @Composable DOMScope<HTMLElement>.() -> Unit
 }
 
+@Stable
+interface AppState {
+    val features: Set<Feature>
+    fun load(feature: Feature): (@Composable DOMScope<HTMLElement>.() -> Unit)?
+}
 
-class AppModel(storage: Storage = InMemoryStorage()) {
-    private var recentlyUsedSearchEngine by storage default SearchEngine.Default
+class ProgressivelyLoadingAppState(
+    initialFeatures: Set<Feature>,
+) : AppState {
+    override var features by mutableStateOf(initialFeatures)
+        private set
 
-    private val logger = simpleLogger()
+    override fun load(feature: Feature): (@Composable DOMScope<HTMLElement>.() -> Unit)? {
+        if (features.all { it.loaded }) {
+            if (!features.contains(feature)) {
+                features = features + feature
+            }
+        }
+        return if (features.contains(feature)) feature.content
+        else null
+    }
+}
 
-    private val _appState = MutableStateFlow<AppState>(Loading)
-    val appState = _appState.asStateFlow()
+@Composable
+fun rememberAppState(
+    vararg features: Feature,
+) = remember(features) { ProgressivelyLoadingAppState(features.toSet()) }
 
-    private val _engine = MutableStateFlow(recentlyUsedSearchEngine)
-    val engine = _engine.asStateFlow()
 
-    fun change(searchEngine: SearchEngine) {
-        recentlyUsedSearchEngine = searchEngine
-        _engine.update { searchEngine }
+object ClickUpFeature : Feature {
+    override val name: String = "ClickUp"
+    override val loaded: Boolean = true
+    override val content: @Composable DOMScope<HTMLElement>.() -> Unit = {
+        @Suppress("SpellCheckingInspection")
+        ClickUpMenu(remember { ClickUpModel(storage = localStorage.scoped("clickup")) }
+            .also { it.initialize() })
+    }
+}
+
+object CustomFeature : Feature {
+    override val name: String = "Custom"
+    override val loaded: Boolean = true
+    override val content: @Composable DOMScope<HTMLElement>.() -> Unit = {
+        val url = if (window.location.url.host == "localhost") null else Url("https://start.me/p/0PBMOo/dkb")
+        Custom(url)
+    }
+}
+
+@Composable
+fun App(state: AppState = rememberAppState()) {
+
+    val coroutineScope = rememberCoroutineScope()
+    coroutineScope.launch {
+        delay(3.seconds)
+        console.warn("event")
     }
 
-    fun searchReady() {
-        if (appState.value != Loading) return
-        _appState.update { AppState.Ready }
+    Grid({
+        style {
+            backgroundSize("cover")
+            backgroundImage("url(grayscale-gradient.svg)")
+        }
+    }) {
+        Div({
+            style {
+                gridArea(Header)
+                backgroundSize("cover")
+                backgroundImage("url(steel-gradient.svg)")
+            }
+        }) { Header() }
+        Div({
+            style {
+                gridArea(Links)
+                center()
+            }
+        }) {
+            Buttons(Icon, { +Basic }) {
+                AnkerButton("https://start.me/p/4K6MOy/dashboard") { Icon("globe") }
+                AnkerButton("https://home.bkahlert.com") { Icon("home") }
+                AnkerButton("https://github.com/bkahlert") { Icon("github") }
+            }
+        }
+        Div({
+            style {
+                gridArea(Search)
+                display(DisplayStyle.Flex)
+                flexDirection(FlexDirection.Column)
+                alignContent(AlignContent.Center)
+                justifyContent(JustifyContent.Center)
+                padding(2.em)
+            }
+        }) {
+            state.load(SearchFeature())?.invoke(this)
+        }
+        Div({
+            style {
+                gridArea(Plugins)
+                display(DisplayStyle.Flex)
+                flexDirection(FlexDirection.Column)
+                alignContent(AlignContent.Center)
+                justifyContent(JustifyContent.Center)
+                padding(2.em, 2.em, 2.em, 0.em)
+            }
+        }) {
+            state.load(ClickUpFeature)?.invoke(this)
+        }
+        Div({
+            style {
+                gridArea(CustomGradient)
+                property("z-index", "1")
+                height(GRADIENT_HEIGHT)
+                transform { translateY(-GRADIENT_HEIGHT / 2) }
+                backgroundColor(Color.transparent)
+                backgroundImage(linearGradient(CUSTOM_BACKGROUND_COLOR.transparentize(0),
+                    CUSTOM_BACKGROUND_COLOR,
+                    CUSTOM_BACKGROUND_COLOR.transparentize(0)))
+            }
+        })
+        Div({
+            style {
+                gridArea(Custom)
+                backgroundColor(CUSTOM_BACKGROUND_COLOR)
+            }
+        }) {
+            state.load(CustomFeature)?.invoke(this)
+        }
     }
 }
 
@@ -145,95 +252,7 @@ fun main() {
 
     renderComposable("root") {
         Style(AppStylesheet)
-
-        val appModel = remember { AppModel(localStorage.scoped("hello")) }
-        val loadingState by appModel.appState.collectAsState()
-        val engine by appModel.engine.collectAsState()
-
-        @Suppress("SpellCheckingInspection") val clickupModel = remember { ClickUpModel(storage = localStorage.scoped("clickup")) }
-        when (loadingState) {
-            is Loading -> {}
-            else -> clickupModel.initialize()
-        }
-
-        Grid({
-            style {
-                backgroundSize("cover")
-                backgroundImage("url(grayscale-gradient.svg)")
-            }
-        }) {
-            Div({
-                style {
-                    gridArea(Header)
-                    backgroundSize("cover")
-                    backgroundImage("url(steel-gradient.svg)")
-                }
-            }) { Header() }
-            Div({
-                style {
-                    gridArea(Links)
-                    center()
-                }
-            }) {
-                Buttons(Icon, { +Basic }) {
-                    AnkerButton("https://start.me/p/4K6MOy/dashboard") { Icon("globe") }
-                    AnkerButton("https://home.bkahlert.com") { Icon("home") }
-                    AnkerButton("https://github.com/bkahlert") { Icon("github") }
-                }
-            }
-            Div({
-                style {
-                    gridArea(Search)
-                    display(DisplayStyle.Flex)
-                    flexDirection(FlexDirection.Column)
-                    alignContent(AlignContent.Center)
-                    justifyContent(JustifyContent.Center)
-                    padding(2.em)
-                }
-            }) {
-                PasteHandlingMultiSearchInput()
-            }
-            Div({
-                style {
-                    gridArea(Plugins)
-                    display(DisplayStyle.Flex)
-                    flexDirection(FlexDirection.Column)
-                    alignContent(AlignContent.Center)
-                    justifyContent(JustifyContent.Center)
-                    padding(2.em, 2.em, 2.em, 0.em)
-                }
-            }) {
-                // TODO delay until AppState.Ready
-                when (loadingState) {
-//                    is AppState.Loading -> {}
-                    else -> ClickUpMenu(clickupModel)
-                }
-            }
-            Div({
-                style {
-                    gridArea(CustomGradient)
-                    property("z-index", "1")
-                    height(GRADIENT_HEIGHT)
-                    transform { translateY(-GRADIENT_HEIGHT / 2) }
-                    backgroundColor(Color.transparent)
-                    backgroundImage(linearGradient(CUSTOM_BACKGROUND_COLOR.transparentize(0),
-                        CUSTOM_BACKGROUND_COLOR,
-                        CUSTOM_BACKGROUND_COLOR.transparentize(0)))
-                }
-            })
-            Div({
-                style {
-                    gridArea(Custom)
-                    backgroundColor(CUSTOM_BACKGROUND_COLOR)
-                }
-            }) {
-                when (loadingState) {
-                    AppState.Ready -> Custom(URL("https://start.me/p/0PBMOo/dkb"))
-                    AppState.FullLoaded -> Custom(URL("https://start.me/p/0PBMOo/dkb"))
-                    else -> Custom(null)
-                }
-            }
-        }
+        App()
     }
 }
 

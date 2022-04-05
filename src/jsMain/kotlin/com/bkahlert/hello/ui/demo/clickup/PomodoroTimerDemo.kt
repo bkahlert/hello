@@ -46,20 +46,20 @@ fun PomodoroTimerDemo() {
                 }
             }
             Demo("unknown type") {
-                PomodoroTimer(ClickupFixtures.TimeEntry.running(type = null), onStop)
+                PomodoroTimer(ClickupFixtures.TimeEntry.running(type = null), onStop = onStop)
             }
         }
         Demo("aborted") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.aborted(), onStop)
+            PomodoroTimer(ClickupFixtures.TimeEntry.aborted(), onStop = onStop)
         }
         Demo("completed") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.completed(), onStop)
+            PomodoroTimer(ClickupFixtures.TimeEntry.completed(), onStop = onStop)
         }
         Demo("completed and exceeded") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.completed(start = Now - 1.days), onStop)
+            PomodoroTimer(ClickupFixtures.TimeEntry.completed(start = Now - 1.days), onStop = onStop)
         }
         Demo("exceeded") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.running(start = Now - 1.days), onStop)
+            PomodoroTimer(ClickupFixtures.TimeEntry.running(start = Now - 1.days), onStop = onStop)
         }
     }
 }

@@ -30,6 +30,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun PomodoroTimer(
     timeEntry: TimeEntry,
+    stop: () -> Boolean = { false },
     onStop: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
     fps: Double = 15.0,
     progressIndicating: Boolean = true,
@@ -90,7 +91,12 @@ fun PomodoroTimer(
             Icon("red", "stop", "circle") {
                 if (!stopping) {
                     +Link
+                    if (stop()) {
+                        stopping = true
+                        onStop(timeEntry, listOf(Aborted.tag))
+                    }
                     onClick {
+                        it.preventDefault()
                         stopping = true
                         onStop(timeEntry, listOf(Aborted.tag))
                     }

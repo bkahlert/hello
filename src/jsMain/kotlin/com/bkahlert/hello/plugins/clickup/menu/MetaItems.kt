@@ -9,7 +9,6 @@ import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.cursor
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.paddingLeft
-import org.jetbrains.compose.web.css.paddingRight
 
 /**
  * Presentation of the specified [meta] information.
@@ -24,7 +23,6 @@ fun SemanticElementScope<MenuElement, *>.MetaItems(
             +Borderless
             style {
                 paddingLeft(0.5.em)
-                paddingRight(0.5.em)
                 cursor("default")
                 backgroundColor(Color.transparent)
             }

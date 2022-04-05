@@ -21,7 +21,9 @@ external class jQuery(deep: Any?) {
 
     fun attr(propertyName: String, value: Any?): jQuery
     fun children(selector: String = definedExternally): jQuery
+    fun find(selector: String = definedExternally): jQuery
     fun css(propertyName: String, value: Any?): jQuery
+    fun focus(): jQuery
 }
 
 /**

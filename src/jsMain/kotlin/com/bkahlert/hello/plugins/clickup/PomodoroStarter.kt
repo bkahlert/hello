@@ -29,6 +29,7 @@ fun PomodoroStarter(
     taskID: TaskID?,
     type: Type = Type.Default,
     billable: Boolean = false,
+    start: () -> Boolean = { false },
     onStart: (TaskID, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
     acousticFeedback: AcousticFeedback = AcousticFeedback.NoFeedback,
 ) {
@@ -42,7 +43,12 @@ fun PomodoroStarter(
         Icon("green", icon) {
             if (!starting) {
                 +Link
+                if (start()) {
+                    starting = true
+                    onStart(taskID, listOf(selectedType.tag), selectedBillable)
+                }
                 onClick {
+                    it.preventDefault()
                     starting = true
                     onStart(taskID, listOf(selectedType.tag), selectedBillable)
                 }
