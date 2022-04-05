@@ -38,11 +38,15 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.js.Date
 
 data class ClickUpClient(
     val accessToken: AccessToken,
     private val cacheStorage: Storage,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
     val clickUpUrl = Url("/api.clickup.com/api/v2")
 
@@ -80,6 +84,17 @@ data class ClickUpClient(
         logger.error("ClickUp error occurred", it)
     }
 
+    private suspend fun <T> runLoggingV2(
+        name: String,
+        block: suspend () -> T,
+    ): T = kotlin.runCatching {
+        logger.debug(name)
+        block()
+    }.getOrElse {
+        logger.error("ClickUp error occurred", it)
+        throw it
+    }
+
     private val cache = Cache(cacheStorage)
 
     private suspend inline fun <reified T> HttpClient.caching(
@@ -93,14 +108,18 @@ data class ClickUpClient(
         return get(url, block).body<T>().also(accessor::save)
     }
 
-    suspend fun getUser(): Result<User> =
-        runLogging("getting user") {
-            restClient.caching<Named<User>>({ forUser() }, clickUpUrl / "user").value
+    suspend fun getUser(): User =
+        runLoggingV2("getting user") {
+            withContext(dispatcher) { // TODO use in all cases
+                restClient.caching<Named<User>>({ forUser() }, clickUpUrl / "user").value
+            }
         }
 
-    suspend fun getTeams(): Result<List<Team>> =
-        runLogging("getting teams") {
-            restClient.caching<Named<List<Team>>>({ forTeams() }, clickUpUrl / "team").value
+    suspend fun getTeams(): List<Team> =
+        runLoggingV2("getting teams") {
+            withContext(dispatcher) {
+                restClient.caching<Named<List<Team>>>({ forTeams() }, clickUpUrl / "team").value
+            }
         }
 
     suspend fun getTasks(
@@ -230,10 +249,10 @@ data class ClickUpClient(
 
     suspend fun stopTimeEntry(
         team: Team,
-    ): Result<TimeEntry> =
+    ): Result<TimeEntry?> =
         runLogging("stopping time entry for team=${team.name}") {
             cache.forRunningTimeEntry(team.id).evict()
-            restClient.post(clickUpUrl / "team" / team.id / "time_entries" / "stop").body<Named<TimeEntry>>().value
+            restClient.post(clickUpUrl / "team" / team.id / "time_entries" / "stop").body<Named<TimeEntry?>>().value
         }
 
     suspend fun addTagsToTimeEntries(

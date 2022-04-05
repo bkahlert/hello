@@ -1,5 +1,7 @@
 package com.bkahlert.hello.plugins.clickup
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected
 import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelected
@@ -18,10 +20,17 @@ import com.clickup.api.TaskID
 import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
+import com.clickup.api.User
 import com.clickup.api.rest.AccessToken
 import com.clickup.api.rest.ClickUpClient
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlin.time.measureTime
 
@@ -87,15 +96,15 @@ class ClickUpModel(
     fun connect(accessToken: AccessToken) {
         update("connecting") {
             val client = ClickUpClient(accessToken, storage.cache)
-            val userResult = client.getUser()
-            val teamsResult = client.getTeams()
-            combine(userResult, teamsResult, Connected::TeamSelecting)
-                .map { state ->
-                    storage.`access-token` = client.accessToken
-                    if (state.teams.size == 1) internalSelectTeam(client, state, state.teams.first())
-                    else InternalState.Connected(client, state)
-                }
-                .getOrElse { state -> InternalState.Failed(Failed(client.accessToken, state)) }
+            coroutineScope {
+                val deferredUserResult: Deferred<User> = async { client.getUser() }
+                val deferredTeamsResult: Deferred<List<Team>> = async { client.getTeams() }
+                combine(deferredUserResult, deferredTeamsResult, Connected::TeamSelecting)
+            }.map { state ->
+                storage.`access-token` = client.accessToken
+                if (state.teams.size == 1) internalSelectTeam(client, state, state.teams.first())
+                else InternalState.Connected(client, state)
+            }.getOrElse { state -> InternalState.Failed(Failed(client.accessToken, state)) }
         }
     }
 
@@ -144,9 +153,11 @@ class ClickUpModel(
                     val (client, state) = internal
                     when (state) {
                         is TeamSelecting -> {
-                            val userResult = client.getUser()
-                            val teamsResult = client.getTeams()
-                            combine(userResult, teamsResult, Connected::TeamSelecting)
+                            coroutineScope {
+                                val deferredUserResult: Deferred<User> = async { client.getUser() }
+                                val deferredTeamsResult: Deferred<List<Team>> = async { client.getTeams() }
+                                combine(deferredUserResult, deferredTeamsResult, Connected::TeamSelecting)
+                            }
                                 .map { InternalState.Connected(client, it) }
                                 .getOrElse { InternalState.Failed(Failed(client.accessToken, it)) }
                         }
@@ -234,7 +245,7 @@ class ClickUpModel(
         }
     }
 
-    fun stopTimeEntry(tags: List<Tag>) {
+    fun stopTimeEntry(timeEntry: TimeEntry, tags: List<Tag>) {
         update("stopping time entry") { internal ->
             when (internal) {
                 is InternalState.Connected -> {
@@ -245,15 +256,23 @@ class ClickUpModel(
                         }
                         is TeamSelected -> {
                             val updatedState = client.stopTimeEntry(state.selectedTeam).fold({ stoppedTimeEntry ->
-                                logger.debug("stopped $stoppedTimeEntry")
-                                client.addTagsToTimeEntries(state.selectedTeam, listOf(stoppedTimeEntry.id), tags).fold(
-                                    { logger.debug("added tags $tags to time entry ${stoppedTimeEntry.id}") },
-                                    { logger.error("failed to add tags $tags to time entry ${stoppedTimeEntry.id}") },
+                                val stoppedTimeEntryID = if (stoppedTimeEntry != null) {
+                                    logger.debug("stopped $stoppedTimeEntry")
+                                    stoppedTimeEntry.id
+                                } else {
+                                    logger.debug("time entry $timeEntry was already stopped")
+                                    timeEntry.id
+                                }
+
+                                client.addTagsToTimeEntries(state.selectedTeam, listOf(stoppedTimeEntryID), tags).fold(
+                                    { logger.debug("added tags $tags to time entry $stoppedTimeEntryID") },
+                                    { logger.error("failed to add tags $tags to time entry $stoppedTimeEntryID") },
                                 )
-                                val taskId = stoppedTimeEntry.task?.id
+
+                                val taskId = (stoppedTimeEntry ?: timeEntry).task?.id
                                 state.copy(
                                     runningTimeEntry = Result.success(null),
-                                    tasks = updateTasks(state, taskId, client, stoppedTimeEntry),
+                                    tasks = updateTasks(state, taskId, client, stoppedTimeEntry ?: timeEntry),
                                 )
                             }, {
                                 logger.error("failed to stop time entry", it)

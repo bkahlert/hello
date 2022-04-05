@@ -474,7 +474,7 @@ fun ClickUpMenu(
                             activityGroupsResult = state.activityGroups,
                             onSelect = model::select,
                             onTimeEntryStart = model::startTimeEntry,
-                            onTimeEntryStop = { _, tags -> model.stopTimeEntry(tags) },
+                            onTimeEntryStop = { timeEntry, tags -> model.stopTimeEntry(timeEntry, tags) },
                             onRetry = {
                                 refreshing = true
                                 model.refresh(force = true)
