@@ -2152,7 +2152,7 @@ object ClickupFixtures {
         ]
         """.trimIndent().deserialize()
     }
-    val SPACES: List<Space> by lazy {
+    val Spaces: List<Space> by lazy {
         """
         [
             {

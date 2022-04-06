@@ -8,6 +8,7 @@ import kotlin.js.json
  */
 external class jQuery(deep: Any?) {
     fun accordion(options: Json = definedExternally): jQuery
+    fun dimmer(behavior: String, vararg args: Any? = definedExternally): jQuery
     fun dropdown(options: Json = definedExternally): jQuery
     fun dropdown(behavior: String, vararg args: Any? = definedExternally): jQuery
     fun popup(options: Json = definedExternally): jQuery
@@ -19,6 +20,7 @@ external class jQuery(deep: Any?) {
     fun progress(options: Json = definedExternally): jQuery
     fun progress(behavior: String, vararg args: Any? = definedExternally): jQuery
 
+    fun attr(propertyName: String): String?
     fun attr(propertyName: String, value: Any?): jQuery
     fun children(selector: String = definedExternally): jQuery
     fun find(selector: String = definedExternally): jQuery

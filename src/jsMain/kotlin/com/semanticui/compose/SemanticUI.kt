@@ -15,15 +15,12 @@ import kotlin.reflect.KProperty
  * A semantic UI element of the form `<div class="ui $classes">$content</div>` that
  * can be used as a fallback for not yet implemented Semantic UI features. */
 @Composable
-fun UI(
+fun SemanticUI(
     vararg classes: String,
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {
-    Div({
-        attrs?.invoke(this)
-        classes("ui", *classes)
-    }, content)
+    Semantic("ui", *classes, attrs = attrs, content = content)
 }
 
 /**
@@ -37,7 +34,7 @@ fun Semantic(
 ) {
     Div({
         attrs?.invoke(this)
-        classes(*classes)
+        classes(*classes.flatMap { it.split(' ') }.toTypedArray())
     }, content)
 }
 
@@ -204,6 +201,8 @@ open class Variation(override vararg val classNames: String) : Modifier {
     object Inline : Variation("inline")
     object Fitted : Variation("fitted")
     object Compact : Variation("compact")
+    object FullScreen : Variation("fullscreen")
+    object Longer : Variation("longer")
     object Size {
         val Mini = Variation("mini")
         val Tiny = Variation("tiny")

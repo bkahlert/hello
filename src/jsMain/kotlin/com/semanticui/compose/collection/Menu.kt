@@ -8,7 +8,6 @@ import com.semanticui.compose.SemanticElement
 import com.semanticui.compose.SemanticElementScope
 import com.semanticui.compose.module.Dropdown
 import com.semanticui.compose.module.DropdownElement
-import com.semanticui.compose.view.ItemElement
 import org.jetbrains.compose.web.dom.A
 import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
@@ -30,19 +29,65 @@ fun Menu(
     }, content)
 }
 
+/**
+ * Creates a [text](https://semantic-ui.com/collections/menu.html#text) [SemanticUI menu](https://semantic-ui.com/collections/menu.html).
+ */
+@Composable
+fun TextMenu(
+    attrs: SemanticAttrBuilder<MenuElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<MenuElement, HTMLDivElement>? = null,
+) {
+    Menu({
+        attrs?.invoke(this)
+        classes("text")
+    }, content)
+}
+
 
 /**
  * Creates a [SemanticUI sub menu](https://semantic-ui.com/collections/menu.html#sub-menu).
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<MenuElement, *>.SubMenu(
+fun SemanticElementScope<MenuElement, *>.Menu(
     attrs: SemanticAttrBuilder<MenuElement, HTMLDivElement>? = null,
     content: SemanticBuilder<MenuElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
         classes("menu")
+    }, content)
+}
+
+interface MenuItemElement : SemanticElement
+
+/**
+ * Creates a [SemanticUI item](https://semantic-ui.com/collections/menu.html#content).
+ */
+@Suppress("unused")
+@Composable
+fun SemanticElementScope<MenuElement, *>.Item(
+    attrs: SemanticAttrBuilder<MenuItemElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<MenuItemElement, HTMLDivElement>? = null,
+) {
+    SemanticDivElement({
+        attrs?.invoke(this)
+        classes("item")
+    }, content)
+}
+
+/**
+ * Creates a [SemanticUI header item](https://semantic-ui.com/collections/menu.html#header).
+ */
+@Suppress("unused")
+@Composable
+fun SemanticElementScope<MenuElement, *>.Header(
+    attrs: SemanticAttrBuilder<MenuItemElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<MenuItemElement, HTMLDivElement>? = null,
+) {
+    Item({
+        attrs?.invoke(this)
+        classes("header")
     }, content)
 }
 
@@ -54,12 +99,12 @@ fun SemanticElementScope<MenuElement, *>.SubMenu(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<MenuElement, *>.LinkItem(
-    attrs: SemanticAttrBuilder<ItemElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilder<MenuItemElement, HTMLDivElement>? = null,
+    content: SemanticBuilder<MenuItemElement, HTMLDivElement>? = null,
 ) {
-    SemanticDivElement({
+    Item({
         attrs?.invoke(this)
-        classes("link", "item")
+        classes("link")
     }, content)
 }
 
@@ -71,8 +116,8 @@ fun SemanticElementScope<MenuElement, *>.LinkItem(
 @Composable
 fun SemanticElementScope<MenuElement, *>.AnkerItem(
     href: String? = null,
-    attrs: SemanticAttrBuilder<ItemElement, HTMLAnchorElement>? = null,
-    content: SemanticBuilder<ItemElement, HTMLAnchorElement>? = null,
+    attrs: SemanticAttrBuilder<MenuItemElement, HTMLAnchorElement>? = null,
+    content: SemanticBuilder<MenuItemElement, HTMLAnchorElement>? = null,
 ) {
     SemanticElement({
         attrs?.invoke(this)

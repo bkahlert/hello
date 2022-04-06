@@ -1,4 +1,4 @@
-package com.bkahlert.hello.ui.demo
+package com.bkahlert.hello.ui.demo.misc
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,9 +10,13 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
-import com.bkahlert.hello.ui.demo.ViewModelDemoStuff.TestViewModel
+import com.bkahlert.hello.ui.demo.Demo
+import com.bkahlert.hello.ui.demo.Demos
 import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures
 import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
+import com.bkahlert.hello.ui.demo.failedResponse
+import com.bkahlert.hello.ui.demo.misc.ViewModelDemoStuff.TestViewModel
+import com.bkahlert.hello.ui.demo.response
 import com.bkahlert.kommons.math.isOdd
 import com.bkahlert.kommons.text.randomString
 import com.bkahlert.kommons.time.Now

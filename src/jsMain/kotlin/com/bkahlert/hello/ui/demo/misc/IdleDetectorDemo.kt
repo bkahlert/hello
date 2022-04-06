@@ -1,6 +1,8 @@
-package com.bkahlert.hello.ui.demo
+package com.bkahlert.hello.ui.demo.misc
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.ui.demo.Demo
+import com.bkahlert.hello.ui.demo.Demos
 import org.jetbrains.compose.web.dom.Text
 import kotlin.js.Json
 import kotlin.js.Promise

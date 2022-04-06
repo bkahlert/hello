@@ -2,7 +2,6 @@ package com.bkahlert.hello.plugins.clickup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -13,7 +12,6 @@ import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Completed
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Prepared
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Status.Running
 import com.bkahlert.hello.ui.AcousticFeedback
-import com.bkahlert.hello.ui.DimmingLoader
 import com.clickup.api.Tag
 import com.clickup.api.TimeEntry
 import com.semanticui.compose.element.Icon
@@ -63,9 +61,6 @@ fun PomodoroTimer(
         }
     }
 
-    var stopping by remember(timeEntry) { mutableStateOf(false) }
-    DimmingLoader({ stopping })
-
     if (timeEntry.ended) {
         Div {
             if (status == Aborted) {
@@ -89,41 +84,35 @@ fun PomodoroTimer(
     } else {
         Div {
             Icon("red", "stop", "circle") {
-                if (!stopping) {
-                    +Link
-                    if (stop()) {
-                        stopping = true
-                        onStop(timeEntry, listOf(Aborted.tag))
-                    }
-                    onClick {
-                        it.preventDefault()
-                        stopping = true
-                        onStop(timeEntry, listOf(Aborted.tag))
-                    }
+                +Link
+                if (stop()) {
+                    onStop(timeEntry, listOf(Aborted.tag))
+                }
+                onClick {
+                    it.preventDefault()
+                    onStop(timeEntry, listOf(Aborted.tag))
                 }
             }
-            Span({
-                style {
-                    fontWeight(700)
-                }
-            }) { Text(remaining.format()) }
         }
-
-        if (remaining < 0.5.seconds) {
-            LaunchedEffect(timeEntry) { // TODO likely start with a remembered coroutine
-                stopping = true
-                acousticFeedback.completed.play()
-                onStop(timeEntry, listOf(Completed.tag))
+        Span({
+            style {
+                fontWeight(700)
             }
+        }) { Text(remaining.format()) }
+    }
+
+    if (remaining < 0.5.seconds) {
+        DisposableEffect(timeEntry) {
+            acousticFeedback.completed.play()
+            onStop(timeEntry, listOf(Completed.tag))
+            onDispose { }
         }
-
-        if (!stopping) {
-            DisposableEffect(timeEntry) {
-                val timeout = 1.seconds / fps
-                // avoid flickering by initially waiting one second
-                val handle: Int = window.setInterval({ tick++ }, timeout = timeout.inWholeMilliseconds.toInt())
-                onDispose { window.clearInterval(handle) }
-            }
+    } else {
+        DisposableEffect(timeEntry) {
+            val timeout = 1.seconds / fps
+            // avoid flickering by initially waiting one second
+            val handle: Int = window.setInterval({ tick++ }, timeout = timeout.inWholeMilliseconds.toInt())
+            onDispose { window.clearInterval(handle) }
         }
     }
 }

@@ -1,0 +1,289 @@
+package com.bkahlert.hello.ui.demo.clickup
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelected
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelected.Data.CoreData
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelected.Data.FullData
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelecting
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuViewModel
+import com.bkahlert.hello.plugins.clickup.rememberClickUpMenuViewModel
+import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
+import com.bkahlert.kommons.dom.InMemoryStorage
+import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.text.randomString
+import com.bkahlert.kommons.time.Now
+import com.bkahlert.kommons.time.compareTo
+import com.bkahlert.kommons.time.seconds
+import com.clickup.api.Folder
+import com.clickup.api.FolderID
+import com.clickup.api.Identifier
+import com.clickup.api.Space
+import com.clickup.api.SpaceID
+import com.clickup.api.Tag
+import com.clickup.api.Task
+import com.clickup.api.TaskID
+import com.clickup.api.TaskList
+import com.clickup.api.TaskListID
+import com.clickup.api.TaskPreview
+import com.clickup.api.Team
+import com.clickup.api.TimeEntry
+import com.clickup.api.TimeEntryID
+import com.clickup.api.User
+import com.clickup.api.rest.ClickUpClient
+import com.clickup.api.rest.CustomFieldFilter
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlin.js.Date
+import kotlin.time.Duration
+
+open class ClickUpTestClient(
+    private val initialUser: User = ClickupFixtures.User,
+    private val initialTeams: List<Team> = listOf(ClickupFixtures.Team),
+    private val initialTasks: List<Task> = ClickupFixtures.Tasks,
+    private val initialSpaces: List<Space> = ClickupFixtures.Spaces,
+    private val initialLists: List<TaskList> = listOf(
+        ClickupFixtures.Space1FolderlessLists,
+        ClickupFixtures.Space2FolderlessLists,
+        ClickupFixtures.Space1FolderLists,
+        ClickupFixtures.Space2FolderLists,
+    ).flatten(),
+    private val initialFolders: List<Folder> = listOf(
+        ClickupFixtures.Space1Folders,
+        ClickupFixtures.Space2Folders,
+    ).flatten(),
+    initialTimeEntries: List<TimeEntry> = emptyList(),
+    private val initialRunningTimeEntry: TimeEntry? = ClickupFixtures.TimeEntry.running(),
+    private val delayFactor: Double = .3,
+) : ClickUpClient {
+
+    fun toTeamSelecting(
+        user: User = initialUser,
+        teams: List<Team> = initialTeams,
+    ): TeamSelecting = TeamSelecting(
+        client = this,
+        user = user,
+        teams = teams,
+    )
+
+    fun toPartiallyLoaded(
+        user: User = initialUser,
+        teams: List<Team> = initialTeams,
+        runningTimeEntry: TimeEntry? = initialRunningTimeEntry,
+        tasks: List<Task> = initialTasks,
+        spaces: List<Space> = initialSpaces,
+        select: (Int, Identifier<*>) -> Boolean = { index, _ -> index == 0 },
+    ): TeamSelected {
+        val data = CoreData(runningTimeEntry, tasks, spaces)
+        return TeamSelected(
+            client = this,
+            user = user,
+            teams = teams,
+            selectedTeam = teams.first(),
+            selected = listOfNotNull(data.runningTimeEntry?.id, *data.tasks.map { it.id }.toTypedArray()).filterIndexed(select),
+            data = data,
+        )
+    }
+
+    fun toFullyLoaded(
+        user: User = initialUser,
+        teams: List<Team> = initialTeams,
+        runningTimeEntry: TimeEntry? = initialRunningTimeEntry,
+        tasks: List<Task> = initialTasks,
+        spaces: List<Space> = initialSpaces,
+        lists: List<TaskList> = initialLists,
+        folders: List<Folder> = initialFolders,
+        select: (Int, Identifier<*>) -> Boolean = { index, _ -> index == 0 },
+    ): TeamSelected {
+        val data = FullData(
+            runningTimeEntry = runningTimeEntry,
+            tasks = tasks,
+            spaces = spaces,
+            folders = spaces.associateBy(Space::id) { folders.filterBy(it) },
+            spaceLists = spaces.associateBy(Space::id) { lists.filterBy(it) },
+            folderLists = folders.associateBy(Folder::id) { lists.filterBy(it) },
+        )
+        return TeamSelected(
+            client = this,
+            user = user,
+            teams = teams,
+            selectedTeam = teams.first(),
+            selected = listOfNotNull(data.runningTimeEntry?.id, *data.tasks.map { it.id }.toTypedArray()).filterIndexed(select),
+            data = data,
+        )
+    }
+
+    private var user: User = initialUser
+    private var teams: List<Team> = initialTeams
+    private var tasks: List<Task> = initialTasks
+    private var spaces: List<Space> = initialSpaces
+    private var lists: List<TaskList> = initialLists
+    private var folders: List<Folder> = initialFolders
+    private var timeEntries: List<TimeEntry> = initialTimeEntries
+    private var runningTimeEntry: TimeEntry? = initialRunningTimeEntry
+    private suspend fun adaptedDelay(duration: Duration) = delay(duration * delayFactor)
+
+    override suspend fun getUser(): User {
+        adaptedDelay(1.5.seconds)
+        return user
+    }
+
+    override suspend fun getTeams(): List<Team> {
+        adaptedDelay(2.5.seconds)
+        return teams
+    }
+
+    override suspend fun getTasks(
+        team: Team,
+        page: Int?,
+        order_by: String?,
+        reverse: Boolean?,
+        subtasks: Boolean?,
+        space_ids: List<SpaceID>?,
+        project_ids: List<FolderID>?,
+        list_ids: List<TaskListID>?,
+        statuses: List<String>?,
+        include_closed: Boolean?,
+        assignees: List<String>?,
+        tags: List<String>?,
+        due_date_gt: Date?,
+        due_date_lt: Date?,
+        date_created_gt: Date?,
+        date_created_lt: Date?,
+        date_updated_gt: Date?,
+        date_updated_lt: Date?,
+        custom_fields: List<CustomFieldFilter>?,
+    ): List<Task> {
+        adaptedDelay(3.seconds)
+        return tasks.asSequence()
+            .filter { space_ids == null || space_ids.contains(it.space.id) }
+            .filter { project_ids == null || project_ids.contains(it.folder.id) }
+            .filter { list_ids == null || list_ids.contains(it.list?.id) }
+            .filter { statuses == null || statuses.contains(it.status.status) }
+            .filter { tags == null || tags.any { tag -> it.tags.map { it.name }.contains(tag) } }
+            .filter { due_date_gt == null || it.dueDate?.let { dueDate -> due_date_gt > dueDate } ?: false }
+            .filter { due_date_lt == null || it.dueDate?.let { dueDate -> due_date_lt < dueDate } ?: false }
+            .filter { date_created_gt == null || it.dateCreated?.let { dateCreated -> date_created_gt > dateCreated } ?: false }
+            .filter { date_created_lt == null || it.dateCreated?.let { dateCreated -> date_created_lt < dateCreated } ?: false }
+            .filter { date_updated_gt == null || it.dateUpdated?.let { dateUpdated -> date_updated_gt > dateUpdated } ?: false }
+            .filter { date_updated_lt == null || it.dateUpdated?.let { dateUpdated -> date_updated_lt < dateUpdated } ?: false }
+            .toList()
+    }
+
+    override suspend fun getTask(taskId: TaskID): Task? {
+        adaptedDelay(1.seconds)
+        return tasks.firstOrNull { it.id == taskId }
+    }
+
+    override suspend fun getSpaces(team: Team, archived: Boolean): List<Space> {
+        adaptedDelay(.5.seconds)
+        return spaces
+    }
+
+    override suspend fun getLists(space: Space, archived: Boolean): List<TaskList> {
+        adaptedDelay(.5.seconds)
+        return lists.filterBy(space)
+    }
+
+    override suspend fun getLists(folder: Folder, archived: Boolean): List<TaskList> {
+        adaptedDelay(.5.seconds)
+        return lists.filterBy(folder)
+    }
+
+    override suspend fun getFolders(space: Space, archived: Boolean): List<Folder> {
+        adaptedDelay(.5.seconds)
+        return folders.filterBy(space)
+    }
+
+    override suspend fun getTimeEntry(team: Team, timeEntryID: TimeEntryID): TimeEntry? {
+        adaptedDelay(.5.seconds)
+        return timeEntries.firstOrNull { it.wid == team.id && it.id == timeEntryID }
+    }
+
+    override suspend fun getRunningTimeEntry(team: Team, assignee: User?): TimeEntry? {
+        adaptedDelay(.5.seconds)
+        return runningTimeEntry
+    }
+
+    override suspend fun startTimeEntry(team: Team, taskId: TaskID?, description: String?, billable: Boolean, vararg tags: Tag): TimeEntry {
+        adaptedDelay(1.seconds)
+        stopTimeEntry(team)
+        val timeEntry = taskId?.let {
+            checkNotNull(getTask(taskId = it)).let { task ->
+                TimeEntry(
+                    id = TimeEntryID(id = randomString()),
+                    task = TaskPreview(taskId, task.name, task.status, null),
+                    wid = team.id,
+                    user = user,
+                    billable = billable,
+                    start = Now,
+                    end = null,
+                    description = description ?: "",
+                    tags = tags.toList(),
+                    source = "hello",
+                    taskUrl = null,
+                )
+            }
+        } ?: TimeEntry(
+            id = TimeEntryID(id = randomString()),
+            task = null,
+            wid = team.id,
+            user = user,
+            billable = billable,
+            start = Now,
+            end = null,
+            description = description ?: "",
+            tags = tags.toList(),
+            source = "hello",
+            taskUrl = null,
+        )
+        runningTimeEntry = timeEntry
+        return timeEntry
+    }
+
+    override suspend fun stopTimeEntry(team: Team): TimeEntry? {
+        adaptedDelay(1.seconds)
+        return runningTimeEntry?.also {
+            val timeEntry = it.copy(end = Now)
+            timeEntries = timeEntries + timeEntry
+            runningTimeEntry = null
+        }
+    }
+
+    override suspend fun addTagsToTimeEntries(team: Team, timeEntryIDs: List<TimeEntryID>, tags: List<Tag>) {
+        adaptedDelay(1.5.seconds)
+        timeEntries = timeEntries.map {
+            it.takeUnless { it.wid == team.id && timeEntryIDs.contains(it.id) } ?: it.copy(tags = buildSet { addAll(it.tags);addAll(tags) }.toList())
+        }
+    }
+
+    companion object {
+        fun Iterable<TaskList>.filterBy(space: Space) = filter { it.space.id == space.id }
+        fun Iterable<TaskList>.filterBy(folder: Folder) = filter { it.folder?.id == folder.id }
+        fun Iterable<Folder>.filterBy(space: Space) = filter { folder -> folder.lists.any { it.space.id == space.id } }
+    }
+}
+
+/**
+ * Returns a remembered [ClickUpMenuViewModel] for the purpose of testing with the
+ * optionally specified [dispatcher], [refreshCoroutineScope], [storage]
+ * and the [initialState] derived from the optionally specified [testClient].
+ */
+@Composable
+fun rememberClickUpMenuTestViewModel(
+    testClient: ClickUpTestClient = ClickUpTestClient(),
+    dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    refreshCoroutineScope: CoroutineScope = rememberCoroutineScope(),
+    storage: Storage = InMemoryStorage(),
+    initialState: ClickUpTestClient.() -> ClickUpMenuState,
+): ClickUpMenuViewModel =
+    rememberClickUpMenuViewModel(
+        initialState = testClient.initialState(),
+        dispatcher = dispatcher,
+        refreshCoroutineScope = refreshCoroutineScope,
+        storage = storage,
+        createClient = { _, _, _ -> testClient },
+    )

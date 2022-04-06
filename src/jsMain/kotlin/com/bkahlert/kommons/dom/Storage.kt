@@ -2,6 +2,7 @@ package com.bkahlert.kommons.dom
 
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
+import com.bkahlert.kommons.text.toKebabCaseString
 import org.w3c.dom.get
 import org.w3c.dom.set
 import kotlin.reflect.KProperty
@@ -63,7 +64,7 @@ interface Storage {
     }
 }
 
-/** [Storage] implementation resides in-memory. */
+/** [Storage] implementation that is backed by an in-memory [Map]. */
 class InMemoryStorage : Storage {
     private val map = mutableMapOf<String, String>()
     override val keys: Set<String> get() = map.keys
@@ -179,22 +180,23 @@ value class StorageDelegate(
      * Reads the value for the key with the name of the [property] from [storage]
      * and if set returns it deserialized to [T]. Strings are returned unchanged.
      */
-    inline operator fun <reified T> getValue(thisRef: Any?, property: KProperty<*>): T? =
-        when (T::class) {
-            String::class -> storage[property.name]?.let { it as T? }
-//            Enum::class -> storage[property.name]?.let { enumValueOf<T>(it) }
-            else -> storage.getSerializable<T>(property.name)
+    inline operator fun <reified T> getValue(thisRef: Any?, property: KProperty<*>): T? {
+        val name = property.name.toKebabCaseString()
+        return when (T::class) {
+            String::class -> storage[name]?.let { it as T? }
+            else -> storage.getSerializable<T>(name)
         }
+    }
 
     /**
      * Writes the serialized [value] for the key with the name of the [property] to [storage]
      * if not `null`. Otherwise, removes it. Strings are stored unchanged.
      */
     inline operator fun <reified T> setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+        val name = property.name.toKebabCaseString()
         when (T::class) {
-            String::class -> storage[property.name] = value as String?
-//            Enum::class -> storage[property.name] = value?.let { it as Enum<T> }?.name
-            else -> storage.setSerializable(property.name, value)
+            String::class -> storage[name] = value as String?
+            else -> storage.setSerializable(name, value)
         }
     }
 }

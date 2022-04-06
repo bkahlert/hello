@@ -22,46 +22,23 @@ import kotlin.random.Random
 @Composable
 fun ActivityDropdownDemo() {
     Demos("Activity Dropdown") {
-        Demos("No Running Time Entry") {
-            Demo("No selection") {
-                ActivityDropdown(
-                    activityGroups = ActivityDropdownFixtures.ActivityGroups,
-                    onSelect = onSelect,
-                )
-            }
-            Demo("Selection") {
-                ActivityDropdown(
-                    activityGroups = ActivityDropdownFixtures.ActivityGroups.withSelection { index, _ -> index == 3 },
-                    onSelect = onSelect,
-                )
-            }
-            Demo("Empty") {
-                ActivityDropdown(
-                    activityGroups = emptyList(),
-                    onSelect = onSelect,
-                )
-            }
+        Demo("No selection") {
+            ActivityDropdown(
+                activityGroups = ActivityDropdownFixtures.ActivityGroups,
+                onSelect = onSelect,
+            )
         }
-
-        Demos("With Running Time Entry") {
-            Demo("No selection") {
-                ActivityDropdown(
-                    activityGroups = ActivityDropdownFixtures.ActivityGroupsWithRunningActivity,
-                    onSelect = onSelect,
-                )
-            }
-            Demo("Selection") {
-                ActivityDropdown(
-                    activityGroups = ActivityDropdownFixtures.ActivityGroupsWithRunningActivity.withSelection { index, _ -> index == 3 },
-                    onSelect = onSelect,
-                )
-            }
-            Demo("Task-less time entry") {
-                ActivityDropdown(
-                    activityGroups = ActivityDropdownFixtures.ActivityGroupsWithTaskLessRunningActivity,
-                    onSelect = onSelect,
-                )
-            }
+        Demo("Selection") {
+            ActivityDropdown(
+                activityGroups = ActivityDropdownFixtures.ActivityGroups.withSelection { index, _ -> index == 3 },
+                onSelect = onSelect,
+            )
+        }
+        Demo("Empty") {
+            ActivityDropdown(
+                activityGroups = emptyList(),
+                onSelect = onSelect,
+            )
         }
     }
 }
@@ -80,7 +57,7 @@ object ActivityDropdownFixtures {
     ) = ActivityGroup.of(runningTaskActivity)
 
     fun taskActivityGroup(
-        space: Space? = ClickupFixtures.SPACES.first(),
+        space: Space? = ClickupFixtures.Spaces.first(),
         folder: FolderPreview? = ClickupFixtures.Space1FolderLists.first().folder,
         list: TaskList? = ClickupFixtures.Space1FolderLists.first(),
         color: Color? = Brand.colors.primary.toHSL().run { copy(h = Random.nextDouble(0.0, 360.0)) },

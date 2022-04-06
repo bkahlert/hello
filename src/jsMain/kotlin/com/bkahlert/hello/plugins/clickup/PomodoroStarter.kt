@@ -8,7 +8,6 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Companion.format
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.ui.AcousticFeedback
-import com.bkahlert.hello.ui.DimmingLoader
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
 import com.semanticui.compose.element.Icon
@@ -38,20 +37,14 @@ fun PomodoroStarter(
     val icon = if (selectedBillable) "dollar" else "play"
 
     if (taskID != null) {
-        var starting by remember(taskID) { mutableStateOf(false) }
-        DimmingLoader({ starting })
         Icon("green", icon) {
-            if (!starting) {
-                +Link
-                if (start()) {
-                    starting = true
-                    onStart(taskID, listOf(selectedType.tag), selectedBillable)
-                }
-                onClick {
-                    it.preventDefault()
-                    starting = true
-                    onStart(taskID, listOf(selectedType.tag), selectedBillable)
-                }
+            +Link
+            if (start()) {
+                onStart(taskID, listOf(selectedType.tag), selectedBillable)
+            }
+            onClick {
+                it.preventDefault()
+                onStart(taskID, listOf(selectedType.tag), selectedBillable)
             }
         }
     } else {

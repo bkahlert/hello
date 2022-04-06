@@ -73,7 +73,7 @@ fun SemanticElementScope<AccordionElement, *>.Content(
  * Creates the elements [Title] with the specified [title] and [Content]
  * with the specified [content].
  *
- * The is provided with an instance of [AttrBuilderContext]
+ * The [content] is provided with an instance of [AttrBuilderContext]
  * which needs to be applied to all immediate child elements that
  * should transition.
  */

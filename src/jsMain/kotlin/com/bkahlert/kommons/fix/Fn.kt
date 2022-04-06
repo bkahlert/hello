@@ -2,28 +2,10 @@
 
 package com.bkahlert.kommons.fix
 
-import com.bkahlert.kommons.coroutines.awaitCatching
 import com.bkahlert.kommons.fix.Either.Left
 import com.bkahlert.kommons.fix.Either.Right
 import com.bkahlert.kommons.fix.EitherTest.Return.A
 import com.bkahlert.kommons.fix.EitherTest.Return.B
-import kotlinx.coroutines.Deferred
-
-
-inline fun <T1, T2, R> Result<T1>.combine(other: Result<T2>, transform: (T1, T2) -> R): Result<R> {
-    return map { t1: T1 -> other.map { t2: T2 -> transform(t1, t2) }.getOrThrow() }
-}
-
-inline fun <T1, T2, R> combine(result: Result<T1>, other: Result<T2>, transform: (T1, T2) -> R): Result<R> =
-    result.combine(other, transform)
-
-
-suspend inline fun <T1, T2, R> Deferred<T1>.combine(other: Deferred<T2>, transform: (T1, T2) -> R): Result<R> {
-    return awaitCatching().map { t1: T1 -> other.awaitCatching().map { t2: T2 -> transform(t1, t2) }.getOrThrow() }
-}
-
-suspend inline fun <T1, T2, R> combine(result: Deferred<T1>, other: Deferred<T2>, transform: (T1, T2) -> R): Result<R> =
-    result.awaitCatching().combine(other.awaitCatching(), transform)
 
 /**
  * Represents a container containing either an instance of type [A] ([Left])

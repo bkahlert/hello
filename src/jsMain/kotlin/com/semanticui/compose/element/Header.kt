@@ -129,12 +129,12 @@ fun Header(
  */
 @Composable
 fun IconHeader(
-    icon: String,
+    vararg icon: String,
     attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     Header({ classes("icon") }) {
-        Icon(icon) { attrs?.invoke(this) }
+        Icon(*icon) { attrs?.invoke(this) }
         Div({ classes("content") }, content)
     }
 }

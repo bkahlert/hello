@@ -25,30 +25,6 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun PomodoroTimerDemo() {
     Demos("Pomodoro Timer") {
-        Demos("running") {
-            enumValues<Type>().forEach { type ->
-                Demo(type.name) {
-                    val scope = rememberCoroutineScope()
-                    var timeEntry by remember {
-                        mutableStateOf(ClickupFixtures.TimeEntry.running(start = Now,
-                            type = type))
-                    }
-                    PomodoroTimer(
-                        timeEntry = timeEntry,
-                        onStop = { entry, tags ->
-                            onStop(entry, tags)
-                            scope.launch {
-                                delay(5.seconds)
-                                timeEntry = entry.copy(end = Now, tags = entry.tags + tags)
-                            }
-                        },
-                    )
-                }
-            }
-            Demo("unknown type") {
-                PomodoroTimer(ClickupFixtures.TimeEntry.running(type = null), onStop = onStop)
-            }
-        }
         Demo("aborted") {
             PomodoroTimer(ClickupFixtures.TimeEntry.aborted(), onStop = onStop)
         }
@@ -60,6 +36,30 @@ fun PomodoroTimerDemo() {
         }
         Demo("exceeded") {
             PomodoroTimer(ClickupFixtures.TimeEntry.running(start = Now - 1.days), onStop = onStop)
+        }
+    }
+    Demos("Pomodoro Timer (Running)") {
+        enumValues<Type>().forEach { type ->
+            Demo(type.name) {
+                val scope = rememberCoroutineScope()
+                var timeEntry by remember {
+                    mutableStateOf(ClickupFixtures.TimeEntry.running(start = Now,
+                        type = type))
+                }
+                PomodoroTimer(
+                    timeEntry = timeEntry,
+                    onStop = { entry, tags ->
+                        onStop(entry, tags)
+                        scope.launch {
+                            delay(5.seconds)
+                            timeEntry = entry.copy(end = Now, tags = entry.tags + tags)
+                        }
+                    },
+                )
+            }
+        }
+        Demo("unknown type") {
+            PomodoroTimer(ClickupFixtures.TimeEntry.running(type = null), onStop = onStop)
         }
     }
 }

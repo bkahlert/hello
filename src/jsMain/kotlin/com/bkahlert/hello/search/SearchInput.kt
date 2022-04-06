@@ -11,7 +11,7 @@ import com.bkahlert.kommons.dom.openInSameTab
 import com.bkahlert.kommons.dom.toUrlOrNull
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticBuilder
-import com.semanticui.compose.UI
+import com.semanticui.compose.SemanticUI
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.Input
 import com.semanticui.compose.element.InputElement
@@ -61,7 +61,7 @@ fun SearchInput(
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
     content: SemanticBuilder<InputElement, HTMLDivElement>? = null,
 ) {
-    UI("search") {
+    SemanticUI("search") {
         Input({
             attrs?.invoke(this)
             +Position.Left + icon

@@ -5,7 +5,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.bkahlert.Brand
 import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
@@ -20,7 +19,9 @@ import com.bkahlert.hello.AppStylesheet.Grid.Search
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.plugins.clickup.ClickUpMenu
-import com.bkahlert.hello.plugins.clickup.ClickUpModel
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disabled
+import com.bkahlert.hello.plugins.clickup.ClickUpStyleSheet
+import com.bkahlert.hello.plugins.clickup.rememberClickUpMenuViewModel
 import com.bkahlert.hello.search.SearchFeature
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
@@ -29,7 +30,6 @@ import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.url
-import com.bkahlert.kommons.time.seconds
 import com.semanticui.compose.element.AnkerButton
 import com.semanticui.compose.element.ButtonGroupElementType.Icon
 import com.semanticui.compose.element.Buttons
@@ -38,11 +38,10 @@ import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.Modal
 import com.semanticui.compose.module.autofocus
 import com.semanticui.compose.module.blurring
+import com.semanticui.compose.module.centered
 import io.ktor.http.Url
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.CSSBuilder
@@ -96,6 +95,8 @@ import org.w3c.dom.HTMLElement
 // TODO detect updates
 // TODO loader animation on null Responses (not yet finished)
 // TODO semantic UI progress https://semantic-ui.com/modules/progress.html#attached at top of page for Pomodoro timer
+// TODO fix starting a task will stop a running time entry without any notice
+// TODO support closing tasks
 
 interface Feature {
     val name: String
@@ -137,8 +138,8 @@ object ClickUpFeature : Feature {
     override val loaded: Boolean = true
     override val content: @Composable DOMScope<HTMLElement>.() -> Unit = {
         @Suppress("SpellCheckingInspection")
-        ClickUpMenu(remember { ClickUpModel(storage = localStorage.scoped("clickup")) }
-            .also { it.initialize() })
+        ClickUpMenu(rememberClickUpMenuViewModel(initialState = Disabled, storage = localStorage.scoped("clickup"))
+            .also { it.enable() })
     }
 }
 
@@ -153,12 +154,6 @@ object CustomFeature : Feature {
 
 @Composable
 fun App(state: AppState = rememberAppState()) {
-
-    val coroutineScope = rememberCoroutineScope()
-    coroutineScope.launch {
-        delay(3.seconds)
-        console.warn("event")
-    }
 
     Grid({
         style {
@@ -237,14 +232,15 @@ fun main() {
     DebugMode(
         storage = localStorage.scoped("debug"),
     ) {
-        Modal(Unit, {
+        Modal({
             +Fullscreen
             +Long
             blurring = false // true will blur popups inside the debug mode, too
             autofocus = false
+            centered = false
         }) {
             Content {
-                DebugUI()
+                DebugUI(localStorage.scoped("debug-ui"))
             }
 
         }
@@ -252,6 +248,7 @@ fun main() {
 
     renderComposable("root") {
         Style(AppStylesheet)
+        Style(ClickUpStyleSheet)
         App()
     }
 }

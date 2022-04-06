@@ -1,46 +1,73 @@
 package com.bkahlert.hello.ui.demo
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.SVGImage
 import com.bkahlert.kommons.test.SvgFixture
 import com.clickup.api.rest.ClickUpException
 import com.clickup.api.rest.ErrorInfo
-import com.semanticui.compose.SemanticAttrBuilder
-import com.semanticui.compose.SemanticBuilder
+import com.semanticui.compose.SemanticUI
+import com.semanticui.compose.collection.Header
+import com.semanticui.compose.collection.LinkItem
+import com.semanticui.compose.collection.Menu
+import com.semanticui.compose.collection.TextMenu
 import com.semanticui.compose.element.Header
-import com.semanticui.compose.element.Segment
-import com.semanticui.compose.element.SegmentElement
-import com.semanticui.compose.element.SegmentElementType
-import com.semanticui.compose.element.Segments
-import com.semanticui.compose.element.SubHeader
+import com.semanticui.compose.element.Icon
+import org.jetbrains.compose.web.css.em
+import org.jetbrains.compose.web.css.marginBottom
+import org.jetbrains.compose.web.css.marginTop
+import org.jetbrains.compose.web.dom.AttrBuilderContext
+import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 
 @Composable
-fun Demo(
-    name: String,
-    attrs: SemanticAttrBuilder<SegmentElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<SegmentElement, HTMLDivElement>? = null,
-) {
-    Segment(attrs) {
-        SubHeader { Text(name) }
-        content?.invoke(this)
-    }
-}
-
-@Composable
 fun Demos(
     name: String,
-    attrs: SemanticAttrBuilder<SegmentElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<SegmentElement, HTMLDivElement>? = null,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
 ) {
-    Segments(SegmentElementType.Raised, attrs) {
+    SemanticUI("segments", "raised", attrs = attrs) {
         Header({
             +Attached.Top
             +Inverted
             style { property("border-bottom-width", "0") }
         }) { Text(name) }
         content?.invoke(this)
+    }
+}
+
+@Composable
+fun Demo(
+    name: String,
+    attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
+) {
+    var dirty by remember { mutableStateOf(false) }
+    SemanticUI("segment", attrs = attrs) {
+        if (!dirty) {
+            TextMenu({
+                +Size.Small
+                style { marginTop((-1).em); marginBottom(0.em) }
+            }) {
+                Header { Text(name) }
+                Menu({ +Direction.Right + Size.Small }) {
+                    LinkItem({
+                        onClick { dirty = true }
+                    }) {
+                        Icon("redo", "alternate")
+                        Text("Reset")
+                    }
+                }
+            }
+            content?.invoke(this)
+        } else {
+            Text("Resetting")
+            dirty = false
+        }
     }
 }
 

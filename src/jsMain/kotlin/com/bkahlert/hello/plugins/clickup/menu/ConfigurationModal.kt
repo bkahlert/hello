@@ -11,11 +11,12 @@ import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.IconHeader
 import com.semanticui.compose.module.Actions
 import com.semanticui.compose.module.ApproveButton
+import com.semanticui.compose.module.BasicModal
 import com.semanticui.compose.module.Content
 import com.semanticui.compose.module.DenyButton
-import com.semanticui.compose.module.Modal
 import com.semanticui.compose.module.onApprove
 import com.semanticui.compose.module.onDeny
+import com.semanticui.compose.module.size
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.attributes.InputType.Password
 import org.jetbrains.compose.web.attributes.name
@@ -38,8 +39,8 @@ fun ConfigurationModal(
     var accessTokenInput by remember { mutableStateOf(defaultAccessToken?.token ?: "") }
     val isValid by derivedStateOf { AccessToken.REGEX.matches(accessTokenInput) }
 
-    Modal(Unit, {
-        +Size.Tiny + Basic
+    BasicModal({
+        +size.Tiny
         onApprove = { runCatching { AccessToken(accessTokenInput) }.onSuccess(onConnect).isSuccess }
         onDeny = { onCancel(); false }
     }) {

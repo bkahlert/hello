@@ -1,22 +1,23 @@
 package com.bkahlert.hello.plugins.clickup
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelected
-import com.bkahlert.hello.plugins.clickup.ClickUpState.Connected.TeamSelecting
-import com.bkahlert.hello.plugins.clickup.ClickUpState.Disconnected
-import com.bkahlert.hello.plugins.clickup.ClickUpState.Failed
-import com.bkahlert.hello.plugins.clickup.ClickUpState.Paused
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Failed
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelected
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelecting
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disabled
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disconnected
+import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioning
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.ActivityDropdown
 import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
 import com.bkahlert.hello.plugins.clickup.menu.ConfigurationModal
-import com.bkahlert.hello.plugins.clickup.menu.ErrorItem
+import com.bkahlert.hello.plugins.clickup.menu.FailureModal
 import com.bkahlert.hello.plugins.clickup.menu.MetaItems
 import com.bkahlert.hello.plugins.clickup.menu.selected
 import com.bkahlert.hello.ui.AcousticFeedback
@@ -37,10 +38,10 @@ import com.semanticui.compose.collection.DropdownItem
 import com.semanticui.compose.collection.LinkItem
 import com.semanticui.compose.collection.Menu
 import com.semanticui.compose.collection.MenuElement
-import com.semanticui.compose.collection.SubMenu
+import com.semanticui.compose.collection.MenuItemElement
 import com.semanticui.compose.element.Icon
+import com.semanticui.compose.module.Dimmer
 import com.semanticui.compose.module.Menu
-import com.semanticui.compose.view.ItemElement
 import io.ktor.http.Url
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.ATarget.Blank
@@ -49,7 +50,6 @@ import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.LineStyle
-import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.border
@@ -81,24 +81,7 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.Window
 
 @Composable
-fun InitializingClickUpMenu() {
-
-    Menu({ +Size.Mini + Dimmable }) {
-        DimmingLoader({ true }, loaderAttrs = {
-            +Size.Mini
-            +Indeterminate
-        })
-        LinkItem({
-            +Borderless
-            +Disabled
-        }) {
-            Text(" ")
-        }
-    }
-}
-
-@Composable
-fun DisconnectedClickUpMenu(
+fun SemanticElementScope<MenuElement, *>.DisconnectedItems(
     onConnect: (AccessToken) -> Unit = {},
 ) {
     var configuring by remember { mutableStateOf(false) }
@@ -113,71 +96,11 @@ fun DisconnectedClickUpMenu(
         )
     }
 
-    Menu({
-        +Size.Mini + Fluid
-        if (configuring) +Disabled
-        classes("one", "item")
+    LinkItem({
+        onClick { configuring = true }
     }) {
-        LinkItem({
-            onClick { configuring = true }
-        }) {
-            Img(src = "clickup-icon.svg", alt = "ClickUp") { classes("mini") }
-            Text("Connect to ClickUp")
-        }
-    }
-}
-
-
-@Composable
-fun ConnectingClickUpMenu() {
-    Menu({
-        +Size.Mini + Fluid
-        classes("one", "item")
-    }) {
-        LinkItem({
-            +Borderless
-            +Disabled
-        }) {
-            Icon("circle", "notch") { +Loading }
-            Text("Connecting ...")
-        }
-    }
-}
-
-@Composable
-fun SemanticElementScope<MenuElement, *>.FailedItems(
-    state: Failed,
-    onConnect: (AccessToken) -> Unit,
-) {
-    var configuring by remember { mutableStateOf(false) }
-
-    if (configuring) {
-        ConfigurationModal(
-            onConnect = {
-                configuring = false
-                onConnect(it)
-            },
-            onCancel = { configuring = false },
-        )
-    }
-
-    val exception = state.exception
-    ErrorItem(exception)
-    SubMenu({ +Direction.Right }) {
-        LinkItem({
-            onClick {
-                onConnect(state.accessToken)
-            }
-        }) {
-            Text("Retry")
-        }
-        LinkItem({
-            onClick {
-                configuring = true
-            }
-        }) {
-            Text("Reconfigure")
-        }
+        Img(src = "clickup-icon.svg", alt = "ClickUp") { classes("mini") }
+        Text("Connect to ClickUp")
     }
 }
 
@@ -186,15 +109,15 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectingItems(
     state: TeamSelecting,
     onActivate: (TeamID) -> Unit = {},
 ) {
-    state.teams.forEach { team ->
+    state.teams.forEach { (id, name, _, avatar, _) ->
         LinkItem({
-            onClick { onActivate(team.id) }
+            onClick { onActivate(id) }
         }) {
-            Img(src = team.avatar.toString(), alt = "Team ${team.name}") {
+            Img(src = avatar.toString(), alt = "Team $name") {
                 classes("avatar")
             }
             Span {
-                Text(team.name)
+                Text(name)
             }
         }
     }
@@ -224,7 +147,7 @@ fun SemanticElementScope<MenuElement, *>.MainItems(
         Img(src = user.profilePicture.toString(), alt = "User ${user.username}") {
             classes("avatar")
         }
-        SubMenu {
+        Menu {
             TeamSelectionItems(teams, selectedTeam, onTeamSelect)
             LinkItem({
                 onClick { onRefresh() }
@@ -285,7 +208,7 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
 fun SemanticElementScope<MenuElement, *>.TeamItem(
     team: Team,
     onClick: () -> Unit,
-    attrs: SemanticAttrBuilder<ItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilder<MenuItemElement, HTMLDivElement>? = null,
 ) {
     LinkItem({
         attrs?.invoke(this)
@@ -311,182 +234,166 @@ fun SemanticElementScope<MenuElement, *>.TeamItem(
 
 @Composable
 fun SemanticElementScope<MenuElement, *>.ActivityItems(
-    activityGroupsResult: Result<List<ActivityGroup>>?,
+    activityGroups: List<ActivityGroup>,
     onSelect: (Selection) -> Unit,
     onTimeEntryStart: (TaskID, List<Tag>, Boolean) -> Unit,
     onTimeEntryStop: (TimeEntry, List<Tag>) -> Unit,
-    onRetry: () -> Unit,
-) = if (activityGroupsResult == null) {
+) {
+    val selectedActivity = activityGroups.selected.firstOrNull()
+    var clicked by remember(selectedActivity) { mutableStateOf(false) }
     LinkItem({
         +Borderless
-        +Disabled
+        if (selectedActivity == null) +Disabled
+        onClick { clicked = !it.defaultPrevented }
     }) {
-        Icon("circle", "notch") { +Loading }
-        Text("Loading ...")
+        when (selectedActivity) {
+            is RunningTaskActivity -> {
+                PomodoroTimer(
+                    timeEntry = selectedActivity.timeEntry,
+                    stop = { clicked },
+                    onStop = onTimeEntryStop,
+                    progressIndicating = false,
+                    acousticFeedback = AcousticFeedback.PomodoroFeedback,
+                )
+            }
+            else -> {
+                PomodoroStarter(
+                    taskID = selectedActivity?.taskID,
+                    start = { clicked },
+                    onStart = onTimeEntryStart,
+                    acousticFeedback = AcousticFeedback.PomodoroFeedback,
+                )
+            }
+        }
     }
-} else {
-    activityGroupsResult.fold({ activityGroups ->
-        val selectedActivity = activityGroups.selected.firstOrNull()
-        var clicked by remember(selectedActivity) { mutableStateOf(false) }
-        LinkItem({
-            +Borderless
-            if (selectedActivity == null) +Disabled
-            onClick { clicked = !it.defaultPrevented }
-        }) {
-            when (selectedActivity) {
-                is RunningTaskActivity -> {
-                    PomodoroTimer(
-                        timeEntry = selectedActivity.timeEntry,
-                        stop = { clicked },
-                        onStop = onTimeEntryStop,
-                        progressIndicating = false,
-                        acousticFeedback = AcousticFeedback.PomodoroFeedback,
-                    )
-                }
-                else -> {
-                    PomodoroStarter(
-                        taskID = selectedActivity?.taskID,
-                        start = { clicked },
-                        onStart = onTimeEntryStart,
-                        acousticFeedback = AcousticFeedback.PomodoroFeedback,
-                    )
-                }
-            }
+    LinkItem({
+        +Borderless
+        if (selectedActivity == null) classes("disabled")
+        style {
+            flex(1, 1)
+            minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
         }
-        LinkItem({
-            +Borderless
-            if (selectedActivity == null) classes("disabled")
-            style {
-                flex(1, 1)
-                minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
-            }
-        }) {
-            ActivityDropdown(activityGroups) { onSelect(it) }
-        }
+    }) {
+        ActivityDropdown(activityGroups) { onSelect(it) }
+    }
 
-        SubMenu({ +Direction.Right }) {
-            if (selectedActivity == null) {
-                LinkItem({
-                    +Borderless
-                    +Disabled
+    Menu({ +Direction.Right }) {
+        if (selectedActivity != null) {
+            MetaItems(selectedActivity.meta.reversed())
+
+            var taskWindow: Pair<Window, Url>? by remember { mutableStateOf(null) }
+            selectedActivity.url?.also { url ->
+                AnkerItem(url.toString(), {
+                    style { paddingRight(.6.em) }
+                    onClick {
+                        @Suppress("SpellCheckingInspection")
+                        val features = "popup=1,innerWidth=900,innerHeight=1200,top=400"
+                        val openedWindow = taskWindow?.takeUnless { (window, _) -> window.closed }?.let { (openedWindow, openedUrl) ->
+                            (if (openedUrl != url) window.open(url, "ClickUp-task", features) else openedWindow)?.apply { focus() }
+                        } ?: run {
+                            window.open(url, "ClickUp-task", features)
+                        }
+
+                        if (openedWindow != null) {
+                            taskWindow = openedWindow to url
+                        }
+
+                        // can't put this in the else case as it's not even safe to assume
+                        // that you'll get a window reference even in case of success
+                        it.preventDefault()
+                        it.stopPropagation()
+                    }
+                    target(Blank)
                 }) {
-                    Icon("circle", "notch") { +Loading }
-                    Text("Loading ...")
-                }
-            } else {
-                MetaItems(selectedActivity.meta.reversed())
-
-                var taskWindow: Pair<Window, Url>? by remember { mutableStateOf(null) }
-                selectedActivity.url?.also { url ->
-                    AnkerItem(url.toString(), {
-                        style { paddingRight(.6.em) }
-                        onClick {
-                            @Suppress("SpellCheckingInspection")
-                            val features = "popup=1,innerWidth=900,innerHeight=1200,top=400"
-                            val openedWindow = taskWindow?.takeUnless { (window, _) -> window.closed }?.let { (openedWindow, openedUrl) ->
-                                (if (openedUrl != url) window.open(url, "ClickUp-task", features) else openedWindow)?.apply { focus() }
-                            } ?: run {
-                                window.open(url, "ClickUp-task", features)
-                            }
-
-                            if (openedWindow != null) {
-                                taskWindow = openedWindow to url
-                            }
-
-                            // can't put this in the else case as it's not even safe to assume
-                            // that you'll get a window reference even in case of success
-                            it.preventDefault()
-                            it.stopPropagation()
-                        }
-                        target(Blank)
-                    }) {
-                        Icon("external", "alternate") {
-                            title("Open on ClickUp")
-                        }
+                    Icon("external", "alternate") {
+                        title("Open on ClickUp")
                     }
                 }
             }
         }
-    }, { exception ->
-        ErrorItem(exception)
-        SubMenu({ +Direction.Right }) {
-            LinkItem({ onClick { onRetry() } }) {
-                Text("Retry")
-            }
-        }
-    })
+    }
 }
 
 @Composable
 fun ClickUpMenu(
-    model: ClickUpModel = remember { ClickUpModel() },
+    viewModel: ClickUpMenuViewModel = rememberClickUpMenuViewModel(),
 ) {
-    Style(ClickUpStyleSheet)
 
-    Div {
-        val _state by model.menuState.collectAsState(Paused)
-        console.info("ClickUp menu in state ${_state::class.simpleName}")
+    Div { // wrapper to make SemanticUI remove margins
+        when (val state = viewModel.state.collectAsState(Disabled).value) {
+            is Transitioning -> {
+                console.info("ClickUp menu is ${state::class.simpleName}")
+                ClickUpMenu(viewModel, state.previousState, loading = true)
+            }
+            is Failed -> {
+                console.warn("ClickUp menu failed state ${state.previousState::class.simpleName}")
+                FailureModal(
+                    operation = state.operation,
+                    cause = state.cause,
+                    onRetry = state.retry,
+                    onIgnore = state.ignore,
+                    onSignOut = viewModel::disconnect
+                )
+                ClickUpMenu(viewModel, state.previousState)
+            }
+            is Succeeded -> {
+                console.info("ClickUp menu in state ${state::class.simpleName}")
+                ClickUpMenu(viewModel, state)
+            }
+        }
+    }
+}
 
-        var loading by remember(_state) { mutableStateOf(false) }
-        if (loading) {
-            ConnectingClickUpMenu()
-        } else {
-            when (val state = _state) {
-                Paused -> InitializingClickUpMenu()
-                Disconnected -> DisconnectedClickUpMenu {
-                    loading = true
-                    model.connect(it)
-                }
-                is Failed -> {
-                    Menu({ +Size.Mini + Dimmable }) {
-                        FailedItems(
-                            state = state,
-                        ) {
-                            loading = true
-                            model.connect(it)
-                        }
-                    }
-                }
-                is TeamSelecting -> {
-                    Menu({ +Size.Mini + Dimmable }) {
-                        TeamSelectingItems(
-                            state = state,
-                            onActivate = model::selectTeam,
-                        )
-                    }
-                }
-                is TeamSelected -> {
-                    Menu({ +Size.Mini + Dimmable }) {
-                        var refreshing by remember(state) { mutableStateOf(false) }
-                        DimmingLoader({ refreshing })
-                        MainItems(
-                            user = state.user,
-                            teams = state.teams,
-                            selectedTeam = state.selectedTeam,
-                            onTeamSelect = model::selectTeam,
-                            onRefresh = {
-                                refreshing = true
-                                model.refresh(force = true)
-                            },
-                            onSignOut = { model.signOut() },
-                        )
-                        ActivityItems(
-                            activityGroupsResult = state.activityGroups,
-                            onSelect = model::select,
-                            onTimeEntryStart = model::startTimeEntry,
-                            onTimeEntryStop = { timeEntry, tags -> model.stopTimeEntry(timeEntry, tags) },
-                            onRetry = {
-                                refreshing = true
-                                model.refresh(force = true)
-                            },
-                        )
-                    }
-
-                    DisposableEffect(state.selectedTeam) {
-                        model.refresh()
-                        onDispose { }
-                    }
-                }
+@Composable
+fun ClickUpMenu(
+    viewModel: ClickUpMenuViewModel,
+    state: Succeeded,
+    loading: Boolean = false,
+) {
+    Menu({
+        +Size.Mini + Dimmable
+        if (state is Disabled || state is Disconnected) {
+            +Fluid
+            classes("one", "item")
+        }
+    }) {
+        DimmingLoader(loading)
+        when (state) {
+            Disabled -> {
+                Dimmer({
+                    +Active
+                    +Inverted
+                })
+                DisconnectedItems(
+                    onConnect = {},
+                )
+            }
+            Disconnected -> {
+                DisconnectedItems(
+                    onConnect = viewModel::connect,
+                )
+            }
+            is TeamSelecting -> {
+                TeamSelectingItems(
+                    state = state,
+                    onActivate = viewModel::selectTeam,
+                )
+            }
+            is TeamSelected -> {
+                MainItems(
+                    user = state.user,
+                    teams = state.teams,
+                    selectedTeam = state.selectedTeam,
+                    onTeamSelect = viewModel::selectTeam,
+                    onRefresh = viewModel::refresh,
+                    onSignOut = viewModel::disconnect,
+                )
+                ActivityItems(
+                    activityGroups = state.activityGroups,
+                    onSelect = viewModel::select,
+                    onTimeEntryStart = viewModel::startTimeEntry,
+                    onTimeEntryStop = viewModel::stopTimeEntry,
+                )
             }
         }
     }

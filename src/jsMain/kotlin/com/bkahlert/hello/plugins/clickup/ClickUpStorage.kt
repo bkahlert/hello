@@ -12,14 +12,13 @@ import com.clickup.api.TeamID
 import com.clickup.api.rest.AccessToken
 
 /**
- * [Storage] for [ClickUpModel] settings that
+ * [Storage] for [ClickUpMenuViewModelImpl] settings that
  * delegates to the specified [storage] with keys prefixed with the specified [prefix].
  */
 class ClickUpStorage(private val storage: Storage) {
 
     /** Access token to use. */
-    @JsName("accessToken")
-    var `access-token`: AccessToken? by storage
+    var accessToken: AccessToken? by storage
 
     /** The most recent selections by the user. */
     val selections = Selections(storage.scoped("selection"))

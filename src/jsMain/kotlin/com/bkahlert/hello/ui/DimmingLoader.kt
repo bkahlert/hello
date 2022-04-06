@@ -17,14 +17,14 @@ import org.w3c.dom.HTMLDivElement
  */
 @Composable
 fun DimmingLoader(
-    active: () -> Boolean,
+    active: Boolean,
     dimmerAttrs: SemanticAttrBuilder<DimmerElement, HTMLDivElement>? = { +Inverted },
     loaderAttrs: SemanticAttrBuilder<LoaderElement, HTMLDivElement>? = { +Size.Mini },
     loaderContent: SemanticBuilder<LoaderElement, HTMLDivElement>? = null,
 ) {
     Dimmer({
         dimmerAttrs?.invoke(this)
-        if (active()) +Active
+        if (active) +Active
     }) {
         if (loaderContent != null) TextLoader(loaderAttrs, loaderContent)
         else Loader(loaderAttrs)
@@ -38,7 +38,7 @@ fun DimmingLoader(
  */
 @Composable
 fun DimmingLoader(
-    active: () -> Boolean,
+    active: Boolean,
     attrs: SemanticAttrBuilder<LoaderElement, HTMLDivElement>? = { +Size.Mini },
     content: SemanticBuilder<LoaderElement, HTMLDivElement>? = null,
 ) {
