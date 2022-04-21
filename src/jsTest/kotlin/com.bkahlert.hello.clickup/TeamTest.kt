@@ -7,8 +7,9 @@ import com.bkahlert.kommons.serialization.SerializerTest
 import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.User
-import io.ktor.http.Url
+import org.w3c.dom.url.URL
 
+@Suppress("unused")
 class TeamTest : SerializerTest<Team>(Team.serializer(),
     // language=JSON
     """
@@ -20,7 +21,7 @@ class TeamTest : SerializerTest<Team>(Team.serializer(),
             "members": [
                 {
                     "user": {
-                        "id": 42,
+                        "id": 11111,
                         "username": "john.doe",
                         "email": "john.doe@example.com",
                         "color": "#ff0000",
@@ -52,7 +53,7 @@ fun team(
     id: TeamID = TeamID("180"),
     name: String = "work group",
     color: Color = RGB("#0000ff"),
-    avatar: Url = Url("https://example.com/work.png"),
+    avatar: URL = URL("https://example.com/work.png"),
     vararg members: User = arrayOf(user(), otherUser()),
 ) = Team(
     id,

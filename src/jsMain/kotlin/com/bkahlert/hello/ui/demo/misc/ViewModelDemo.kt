@@ -12,8 +12,8 @@ import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
-import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures
-import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.running
 import com.bkahlert.hello.ui.demo.failedResponse
 import com.bkahlert.hello.ui.demo.misc.ViewModelDemoStuff.TestViewModel
 import com.bkahlert.hello.ui.demo.response
@@ -131,13 +131,13 @@ private object ViewModelDemoStuff {
             }
         }
 
-        var timeEntry: TimeEntry? by mutableStateOf(ClickupFixtures.TimeEntry.running())
+        var timeEntry: TimeEntry? by mutableStateOf(ClickUpFixtures.TimeEntry.running())
             private set
 
         fun start(taskID: TaskID?, type: Type) {
-            timeEntry = ClickupFixtures.TimeEntry.running(start = Now).copy(
+            timeEntry = ClickUpFixtures.TimeEntry.running(start = Now).copy(
                 id = TimeEntryID((taskID?.stringValue ?: "unknown") + "-${randomString()}"),
-                tags = type.addTag(ClickupFixtures.TimeEntry.running().tags).also { console.log("$it") },
+                tags = type.addTag(ClickUpFixtures.TimeEntry.running().tags).also { console.log("$it") },
             )
             logger.info("Time entry $timeEntry started")
         }

@@ -17,7 +17,7 @@ import org.jetbrains.compose.web.css.width
 @Suppress("PublicApiImplicitType")
 object ClickUpStyleSheet : StyleSheet() {
     private val size = 512
-    private val profilePictureMask = SVGImage(
+    private val roundedMask = SVGImage(
         //language=SVG
         """
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="$size" height="$size">
@@ -31,6 +31,13 @@ object ClickUpStyleSheet : StyleSheet() {
     }
 
     init {
+        "img.rounded" style {
+            property("mask-image", "url('${roundedMask.dataURI}')")
+            property("mask-position", "center")
+            property("mask-size", "100%")
+            property("mask-repeat", "no-repeat")
+        }
+
         ".ui.menu:first-child:last-child" style {
             marginTop(0.px)
         }
@@ -43,10 +50,6 @@ object ClickUpStyleSheet : StyleSheet() {
         }
 
         ".ui.menu .item > img:not(.ui).avatar" style {
-            property("mask-image", """url('${profilePictureMask.dataURI}')""")
-            property("mask-position", "center")
-            property("mask-size", "100%")
-            property("mask-repeat", "no-repeat")
             miniMenuImage()
         }
 

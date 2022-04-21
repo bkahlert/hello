@@ -6,10 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.hello.plugins.clickup.ClickUpMenu
 import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownDemo
 import com.bkahlert.hello.ui.demo.clickup.ClickUpMenuDemo
+import com.bkahlert.hello.ui.demo.clickup.ClickUpTestClient
 import com.bkahlert.hello.ui.demo.clickup.PomodoroStarterDemo
 import com.bkahlert.hello.ui.demo.clickup.PomodoroTimerDemo
+import com.bkahlert.hello.ui.demo.clickup.rememberClickUpMenuTestViewModel
 import com.bkahlert.hello.ui.demo.misc.DimmingLoaderDemo
 import com.bkahlert.hello.ui.demo.misc.IdleDetectoryDemo
 import com.bkahlert.hello.ui.demo.misc.MutableFlowStateDemo
@@ -24,6 +27,7 @@ import com.bkahlert.hello.ui.demo.semanticui.ViewsDemos
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.default
+import com.clickup.api.TimeEntry
 import com.semanticui.compose.Semantic
 import com.semanticui.compose.SemanticUI
 import com.semanticui.compose.jQuery
@@ -130,6 +134,16 @@ fun DebugUI(
                     MutableFlowStateDemo()
                     IdleDetectoryDemo()
                 }
+            }
+        },
+        "Focus" to {
+            val runningTimeEntry: TimeEntry? = null
+            fun client() = ClickUpTestClient(
+                initialRunningTimeEntry = runningTimeEntry,
+            )
+            Demo("Connected — Partially Loaded") {
+                val client = client()
+                ClickUpMenu(rememberClickUpMenuTestViewModel(client) { toPartiallyLoaded() })
             }
         },
         activeTab = activeTab,

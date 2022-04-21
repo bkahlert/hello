@@ -16,13 +16,15 @@ abstract class SerializerTest<T>(
         vararg mappings: Pair<String, T>,
     ) : this(serializer, mappings.toList())
 
-    @Test fun deserialize() {
+    @Test
+    fun deserialize() {
         mappings.forEach { (serialized, deserialized) ->
             serialized.deserialize(serializer) shouldBe deserialized
         }
     }
 
-    @Test fun serialize() {
+    @Test
+    fun serialize() {
         mappings.forEach { (serialized, deserialized) ->
             deserialized.serialize(serializer, pretty = true) shouldBe serialized
         }
@@ -38,7 +40,8 @@ abstract class BasicSerializerTest<T>(
         vararg jsons: String,
     ) : this(serializer, jsons.toList())
 
-    @Test fun deserialize() {
+    @Test
+    fun deserialize() {
         jsons.forEach { json ->
             json.deserialize(serializer)
             shouldNotThrow<Throwable> {

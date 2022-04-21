@@ -2,6 +2,7 @@ package com.bkahlert.hello.ui.demo.clickup
 
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.plugins.clickup.Pomodoro
+import com.bkahlert.hello.ui.demo.ImageFixtures
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
 import com.bkahlert.kommons.time.minutes
@@ -14,42 +15,48 @@ import com.clickup.api.TimeEntry
 import com.clickup.api.User
 import kotlin.js.Date
 
-object ClickupFixtures {
-    val User: User by lazy {
-        """
+object ClickUpFixtures {
+    val UserJson = """
         {
-            "id": 4687596,
-            "username": "Björn Kahlert",
-            "email": "mail@bkahlert.com",
-            "color": "#4169e1",
-            "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg",
-            "initials": "BK",
+            "id": 11111,
+            "username": "john.doe",
+            "email": "john.doe@example.com",
+            "color": "#ff0000",
+            "profilePicture": "${ImageFixtures.JohnDoe}",
+            "initials": "JD",
             "week_start_day": 1,
             "global_font_support": false,
             "timezone": "Europe/Berlin"
         }
-        """.trimIndent().deserialize()
-    }
-    val Team: Team by lazy {
+        """.trimIndent()
+
+    val User: User by lazy { UserJson.deserialize() }
+    val Teams: List<Team> by lazy {
         """
-        {
-            "id": "2576831",
-            "name": "BKAHLERT",
-            "color": "#e040fb",
-            "avatar": "https://attachments2.clickup.com/team_avatars/2576831_i9f.blob?Expires=1661904000&Key-Pair-Id=APKAIYJRUKB5RLQWHZWQ&Signature=s2bcQ8Ej6VU5c3m88wowMn6aI34eAkDI0TPO4e9D5ZBJ-GVxMizY0ysh-0B4FuXhCdabsPPYpNgg0M1eARIFVhN1wq8G26MVxRNJ~GF2QeYFxxCTCUjgF8Vsi2nO-cyk1ZtGroaJ0w8OBQgJZz9kTqQ-ZpWXUzejqLwNgGzPCuqpVZ75gjjesA8qRuUZEC-ynlDvhoku8VERz-C-94O~ba1KAQgoeyPSvWQ1x-Y1nMW2BCFOAwMsjP0aObVhxWhrQzuOHNRj09ebDDk4xEyxIFoxCrZAaPW3w6coIhnJ9fAdzj5eduE0Tq3Ig4T3VmUzJohxatUBhTx9JQxN8BCOTA__",
-            "members": [
-                {
-                    "user": {
-                        "id": 4687596,
-                        "username": "Björn Kahlert",
-                        "email": "mail@bkahlert.com",
-                        "color": "#4169e1",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg",
-                        "initials": "BK"
+        [
+            {
+                "id": "1111111",
+                "name": "Pear",
+                "color": "#00ff00",
+                "avatar": "${ImageFixtures.PearLogo.dataURI}",
+                "members": [
+                    {
+                        "user": $UserJson
                     }
-                }
-            ]
-        }
+                ]
+            },
+            {
+                "id": "2222222",
+                "name": "Kommons",
+                "color": "#0000ff",
+                "avatar": "${ImageFixtures.KommonsLogo.dataURI}",
+                "members": [
+                    {
+                        "user": $UserJson
+                    }
+                ]
+            }
+        ]
         """.trimIndent().deserialize()
     }
     val Tasks: List<Task> by lazy {
@@ -69,20 +76,9 @@ object ClickupFixtures {
                 "orderindex": 249.0026489,
                 "date_created": 1647040375239,
                 "date_updated": 1647537376018,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -146,7 +142,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/20jg1er",
                 "permission_level": "create",
                 "list": {
@@ -176,20 +172,9 @@ object ClickupFixtures {
                 "orderindex": 199.0003736,
                 "date_created": 1645114194584,
                 "date_updated": 1647040454344,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -252,7 +237,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1yt2xek",
                 "permission_level": "create",
                 "list": {
@@ -282,20 +267,9 @@ object ClickupFixtures {
                 "orderindex": 189.000068,
                 "date_created": 1641465410256,
                 "date_updated": 1641465413976,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -337,7 +311,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zfu735",
                 "permission_level": "create",
                 "list": {
@@ -369,20 +343,9 @@ object ClickupFixtures {
                 "orderindex": 186.12704344911424,
                 "date_created": 1641463760120,
                 "date_updated": 1641464887333,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -424,7 +387,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zftxd7",
                 "permission_level": "create",
                 "list": {
@@ -456,20 +419,9 @@ object ClickupFixtures {
                 "orderindex": 176.3204338420263,
                 "date_created": 1641463479154,
                 "date_updated": 1641465306031,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -511,7 +463,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zftw92",
                 "permission_level": "create",
                 "list": {
@@ -543,20 +495,9 @@ object ClickupFixtures {
                 "orderindex": 183.0001097,
                 "date_created": 1641463459596,
                 "date_updated": 1641463614449,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -598,7 +539,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zftw7j",
                 "permission_level": "create",
                 "list": {
@@ -628,20 +569,9 @@ object ClickupFixtures {
                 "orderindex": 177.91026477101315,
                 "date_created": 1641460866653,
                 "date_updated": 1641460870482,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -683,7 +613,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zftj9c",
                 "permission_level": "create",
                 "list": {
@@ -715,20 +645,9 @@ object ClickupFixtures {
                 "orderindex": 179.0000957,
                 "date_created": 1641460855822,
                 "date_updated": 1641465689260,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -770,7 +689,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zftj7t",
                 "permission_level": "create",
                 "list": {
@@ -802,20 +721,9 @@ object ClickupFixtures {
                 "orderindex": 176.8204338420263,
                 "date_created": 1641460769804,
                 "date_updated": 1641461873791,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -857,7 +765,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zfthxd",
                 "permission_level": "create",
                 "list": {
@@ -887,20 +795,9 @@ object ClickupFixtures {
                 "orderindex": 163,
                 "date_created": 1618100805929,
                 "date_updated": 1618100885206,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -962,7 +859,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/gz9v67",
                 "permission_level": "create",
                 "list": {
@@ -992,20 +889,9 @@ object ClickupFixtures {
                 "orderindex": 161,
                 "date_created": 1618095873394,
                 "date_updated": 1618095875600,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1067,7 +953,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/gz9t8v",
                 "permission_level": "create",
                 "list": {
@@ -1097,20 +983,9 @@ object ClickupFixtures {
                 "orderindex": 159,
                 "date_created": 1618095855861,
                 "date_updated": 1618190430602,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1173,7 +1048,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/gz9t8b",
                 "permission_level": "create",
                 "list": {
@@ -1203,20 +1078,9 @@ object ClickupFixtures {
                 "orderindex": 157,
                 "date_created": 1618095828989,
                 "date_updated": 1618117997826,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1279,7 +1143,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/gz9t7m",
                 "permission_level": "create",
                 "list": {
@@ -1309,20 +1173,9 @@ object ClickupFixtures {
                 "orderindex": 158,
                 "date_created": 1610299954091,
                 "date_updated": 1610344075567,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1384,7 +1237,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/caw2qt",
                 "permission_level": "create",
                 "list": {
@@ -1414,20 +1267,9 @@ object ClickupFixtures {
                 "orderindex": 156,
                 "date_created": 1610299879105,
                 "date_updated": 1610344051409,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1489,7 +1331,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/caw2kb",
                 "permission_level": "create",
                 "list": {
@@ -1519,20 +1361,9 @@ object ClickupFixtures {
                 "orderindex": 154,
                 "date_created": 1610299807778,
                 "date_updated": 1610299832308,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1594,7 +1425,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/caw2eg",
                 "permission_level": "create",
                 "list": {
@@ -1624,20 +1455,9 @@ object ClickupFixtures {
                 "orderindex": 153,
                 "date_created": 1609785077902,
                 "date_updated": 1609785079958,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1699,7 +1519,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/c2whgw",
                 "permission_level": "create",
                 "list": {
@@ -1729,20 +1549,9 @@ object ClickupFixtures {
                 "orderindex": 152,
                 "date_created": 1609785070045,
                 "date_updated": 1609785071916,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1804,7 +1613,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/c2whgt",
                 "permission_level": "create",
                 "list": {
@@ -1836,20 +1645,9 @@ object ClickupFixtures {
                 "orderindex": 151,
                 "date_created": 1609784824618,
                 "date_updated": 1609784824618,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -1860,7 +1658,7 @@ object ClickupFixtures {
                         "name": "focus",
                         "tag_fg": "#800000",
                         "tag_bg": "#0231e8",
-                        "creator": 4687596
+                        "creator": ${User.id.stringValue}
                     }
                 ],
                 "due_date": 1596160800000,
@@ -1919,7 +1717,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/c2wgmp",
                 "permission_level": "create",
                 "list": {
@@ -1949,20 +1747,9 @@ object ClickupFixtures {
                 "orderindex": 145,
                 "date_created": 1597551981002,
                 "date_updated": 1597551981391,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -2024,7 +1811,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/7cku3f",
                 "permission_level": "create",
                 "list": {
@@ -2056,20 +1843,9 @@ object ClickupFixtures {
                 "orderindex": 144,
                 "date_created": 1597094330386,
                 "date_updated": 1597094331378,
-                "creator": {
-                    "id": 4687596,
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "color": "#4169e1",
-                        "username": "Björn Kahlert",
-                        "initials": "BK",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [
                 ],
@@ -2131,7 +1907,7 @@ object ClickupFixtures {
                 ],
                 "linked_tasks": [
                 ],
-                "team_id": "2576831",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/78mj21",
                 "permission_level": "create",
                 "list": {
@@ -2414,12 +2190,7 @@ object ClickupFixtures {
                     "status": "professsional",
                     "color": "#02bcd4"
                 },
-                "assignee": {
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "initials": "BK",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "assignee": $UserJson,
                 "task_count": 46,
                 "folder": {
                     "id": "11087491",
@@ -2444,12 +2215,7 @@ object ClickupFixtures {
                     "status": "private",
                     "color": "#2ecd6f"
                 },
-                "assignee": {
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "initials": "BK",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "assignee": $UserJson,
                 "task_count": 7,
                 "folder": {
                     "id": "11087492",
@@ -2480,12 +2246,7 @@ object ClickupFixtures {
                     "status": "dkb",
                     "color": "#04a9f4"
                 },
-                "assignee": {
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "initials": "BK",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "assignee": $UserJson,
                 "task_count": 0,
                 "folder": {
                     "id": "11067957",
@@ -2510,12 +2271,7 @@ object ClickupFixtures {
                     "status": "senacor",
                     "color": "#1bbc9c"
                 },
-                "assignee": {
-                    "color": "#4169e1",
-                    "username": "Björn Kahlert",
-                    "initials": "BK",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "assignee": $UserJson,
                 "task_count": 16,
                 "folder": {
                     "id": "11067967",
@@ -2573,15 +2329,8 @@ object ClickupFixtures {
                     "type": "custom"
                 }
             },
-            "wid": "2576831",
-            "user": {
-                "id": 4687596,
-                "username": "Björn Kahlert",
-                "email": "mail@bkahlert.com",
-                "color": "#4169e1",
-                "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg",
-                "initials": "BK"
-            },
+            "wid": "${Teams.first().id.stringValue}",
+            "user": $UserJson,
             "billable": false,
             "start": 1647225649667,
             "duration": -350610,
@@ -2591,7 +2340,7 @@ object ClickupFixtures {
                     "name": "pomodoro",
                     "tag_fg": "#ff6347",
                     "tag_bg": "#ff6347",
-                    "creator": 4687596
+                    "creator": ${User.id.stringValue}
                 }
             ],
             "source": "api",

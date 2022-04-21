@@ -9,6 +9,7 @@ import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeede
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioning
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
+import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.text.toSentenceCaseString
 import com.clickup.api.Folder
 import com.clickup.api.FolderID
@@ -202,6 +203,12 @@ sealed class ClickUpMenuState {
                             override val tasks: List<Task>,
                             override val spaces: List<Space>,
                         ) : Data(runningTimeEntry, tasks, spaces) {
+                            //                            override fun toString(): String = asString {
+//                                ::runningTimeEntry.name to runningTimeEntry
+//                                ::tasks.name to tasks.size
+//                                ::spaces.name to spaces.size
+//                            }
+                            override fun toString(): String = asString()
 
                             companion object {
                                 suspend fun load(user: User, team: Team, client: ClickUpClient): CoreData = withContext(Dispatchers.Default) {
@@ -231,6 +238,15 @@ sealed class ClickUpMenuState {
                             /** The task lists and the folders they belong to. */
                             val folderLists: Map<FolderID, List<TaskList>>,
                         ) : Data(runningTimeEntry, tasks, spaces) {
+                            //                            override fun toString(): String = asString {
+//                                ::runningTimeEntry.name to runningTimeEntry
+//                                ::tasks.name to tasks.size
+//                                ::spaces.name to spaces.size
+//                                ::folders.name to folders.size
+//                                ::spaceLists.name to spaceLists.size
+//                                ::folderLists.name to folderLists.size
+//                            }
+                            override fun toString(): String = asString()
 
                             companion object {
                                 suspend fun load(coreData: CoreData, client: ClickUpClient): FullData = withContext(Dispatchers.Default) {

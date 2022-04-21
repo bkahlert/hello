@@ -45,8 +45,8 @@ fun ActivityDropdownDemo() {
 
 object ActivityDropdownFixtures {
     fun runningTaskActivity(
-        timeEntry: TimeEntry = ClickupFixtures.TimeEntry,
-        task: Task? = ClickupFixtures.Tasks.first(),
+        timeEntry: TimeEntry = ClickUpFixtures.TimeEntry,
+        task: Task? = ClickUpFixtures.Tasks.first(),
     ) = RunningTaskActivity(
         timeEntry = timeEntry,
         task = task,
@@ -57,11 +57,11 @@ object ActivityDropdownFixtures {
     ) = ActivityGroup.of(runningTaskActivity)
 
     fun taskActivityGroup(
-        space: Space? = ClickupFixtures.Spaces.first(),
-        folder: FolderPreview? = ClickupFixtures.Space1FolderLists.first().folder,
-        list: TaskList? = ClickupFixtures.Space1FolderLists.first(),
+        space: Space? = ClickUpFixtures.Spaces.first(),
+        folder: FolderPreview? = ClickUpFixtures.Space1FolderLists.first().folder,
+        list: TaskList? = ClickUpFixtures.Space1FolderLists.first(),
         color: Color? = Brand.colors.primary.toHSL().run { copy(h = Random.nextDouble(0.0, 360.0)) },
-        tasks: List<Task> = ClickupFixtures.Tasks,
+        tasks: List<Task> = ClickUpFixtures.Tasks,
         fromIndex: Int = 0,
         toIndex: Int = tasks.size,
         select: (Int, Task) -> Boolean = { _, _ -> false },

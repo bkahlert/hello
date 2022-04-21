@@ -7,10 +7,10 @@ import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
-import io.ktor.http.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import org.w3c.dom.url.URL
 import kotlin.js.Date
 import kotlin.time.Duration
 
@@ -42,7 +42,7 @@ data class Task(
     @SerialName("dependencies") val dependencies: List<String>,
     @SerialName("linked_tasks") val linkedTasks: List<TaskLink>,
     @SerialName("team_id") val teamId: TeamID?,
-    @SerialName("url") val url: Url?,
+    @SerialName("url") val url: URL?,
     @SerialName("permission_level") val permissionLevel: String?,
     @SerialName("list") val list: TaskListPreview?,
     @SerialName("folder") val folder: FolderPreview,

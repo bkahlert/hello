@@ -1,11 +1,15 @@
 package com.bkahlert.hello.clickup
 
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.Teams
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.UserJson
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
 import com.clickup.api.Task
+import com.clickup.api.Team
 import kotlinx.serialization.builtins.ListSerializer
 
+@Suppress("unused")
 class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSerializer(Task.serializer())),
     // language=JSON
     """
@@ -28,22 +32,9 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                 "date_updated": "1645121102051",
                 "date_closed": null,
                 "archived": false,
-                "creator": {
-                    "id": 4687596,
-                    "username": "Björn Kahlert",
-                    "color": "#4169E1",
-                    "email": "mail@bkahlert.com",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "username": "Björn Kahlert",
-                        "color": "#4169E1",
-                        "initials": "BK",
-                        "email": "mail@bkahlert.com",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [],
                 "checklists": [],
@@ -113,7 +104,7 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                 ],
                 "dependencies": [],
                 "linked_tasks": [],
-                "team_id": "2576831",
+                "team_id": "${this.Teams.first<Team>().id.stringValue}",
                 "url": "https://app.clickup.com/t/1yt2xek",
                 "permission_level": "create",
                 "list": {
@@ -154,22 +145,9 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                 "date_updated": "1641465413976",
                 "date_closed": null,
                 "archived": false,
-                "creator": {
-                    "id": 4687596,
-                    "username": "Björn Kahlert",
-                    "color": "#4169E1",
-                    "email": "mail@bkahlert.com",
-                    "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                },
+                "creator": $UserJson,
                 "assignees": [
-                    {
-                        "id": 4687596,
-                        "username": "Björn Kahlert",
-                        "color": "#4169E1",
-                        "initials": "BK",
-                        "email": "mail@bkahlert.com",
-                        "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-                    }
+                    $UserJson
                 ],
                 "watchers": [],
                 "checklists": [],
@@ -217,7 +195,7 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                 ],
                 "dependencies": [],
                 "linked_tasks": [],
-                "team_id": "2576831",
+                "team_id": "${this.Teams.first<Team>().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zfu735",
                 "permission_level": "create",
                 "list": {

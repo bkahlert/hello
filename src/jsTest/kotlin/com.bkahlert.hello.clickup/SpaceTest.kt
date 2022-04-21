@@ -7,6 +7,7 @@ import com.clickup.api.SpaceID
 import com.clickup.api.Status
 import com.clickup.api.StatusID
 
+@Suppress("unused")
 class SpaceTest : SerializerTest<Space>(Space.serializer(),
     // language=JSON
     """

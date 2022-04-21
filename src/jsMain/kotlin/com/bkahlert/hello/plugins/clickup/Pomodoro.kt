@@ -42,10 +42,10 @@ data class Pomodoro(
         tagColor: Color,
     ) {
         /** The original [Pomodoro] type encompassing 25 minutes. */
-        Classic(25.minutes, Type.TOMATO),
+        Classic(25.minutes, Color.Tomato),
 
         /** The [Pomodoro] type preferred by many brain-workers with a duration of 50 minutes. */
-        Pro(50.minutes, Type.TOMATO_SAUCE),
+        Pro(50.minutes, Color.TomatoSauce),
 
         /** *used for debugging purposes* */
         Debug(10.seconds, Brand.colors.cyan);
@@ -67,8 +67,6 @@ data class Pomodoro(
         }
 
         companion object {
-            private val TOMATO = RGB(0xff6347)
-            private val TOMATO_SAUCE = RGB(0xb21807)
 
             /**
              * Extracts a [Pomodoro.Type] from `this` [Tag].

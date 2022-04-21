@@ -36,6 +36,7 @@ import org.jetbrains.compose.web.css.right
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Input
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.url.URL
 
 @Stable
 interface SearchInputState {
@@ -167,7 +168,7 @@ fun MultiSearchInput(
 
 @Composable
 fun PasteHandlingMultiSearchInput(
-    onSearch: (String, List<Url>) -> Unit = { _, urls ->
+    onSearch: (String, List<URL>) -> Unit = { _, urls ->
         if (urls.size == 1) window.openInSameTab(urls.first())
         else urls.forEach(window::openInNewTab)
     },
@@ -179,7 +180,7 @@ fun PasteHandlingMultiSearchInput(
         onPaste = {
             it("text/plain")?.also {
                 val url = it.toUrlOrNull()
-                if (url != null && url.port != 0) {
+                if (url != null && Url(url.toString()).port != 0) {
                     window.openInSameTab(url)
                 }
             }

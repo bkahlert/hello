@@ -42,7 +42,6 @@ import com.semanticui.compose.collection.MenuItemElement
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.module.Dimmer
 import com.semanticui.compose.module.Menu
-import io.ktor.http.Url
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.attributes.target
@@ -79,6 +78,7 @@ import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.Window
+import org.w3c.dom.url.URL
 
 @Composable
 fun SemanticElementScope<MenuElement, *>.DisconnectedItems(
@@ -109,18 +109,6 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectingItems(
     state: TeamSelecting,
     onActivate: (TeamID) -> Unit = {},
 ) {
-    state.teams.forEach { (id, name, _, avatar, _) ->
-        LinkItem({
-            onClick { onActivate(id) }
-        }) {
-            Img(src = avatar.toString(), alt = "Team $name") {
-                classes("avatar")
-            }
-            Span {
-                Text(name)
-            }
-        }
-    }
     if (state.teams.isEmpty()) {
         LinkItem({
             +Borderless
@@ -128,6 +116,28 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectingItems(
         }) {
             Span {
                 Text("No teams found")
+            }
+        }
+    } else {
+        LinkItem({
+            +Borderless
+            +Disabled
+        }) {
+            Span {
+                Text("Select team:")
+            }
+        }
+        state.teams.forEach { (id, name, _, avatar, _) ->
+            LinkItem({
+                +Borderless
+                onClick { onActivate(id) }
+            }) {
+                Img(src = avatar.toString(), alt = "Team $name") {
+                    classes("avatar")
+                }
+                Span {
+                    Text(name)
+                }
             }
         }
     }
@@ -145,10 +155,10 @@ fun SemanticElementScope<MenuElement, *>.MainItems(
 
     DropdownItem({ +Borderless }) {
         Img(src = user.profilePicture.toString(), alt = "User ${user.username}") {
-            classes("avatar")
+            classes("rounded", "avatar")
         }
         Menu {
-            TeamSelectionItems(teams, selectedTeam, onTeamSelect)
+            if (selectedTeam != null) TeamSelectionItems(teams, selectedTeam, onTeamSelect)
             LinkItem({
                 onClick { onRefresh() }
             }) {
@@ -222,6 +232,7 @@ fun SemanticElementScope<MenuElement, *>.TeamItem(
             }
         }) {
             Img(src = team.avatar.toString(), alt = "Team ${team.name}") {
+                style { borderRadius(0.em) }
                 classes("ui", "avatar", "image")
             }
         }
@@ -281,7 +292,7 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
         if (selectedActivity != null) {
             MetaItems(selectedActivity.meta.reversed())
 
-            var taskWindow: Pair<Window, Url>? by remember { mutableStateOf(null) }
+            var taskWindow: Pair<Window, URL>? by remember { mutableStateOf(null) }
             selectedActivity.url?.also { url ->
                 AnkerItem(url.toString(), {
                     style { paddingRight(.6.em) }
@@ -374,6 +385,14 @@ fun ClickUpMenu(
                 )
             }
             is TeamSelecting -> {
+                MainItems(
+                    user = state.user,
+                    teams = state.teams,
+                    selectedTeam = null,
+                    onTeamSelect = viewModel::selectTeam,
+                    onRefresh = viewModel::refresh,
+                    onSignOut = viewModel::disconnect,
+                )
                 TeamSelectingItems(
                     state = state,
                     onActivate = viewModel::selectTeam,

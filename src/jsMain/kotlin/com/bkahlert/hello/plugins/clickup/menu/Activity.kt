@@ -9,8 +9,17 @@ import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
 import com.bkahlert.kommons.time.toMoment
-import com.clickup.api.*
-import io.ktor.http.*
+import com.clickup.api.FolderPreview
+import com.clickup.api.Identifier
+import com.clickup.api.Space
+import com.clickup.api.Tag
+import com.clickup.api.Task
+import com.clickup.api.TaskID
+import com.clickup.api.TaskList
+import com.clickup.api.TaskListPreview
+import com.clickup.api.TimeEntry
+import com.clickup.api.TimeEntryID
+import org.w3c.dom.url.URL
 
 /**
  * Some king of icon like meta information
@@ -116,7 +125,7 @@ sealed interface Activity<ID : Identifier<*>> {
     val taskID: TaskID?
     val name: String
     val color: Color?
-    val url: Url?
+    val url: URL?
     val meta: List<Meta>
     val descriptions: Map<String, String?>
     val tags: Set<Tag>
@@ -134,7 +143,7 @@ sealed interface Activity<ID : Identifier<*>> {
             get() = timeEntry.task?.name ?: taskActivity?.name ?: "— Timer with no associated task —"
         override val color: Color?
             get() = timeEntry.task?.status?.color ?: taskActivity?.color ?: Brand.colors.white.transparentize(1.0)
-        override val url: Url? get() = timeEntry.url ?: timeEntry.url ?: taskActivity?.url
+        override val url: URL? get() = timeEntry.url ?: timeEntry.url ?: taskActivity?.url
         override val meta: List<Meta>
             get() = buildList {
                 if (timeEntry.billable) add(Meta("billable", "dollar"))
@@ -160,7 +169,7 @@ sealed interface Activity<ID : Identifier<*>> {
         override val taskID: TaskID get() = task.id
         override val name: String get() = task.name
         override val color: Color get() = task.status.color
-        override val url: Url? get() = task.url
+        override val url: URL? get() = task.url
         override val meta: List<Meta>
             get() = buildList {
                 if (task.dateCreated != null) {

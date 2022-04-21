@@ -11,6 +11,7 @@ import io.ktor.http.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import org.w3c.dom.url.URL
 import kotlin.js.Date
 import kotlin.time.Duration
 
@@ -26,12 +27,12 @@ data class TimeEntry(
     @SerialName("description") val description: String,
     @SerialName("tags") val tags: List<Tag>,
     @SerialName("source") val source: String?,
-    @SerialName("task_url") val taskUrl: Url?,
+    @SerialName("task_url") val taskUrl: URL?,
 ) {
     val duration: Duration? get() = end?.let { it - start }
     val passed: Duration get() = Now - start
     val ended: Boolean get() = end != null
-    val url: Url? get() = taskUrl?.takeUnless { it.pathSegments.lastOrNull() == "null" }
+    val url: URL? get() = taskUrl?.takeUnless { Url(it.toString()).pathSegments.lastOrNull() == "null" }
 }
 
 @Serializable

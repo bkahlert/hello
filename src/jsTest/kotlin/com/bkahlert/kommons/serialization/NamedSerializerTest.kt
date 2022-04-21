@@ -6,6 +6,7 @@ import com.clickup.api.UserID
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.nullable
 
+@Suppress("unused")
 class NamedSerializerTest {
 
     inner class OfSingle {
@@ -23,7 +24,7 @@ class NamedSerializerTest {
             """
                 {
                     "user": {
-                        "id": 42,
+                        "id": 11111,
                         "username": "john.doe",
                         "email": "john.doe@example.com",
                         "color": "#ff0000",
@@ -44,7 +45,7 @@ class NamedSerializerTest {
             {
                 "users": [
                     {
-                        "id": 42,
+                        "id": 11111,
                         "username": "john.doe",
                         "email": "john.doe@example.com",
                         "color": "#ff0000",

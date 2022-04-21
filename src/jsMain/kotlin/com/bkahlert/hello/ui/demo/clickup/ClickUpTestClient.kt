@@ -9,7 +9,8 @@ import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeede
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelecting
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuViewModel
 import com.bkahlert.hello.plugins.clickup.rememberClickUpMenuViewModel
-import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.running
+import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.text.randomString
@@ -41,22 +42,22 @@ import kotlin.js.Date
 import kotlin.time.Duration
 
 open class ClickUpTestClient(
-    private val initialUser: User = ClickupFixtures.User,
-    private val initialTeams: List<Team> = listOf(ClickupFixtures.Team),
-    private val initialTasks: List<Task> = ClickupFixtures.Tasks,
-    private val initialSpaces: List<Space> = ClickupFixtures.Spaces,
+    private val initialUser: User = ClickUpFixtures.User,
+    private val initialTeams: List<Team> = ClickUpFixtures.Teams,
+    private val initialTasks: List<Task> = ClickUpFixtures.Tasks,
+    private val initialSpaces: List<Space> = ClickUpFixtures.Spaces,
     private val initialLists: List<TaskList> = listOf(
-        ClickupFixtures.Space1FolderlessLists,
-        ClickupFixtures.Space2FolderlessLists,
-        ClickupFixtures.Space1FolderLists,
-        ClickupFixtures.Space2FolderLists,
+        ClickUpFixtures.Space1FolderlessLists,
+        ClickUpFixtures.Space2FolderlessLists,
+        ClickUpFixtures.Space1FolderLists,
+        ClickUpFixtures.Space2FolderLists,
     ).flatten(),
     private val initialFolders: List<Folder> = listOf(
-        ClickupFixtures.Space1Folders,
-        ClickupFixtures.Space2Folders,
+        ClickUpFixtures.Space1Folders,
+        ClickUpFixtures.Space2Folders,
     ).flatten(),
     initialTimeEntries: List<TimeEntry> = emptyList(),
-    private val initialRunningTimeEntry: TimeEntry? = ClickupFixtures.TimeEntry.running(),
+    private val initialRunningTimeEntry: TimeEntry? = ClickUpFixtures.TimeEntry.running(),
     private val delayFactor: Double = .3,
 ) : ClickUpClient {
 
@@ -170,6 +171,7 @@ open class ClickUpTestClient(
             .filter { date_created_lt == null || it.dateCreated?.let { dateCreated -> date_created_lt < dateCreated } ?: false }
             .filter { date_updated_gt == null || it.dateUpdated?.let { dateUpdated -> date_updated_gt > dateUpdated } ?: false }
             .filter { date_updated_lt == null || it.dateUpdated?.let { dateUpdated -> date_updated_lt < dateUpdated } ?: false }
+            .map { it.copy(timeSpent = it.totalTimeSpent) }
             .toList()
     }
 
@@ -259,6 +261,18 @@ open class ClickUpTestClient(
             it.takeUnless { it.wid == team.id && timeEntryIDs.contains(it.id) } ?: it.copy(tags = buildSet { addAll(it.tags);addAll(tags) }.toList())
         }
     }
+
+    override fun toString(): String = asString()
+
+    /**
+     * The total time spent based on what is already tracked as part of this task itself
+     * and matching time entries.
+     */
+    val Task.totalTimeSpent: Duration?
+        get() = timeEntries.fold(timeSpent ?: Duration.ZERO) { acc, timeEntry ->
+            if (timeEntry.task?.id == id) acc + (timeEntry.duration ?: Duration.ZERO)
+            else acc
+        }.takeUnless { it == Duration.ZERO }
 
     companion object {
         fun Iterable<TaskList>.filterBy(space: Space) = filter { it.space.id == space.id }

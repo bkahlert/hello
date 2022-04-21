@@ -7,9 +7,10 @@ import io.ktor.http.Url
 import io.ktor.util.toMap
 import org.w3c.dom.Location
 import org.w3c.dom.Window
+import org.w3c.dom.url.URL
 
 inline fun Window.open(
-    url: Url,
+    url: URL,
     target: String? = null,
     features: String? = null,
 ): Window? {
@@ -26,7 +27,7 @@ inline fun Window.open(
 }
 
 inline fun Window.openInSameTab(
-    url: Url,
+    url: URL,
     features: String? = null,
     newTabFallback: Boolean = true,
 ): Window? =
@@ -38,7 +39,7 @@ inline fun Window.openInSameTab(
     }.getOrThrow()
 
 inline fun Window.openInNewTab(
-    url: Url,
+    url: URL,
     features: String? = null,
 ): Window? = open(url, "_blank", features)
 
@@ -72,8 +73,8 @@ inline fun Parameters.copy(builder: ParametersBuilder.() -> Unit): Parameters =
 /**
  * Contains the [Url] of this location.
  */
-var Location.url: Url
-    get() = Url(href)
+var Location.url: URL
+    get() = URL(href)
     set(value) {
         href = value.toString()
     }
@@ -104,7 +105,7 @@ val Url.allParameters: Parameters
  * `?param=1=value1&param2=value2`
  */
 var Location.parameters: Parameters
-    get() = url.parameters
+    get() = Url(url.toString()).parameters
     set(value) {
         value.serialize()
             .takeIf { it != search.removePrefix("?") }
@@ -116,15 +117,9 @@ var Location.parameters: Parameters
  * `#param1=value1&param2=value2`
  */
 var Location.hashParameters: Parameters
-    get() = url.hashParameters
+    get() = Url(url.toString()).hashParameters
     set(value) {
         value.serialize()
             .takeIf { it != hash.removePrefix("#") }
             ?.also { hash = it.withPrefix("#") }
     }
-
-/**
- * Contains both [parameters] and [hashParameters].
- */
-val Location.allParameters: Parameters
-    get() = url.parameters

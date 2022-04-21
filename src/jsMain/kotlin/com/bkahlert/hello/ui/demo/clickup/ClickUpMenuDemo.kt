@@ -1,18 +1,15 @@
 package com.bkahlert.hello.ui.demo.clickup
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.Brand.colors
 import com.bkahlert.hello.plugins.clickup.ClickUpMenu
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
-import com.bkahlert.hello.ui.demo.JOHN
-import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.running
 import com.bkahlert.hello.ui.demo.clickupException
 import com.clickup.api.Team
 import com.clickup.api.TimeEntry
-import io.ktor.http.Url
 
 @Composable
 fun ClickUpMenuDemo() {
@@ -26,8 +23,8 @@ fun ClickUpMenuDemo() {
     }
     Demos("ClickUp Menu (Team Selecting)") {
         mapOf(
-            "Multiple Teams" to listOf(ClickupFixtures.Team, ClickupFixtures.Team.copy(name = "Other Team", color = colors.green, avatar = Url(JOHN))),
-            "Single Team" to listOf(ClickupFixtures.Team),
+            "Multiple Teams" to ClickUpFixtures.Teams.subList(0, 2),
+            "Single Team" to ClickUpFixtures.Teams.subList(0, 1),
             "No Teams" to emptyList(),
         ).forEach { (name, teams) ->
             Demo(name) {
@@ -38,7 +35,7 @@ fun ClickUpMenuDemo() {
 
     mapOf(
         "No Running Time Entry" to null,
-        "Running Time Entry" to ClickupFixtures.TimeEntry.running(),
+        "Running Time Entry" to ClickUpFixtures.TimeEntry.running(),
     ).forEach { (name, runningTimeEntry) ->
         fun client() = ClickUpTestClient(
             initialRunningTimeEntry = runningTimeEntry,
@@ -89,6 +86,16 @@ fun ClickUpMenuDemo() {
                 }
                 ClickUpMenu(rememberClickUpMenuTestViewModel(failingClient) { toFullyLoaded() })
             }
+        }
+    }
+
+    Demos("ClickUp Menu (Synchronized)") {
+        val client = ClickUpTestClient(initialRunningTimeEntry = ClickUpFixtures.TimeEntry.running())
+        Demo("Browser 1") {
+            ClickUpMenu(rememberClickUpMenuTestViewModel(client) { toPartiallyLoaded(runningTimeEntry = null) })
+        }
+        Demo("Browser 2") {
+            ClickUpMenu(rememberClickUpMenuTestViewModel(client) { toFullyLoaded() })
         }
     }
 }

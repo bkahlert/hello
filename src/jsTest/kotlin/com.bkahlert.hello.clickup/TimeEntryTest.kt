@@ -2,15 +2,18 @@ package com.bkahlert.hello.clickup
 
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
-import com.bkahlert.hello.ui.demo.JOHN
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.Teams
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.UserJson
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
+import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import io.kotest.matchers.string.shouldContain
 import org.jetbrains.compose.web.testutils.runTest
 import kotlin.test.Test
 
+@Suppress("unused")
 class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(TimeEntry.serializer()),
     // language=JSON
     """
@@ -29,14 +32,7 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
           "custom_type": null
         },
         "wid": "3576831",
-        "user": {
-          "id": 3687596,
-          "username": "John Doe",
-          "email": "john.doe@example.com",
-          "color": "#4169E1",
-          "initials": "JD",
-          "profilePicture": "$JOHN"
-        },
+        "user": $UserJson,
         "billable": false,
         "start": "1647040470454",
         "duration": -13523,
@@ -58,15 +54,8 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
     {
       "data": {
         "id": "2874960270525506934",
-        "wid": "2576831",
-        "user": {
-          "id": 4687596,
-          "username": "Björn Kahlert",
-          "email": "mail@bkahlert.com",
-          "color": "#4169E1",
-          "initials": "BK",
-          "profilePicture": "https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"
-        },
+        "wid": "${this.Teams.first<Team>().id.stringValue}",
+        "user": $UserJson,
         "billable": false,
         "start": "1647157125275",
         "duration": -117108,
@@ -83,11 +72,6 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
       }
     }
     """.trimIndent()) {
-
-    val x = """
-    {"data":{"id":"2874288493751214437","task":{"id":"20jg1er","name":"hello.bkahlert.com","status":{"status":"in progress","color":"#a875ff","type":"custom","orderindex":1}},"wid":"2576831","user":{"id":4687596,"username":"Björn Kahlert","email":"mail@bkahlert.com","color":"#4169E1","initials":"BK","profilePicture":"https://attachments.clickup.com/profilePictures/4687596_ARW.jpg"},"billable":true,"start":1647117084159,"duration":-279,"description":"hello again","tags":[{"name":"tag1","tag_fg":"hsl(329deg, 73.2%, 43.9%)","tag_bg":"hsl(198deg, 76.7%, 51.2%)"},{"name":"tag2"}],"at":1647117084159,"task_location":{},"stopped":"2874274324586996059"}}
-""".trimIndent()
-
 
     val request = """
         {

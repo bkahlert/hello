@@ -3,6 +3,7 @@ package com.clickup.api.rest
 import com.bkahlert.hello.JsonSerializer
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.serialize
+import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.div
 import com.bkahlert.kommons.serialization.Named
@@ -20,6 +21,7 @@ import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
 import com.clickup.api.User
 import com.clickup.api.div
+import com.clickup.api.rest.Cache.Accessor
 import com.clickup.api.rest.ClickUpException.Companion.wrapOrNull
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -90,7 +92,7 @@ data class AccessTokenBasedClickUpClient(
     private val cache = Cache(cacheStorage)
 
     private suspend inline fun <reified T> HttpClient.caching(
-        provideAccessor: Cache.() -> Cache.Accessor,
+        provideAccessor: Cache.() -> Accessor,
         url: Url,
         block: HttpRequestBuilder.() -> Unit = {},
     ): T {
@@ -255,4 +257,6 @@ data class AccessTokenBasedClickUpClient(
                 setBody(AddTagsToTimeEntriesRequest(timeEntryIDs, tags))
             }
         }
+
+    override fun toString(): String = asString()
 }

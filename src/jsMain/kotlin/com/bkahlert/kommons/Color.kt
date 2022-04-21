@@ -229,6 +229,9 @@ abstract class Color : CSSColorValue {
     }
 
     companion object {
+        val Tomato = RGB(0xff6347)
+        val TomatoSauce = RGB(0xb21807)
+
         val PERCEIVED_RED_RATIO: Double = 0.299
         val PERCEIVED_GREEN_RATIO: Double = 0.587
         val PERCEIVED_BLUE_RATIO: Double = 0.114

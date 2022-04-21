@@ -10,9 +10,9 @@ import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
-import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.aborted
-import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.completed
-import com.bkahlert.hello.ui.demo.clickup.ClickupFixtures.running
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.aborted
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.completed
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.running
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
 import com.clickup.api.Tag
@@ -26,16 +26,16 @@ import kotlin.time.Duration.Companion.seconds
 fun PomodoroTimerDemo() {
     Demos("Pomodoro Timer") {
         Demo("aborted") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.aborted(), onStop = onStop)
+            PomodoroTimer(ClickUpFixtures.TimeEntry.aborted(), onStop = onStop)
         }
         Demo("completed") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.completed(), onStop = onStop)
+            PomodoroTimer(ClickUpFixtures.TimeEntry.completed(), onStop = onStop)
         }
         Demo("completed and exceeded") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.completed(start = Now - 1.days), onStop = onStop)
+            PomodoroTimer(ClickUpFixtures.TimeEntry.completed(start = Now - 1.days), onStop = onStop)
         }
         Demo("exceeded") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.running(start = Now - 1.days), onStop = onStop)
+            PomodoroTimer(ClickUpFixtures.TimeEntry.running(start = Now - 1.days), onStop = onStop)
         }
     }
     Demos("Pomodoro Timer (Running)") {
@@ -43,7 +43,7 @@ fun PomodoroTimerDemo() {
             Demo(type.name) {
                 val scope = rememberCoroutineScope()
                 var timeEntry by remember {
-                    mutableStateOf(ClickupFixtures.TimeEntry.running(start = Now,
+                    mutableStateOf(ClickUpFixtures.TimeEntry.running(start = Now,
                         type = type))
                 }
                 PomodoroTimer(
@@ -59,7 +59,7 @@ fun PomodoroTimerDemo() {
             }
         }
         Demo("unknown type") {
-            PomodoroTimer(ClickupFixtures.TimeEntry.running(type = null), onStop = onStop)
+            PomodoroTimer(ClickUpFixtures.TimeEntry.running(type = null), onStop = onStop)
         }
     }
 }
