@@ -77,8 +77,6 @@ import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.Window
-import org.w3c.dom.url.URL
 
 @Composable
 fun SemanticElementScope<MenuElement, *>.DisconnectedItems(
@@ -293,25 +291,16 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
         if (selectedActivity != null) {
             MetaItems(selectedActivity.meta.reversed())
 
-            var taskWindow: Pair<Window, URL>? by remember { mutableStateOf(null) }
             selectedActivity.url?.also { url ->
                 AnkerItem(url.toString(), {
                     style { paddingRight(.6.em) }
                     onClick {
                         @Suppress("SpellCheckingInspection")
                         val features = "popup=1,innerWidth=900,innerHeight=1200,top=400"
-                        val openedWindow = taskWindow?.takeUnless { (window, _) -> window.closed }?.let { (openedWindow, openedUrl) ->
-                            (if (openedUrl != url) window.open(url, "ClickUp-task", features) else openedWindow)?.apply { focus() }
-                        } ?: run {
-                            window.open(url, "ClickUp-task", features)
-                        }
+                        window.open(url, "ClickUp-task", features)
 
-                        if (openedWindow != null) {
-                            taskWindow = openedWindow to url
-                        }
-
-                        // can't put this in the else case as it's not even safe to assume
-                        // that you'll get a window reference even in case of success
+                        // can't put this in an else case as it's not even safe to assume
+                        // that one gets a window reference in case of success
                         it.preventDefault()
                         it.stopPropagation()
                     }

@@ -90,7 +90,6 @@ import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
-// TODO task opens multiple times after opening a second time
 // TODO start tasks
 // TODO loader animation on null Responses (not yet finished)
 // TODO semantic UI progress https://semantic-ui.com/modules/progress.html#attached at top of page for Pomodoro timer

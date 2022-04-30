@@ -219,12 +219,11 @@ sealed class ClickUpMenuState {
                             override val tasks: List<Task>,
                             override val spaces: List<Space>,
                         ) : Data(runningTimeEntry, tasks, spaces) {
-                            //                            override fun toString(): String = asString {
-//                                ::runningTimeEntry.name to runningTimeEntry
-//                                ::tasks.name to tasks.size
-//                                ::spaces.name to spaces.size
-//                            }
-                            override fun toString(): String = asString()
+                            override fun toString(): String = asString {
+                                ::runningTimeEntry.name to runningTimeEntry
+                                ::tasks.name to tasks.size
+                                ::spaces.name to spaces.size
+                            }
 
                             companion object {
                                 suspend fun load(user: User, team: Team, client: ClickUpClient): CoreData = withContext(Dispatchers.Default) {
@@ -254,15 +253,14 @@ sealed class ClickUpMenuState {
                             /** The task lists and the folders they belong to. */
                             val folderLists: Map<FolderID, List<TaskList>>,
                         ) : Data(runningTimeEntry, tasks, spaces) {
-                            //                            override fun toString(): String = asString {
-//                                ::runningTimeEntry.name to runningTimeEntry
-//                                ::tasks.name to tasks.size
-//                                ::spaces.name to spaces.size
-//                                ::folders.name to folders.size
-//                                ::spaceLists.name to spaceLists.size
-//                                ::folderLists.name to folderLists.size
-//                            }
-                            override fun toString(): String = asString()
+                            override fun toString(): String = asString {
+                                ::runningTimeEntry.name to runningTimeEntry
+                                ::tasks.name to tasks.size
+                                ::spaces.name to spaces.size
+                                ::folders.name to folders.size
+                                ::spaceLists.name to spaceLists.size
+                                ::folderLists.name to folderLists.size
+                            }
 
                             companion object {
                                 suspend fun load(coreData: CoreData, client: ClickUpClient): FullData = withContext(Dispatchers.Default) {

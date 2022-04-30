@@ -15,7 +15,7 @@ fun MetaIcon(
     Icon {
         title(meta.title)
         attrs?.invoke(this)
-        style { classes(*meta.iconVariations.toTypedArray()) }
+        classes(*meta.iconVariations.toTypedArray())
     }
     meta.text?.also { Text(it) }
 }
