@@ -157,6 +157,7 @@ fun SemanticElementScope<MenuElement, *>.MainItems(
         Img(src = user.profilePicture.toString(), alt = "User ${user.username}") {
             classes("rounded", "avatar")
         }
+        Icon("dropdown")
         Menu {
             if (selectedTeam != null) TeamSelectionItems(teams, selectedTeam, onTeamSelect)
             LinkItem({

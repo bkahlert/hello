@@ -8,6 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.plugins.clickup.ClickUpMenu
 import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownDemo
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.running
 import com.bkahlert.hello.ui.demo.clickup.ClickUpMenuDemo
 import com.bkahlert.hello.ui.demo.clickup.ClickUpTestClient
 import com.bkahlert.hello.ui.demo.clickup.PomodoroStarterDemo
@@ -27,7 +29,6 @@ import com.bkahlert.hello.ui.demo.semanticui.ViewsDemos
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.default
-import com.clickup.api.TimeEntry
 import com.semanticui.compose.Semantic
 import com.semanticui.compose.SemanticUI
 import com.semanticui.compose.jQuery
@@ -137,13 +138,15 @@ fun DebugUI(
             }
         },
         "Focus" to {
-            val runningTimeEntry: TimeEntry? = null
-            fun client() = ClickUpTestClient(
-                initialRunningTimeEntry = runningTimeEntry,
-            )
-            Demo("Connected — Partially Loaded") {
-                val client = client()
-                ClickUpMenu(rememberClickUpMenuTestViewModel(client) { toPartiallyLoaded() })
+
+            Demos("ClickUp Menu (Synchronized)") {
+                val client = ClickUpTestClient(initialRunningTimeEntry = ClickUpFixtures.TimeEntry.running())
+                Demo("Browser 1") {
+                    ClickUpMenu(rememberClickUpMenuTestViewModel(client) { toPartiallyLoaded(runningTimeEntry = null) })
+                }
+                Demo("Browser 2") {
+                    ClickUpMenu(rememberClickUpMenuTestViewModel(client) { toFullyLoaded() })
+                }
             }
         },
         activeTab = activeTab,

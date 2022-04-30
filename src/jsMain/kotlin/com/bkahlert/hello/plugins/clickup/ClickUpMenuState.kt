@@ -13,6 +13,7 @@ import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.text.toSentenceCaseString
 import com.clickup.api.Folder
 import com.clickup.api.FolderID
+import com.clickup.api.Identifier
 import com.clickup.api.Space
 import com.clickup.api.SpaceID
 import com.clickup.api.Tag
@@ -129,16 +130,27 @@ sealed class ClickUpMenuState {
                     override suspend fun refresh(): TeamSelected =
                         copy(data = FullData.load(user, selectedTeam, client))
 
+                    private val selectable: List<Identifier<*>>
+                        get() = listOfNotNull(
+                            data.runningTimeEntry?.id,
+                            data.runningTimeEntry?.task?.id,
+                            *data.tasks.map { it.id }.toTypedArray(),
+                        )
+
+                    private val effectivelySelected: Selection
+                        get() = selectable.filter { selected.contains(it) }.takeIf { it.isNotEmpty() }
+                            ?: data.runningTimeEntry?.let { listOf(it.id) }
+                            ?: data.tasks.firstOrNull()?.let { listOf(it.id) }
+                            ?: emptyList()
+
                     private val Data.runningActivity: RunningTaskActivity?
                         get() {
                             val runningTimeEntry = runningTimeEntry ?: return null
-                            val task = runningTimeEntry.task?.run {
-                                tasks.firstOrNull { task -> task.id == id }
-                            }
+                            val runningTask = runningTimeEntry.task?.run { tasks.firstOrNull { task -> task.id == id } }
                             return RunningTaskActivity(
                                 timeEntry = runningTimeEntry,
-                                selected = selected.isEmpty() || listOfNotNull(runningTimeEntry.id, task?.id).any { id -> selected.contains(id) },
-                                task = task
+                                selected = listOfNotNull(runningTimeEntry.id, runningTask?.id).any { effectivelySelected.contains(it) },
+                                task = runningTask
                             )
                         }
 
@@ -147,9 +159,13 @@ sealed class ClickUpMenuState {
 
                     /** The available tasks. */
                     val activityGroups: List<ActivityGroup> = buildList {
+                        val effectivelySelected = effectivelySelected
+
                         data.runningActivity?.also { add(ActivityGroup.of(it)) }
+
                         val (_, tasks, spaces, _, spaceLists, folderLists) =
                             if (data is FullData) data else FullData(data.runningTimeEntry, data.tasks, data.spaces, emptyMap(), emptyMap(), emptyMap())
+
                         tasks.groupBy { it.space.id }
                             .forEach { (spaceID, spaceTasks) ->
                                 val space = spaces.firstOrNull { it.id == spaceID }
@@ -169,7 +185,7 @@ sealed class ClickUpMenuState {
                                                         list = taskList,
                                                         color = taskList.status?.color,
                                                         tasks = listTasks,
-                                                        selected = this@TeamSelected.selected,
+                                                        selected = effectivelySelected,
                                                     )
                                                 } ?: ActivityGroup.of(
                                                     space = space,
@@ -177,7 +193,7 @@ sealed class ClickUpMenuState {
                                                     listPreview = listPreview,
                                                     color = null,
                                                     tasks = listTasks,
-                                                    selected = this@TeamSelected.selected,
+                                                    selected = effectivelySelected,
                                                 )
                                                 add(group)
                                             }

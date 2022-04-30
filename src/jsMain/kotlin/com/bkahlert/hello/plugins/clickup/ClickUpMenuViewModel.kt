@@ -176,7 +176,6 @@ class ClickUpMenuViewModelImpl(
         }
     }
 
-    // TODO recursive exception
     // TODO remove
     private suspend fun internalSelectTeam(
         state: Connected,
