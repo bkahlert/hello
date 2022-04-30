@@ -2,6 +2,7 @@
 
 package com.clickup.api
 
+import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
@@ -11,7 +12,6 @@ import io.ktor.http.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import org.w3c.dom.url.URL
 import kotlin.js.Date
 import kotlin.time.Duration
 

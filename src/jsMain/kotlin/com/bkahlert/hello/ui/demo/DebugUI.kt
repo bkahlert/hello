@@ -140,7 +140,8 @@ fun DebugUI(
         "Focus" to {
 
             Demos("ClickUp Menu (Synchronized)") {
-                val client = ClickUpTestClient(initialRunningTimeEntry = ClickUpFixtures.TimeEntry.running())
+                val client = ClickUpTestClient(
+                    initialRunningTimeEntry = ClickUpFixtures.TimeEntry.running())
                 Demo("Browser 1") {
                     ClickUpMenu(rememberClickUpMenuTestViewModel(client) { toFullyLoaded() })
                 }

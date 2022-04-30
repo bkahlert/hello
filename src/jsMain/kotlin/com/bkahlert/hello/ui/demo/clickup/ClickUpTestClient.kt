@@ -262,7 +262,16 @@ open class ClickUpTestClient(
         }
     }
 
-    override fun toString(): String = asString()
+    override fun toString(): String = asString {
+        ::user.name to user
+        ::teams.name to teams
+        ::tasks.name to tasks
+        ::spaces.name to spaces
+        ::lists.name to lists
+        ::folders.name to folders
+        ::timeEntries.name to timeEntries
+        ::runningTimeEntry.name to runningTimeEntry
+    }
 
     /**
      * The total time spent based on what is already tracked as part of this task itself

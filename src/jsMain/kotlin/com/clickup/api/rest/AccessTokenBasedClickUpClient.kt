@@ -1,5 +1,3 @@
-package com.clickup.api.rest
-
 import com.bkahlert.hello.JsonSerializer
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.serialize
@@ -21,8 +19,14 @@ import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
 import com.clickup.api.User
 import com.clickup.api.div
-import com.clickup.api.rest.Cache.Accessor
+import com.clickup.api.rest.AccessToken
+import com.clickup.api.rest.AddTagsToTimeEntriesRequest
+import com.clickup.api.rest.Cache
+import com.clickup.api.rest.CacheAccessor
+import com.clickup.api.rest.ClickUpClient
 import com.clickup.api.rest.ClickUpException.Companion.wrapOrNull
+import com.clickup.api.rest.CustomFieldFilter
+import com.clickup.api.rest.StartTimeEntryRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
@@ -64,7 +68,10 @@ data class AccessTokenBasedClickUpClient(
                 json(JsonSerializer)
             }
             HttpResponseValidator {
-                handleResponseException { throw it.wrapOrNull() ?: it }
+                handleResponseException {
+                    logger.error("response validation", it)
+                    throw it.wrapOrNull() ?: it
+                }
             }
             install("ClickUp-PersonalToken-Authorization") {
                 plugin(HttpSend).intercept { context ->
@@ -92,24 +99,24 @@ data class AccessTokenBasedClickUpClient(
     private val cache = Cache(cacheStorage)
 
     private suspend inline fun <reified T> HttpClient.caching(
-        provideAccessor: Cache.() -> Accessor,
+        provideAccessor: (Cache) -> CacheAccessor,
         url: Url,
         block: HttpRequestBuilder.() -> Unit = {},
     ): T {
-        val accessor = cache.provideAccessor()
+        val accessor = provideAccessor(cache)
         val cached = accessor.load<T>()
         if (cached != null) return cached
-        return get(url, block).body<T>().also(accessor::save)
+        return get(url, block).body<T>().also { accessor.save(it) }
     }
 
     override suspend fun getUser(): User =
         runLogging("getting user") {
-            restClient.caching<Named<User>>({ forUser() }, clickUpUrl / "user").value
+            restClient.caching<Named<User>>({ it.forUser() }, clickUpUrl / "user").value
         }
 
     override suspend fun getTeams(): List<Team> =
         runLogging("getting teams") {
-            restClient.caching<Named<List<Team>>>({ forTeams() }, clickUpUrl / "team").value
+            restClient.caching<Named<List<Team>>>({ it.forTeams() }, clickUpUrl / "team").value
         }
 
     override suspend fun getTasks(
@@ -134,7 +141,7 @@ data class AccessTokenBasedClickUpClient(
         custom_fields: List<CustomFieldFilter>?,
     ): List<Task> =
         runLogging("getting tasks for team=${team.name}") {
-            restClient.caching<Named<List<Task>>>({ forTasks(team.id) }, clickUpUrl / "team" / team.id / "task") {
+            restClient.caching<Named<List<Task>>>({ it.forTasks(team.id) }, clickUpUrl / "team" / team.id / "task") {
                 parameter("page", page)
                 parameter("order_by", order_by)
                 parameter("reverse", reverse)
@@ -169,7 +176,7 @@ data class AccessTokenBasedClickUpClient(
         archived: Boolean,
     ): List<Space> =
         runLogging("getting spaces for team=${team.name}") {
-            restClient.caching<Named<List<Space>>>({ forSpaces(team.id) }, clickUpUrl / "team" / team.id / "space") {
+            restClient.caching<Named<List<Space>>>({ it.forSpaces(team.id) }, clickUpUrl / "team" / team.id / "space") {
                 parameter("archived", archived)
             }.value
         }
@@ -179,7 +186,7 @@ data class AccessTokenBasedClickUpClient(
         archived: Boolean,
     ): List<TaskList> =
         runLogging("getting lists for space=${space.name}") {
-            restClient.caching<Named<List<TaskList>>>({ forSpaceLists(space.id) }, clickUpUrl / "space" / space.id / "list") {
+            restClient.caching<Named<List<TaskList>>>({ it.forSpaceLists(space.id) }, clickUpUrl / "space" / space.id / "list") {
                 parameter("archived", archived)
             }.value
         }
@@ -189,7 +196,7 @@ data class AccessTokenBasedClickUpClient(
         archived: Boolean,
     ): List<Folder> =
         runLogging("getting folders for space=${space.name}") {
-            restClient.caching<Named<List<Folder>>>({ forFolders(space.id) }, clickUpUrl / "space" / space.id / "folder") {
+            restClient.caching<Named<List<Folder>>>({ it.forFolders(space.id) }, clickUpUrl / "space" / space.id / "folder") {
                 parameter("archived", archived)
             }.value
         }
@@ -199,7 +206,7 @@ data class AccessTokenBasedClickUpClient(
         archived: Boolean,
     ): List<TaskList> =
         runLogging("getting lists for folder=${folder.name}") {
-            restClient.caching<Named<List<TaskList>>>({ forFolderLists(folder.id) }, clickUpUrl / "folder" / folder.id / "list") {
+            restClient.caching<Named<List<TaskList>>>({ it.forFolderLists(folder.id) }, clickUpUrl / "folder" / folder.id / "list") {
                 parameter("archived", archived)
             }.value
         }
@@ -217,7 +224,7 @@ data class AccessTokenBasedClickUpClient(
         assignee: User?,
     ): TimeEntry? =
         runLogging("getting running time entry for team=${team.name} and assignee=${assignee?.username}") {
-            restClient.caching<Named<TimeEntry?>>({ forRunningTimeEntry(team.id) }, clickUpUrl / "team" / team.id / "time_entries" / "current") {
+            restClient.caching<Named<TimeEntry?>>({ it.forRunningTimeEntry(team.id) }, clickUpUrl / "team" / team.id / "time_entries" / "current") {
                 parameter("assignee", assignee?.id?.stringValue)
             }.value
         }
@@ -258,5 +265,8 @@ data class AccessTokenBasedClickUpClient(
             }
         }
 
-    override fun toString(): String = asString()
+    override fun toString(): String = asString {
+        ::cacheStorage.name to cacheStorage
+        ::clickUpUrl.name to clickUpUrl
+    }
 }

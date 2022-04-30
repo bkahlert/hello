@@ -1,4 +1,4 @@
-package com.bkahlert.hello.clickup
+package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
 import com.bkahlert.kommons.Color
@@ -27,7 +27,13 @@ class TaskListTest : SerializerTest<TaskList>(TaskList.serializer(),
                 "status": "professional",
                 "color": "#02bcd4"
             },
-            "assignee": ${ClickUpFixtures.UserJson},
+            "assignee": {
+                "id": 11111,
+                "color": "#ff0000",
+                "username": "john.doe",
+                "initials": "JD",
+                "profilePicture": "${ClickUpFixtures.User.profilePicture}"
+            },
             "task_count": 45,
             "folder": {
                 "id": "11087491",
@@ -36,7 +42,7 @@ class TaskListTest : SerializerTest<TaskList>(TaskList.serializer(),
                 "access": true
             },
             "space": {
-                "id": "4564985",
+                "id": "1",
                 "name": "Personal",
                 "access": true
             },
@@ -65,7 +71,7 @@ fun taskList(
         access = true
     ),
     space: SpacePreview = SpacePreview(
-        SpaceID("4564985"),
+        SpaceID("1"),
         "Personal",
         true
     ),

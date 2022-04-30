@@ -1,4 +1,4 @@
-package com.bkahlert.hello.clickup
+package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.Teams
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.UserJson
@@ -104,7 +104,7 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                 ],
                 "dependencies": [],
                 "linked_tasks": [],
-                "team_id": "${this.Teams.first<Team>().id.stringValue}",
+                "team_id": "${Teams.first().id.stringValue}",
                 "url": "https://app.clickup.com/t/1yt2xek",
                 "permission_level": "create",
                 "list": {
@@ -125,7 +125,7 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                     "access": true
                 },
                 "space": {
-                    "id": "4564985"
+                    "id": "1"
                 }
             },
             {
@@ -195,7 +195,7 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                 ],
                 "dependencies": [],
                 "linked_tasks": [],
-                "team_id": "${this.Teams.first<Team>().id.stringValue}",
+                "team_id": "${Teams.first<Team>().id.stringValue}",
                 "url": "https://app.clickup.com/t/1zfu735",
                 "permission_level": "create",
                 "list": {
@@ -216,7 +216,7 @@ class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSeri
                     "access": true
                 },
                 "space": {
-                    "id": "4565284"
+                    "id": "2"
                 }
             }
         ]

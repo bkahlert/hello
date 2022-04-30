@@ -1,16 +1,18 @@
-import com.bkahlert.hello.clickup.otherUser
-import com.bkahlert.hello.clickup.user
+import com.bkahlert.hello.plugins.clickup.otherUser
+import com.bkahlert.hello.plugins.clickup.user
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.SerializerTest
 import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.User
-import org.w3c.dom.url.URL
 
 @Suppress("unused")
-class TeamTest : SerializerTest<Team>(Team.serializer(),
+class TeamTest : SerializerTest<Team>(
+    Team.serializer(),
     // language=JSON
     """
         {
@@ -25,7 +27,7 @@ class TeamTest : SerializerTest<Team>(Team.serializer(),
                         "username": "john.doe",
                         "email": "john.doe@example.com",
                         "color": "#ff0000",
-                        "profilePicture": "https://example.com/john-doe.jpg",
+                        "profilePicture": "${ClickUpFixtures.User.profilePicture}",
                         "initials": "JD",
                         "week_start_day": 1,
                         "global_font_support": false,
@@ -47,13 +49,14 @@ class TeamTest : SerializerTest<Team>(Team.serializer(),
                 }
             ]
         }
-    """.trimIndent() to team())
+    """.trimIndent() to team(),
+)
 
 fun team(
     id: TeamID = TeamID("180"),
     name: String = "work group",
     color: Color = RGB("#0000ff"),
-    avatar: URL = URL("https://example.com/work.png"),
+    avatar: URL = URL.parse("https://example.com/work.png"),
     vararg members: User = arrayOf(user(), otherUser()),
 ) = Team(
     id,

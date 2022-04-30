@@ -1,5 +1,6 @@
 package com.bkahlert.hello.plugins.clickup
 
+import AccessTokenBasedClickUpClient
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -21,7 +22,6 @@ import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.rest.AccessToken
-import com.clickup.api.rest.AccessTokenBasedClickUpClient
 import com.clickup.api.rest.ClickUpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -94,23 +94,25 @@ class ClickUpMenuViewModelImpl(
                 Transitioning(currentState.lastSucceededState)
             }
         }
-        updateJob = coroutineScope.launch {
-            _state.update { currentState ->
-                logger.debug("INTERNAL STATE is $name\n- STATE: $currentState")
-                kotlin.runCatching {
-                    val newState: ClickUpMenuState
-                    val duration = measureTime { newState = operation(currentState.lastSucceededState) }
-                    logger.debug("INTERNAL STATE finished $name within $duration\n- NEW STATE: $newState")
-                    newState
-                }.getOrElse {
-                    logger.error("INTERNAL STATE failed $name", it)
-                    Failed(
-                        operation = name,
-                        cause = it,
-                        previousState = currentState.lastSucceededState,
-                        ignore = { update(name) { currentState } },
-                        retry = { update(name) { operation(currentState.lastSucceededState) } }
-                    )
+        if (!background || _state.value !is Failed) {
+            updateJob = coroutineScope.launch {
+                _state.update { currentState ->
+                    logger.debug("INTERNAL STATE is $name\n- STATE: $currentState")
+                    kotlin.runCatching {
+                        val newState: ClickUpMenuState
+                        val duration = measureTime { newState = operation(currentState.lastSucceededState) }
+                        logger.debug("INTERNAL STATE finished $name within $duration\n- NEW STATE: $newState")
+                        newState
+                    }.getOrElse {
+                        logger.error("INTERNAL STATE failed $name", it)
+                        Failed(
+                            operation = name,
+                            cause = it,
+                            previousState = currentState.lastSucceededState,
+                            ignore = { update(name) { currentState } },
+                            retry = { update(name) { operation(currentState.lastSucceededState) } }
+                        )
+                    }
                 }
             }
         }

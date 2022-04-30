@@ -6,9 +6,9 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.P
 import org.jetbrains.kotlin.gradle.targets.js.webpack.WebpackDevtool
 
 plugins {
-    kotlin("multiplatform") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
-    id("org.jetbrains.compose") version "1.1.0"
+    kotlin("multiplatform") version "1.6.20"
+    kotlin("plugin.serialization") version "1.6.20"
+    id("org.jetbrains.compose") version "1.2.0-alpha01-dev675"
     id("org.hidetake.ssh")
     id("io.kotest.multiplatform") version "5.1.0"
 }
@@ -19,6 +19,7 @@ version = "1.0"
 repositories {
     google()
     mavenCentral()
+    mavenLocal()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     maven {
         url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
@@ -69,7 +70,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-                implementation("com.bkahlert.kommons:kommons:1.11.5")
+                implementation("com.bkahlert.kommons:kommons:1.12.0-dev.6.uncommitted+17a6503")
             }
 
             languageSettings.apply {

@@ -4,13 +4,14 @@ package com.clickup.api
 
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.asString
+import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
+import com.bkahlert.kommons.text.truncate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import org.w3c.dom.url.URL
 
 @Serializable
 data class User(
@@ -24,7 +25,17 @@ data class User(
     @SerialName("global_font_support") val globalFontSupport: Boolean?,
     @SerialName("timezone") val timezone: String?,
 ) {
-    override fun toString(): String = asString()
+    override fun toString(): String = asString {
+        ::id.name to id
+        ::username.name to username
+        ::email.name to email
+        ::color.name to color
+        ::profilePicture.name to profilePicture.toString().truncate()
+        ::initials.name to initials
+        ::weekStartDay.name to weekStartDay
+        ::globalFontSupport.name to globalFontSupport
+        ::timezone.name to timezone
+    }
 }
 
 @Serializable value class UserID(override val id: Int) : Identifier<Int>
@@ -36,7 +47,15 @@ data class UserPreview(
     @SerialName("username") val username: String,
     @SerialName("initials") val initials: String?,
     @SerialName("profilePicture") val profilePicture: URL,
-)
+) {
+    override fun toString(): String = asString {
+        ::id.name to id
+        ::username.name to username
+        ::color.name to color
+        ::profilePicture.name to profilePicture.toString().truncate()
+        ::initials.name to initials
+    }
+}
 
 fun User.asPreview() = UserPreview(id, color, username, initials, profilePicture)
 

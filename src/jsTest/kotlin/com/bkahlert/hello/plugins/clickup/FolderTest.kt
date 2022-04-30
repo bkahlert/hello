@@ -1,4 +1,4 @@
-package com.bkahlert.hello.clickup
+package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
@@ -19,7 +19,7 @@ class FolderTest : BasicSerializerTest<Named<List<Folder>>>(NamedSerializer(List
                 "override_statuses": true,
                 "hidden": false,
                 "space": {
-                    "id": "4564985",
+                    "id": "1",
                     "name": "Björn"
                 },
                 "task_count": "9",
@@ -59,7 +59,7 @@ class FolderTest : BasicSerializerTest<Named<List<Folder>>>(NamedSerializer(List
                         "due_date": null,
                         "start_date": null,
                         "space": {
-                            "id": "4564985",
+                            "id": "1",
                             "name": "Björn",
                             "access": true
                         },
@@ -101,7 +101,7 @@ class FolderTest : BasicSerializerTest<Named<List<Folder>>>(NamedSerializer(List
                         "due_date": null,
                         "start_date": null,
                         "space": {
-                            "id": "4564985",
+                            "id": "1",
                             "name": "Björn",
                             "access": true
                         },
@@ -143,7 +143,7 @@ class FolderTest : BasicSerializerTest<Named<List<Folder>>>(NamedSerializer(List
                         "due_date": null,
                         "start_date": null,
                         "space": {
-                            "id": "4564985",
+                            "id": "1",
                             "name": "Björn",
                             "access": true
                         },
@@ -185,7 +185,7 @@ class FolderTest : BasicSerializerTest<Named<List<Folder>>>(NamedSerializer(List
                         "due_date": null,
                         "start_date": null,
                         "space": {
-                            "id": "4564985",
+                            "id": "1",
                             "name": "Björn",
                             "access": true
                         },

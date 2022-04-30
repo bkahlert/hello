@@ -104,9 +104,18 @@ sealed class ClickUpMenuState {
                     val data: Data,
                 ) : Connected(client, user, teams) {
 
+                    override fun toString(): String = asString {
+                        ::user.name to user
+                        ::teams.name to teams
+                        ::selectedTeam.name to selectedTeam
+                        ::selected.name to selected
+                        ::data.name to data
+                    }
+
                     fun select(selected: Selection): TeamSelected = copy(selected = selected)
 
                     suspend fun startTimeEntry(taskID: TaskID?, description: String?, billable: Boolean, tags: List<Tag>): TeamSelected {
+                        runningActivity?.also { stopTimeEntry(it.timeEntry, listOf(Pomodoro.Status.Aborted.tag)) }
                         client.startTimeEntry(selectedTeam, taskID, description, billable, *tags.toTypedArray())
                         return refresh()
                     }

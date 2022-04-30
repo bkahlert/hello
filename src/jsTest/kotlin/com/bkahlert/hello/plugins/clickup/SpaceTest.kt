@@ -1,4 +1,4 @@
-package com.bkahlert.hello.clickup
+package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.serialization.SerializerTest
@@ -12,26 +12,26 @@ class SpaceTest : SerializerTest<Space>(Space.serializer(),
     // language=JSON
     """
         {
-            "id": "4564985",
+            "id": "1",
             "name": "Personal",
             "private": false,
             "statuses": [
                 {
-                    "id": "p4564985_LD0PMLG0",
+                    "id": "p1_todo",
                     "status": "to do",
                     "color": "#02bcd4",
                     "orderindex": 0,
                     "type": "open"
                 },
                 {
-                    "id": "p4564985_BBLbHB8w",
+                    "id": "p1_inprogress",
                     "status": "in progress",
                     "color": "#a875ff",
                     "orderindex": 1,
                     "type": "custom"
                 },
                 {
-                    "id": "p4564985_BrkjGhEw",
+                    "id": "p1_closed",
                     "status": "Closed",
                     "color": "#6bc950",
                     "orderindex": 2,
@@ -43,26 +43,26 @@ class SpaceTest : SerializerTest<Space>(Space.serializer(),
     """.trimIndent() to space())
 
 fun space(
-    id: SpaceID = SpaceID("4564985"),
+    id: SpaceID = SpaceID("1"),
     name: String = "Personal",
     private: Boolean = false,
     statuses: List<Status> = listOf(
         Status(
-            StatusID("p4564985_LD0PMLG0"),
+            StatusID("p1_todo"),
             "to do",
             Color(0x02BCD4),
             0,
             "open",
         ),
         Status(
-            StatusID("p4564985_BBLbHB8w"),
+            StatusID("p1_inprogress"),
             "in progress",
             Color(0xa875ff),
             1,
             "custom",
         ),
         Status(
-            StatusID("p4564985_BrkjGhEw"),
+            StatusID("p1_closed"),
             "Closed",
             Color(0x6bc950),
             2,

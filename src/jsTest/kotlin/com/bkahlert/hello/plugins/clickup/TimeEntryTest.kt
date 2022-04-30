@@ -1,17 +1,18 @@
-package com.bkahlert.hello.clickup
+package com.bkahlert.hello.plugins.clickup
 
-import com.bkahlert.hello.deserialize
-import com.bkahlert.hello.plugins.clickup.PomodoroTimer
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.Teams
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.UserJson
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
-import com.clickup.api.Team
+import com.bkahlert.kommons.time.Now
+import com.bkahlert.kommons.time.minus
 import com.clickup.api.TimeEntry
 import io.kotest.matchers.string.shouldContain
 import org.jetbrains.compose.web.testutils.runTest
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.minutes
 
 @Suppress("unused")
 class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(TimeEntry.serializer()),
@@ -43,7 +44,7 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
         "task_location": {
           "list_id": "25510969",
           "folder_id": "11087491",
-          "space_id": "4564985"
+          "space_id": "1"
         },
         "task_url": "https://app.clickup.com/t/20jg1er"
       }
@@ -54,7 +55,7 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
     {
       "data": {
         "id": "2874960270525506934",
-        "wid": "${this.Teams.first<Team>().id.stringValue}",
+        "wid": "${Teams.first().id.stringValue}",
         "user": $UserJson,
         "billable": false,
         "start": "1647157125275",
@@ -91,15 +92,14 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
         }
     """.trimIndent()
 
-    // https://github.com/JetBrains/compose-jb/tree/master/tutorials/Web/Using_Test_Utils
     @Test
-    fun testDateFormat() = runTest {
+    fun testTimeFormat() = runTest {
         composition {
-            PomodoroTimer(jsons.first().deserialize<Named<TimeEntry>>().value)
+            PomodoroTimer(ClickUpFixtures.timeEntry(start = Now - 2.minutes))
         }
 
         console.log(root.innerHTML)
 
-        root.innerHTML shouldContain "12.03.2022"
+        root.innerHTML shouldContain ">23:00<"
     }
 }

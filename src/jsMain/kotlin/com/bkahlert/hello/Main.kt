@@ -91,7 +91,6 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
 // TODO start tasks
-// TODO loader animation on null Responses (not yet finished)
 // TODO semantic UI progress https://semantic-ui.com/modules/progress.html#attached at top of page for Pomodoro timer
 // TODO fix starting a task will stop a running time entry without any notice
 // TODO support closing tasks

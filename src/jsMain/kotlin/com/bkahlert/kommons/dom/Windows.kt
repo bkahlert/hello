@@ -7,7 +7,6 @@ import io.ktor.http.Url
 import io.ktor.util.toMap
 import org.w3c.dom.Location
 import org.w3c.dom.Window
-import org.w3c.dom.url.URL
 
 inline fun Window.open(
     url: URL,
@@ -74,7 +73,7 @@ inline fun Parameters.copy(builder: ParametersBuilder.() -> Unit): Parameters =
  * Contains the [Url] of this location.
  */
 var Location.url: URL
-    get() = URL(href)
+    get() = URL.parse(href)
     set(value) {
         href = value.toString()
     }

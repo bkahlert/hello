@@ -17,7 +17,14 @@ data class Status(
     @SerialName("color") val color: Color,
     @SerialName("orderindex") val orderIndex: Int,
     @SerialName("type") val type: String,
-)
+) {
+    fun asPreview() = StatusPreview(
+        status = status,
+        color = color,
+        orderIndex = orderIndex,
+        type = type,
+    )
+}
 
 @Serializable value class StatusID(override val id: String) : Identifier<String>
 

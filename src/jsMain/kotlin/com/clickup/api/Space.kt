@@ -16,7 +16,13 @@ data class Space(
     @SerialName("private") val private: Boolean,
     @SerialName("statuses") val statuses: List<Status>,
     @SerialName("multiple_assignees") val multipleAssignees: Boolean,
-)
+) {
+    fun asPreview() = SpacePreview(
+        id = id,
+        name = name,
+        access = true,
+    )
+}
 
 @Serializable value class SpaceID(override val id: String) : Identifier<String>
 

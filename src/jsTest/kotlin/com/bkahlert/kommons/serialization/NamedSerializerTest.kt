@@ -1,6 +1,7 @@
 package com.bkahlert.kommons.serialization
 
-import com.bkahlert.hello.clickup.user
+import com.bkahlert.hello.plugins.clickup.user
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
 import com.clickup.api.User
 import com.clickup.api.UserID
 import kotlinx.serialization.builtins.ListSerializer
@@ -28,7 +29,7 @@ class NamedSerializerTest {
                         "username": "john.doe",
                         "email": "john.doe@example.com",
                         "color": "#ff0000",
-                        "profilePicture": "https://example.com/john-doe.jpg",
+                        "profilePicture": "${ClickUpFixtures.User.profilePicture}",
                         "initials": "JD",
                         "week_start_day": 1,
                         "global_font_support": false,
@@ -49,7 +50,7 @@ class NamedSerializerTest {
                         "username": "john.doe",
                         "email": "john.doe@example.com",
                         "color": "#ff0000",
-                        "profilePicture": "https://example.com/john-doe.jpg",
+                        "profilePicture": "${ClickUpFixtures.User.profilePicture}",
                         "initials": "JD",
                         "week_start_day": 1,
                         "global_font_support": false,
@@ -60,7 +61,7 @@ class NamedSerializerTest {
                         "username": "john.doe",
                         "email": "john.doe@example.com",
                         "color": "#ff0000",
-                        "profilePicture": "https://example.com/john-doe.jpg",
+                        "profilePicture": "${ClickUpFixtures.User.profilePicture}",
                         "initials": "JD",
                         "week_start_day": 1,
                         "global_font_support": false,

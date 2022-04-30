@@ -28,7 +28,9 @@ data class TaskList(
     @SerialName("archived") val archived: Boolean,
     @SerialName("override_statuses") val overrideStatuses: Boolean?,
     @SerialName("permission_level") val permissionLevel: String,
-)
+) {
+    fun asPreview(): TaskListPreview = TaskListPreview(id = id, name = name, access = true)
+}
 
 @Serializable value class TaskListID(override val id: String) : Identifier<String>
 

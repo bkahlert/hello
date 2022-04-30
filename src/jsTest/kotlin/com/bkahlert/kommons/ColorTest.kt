@@ -54,7 +54,7 @@ class ColorTest {
         }
 
         @Test fun hsl() {
-            HSL(100.deg, 100, 50, .5).serialize<Color>() shouldBe "hsla(100deg, 100%, 50%, 0.5)".quoted
+            HSL(100.deg, 100, 50, .5).serialize<Color>() shouldBe "rgba(85, 255, 0, 0.5)".quoted
         }
     }
 }

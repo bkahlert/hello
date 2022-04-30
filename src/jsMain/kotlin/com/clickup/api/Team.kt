@@ -4,14 +4,15 @@ package com.clickup.api
 
 import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.asString
+import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.UrlSerializer
+import com.bkahlert.kommons.text.truncate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-import org.w3c.dom.url.URL
 
 @Serializable
 data class Team(
@@ -21,7 +22,13 @@ data class Team(
     @SerialName("avatar") val avatar: URL,
     @SerialName("members") val members: List<Named<User>>,
 ) {
-    override fun toString(): String = asString()
+    override fun toString(): String = asString {
+        ::id.name to id
+        ::name.name to name
+        ::color.name to color
+        ::avatar.name to avatar.toString().truncate()
+        ::members.name to members
+    }
 }
 
 @Serializable value class TeamID(override val id: String) : Identifier<String>

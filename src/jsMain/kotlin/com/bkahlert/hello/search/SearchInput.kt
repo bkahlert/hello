@@ -6,9 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.dom.openInNewTab
 import com.bkahlert.kommons.dom.openInSameTab
-import com.bkahlert.kommons.dom.toUrlOrNull
+import com.bkahlert.kommons.dom.toURLOrNull
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticBuilder
 import com.semanticui.compose.SemanticUI
@@ -36,7 +37,6 @@ import org.jetbrains.compose.web.css.right
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Input
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.url.URL
 
 @Stable
 interface SearchInputState {
@@ -179,7 +179,7 @@ fun PasteHandlingMultiSearchInput(
         },
         onPaste = {
             it("text/plain")?.also {
-                val url = it.toUrlOrNull()
+                val url = it.toURLOrNull()
                 if (url != null && Url(url.toString()).port != 0) {
                     window.openInSameTab(url)
                 }

@@ -6,6 +6,7 @@ import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.TaskActivity
 import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
 import com.bkahlert.kommons.time.toMoment
@@ -19,7 +20,6 @@ import com.clickup.api.TaskList
 import com.clickup.api.TaskListPreview
 import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
-import org.w3c.dom.url.URL
 
 /**
  * Some king of icon like meta information
