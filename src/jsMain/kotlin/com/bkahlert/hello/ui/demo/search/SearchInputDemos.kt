@@ -19,7 +19,7 @@ fun SearchInputDemos() {
             SearchInput()
         }
         Demo("Multi: Empty") {
-            MultiSearchInput(rememberMultiSearchInputState(searchEngineSelectState = rememberSearchEngineSelectState { false }))
+            MultiSearchInput(rememberMultiSearchInputState(searchEngineSelectState = rememberSearchEngineSelectState(selected = { false })))
         }
         Demo("Multi: Default") {
             MultiSearchInput()
@@ -27,11 +27,11 @@ fun SearchInputDemos() {
         Demo("Multi: Pre-selected") {
             MultiSearchInput(rememberMultiSearchInputState(
                 searchEngineSelectState = rememberSearchEngineSelectState(
-                    engines = SearchEngine.values().take(10).toTypedArray()) { listOf(Google, Bing).contains(it) },
+                    engines = SearchEngine.values().take(10).toTypedArray(), selected = { listOf(Google, Bing).contains(it) }),
             ))
         }
         Demo("Multi: All") {
-            MultiSearchInput(rememberMultiSearchInputState(searchEngineSelectState = rememberSearchEngineSelectState { true }))
+            MultiSearchInput(rememberMultiSearchInputState(searchEngineSelectState = rememberSearchEngineSelectState(selected = { true })))
         }
         Demo("Paste-Handling") {
             PasteHandlingMultiSearchInput()

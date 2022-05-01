@@ -13,19 +13,18 @@ import com.bkahlert.hello.ui.demo.Demos
 fun SearchEngineSelectDemos() {
     Demos("Search Engine Select") {
         Demo("Empty") {
-            SearchEngineSelect(rememberSearchEngineSelectState { false })
+            SearchEngineSelect(rememberSearchEngineSelectState(selected = { false }))
         }
         Demo("Default") {
             SearchEngineSelect()
         }
         Demo("Pre-selected") {
-            SearchEngineSelect(rememberSearchEngineSelectState(engines = SearchEngine.values().take(10).toTypedArray()) {
-                listOf(Google,
-                    Bing).contains(it)
-            })
+            SearchEngineSelect(rememberSearchEngineSelectState(engines = SearchEngine.values().take(10).toTypedArray(), selected = {
+                listOf(Google, Bing).contains(it)
+            }))
         }
         Demo("All") {
-            SearchEngineSelect(rememberSearchEngineSelectState { true })
+            SearchEngineSelect(rememberSearchEngineSelectState(selected = { true }))
         }
     }
 }

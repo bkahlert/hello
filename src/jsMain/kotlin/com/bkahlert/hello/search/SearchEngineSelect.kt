@@ -20,11 +20,7 @@ import com.semanticui.compose.module.Menu
 import com.semanticui.compose.module.MultipleDropdownState
 import com.semanticui.compose.module.MultipleDropdownStateImpl
 import com.semanticui.compose.module.Text
-import com.semanticui.compose.module.debug
-import com.semanticui.compose.module.message
-import com.semanticui.compose.module.placeholder
 import com.semanticui.compose.module.scrolling
-import com.semanticui.compose.module.useLabels
 import com.semanticui.compose.toJsonArray
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
@@ -87,15 +83,24 @@ interface SearchEngineSelectState : MultipleDropdownState {
 class SearchEngineSelectStateImpl(
     availableEngines: List<SearchEngine> = emptyList(),
     selectedEngines: List<SearchEngine> = emptyList(),
+    onEngineSelect: (oldSelectedEngines: List<SearchEngine>, newSelectedEngines: List<SearchEngine>) -> Unit,
+    debug: Boolean,
+    message: Map<String, String?>,
+    placeholder: String?,
+    useLabels: Boolean?,
     private val toString: (SearchEngine) -> String = { it.name },
     private val fromString: (String) -> SearchEngine = run {
         val mappings: Map<String, SearchEngine> = availableEngines.associateBy { it.name }
-        val y: (String) -> SearchEngine = { mappings.getValue(it) }
-        y
+        ({ mappings.getValue(it) })
     },
 ) : SearchEngineSelectState, MultipleDropdownState by MultipleDropdownStateImpl(
     availableEngines.map { toString(it) },
     selectedEngines.map { toString(it) },
+    { old, new -> onEngineSelect(old.map(fromString), new.map(fromString)) },
+    debug,
+    message,
+    placeholder,
+    useLabels,
 ) {
     override var selectedEngines: List<SearchEngine>
         get() = selectedValues.map { fromString(it) }
@@ -113,6 +118,13 @@ class SearchEngineSelectStateImpl(
 fun rememberSearchEngineSelectState(
     vararg engines: SearchEngine = SearchEngine.values(),
     selected: (SearchEngine) -> Boolean = { it == SearchEngine.Default },
+    onEngineSelect: (oldSelectedEngines: List<SearchEngine>, newSelectedEngines: List<SearchEngine>) -> Unit = { old, new ->
+        console.log("selection changed from $old to $new")
+    },
+    debug: Boolean = false,
+    message: Map<String, String?> = mapOf("count" to "{count}/${engines.size} engine(s) selected"),
+    placeholder: String? = "no engine selected",
+    useLabels: Boolean? = false,
 ): SearchEngineSelectState {
     val selectedEngines = engines.filter(selected)
     val availableEngines = engines.toList()
@@ -120,6 +132,11 @@ fun rememberSearchEngineSelectState(
         SearchEngineSelectStateImpl(
             availableEngines = availableEngines,
             selectedEngines = selectedEngines,
+            onEngineSelect = onEngineSelect,
+            debug = debug,
+            message = message,
+            placeholder = placeholder,
+            useLabels = useLabels,
         )
     }
 }
@@ -179,12 +196,7 @@ fun SearchEngineDropdown(
     state: SearchEngineSelectState = rememberSearchEngineSelectState(),
     debug: Boolean = false,
 ) {
-    InlineMultipleDropdown(state, {
-        this.debug = debug
-        message = mapOf("count" to "{count}/${state.availableEngines.size} engine(s) selected")
-        placeholder = "no engine selected"
-        useLabels = false
-    }) {
+    InlineMultipleDropdown(state) {
         Input(Hidden) { name("engine");value(state.selectedEnginesValue) }
         // it's virtually impossible to provide a custom text its always updated by SemanticUI, even with a custom action
         Text({ classes("default");style { display(DisplayStyle.None) } }) { Text("no engines selected") }

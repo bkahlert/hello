@@ -8,6 +8,8 @@ import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
+import com.bkahlert.kommons.time.plus
+import com.bkahlert.kommons.time.seconds
 import com.clickup.api.TimeEntry
 import io.kotest.matchers.string.shouldContain
 import org.jetbrains.compose.web.testutils.runTest

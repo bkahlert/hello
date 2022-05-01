@@ -7,13 +7,14 @@ import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeede
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelected.Data.FullData
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelecting
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioning
+import com.bkahlert.hello.plugins.clickup.menu.Activity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
+import com.bkahlert.hello.plugins.clickup.menu.byIdOrNull
 import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.text.toSentenceCaseString
 import com.clickup.api.Folder
 import com.clickup.api.FolderID
-import com.clickup.api.Identifier
 import com.clickup.api.Space
 import com.clickup.api.SpaceID
 import com.clickup.api.Tag
@@ -139,28 +140,11 @@ sealed class ClickUpMenuState {
                     override suspend fun refresh(): TeamSelected =
                         copy(data = FullData.load(user, selectedTeam, client))
 
-                    private val selectable: List<Identifier<*>>
-                        get() = listOfNotNull(
-                            data.runningTimeEntry?.id,
-                            data.runningTimeEntry?.task?.id,
-                            *data.tasks.map { it.id }.toTypedArray(),
-                        )
-
-                    private val effectivelySelected: Selection
-                        get() = selectable.filter { selected.contains(it) }.takeIf { it.isNotEmpty() }
-                            ?: data.runningTimeEntry?.let { listOf(it.id) }
-                            ?: data.tasks.firstOrNull()?.let { listOf(it.id) }
-                            ?: emptyList()
-
                     private val Data.runningActivity: RunningTaskActivity?
                         get() {
                             val runningTimeEntry = runningTimeEntry ?: return null
                             val runningTask = runningTimeEntry.task?.run { tasks.firstOrNull { task -> task.id == id } }
-                            return RunningTaskActivity(
-                                timeEntry = runningTimeEntry,
-                                selected = listOfNotNull(runningTimeEntry.id, runningTask?.id).any { effectivelySelected.contains(it) },
-                                task = runningTask
-                            )
+                            return RunningTaskActivity(timeEntry = runningTimeEntry, task = runningTask)
                         }
 
                     /** The eventually running activity. */
@@ -168,8 +152,6 @@ sealed class ClickUpMenuState {
 
                     /** The available tasks. */
                     val activityGroups: List<ActivityGroup> = buildList {
-                        val effectivelySelected = effectivelySelected
-
                         data.runningActivity?.also { add(ActivityGroup.of(it)) }
 
                         val (_, tasks, spaces, _, spaceLists, folderLists) =
@@ -194,7 +176,6 @@ sealed class ClickUpMenuState {
                                                         list = taskList,
                                                         color = taskList.status?.color,
                                                         tasks = listTasks,
-                                                        selected = effectivelySelected,
                                                     )
                                                 } ?: ActivityGroup.of(
                                                     space = space,
@@ -202,13 +183,16 @@ sealed class ClickUpMenuState {
                                                     listPreview = listPreview,
                                                     color = null,
                                                     tasks = listTasks,
-                                                    selected = effectivelySelected,
                                                 )
                                                 add(group)
                                             }
                                     }
                             }
                     }
+
+                    val selectedActivity: Activity<*>? = selected.firstNotNullOfOrNull { id ->
+                        runningActivity.takeIf { id == it?.id || id == it?.task?.id } ?: activityGroups.byIdOrNull(id)
+                    } ?: runningActivity
 
                     /** Data belonging to a [TeamSelected]. */
                     sealed class Data(

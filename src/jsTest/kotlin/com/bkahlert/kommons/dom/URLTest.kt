@@ -2,6 +2,7 @@ package com.bkahlert.kommons.dom
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.ktor.http.Parameters
 import io.ktor.http.URLParserException
 import kotlin.test.Test
 
@@ -17,6 +18,14 @@ class URLTest {
         URL.parse("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7") shouldBe URL("data",
             null,
             "image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
+    }
+
+    @Test fun fragment_parameters() {
+        URL.parse("http://example.com").fragmentParameters shouldBe Parameters.Empty
+        URL.parse("https://example.com/#foo=bar").fragmentParameters shouldBe Parameters.build { append("foo", "bar") }
+        URL.parse("https://example.com/#foo=bar&foo=baz").fragmentParameters shouldBe Parameters.build { appendAll("foo", listOf("bar", "baz")) }
+        URL.parse("https://example.com/#foo[]=bar&foo[]=baz").fragmentParameters shouldBe Parameters.build { appendAll("foo[]", listOf("bar", "baz")) }
+        URL.parse("https://example.com/#foo=bar&baz").fragmentParameters shouldBe Parameters.build { append("foo", "bar");appendAll("baz", emptyList()) }
     }
 
     @Test fun throw_on_nonsense() {

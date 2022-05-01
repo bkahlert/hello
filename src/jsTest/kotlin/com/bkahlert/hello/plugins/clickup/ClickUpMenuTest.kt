@@ -202,13 +202,7 @@ class ClickUpMenuTest {
                         </div>
                         <div class="borderless link item" style="flex: 1 1 0%; min-width: 0px;">
                             <i class="square icon" style="color: rgb(2, 188, 212);"></i>
-                            <div class="ui inline scrolling dropdown" style="flex: 1 1 0%; min-width: 0px;" tabindex="0">
-                                <div class="text" style="max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1em;">Task task-1</div>
-                                <div class="menu" style="max-width: 200%;" tabindex="-1">
-                                    <div class="ui search icon input"><input type="text" placeholder="Search tasks..."><i class="search icon"></i></div>
-                                    <div class="divider"></div>
-                                    <div class="header" style="color: rgb(194, 30, 115);"><i class="stop circle icon" title="running timer"></i>Running</div>
-                                    <div class="item" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" data-text="Task task-1" data-value="TimeEntryID::time-entry-1" data-variation="mini" data-offset="0" data-position="left center" data-html="<div class=&quot;ui items&quot;><div class=&quot;item&quot;><div class=&quot;content&quot;><div class=&quot;meta&quot;><span title=&quot;created&quot;><i class=&quot;calendar alternate outline icon&quot;></i> 3d 0h</span><span title=&quot;estimated time&quot;><i class=&quot;hourglass outline icon&quot;></i> 12h</span></div><div class=&quot;description&quot;><div class=&quot;ui list&quot;><div class=&quot;item&quot;><div class=&quot;sub header&quot;>Timer</div><div class=&quot;content&quot;>A time entry</div><div class=&quot;item&quot;><div class=&quot;sub header&quot;>Task</div><div class=&quot;content&quot;>Description of task task-1</div></div></div><div class=&quot;extra&quot;><span><i class=&quot;tag red icon&quot; style=&quot;color: hsl(9.13043478260871deg, 99.99999999999999%, 63.921568627450974%) !important&quot;></i> pomodoro-classic</span></div></div></div></div>">
+                            <div class="ui inline scrolling dropdown" style="flex: 1 1 0%; min-width: 0px; padding-right: 0.357143em;" tabindex="0"><input type="hidden" name="activity" value="TimeEntryID::time-entry-1"><div class="text" style="max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1em;">Task task-1</div><div class="menu" style="max-width: 200%;" tabindex="-1"><div class="ui search icon input"><input type="text" placeholder="Search tasks..."><i class="search icon"></i></div><div class="divider"></div><div class="header" style="color: rgb(194, 30, 115);"><i class="stop circle icon" title="running timer"></i>Running</div><div class="item active selected" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" data-text="Task task-1" data-value="TimeEntryID::time-entry-1" data-variation="mini" data-offset="0" data-position="left center" data-html="<div class=&quot;ui items&quot;><div class=&quot;item&quot;><div class=&quot;content&quot;><div class=&quot;meta&quot;><span title=&quot;created&quot;><i class=&quot;calendar alternate outline icon&quot;></i> 3d 0h</span><span title=&quot;estimated time&quot;><i class=&quot;hourglass outline icon&quot;></i> 12h</span></div><div class=&quot;description&quot;><div class=&quot;ui list&quot;><div class=&quot;item&quot;><div class=&quot;sub header&quot;>Timer</div><div class=&quot;content&quot;>A time entry</div><div class=&quot;item&quot;><div class=&quot;sub header&quot;>Task</div><div class=&quot;content&quot;>Description of task task-1</div></div></div><div class=&quot;extra&quot;><span><i class=&quot;tag red icon&quot; style=&quot;color: hsl(9.13043478260871deg, 99.99999999999999%, 63.921568627450974%) !important&quot;></i> pomodoro-classic</span></div></div></div></div>">
                                         <i class="square icon" style="color: rgb(2, 188, 212);"></i>Task task-1</div>
                                     <div class="divider">
                                 </div>
@@ -230,7 +224,7 @@ class ClickUpMenuTest {
         }
         waitForRecompositionComplete()
 
-        shouldRender("""
+        shouldRenderPartially("""
             <div class="header" style="color: rgb(255, 0, 0);">
                 <i class="clone icon" title="project"></i>Space<i class="inverted icon"></i>
                 <i class="list icon" title="list"></i>Task List</div>
@@ -331,6 +325,10 @@ class ClickUpMenuTest {
 }
 
 infix fun TestScope.shouldRender(expected: String) {
+    root.innerHTML shouldBe expected.replace(">\\s+?<".toRegex(), "><")
+}
+
+infix fun TestScope.shouldRenderPartially(expected: String) {
     root.innerHTML shouldContain expected.replace(">\\s+?<".toRegex(), "><")
 }
 

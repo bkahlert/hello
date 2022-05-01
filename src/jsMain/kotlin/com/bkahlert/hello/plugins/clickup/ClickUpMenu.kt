@@ -13,13 +13,14 @@ import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeede
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioning
+import com.bkahlert.hello.plugins.clickup.menu.Activity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.ActivityDropdown
 import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
 import com.bkahlert.hello.plugins.clickup.menu.ConfigurationModal
 import com.bkahlert.hello.plugins.clickup.menu.FailureModal
 import com.bkahlert.hello.plugins.clickup.menu.MetaItems
-import com.bkahlert.hello.plugins.clickup.menu.selected
+import com.bkahlert.hello.plugins.clickup.menu.rememberActivityDropdownState
 import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.DimmingLoader
 import com.bkahlert.hello.ui.textOverflow
@@ -241,20 +242,19 @@ fun SemanticElementScope<MenuElement, *>.TeamItem(
     }
 }
 
-
 @Composable
 fun SemanticElementScope<MenuElement, *>.ActivityItems(
     activityGroups: List<ActivityGroup>,
+    selectedActivity: Activity<*>?,
     onSelect: (Selection) -> Unit,
-    onTimeEntryStart: (TaskID, List<Tag>, Boolean) -> Unit,
+    onTimeEntryStart: (TaskID?, List<Tag>, Boolean) -> Unit,
     onTimeEntryStop: (TimeEntry, List<Tag>) -> Unit,
 ) {
-    val selectedActivity = activityGroups.selected.firstOrNull()
     var clicked by remember(selectedActivity) { mutableStateOf(false) }
     LinkItem({
         +Borderless
         if (selectedActivity == null) +Disabled
-        onClick { clicked = !it.defaultPrevented }
+        onClick { clicked = it.target == it.currentTarget }
     }) {
         when (selectedActivity) {
             is RunningTaskActivity -> {
@@ -268,10 +268,12 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
             }
             else -> {
                 PomodoroStarter(
-                    taskID = selectedActivity?.taskID,
+                    rememberPomodoroStarterState(
+                        taskID = selectedActivity?.taskID,
+                        acousticFeedback = AcousticFeedback.PomodoroFeedback,
+                    ),
                     start = { clicked },
                     onStart = onTimeEntryStart,
-                    acousticFeedback = AcousticFeedback.PomodoroFeedback,
                 )
             }
         }
@@ -284,7 +286,10 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
             minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
         }
     }) {
-        ActivityDropdown(activityGroups) { onSelect(it) }
+        ActivityDropdown(rememberActivityDropdownState(
+            availableActivityGroups = activityGroups,
+            selectedActivity = selectedActivity,
+            onActivitySelect = { _, activity -> onSelect(listOfNotNull(activity?.id)) }))
     }
 
     Menu({ +Direction.Right }) {
@@ -399,6 +404,7 @@ fun ClickUpMenu(
                 )
                 ActivityItems(
                     activityGroups = state.activityGroups,
+                    selectedActivity = state.selectedActivity,
                     onSelect = viewModel::select,
                     onTimeEntryStart = viewModel::startTimeEntry,
                     onTimeEntryStop = viewModel::stopTimeEntry,

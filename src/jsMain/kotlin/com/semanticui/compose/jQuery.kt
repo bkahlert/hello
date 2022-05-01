@@ -57,6 +57,13 @@ fun jQuery.modal(vararg options: Pair<String, Any?>) = modal(json(*options))
 fun jQuery.progress(vararg options: Pair<String, Any?>) = progress(json(*options))
 
 /**
+ * Helper function to convert an optional value to something that jQuery / Semantic UI
+ * accepts as an array.
+ */
+fun <T> T?.toJsonArrayOrEmpty(transform: (T) -> String = { it.toString() }): Array<String> =
+    this?.let { arrayOf(transform(it)) } ?: emptyArray()
+
+/**
  * Helper function to convert collections to something that jQuery / Semantic UI
  * accepts as an array.
  */

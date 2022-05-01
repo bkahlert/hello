@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.dom.data
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticAttrsScope
-import com.semanticui.compose.SemanticAttrsScope.Companion.or
 import com.semanticui.compose.SemanticBuilder
 import com.semanticui.compose.SemanticDivElement
 import com.semanticui.compose.SemanticElement
@@ -19,25 +18,13 @@ import com.semanticui.compose.Variation
 import com.semanticui.compose.dropdown
 import com.semanticui.compose.jQuery
 import com.semanticui.compose.toJsonArray
-import org.jetbrains.compose.web.attributes.AttrsScopeBuilder
+import com.semanticui.compose.toJsonArrayOrEmpty
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.paddingRight
 import org.w3c.dom.HTMLDivElement
 import kotlin.js.json
 
 interface DropdownElement : SemanticElement
-
-/** Whether to provide standard debug output to console. */
-var <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.debug: Boolean? by SemanticAttrsScope or null
-
-/** Messages to appear on the dropdown. */
-var <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.message: Map<String, String?> by SemanticAttrsScope or emptyMap()
-
-/** What to display if nothing is selected. */
-var <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.placeholder: String? by SemanticAttrsScope or null
-
-/** Is called when the selection changed. */
-var <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.onChange: ((String) -> Unit)? by SemanticAttrsScope or null
 
 /** [Scrolling](https://semantic-ui.com/modules/dropdown.html#scrolling) variation of [dropdown](https://semantic-ui.com/modules/dropdown.html). */
 @Suppress("unused") val <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.scrolling: Variation.Scrolling get() = Variation.Scrolling
@@ -63,42 +50,105 @@ fun Dropdown(
     }
 }
 
+@Stable
+interface DropdownState {
+    val availableValues: List<String>
+    var selectedValue: String?
+    val onSelect: (oldSelectedValue: String?, newSelectedValue: String?) -> Unit
+
+    /** Whether to provide standard debug output to console. */
+    val debug: Boolean
+
+    /** Messages to appear on the dropdown. */
+    val message: Map<String, String?>
+
+    /** What to display if nothing is selected. */
+    val placeholder: String?
+}
+
+class DropdownStateImpl(
+    override val availableValues: List<String>,
+    selectedValue: String?,
+    override val onSelect: (oldSelectedValue: String?, newSelectedValue: String?) -> Unit,
+    override val debug: Boolean,
+    override val message: Map<String, String?>,
+    override val placeholder: String?,
+) : DropdownState {
+    private var _selectedValue by mutableStateOf(selectedValue)
+    override var selectedValue
+        get() = _selectedValue
+        set(value) {
+            val oldSelectedValue = _selectedValue
+            val newSelectedValue = value?.takeUnless { it.isEmpty() }
+            if (oldSelectedValue != newSelectedValue) onSelect(oldSelectedValue, newSelectedValue)
+            _selectedValue = newSelectedValue
+        }
+}
+
+@Composable
+fun rememberDropdownState(
+    vararg availableValues: String = emptyArray(),
+    select: (String) -> Boolean = { false },
+    onSelect: (oldSelectedValue: String?, newSelectedValue: String?) -> Unit = { old, new -> console.log("selection changed from $old to $new") },
+    debug: Boolean = false,
+    message: Map<String, String?> = emptyMap(),
+    placeholder: String? = null,
+): DropdownState {
+    val selectedValue = availableValues.firstOrNull(select)
+    return remember(selectedValue, availableValues, onSelect, debug, message, placeholder) {
+        DropdownStateImpl(
+            availableValues = availableValues.toList(),
+            selectedValue = selectedValue,
+            onSelect = onSelect,
+            debug = debug,
+            message = message,
+            placeholder = placeholder,
+        )
+    }
+}
+
 /**
  * Creates a [SemanticUI inline dropdown](https://semantic-ui.com/modules/dropdown.html#inline)
- * using the specified [key] to determine if the visual representation needs to be re-created.
+ * using the specified [state] to determine if the visual representation needs to be re-created.
  */
 @Composable
 fun InlineDropdown(
-    key: Any?,
+    state: DropdownState = rememberDropdownState(),
     attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
     content: SemanticBuilder<DropdownElement, HTMLDivElement>? = null,
 ) {
-    val scope = SemanticAttrsScope.of<DropdownElement, HTMLDivElement>(AttrsScopeBuilder()).apply { attrs?.invoke(this) }
     SemanticDivElement<DropdownElement>({
         classes("ui", "inline")
         attrs?.invoke(this)
         classes("dropdown")
+        style { paddingRight(.35714286.em) }
     }) {
         content?.invoke(this)
-        DisposableEffect(key) {
+        DisposableEffect(state) {
             jQuery(scopeElement).dropdown(
-                "debug" to scope.debug,
-                "message" to json(*scope.message.toList().toTypedArray()),
-                "placeholder" to scope.placeholder,
+                "debug" to state.debug,
+                "message" to json(* state.message.toList().toTypedArray()),
+                "placeholder" to state.placeholder,
                 "onChange" to fun(value: String) {
-                    if (scope.debug == true) console.log("selection changed by dropdown to $value")
-                    scope.onChange?.invoke(value)
+                    if (scopeElement.data("muted") == null) {
+                        if (state.debug) console.log("selection changed by dropdown to $value")
+                        state.selectedValue = value.takeUnless { it.isEmpty() }
+                    }
                 },
             )
+            onDispose { }
+        }
+        DisposableEffect(state.selectedValue) {
+            jQuery(scopeElement)
+                .attr("data-muted", true)
+                .dropdown("set exactly", state.selectedValue.toJsonArrayOrEmpty())
+                .attr("data-muted", null)
             onDispose { }
         }
     }
 }
 
 interface MultipleDropdownElement : DropdownElement
-
-/** Whether to use labels to show selected values. */
-var <TSemantic : MultipleDropdownElement> SemanticAttrsScope<TSemantic, *>.useLabels: Boolean? by SemanticAttrsScope or null
 
 @Stable
 interface MultipleDropdownState {
@@ -113,18 +163,37 @@ interface MultipleDropdownState {
 
     val noValues: Boolean get() = selectedValues.isEmpty()
     var allValues: Boolean
+
+    val onSelect: (oldSelectedValues: List<String>, newSelectedValues: List<String>) -> Unit
+
+    /** Whether to provide standard debug output to console. */
+    val debug: Boolean
+
+    /** Messages to appear on the dropdown. */
+    val message: Map<String, String?>
+
+    /** What to display if nothing is selected. */
+    val placeholder: String?
+
+    /** Whether to use labels to show selected values. */
+    val useLabels: Boolean?
 }
 
 class MultipleDropdownStateImpl(
-    availableValues: List<String> = emptyList(),
+    override val availableValues: List<String> = emptyList(),
     selectedValues: List<String> = emptyList(),
+    override val onSelect: (oldSelectedValues: List<String>, newSelectedValues: List<String>) -> Unit,
+    override val debug: Boolean,
+    override val message: Map<String, String?>,
+    override val placeholder: String?,
+    override val useLabels: Boolean?,
 ) : MultipleDropdownState {
-    override val availableValues by mutableStateOf(availableValues)
-
     private var _selectedValues by mutableStateOf(selectedValues)
     override var selectedValues: List<String>
         get() = if (_allValues) availableValues else _selectedValues
         set(value) {
+            val oldSelectedValues = _selectedValues
+            if (oldSelectedValues != value) onSelect(oldSelectedValues, value)
             _selectedValues = value
             if (!availableValues.all { _selectedValues.contains(it) }) {
                 _allValues = false
@@ -143,12 +212,22 @@ class MultipleDropdownStateImpl(
 fun rememberMultipleDropdownState(
     vararg availableValues: String = emptyArray(),
     select: (String) -> Boolean = { false },
+    onSelect: (oldSelectedValues: List<String>, newSelectedValues: List<String>) -> Unit = { old, new -> console.log("selection changed from $old to $new") },
+    debug: Boolean = false,
+    message: Map<String, String?> = emptyMap(),
+    placeholder: String? = null,
+    useLabels: Boolean? = null,
 ): MultipleDropdownState {
     val selectedValues = availableValues.filter(select)
     return remember(selectedValues, availableValues) {
         MultipleDropdownStateImpl(
             availableValues = availableValues.toList(),
             selectedValues = selectedValues,
+            onSelect = onSelect,
+            debug = debug,
+            message = message,
+            placeholder = placeholder,
+            useLabels = useLabels,
         )
     }
 }
@@ -163,7 +242,6 @@ fun InlineMultipleDropdown(
     attrs: SemanticAttrBuilder<MultipleDropdownElement, HTMLDivElement>? = null,
     content: SemanticBuilder<MultipleDropdownElement, HTMLDivElement>? = null,
 ) {
-    val scope = SemanticAttrsScope.of<MultipleDropdownElement, HTMLDivElement>(AttrsScopeBuilder()).apply { attrs?.invoke(this) }
     SemanticDivElement<MultipleDropdownElement>({
         classes("ui", "inline")
         attrs?.invoke(this)
@@ -173,15 +251,14 @@ fun InlineMultipleDropdown(
         content?.invoke(this)
         DisposableEffect(state) {
             jQuery(scopeElement).dropdown(
-                "debug" to scope.debug,
-                "message" to json(*scope.message.toList().toTypedArray()),
-                "placeholder" to scope.placeholder,
-                "useLabels" to scope.useLabels,
+                "debug" to state.debug,
+                "message" to json(*state.message.toList().toTypedArray()),
+                "placeholder" to state.placeholder,
+                "useLabels" to state.useLabels,
                 "onChange" to fun(value: String) {
                     if (scopeElement.data("muted") == null) {
-                        if (scope.debug == true) console.log("selection changed by dropdown to $value")
+                        if (state.debug) console.log("selection changed by dropdown to $value")
                         state.selectedValuesString = value
-                        scope.onChange?.invoke(value)
                     }
                 },
             )

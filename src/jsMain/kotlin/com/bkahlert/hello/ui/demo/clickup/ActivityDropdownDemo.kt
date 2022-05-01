@@ -2,15 +2,15 @@ package com.bkahlert.hello.ui.demo.clickup
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.Brand
-import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.plugins.clickup.menu.Activity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
-import com.bkahlert.hello.plugins.clickup.menu.Activity.TaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.ActivityDropdown
 import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
+import com.bkahlert.hello.plugins.clickup.menu.activities
+import com.bkahlert.hello.plugins.clickup.menu.rememberActivityDropdownState
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
-import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownFixtures.withSelection
+import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownFixtures.select
 import com.bkahlert.kommons.Color
 import com.clickup.api.FolderPreview
 import com.clickup.api.Space
@@ -23,22 +23,16 @@ import kotlin.random.Random
 fun ActivityDropdownDemo() {
     Demos("Activity Dropdown") {
         Demo("No selection") {
-            ActivityDropdown(
-                activityGroups = ActivityDropdownFixtures.ActivityGroups,
-                onSelect = onSelect,
-            )
+            ActivityDropdown(rememberActivityDropdownState(ActivityDropdownFixtures.ActivityGroups))
         }
         Demo("Selection") {
             ActivityDropdown(
-                activityGroups = ActivityDropdownFixtures.ActivityGroups.withSelection { index, _ -> index == 3 },
-                onSelect = onSelect,
+                rememberActivityDropdownState(ActivityDropdownFixtures.ActivityGroups,
+                    ActivityDropdownFixtures.ActivityGroups.select { index, _ -> index == 3 }),
             )
         }
         Demo("Empty") {
-            ActivityDropdown(
-                activityGroups = emptyList(),
-                onSelect = onSelect,
-            )
+            ActivityDropdown(rememberActivityDropdownState())
         }
     }
 }
@@ -64,44 +58,24 @@ object ActivityDropdownFixtures {
         tasks: List<Task> = ClickUpFixtures.Tasks,
         fromIndex: Int = 0,
         toIndex: Int = tasks.size,
-        select: (Int, Task) -> Boolean = { _, _ -> false },
     ): ActivityGroup {
-        val taskSubList = tasks.subList(fromIndex, toIndex)
-        return ActivityGroup.of(space, folder, list, color, taskSubList, taskSubList.filterIndexed(select).map { it.id })
+        return ActivityGroup.of(space, folder, list, color, tasks.subList(fromIndex, toIndex))
     }
 
-    fun List<ActivityGroup>.withSelection(select: (Int, Activity<*>) -> Boolean) =
-        map { group ->
-            group.copy(tasks = group.tasks.mapIndexed { index, activity ->
-                val selected = select(index, activity)
-                when (activity) {
-                    is RunningTaskActivity -> activity.copy(selected = selected)
-                    is TaskActivity -> activity.copy(selected = selected)
-                }
-            })
-        }
+    fun List<ActivityGroup>.select(select: (Int, Activity<*>) -> Boolean) =
+        activities.filterIndexed(select).firstOrNull()
 
-    val ActivityGroups: List<ActivityGroup> by lazy {
-        listOf(
-            taskActivityGroup(fromIndex = 0, toIndex = 5, space = null),
-            taskActivityGroup(fromIndex = 5, toIndex = 14, folder = null, color = null),
-            taskActivityGroup(fromIndex = 14, toIndex = 21, list = null),
-        )
+    val ActivityGroups: List<ActivityGroup> = listOf(
+        taskActivityGroup(fromIndex = 0, toIndex = 5, space = null),
+        taskActivityGroup(fromIndex = 5, toIndex = 14, folder = null, color = null),
+        taskActivityGroup(fromIndex = 14, toIndex = 21, list = null),
+    )
+    val ActivityGroupsWithRunningActivity: List<ActivityGroup> = buildList {
+        add(runningTaskActivityGroup())
+        addAll(ActivityGroups)
     }
-    val ActivityGroupsWithRunningActivity: List<ActivityGroup> by lazy {
-        buildList {
-            add(runningTaskActivityGroup())
-            addAll(ActivityGroups)
-        }
+    val ActivityGroupsWithTaskLessRunningActivity: List<ActivityGroup> = buildList {
+        add(runningTaskActivityGroup(runningTaskActivity(task = null)))
+        addAll(ActivityGroups)
     }
-    val ActivityGroupsWithTaskLessRunningActivity: List<ActivityGroup> by lazy {
-        buildList {
-            add(runningTaskActivityGroup(runningTaskActivity(task = null)))
-            addAll(ActivityGroups)
-        }
-    }
-}
-
-private val onSelect: (Selection) -> Unit = {
-    console.info("selected $it")
 }

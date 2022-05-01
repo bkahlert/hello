@@ -44,7 +44,7 @@ interface ClickUpMenuViewModel {
     fun selectTeam(teamID: TeamID)
     fun refresh(background: Boolean = false)
     fun select(selection: Selection)
-    fun startTimeEntry(taskID: TaskID, tags: List<Tag>, billable: Boolean)
+    fun startTimeEntry(taskID: TaskID?, tags: List<Tag>, billable: Boolean)
     fun stopTimeEntry(timeEntry: TimeEntry, tags: List<Tag>)
 }
 
@@ -221,7 +221,7 @@ class ClickUpMenuViewModelImpl(
     }
 
     override fun startTimeEntry(
-        taskID: TaskID,
+        taskID: TaskID?,
         tags: List<Tag>,
         billable: Boolean,
     ) {

@@ -2,10 +2,10 @@ package com.bkahlert.hello.plugins.clickup.menu
 
 import com.bkahlert.Brand
 import com.bkahlert.Brand.colors
-import com.bkahlert.hello.plugins.clickup.Selection
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.TaskActivity
 import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
@@ -73,19 +73,17 @@ data class ActivityGroup(
 
         fun of(
             timeEntry: TimeEntry,
-            selected: Boolean,
             task: Task?,
-        ): ActivityGroup = of(RunningTaskActivity(timeEntry, selected, task))
+        ): ActivityGroup = of(RunningTaskActivity(timeEntry, task))
 
         fun of(
             tasks: List<Task>,
-            selected: Selection,
             color: Color?,
             vararg meta: Meta?,
         ): ActivityGroup = ActivityGroup(
             name = listOfNotNull(*meta),
             color = color,
-            tasks = tasks.map { task -> TaskActivity(task, selected.contains(task.id)) },
+            tasks = tasks.map { task -> TaskActivity(task) },
         )
 
         fun of(
@@ -94,8 +92,7 @@ data class ActivityGroup(
             list: TaskList?,
             color: Color?,
             tasks: List<Task>,
-            selected: Selection,
-        ): ActivityGroup = of(tasks, selected, color, Meta.of(space), Meta.of(folder), Meta.of(list))
+        ): ActivityGroup = of(tasks, color, Meta.of(space), Meta.of(folder), Meta.of(list))
 
         fun of(
             space: Space?,
@@ -103,19 +100,15 @@ data class ActivityGroup(
             listPreview: TaskListPreview?,
             color: Color?,
             tasks: List<Task>,
-            selected: Selection,
-        ): ActivityGroup = of(tasks, selected, color, Meta.of(space), Meta.of(folder), Meta.of(listPreview))
+        ): ActivityGroup = of(tasks, color, Meta.of(space), Meta.of(folder), Meta.of(listPreview))
     }
 }
 
-/** Contains the selected activities. */
-val Iterable<ActivityGroup>.selected: List<Activity<*>>
-    get() = flatMap { group -> group.tasks.filter { activity -> activity.selected } }
-
-/** Contains the selected activities. */
-fun Iterable<ActivityGroup>.filter(selected: Selection): List<Activity<*>> =
-    flatMap { group -> group.tasks.filter { activity -> selected.contains(activity.id) } }
-
+val Iterable<ActivityGroup>.activities: List<Activity<*>> get() = flatMap { it.tasks }
+fun Iterable<ActivityGroup>.byIdOrNull(id: Identifier<*>): Activity<*>? = firstNotNullOfOrNull { it.tasks.byIdOrNull(id) }
+fun Iterable<ActivityGroup>.byId(id: Identifier<*>): Activity<*>? = firstNotNullOf { it.tasks.byId(id) }
+fun Iterable<Activity<*>>.byIdOrNull(id: Identifier<*>): Activity<*>? = firstOrNull { it.id == id }
+fun Iterable<Activity<*>>.byId(id: Identifier<*>): Activity<*>? = first { it.id == id }
 
 /**
  * Visual presentation of a [Task] ([TaskActivity]) or a [TimeEntry] ([RunningTaskActivity]).
@@ -129,11 +122,9 @@ sealed interface Activity<ID : Identifier<*>> {
     val meta: List<Meta>
     val descriptions: Map<String, String?>
     val tags: Set<Tag>
-    val selected: Boolean
 
     data class RunningTaskActivity(
         val timeEntry: TimeEntry,
-        override val selected: Boolean = false,
         val task: Task? = null,
     ) : Activity<TimeEntryID> {
         private val taskActivity: TaskActivity? = task?.let(::TaskActivity)
@@ -159,11 +150,21 @@ sealed interface Activity<ID : Identifier<*>> {
                 addAll(timeEntry.tags)
                 taskActivity?.also { addAll(it.tags) }
             }
+
+        override fun toString(): String = asString {
+            ::id.name to id
+            ::taskID.name to taskID
+            ::name.name to name
+            ::color.name to color
+            ::url.name to url
+            ::meta.name to meta
+            ::descriptions.name to descriptions
+            ::tags.name to tags
+        }
     }
 
     data class TaskActivity(
         val task: Task,
-        override val selected: Boolean = false,
     ) : Activity<TaskID> {
         override val id: TaskID get() = task.id
         override val taskID: TaskID get() = task.id
@@ -200,5 +201,16 @@ sealed interface Activity<ID : Identifier<*>> {
             }
         override val descriptions: Map<String, String?> get() = mapOf("Task" to task.description?.takeUnless { it.isBlank() })
         override val tags: Set<Tag> get() = task.tags.toSet()
+
+        override fun toString(): String = asString {
+            ::id.name to id
+            ::taskID.name to taskID
+            ::name.name to name
+            ::color.name to color
+            ::url.name to url
+            ::meta.name to meta
+            ::descriptions.name to descriptions
+            ::tags.name to tags
+        }
     }
 }
