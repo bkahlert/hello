@@ -44,6 +44,7 @@ interface ClickUpMenuViewModel {
     fun selectTeam(teamID: TeamID)
     fun refresh(background: Boolean = false)
     fun select(selection: Selection)
+    fun closeTask(taskID: TaskID)
     fun startTimeEntry(taskID: TaskID?, tags: List<Tag>, billable: Boolean)
     fun stopTimeEntry(timeEntry: TimeEntry, tags: List<Tag>)
 }
@@ -214,6 +215,17 @@ class ClickUpMenuViewModelImpl(
                 is TeamSelected -> {
                     storage.selections[state.selectedTeam] = selection
                     state.select(selection)
+                }
+                else -> state.also { console.warn("unexpected state $state") }
+            }
+        }
+    }
+
+    override fun closeTask(taskID: TaskID) {
+        update("closing $taskID") { state ->
+            when (state) {
+                is TeamSelected -> {
+                    state.closeTask(taskID)
                 }
                 else -> state.also { console.warn("unexpected state $state") }
             }

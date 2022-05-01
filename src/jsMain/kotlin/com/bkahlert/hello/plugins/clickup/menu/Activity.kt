@@ -115,7 +115,7 @@ fun Iterable<Activity<*>>.byId(id: Identifier<*>): Activity<*>? = first { it.id 
  */
 sealed interface Activity<ID : Identifier<*>> {
     val id: ID?
-    val taskID: TaskID?
+    val task: Task?
     val name: String
     val color: Color?
     val url: URL?
@@ -125,11 +125,10 @@ sealed interface Activity<ID : Identifier<*>> {
 
     data class RunningTaskActivity(
         val timeEntry: TimeEntry,
-        val task: Task? = null,
+        override val task: Task? = null,
     ) : Activity<TimeEntryID> {
         private val taskActivity: TaskActivity? = task?.let(::TaskActivity)
         override val id: TimeEntryID get() = timeEntry.id
-        override val taskID: TaskID? get() = task?.id
         override val name: String
             get() = timeEntry.task?.name ?: taskActivity?.name ?: "— Timer with no associated task —"
         override val color: Color?
@@ -153,7 +152,7 @@ sealed interface Activity<ID : Identifier<*>> {
 
         override fun toString(): String = asString {
             ::id.name to id
-            ::taskID.name to taskID
+            ::task.name to task
             ::name.name to name
             ::color.name to color
             ::url.name to url
@@ -164,10 +163,9 @@ sealed interface Activity<ID : Identifier<*>> {
     }
 
     data class TaskActivity(
-        val task: Task,
+        override val task: Task,
     ) : Activity<TaskID> {
         override val id: TaskID get() = task.id
-        override val taskID: TaskID get() = task.id
         override val name: String get() = task.name
         override val color: Color get() = task.status.color
         override val url: URL? get() = task.url
@@ -204,7 +202,7 @@ sealed interface Activity<ID : Identifier<*>> {
 
         override fun toString(): String = asString {
             ::id.name to id
-            ::taskID.name to taskID
+            ::task.name to task
             ::name.name to name
             ::color.name to color
             ::url.name to url

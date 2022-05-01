@@ -7,29 +7,23 @@ import com.bkahlert.hello.plugins.clickup.PomodoroStarter
 import com.bkahlert.hello.plugins.clickup.rememberPomodoroStarterState
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
-import com.clickup.api.Tag
-import com.clickup.api.TaskID
 
 @Composable
 fun PomodoroStarterDemo() {
     Demos("Pomodoro Starter") {
         Demo("no task") {
-            PomodoroStarter(rememberPomodoroStarterState(taskID = null, selected = { it == Pro }), onStart = onStart)
+            PomodoroStarter(rememberPomodoroStarterState(taskID = null, selected = { it == Pro }))
         }
         Demo("task") {
-            PomodoroStarter(rememberPomodoroStarterState(taskID = taskID, selected = { it == Debug }), onStart = onStart)
+            PomodoroStarter(rememberPomodoroStarterState(taskID = taskID, selected = { it == Debug }))
         }
         Demo("billable") {
-            PomodoroStarter(rememberPomodoroStarterState(taskID = taskID, billable = true), onStart = onStart)
+            PomodoroStarter(rememberPomodoroStarterState(taskID = taskID, billable = true))
         }
         Demo("non-billable") {
-            PomodoroStarter(rememberPomodoroStarterState(taskID = taskID, billable = false), onStart = onStart)
+            PomodoroStarter(rememberPomodoroStarterState(taskID = taskID, billable = false))
         }
     }
 }
 
 private val taskID = ClickUpFixtures.Tasks.first().id
-
-private val onStart: (TaskID?, List<Tag>, Boolean) -> Unit = { task, tags, billable ->
-    console.info("starting billable=$billable pomodoro $tags for $task")
-}

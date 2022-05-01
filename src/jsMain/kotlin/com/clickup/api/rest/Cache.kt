@@ -19,6 +19,7 @@ class Cache(private val storage: Storage) {
     fun forSpaces(id: TeamID) = CacheAccessor("team-spaces-${id.stringValue}", storage::get, storage::set)
     fun forSpaceLists(id: SpaceID) = CacheAccessor("space-lists-${id.stringValue}", storage::get, storage::set)
     fun forFolders(id: SpaceID) = CacheAccessor("space-folders-${id.stringValue}", storage::get, storage::set)
+    fun forFolder(id: FolderID) = CacheAccessor("folder-${id.stringValue}", storage::get, storage::set)
     fun forFolderLists(id: FolderID) = CacheAccessor("folder-lists-${id.stringValue}", storage::get, storage::set)
 
     companion object {

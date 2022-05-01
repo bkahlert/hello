@@ -206,7 +206,7 @@ enum class SearchEngine(
     /**
      * Returns the [SearchEngine] preceeding this one among the specified [engines].
      */
-    fun prev(engines: List<SearchEngine>) = (engines + engines).windowed(2).firstNotNullOf { (current, next) -> current.takeIf { next == this } }
+    fun prev(engines: List<SearchEngine>) = engines.prev { it == this }.first()
 
     /**
      * The [SearchEngine] following this one.
@@ -216,9 +216,19 @@ enum class SearchEngine(
     /**
      * The [SearchEngine] following this one among the specified [engines].
      */
-    fun next(engines: List<SearchEngine>) = (engines + engines).windowed(2).firstNotNullOf { (current, next) -> next.takeIf { current == this } }
+    fun next(engines: List<SearchEngine>) = engines.next { it == this }.first()
 
     companion object {
         val Default: SearchEngine = Google
     }
 }
+
+/**
+ * Returns a list that contains one previous element for each element the specified [of] returns `true`.
+ */
+fun <T> Iterable<T>.prev(of: (T) -> Boolean): List<T> = (this + this).windowed(2).mapNotNull { (current, next) -> current.takeIf { of(next) } }
+
+/**
+ * Returns a list that contains one next element for each element the specified [of] returns `true`.
+ */
+fun <T> Iterable<T>.next(of: (T) -> Boolean): List<T> = (this + this).windowed(2).mapNotNull { (current, next) -> next.takeIf { of(current) } }

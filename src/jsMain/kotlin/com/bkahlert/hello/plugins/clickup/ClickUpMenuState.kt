@@ -11,6 +11,7 @@ import com.bkahlert.hello.plugins.clickup.menu.Activity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
 import com.bkahlert.hello.plugins.clickup.menu.byIdOrNull
+import com.bkahlert.hello.search.next
 import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.text.toSentenceCaseString
 import com.clickup.api.Folder
@@ -24,6 +25,7 @@ import com.clickup.api.TaskList
 import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.User
+import com.clickup.api.closed
 import com.clickup.api.rest.ClickUpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -114,6 +116,11 @@ sealed class ClickUpMenuState {
                     }
 
                     fun select(selected: Selection): TeamSelected = copy(selected = selected)
+                    suspend fun closeTask(taskID: TaskID): TeamSelected {
+                        val task = data.tasks.first { it.id == taskID }
+                        client.updateTask(task.copy(status = client.getPossibleStatuses(task).closed.asPreview()))
+                        return refresh().select(selected + data.tasks.next { it.id == taskID }.map { it.id })
+                    }
 
                     suspend fun startTimeEntry(taskID: TaskID?, description: String?, billable: Boolean, tags: List<Tag>): TeamSelected {
                         runningActivity?.also { stopTimeEntry(it.timeEntry, listOf(Pomodoro.Status.Aborted.tag)) }

@@ -4,6 +4,7 @@ import com.clickup.api.Folder
 import com.clickup.api.FolderID
 import com.clickup.api.Space
 import com.clickup.api.SpaceID
+import com.clickup.api.Status
 import com.clickup.api.Tag
 import com.clickup.api.Task
 import com.clickup.api.TaskID
@@ -46,6 +47,14 @@ interface ClickUpClient {
         taskId: TaskID,
     ): Task?
 
+    suspend fun getPossibleStatuses(
+        task: Task,
+    ): List<Status> = getFolder(task.folder.id).statuses
+
+    suspend fun updateTask(
+        task: Task,
+    ): Task
+
     suspend fun getSpaces(
         team: Team,
         archived: Boolean = false,
@@ -60,6 +69,10 @@ interface ClickUpClient {
         space: Space,
         archived: Boolean = false,
     ): List<Folder>
+
+    suspend fun getFolder(
+        folderId: FolderID,
+    ): Folder
 
     suspend fun getLists(
         folder: Folder,

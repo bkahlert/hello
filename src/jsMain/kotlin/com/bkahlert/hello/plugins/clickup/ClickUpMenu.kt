@@ -31,6 +31,7 @@ import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
 import com.clickup.api.User
+import com.clickup.api.closed
 import com.clickup.api.rest.AccessToken
 import com.semanticui.compose.SemanticAttrBuilder
 import com.semanticui.compose.SemanticElementScope
@@ -247,6 +248,7 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
     activityGroups: List<ActivityGroup>,
     selectedActivity: Activity<*>?,
     onSelect: (Selection) -> Unit,
+    onCloseTask: (TaskID) -> Unit,
     onTimeEntryStart: (TaskID?, List<Tag>, Boolean) -> Unit,
     onTimeEntryStop: (TimeEntry, List<Tag>) -> Unit,
 ) {
@@ -269,11 +271,12 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
             else -> {
                 PomodoroStarter(
                     rememberPomodoroStarterState(
-                        taskID = selectedActivity?.taskID,
+                        taskID = selectedActivity?.task?.id,
                         acousticFeedback = AcousticFeedback.PomodoroFeedback,
+                        onStart = onTimeEntryStart,
+                        onCloseTask = selectedActivity?.task?.takeUnless { it.status.closed }?.let { { onCloseTask(it.id) } },
                     ),
                     start = { clicked },
-                    onStart = onTimeEntryStart,
                 )
             }
         }
@@ -406,6 +409,7 @@ fun ClickUpMenu(
                     activityGroups = state.activityGroups,
                     selectedActivity = state.selectedActivity,
                     onSelect = viewModel::select,
+                    onCloseTask = viewModel::closeTask,
                     onTimeEntryStart = viewModel::startTimeEntry,
                     onTimeEntryStop = viewModel::stopTimeEntry,
                 )

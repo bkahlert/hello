@@ -27,6 +27,7 @@ import com.clickup.api.rest.ClickUpClient
 import com.clickup.api.rest.ClickUpException.Companion.wrapOrNull
 import com.clickup.api.rest.CustomFieldFilter
 import com.clickup.api.rest.StartTimeEntryRequest
+import com.clickup.api.rest.UpdateTaskRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
@@ -38,6 +39,7 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -171,6 +173,17 @@ data class AccessTokenBasedClickUpClient(
             restClient.get(clickUpUrl / "task" / taskId).body()
         }
 
+    override suspend fun updateTask(task: Task): Task =
+        runLogging("updating task ${task.id}") {
+            task.teamId?.also { cache.forTasks(it).evict() }
+            restClient.put(clickUpUrl / "task" / task.id) {
+                contentType(ContentType.Application.Json)
+                setBody(UpdateTaskRequest(
+                    status = task.status.status,
+                ))
+            }.body()
+        }
+
     override suspend fun getSpaces(
         team: Team,
         archived: Boolean,
@@ -199,6 +212,11 @@ data class AccessTokenBasedClickUpClient(
             restClient.caching<Named<List<Folder>>>({ it.forFolders(space.id) }, clickUpUrl / "space" / space.id / "folder") {
                 parameter("archived", archived)
             }.value
+        }
+
+    override suspend fun getFolder(folderId: FolderID): Folder =
+        runLogging("getting folder $folderId") {
+            restClient.caching<Folder>({ it.forFolder(folderId) }, clickUpUrl / "folder" / folderId)
         }
 
     override suspend fun getLists(

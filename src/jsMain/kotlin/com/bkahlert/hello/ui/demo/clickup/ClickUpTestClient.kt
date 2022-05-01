@@ -180,6 +180,12 @@ open class ClickUpTestClient(
         return tasks.firstOrNull { it.id == taskId }
     }
 
+    override suspend fun updateTask(task: Task): Task {
+        adaptedDelay(1.seconds)
+        tasks = tasks.map { it.takeUnless { it.id == task.id } ?: task }
+        return task
+    }
+
     override suspend fun getSpaces(team: Team, archived: Boolean): List<Space> {
         adaptedDelay(.5.seconds)
         return spaces
@@ -198,6 +204,21 @@ open class ClickUpTestClient(
     override suspend fun getFolders(space: Space, archived: Boolean): List<Folder> {
         adaptedDelay(.5.seconds)
         return folders.filterBy(space)
+    }
+
+    override suspend fun getFolder(folderId: FolderID): Folder {
+        return folders.firstOrNull { it.id == folderId } ?: Folder(
+            id = folderId,
+            name = "hidden folder",
+            orderIndex = 0,
+            overrideStatuses = false,
+            hidden = true,
+            taskCount = "0",
+            archived = false,
+            statuses = initialSpaces.firstOrNull()?.statuses ?: initialFolders.firstOrNull()?.statuses ?: emptyList(),
+            lists = emptyList(),
+            permissionLevel = "create",
+        )
     }
 
     override suspend fun getTimeEntry(team: Team, timeEntryID: TimeEntryID): TimeEntry? {
@@ -284,9 +305,9 @@ open class ClickUpTestClient(
         }.takeUnless { it == Duration.ZERO }
 
     companion object {
-        fun Iterable<TaskList>.filterBy(space: Space) = filter { it.space.id == space.id }
+        fun Iterable<TaskList>.filterBy(space: Space) = filter { it.space?.id == space.id }
         fun Iterable<TaskList>.filterBy(folder: Folder) = filter { it.folder?.id == folder.id }
-        fun Iterable<Folder>.filterBy(space: Space) = filter { folder -> folder.lists.any { it.space.id == space.id } }
+        fun Iterable<Folder>.filterBy(space: Space) = filter { folder -> folder.lists.any { it.space?.id == space.id } }
     }
 }
 

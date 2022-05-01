@@ -340,9 +340,9 @@ object ClickUpFixtures {
     val Tasks: List<Task> = buildList {
         (Space1FolderLists + Space1FolderlessLists + Space2FolderLists + Space2FolderlessLists).forEach { taskList ->
             val folder = checkNotNull(taskList.folder)
-            Spaces.first { it.id == taskList.space.id }.statuses.forEach { status ->
+            Spaces.first { it.id == taskList.space?.id }.statuses.forEach { status ->
                 add(task(
-                    list = taskList.asPreview(), folder = folder, space = taskList.space, status = status.asPreview(),
+                    list = taskList.asPreview(), folder = folder, space = checkNotNull(taskList.space), status = status.asPreview(),
                     name = "Task with status ${status.status}",
                     description = "This is a sample task with status ${status.status}",
                     startDate = when (status.status.lowercase()) {
@@ -363,7 +363,7 @@ object ClickUpFixtures {
             }
             @Suppress("SpellCheckingInspection")
             add(task(
-                list = taskList.asPreview(), folder = folder, space = taskList.space,
+                list = taskList.asPreview(), folder = folder, space = checkNotNull(taskList.space),
                 name = "Task with most meta data set",
                 description = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\nAt vero eos et accusam et justo duo dolores et ea rebum.<br><strong>Stet clita kasd gubergren,</strong> no sea takimata sanctus est Lorem ipsum dolor sit amet.",
                 dateCreated = Now - 3.days,

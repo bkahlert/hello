@@ -13,6 +13,7 @@ import com.bkahlert.kommons.compose.data
 import com.bkahlert.kommons.time.toMoment
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
+import com.semanticui.compose.element.Button
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.IconGroup
 import com.semanticui.compose.module.Checkbox
@@ -25,7 +26,6 @@ import com.semanticui.compose.module.InlineDropdown
 import com.semanticui.compose.module.Item
 import com.semanticui.compose.module.Menu
 import com.semanticui.compose.module.Text
-import com.semanticui.compose.module.scrolling
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.name
@@ -40,8 +40,9 @@ interface PomodoroStarterState : DropdownState {
     val acousticFeedback: AcousticFeedback
     val availableTypes: List<Type>
     var selectedType: Type?
-    val selectedTypeOrDefault: Type get() = selectedType ?: Type.Default
     val onTypeSelect: (oldSelectedType: Type?, newSelectedType: Type?) -> Unit
+    fun onStart()
+    val onCloseTask: (() -> Unit)?
 }
 
 class PomodoroStarterStateImpl(
@@ -51,6 +52,8 @@ class PomodoroStarterStateImpl(
     override val availableTypes: List<Type>,
     selectedType: Type?,
     override val onTypeSelect: (oldSelectedType: Type?, newSelectedType: Type?) -> Unit,
+    private val onStart: (selectedType: Type?, billable: Boolean) -> Unit,
+    override val onCloseTask: (() -> Unit)?,
     debug: Boolean,
     message: Map<String, String?>,
     placeholder: String?,
@@ -74,6 +77,10 @@ class PomodoroStarterStateImpl(
         set(value) {
             selectedValue = value?.let { toString(it) }
         }
+
+    override fun onStart() {
+        onStart(selectedType, billable)
+    }
 }
 
 @Composable
@@ -86,13 +93,17 @@ fun rememberPomodoroStarterState(
     onTypeSelect: (oldSelectedType: Type?, newSelectedType: Type?) -> Unit = { old, new ->
         console.log("selection changed from $old to $new")
     },
+    onStart: (TaskID?, List<Tag>, billable: Boolean) -> Unit = { id, tags, bill ->
+        console.log("started ${if (bill) "billable " else ""}$id with $tags")
+    },
+    onCloseTask: (() -> Unit)? = { console.log("close task") },
     debug: Boolean = false,
     message: Map<String, String?> = emptyMap(),
     placeholder: String? = "Select duration...",
 ): PomodoroStarterState {
     val selectedType = types.firstOrNull(selected)
     val availableTypes = types.toList()
-    return remember(taskID, billable, acousticFeedback, selectedType, availableTypes, onTypeSelect, debug, message, placeholder) {
+    return remember(taskID, billable, acousticFeedback, selectedType, availableTypes, onTypeSelect, onStart, onCloseTask, debug, message, placeholder) {
         PomodoroStarterStateImpl(
             taskID = taskID,
             billable = billable,
@@ -100,6 +111,8 @@ fun rememberPomodoroStarterState(
             availableTypes = availableTypes,
             selectedType = selectedType,
             onTypeSelect = onTypeSelect,
+            onStart = { type, billable -> onStart(taskID, listOf((type ?: Type.Default).tag), billable) },
+            onCloseTask = onCloseTask,
             debug = debug,
             message = message,
             placeholder = placeholder
@@ -111,26 +124,41 @@ fun rememberPomodoroStarterState(
 fun PomodoroStarter(
     state: PomodoroStarterState = rememberPomodoroStarterState(),
     start: () -> Boolean = { false },
-    onStart: (TaskID?, List<Tag>, billable: Boolean) -> Unit = { _, _, _ -> },
 ) {
     IconGroup({
         +Link
         if (start()) {
-            onStart(state.taskID, listOf(state.selectedTypeOrDefault.tag), state.billable)
+            state.onStart()
         }
         onClick {
             it.preventDefault()
-            onStart(state.taskID, listOf(state.selectedTypeOrDefault.tag), state.billable)
+            state.onStart()
         }
     }) {
         Icon("green", "play")
         if (state.billable) Icon("green", "dollar") { +Position.Bottom + Position.Right + Corner }
     }
     InlineDropdown(state) {
-        Input(Hidden) { name("type");value(state.selectedTypeOrDefault.name) }
-        Text { Text(state.selectedTypeOrDefault.duration.format()) }
+        Input(Hidden) { name("type");value((state.selectedType ?: Type.Default).name) }
+        Text { Text((state.selectedType ?: Type.Default).duration.format()) }
         Icon("dropdown")
         Menu {
+            Button({
+                +Size.Mini
+                +Icon
+                classes("input", "positive")
+                when (val onCloseTask = state.onCloseTask) {
+                    null -> +Disabled
+                    else -> onClick { onCloseTask() }
+                }
+            }) {
+                Text("Close task")
+                Icon("check")
+            }
+            Divider()
+            Header {
+                Text("Options")
+            }
             Checkbox(Toggle, { classes("input") }) {
                 Input(Checkbox) {
                     tabIndex(0)
@@ -139,18 +167,11 @@ fun PomodoroStarter(
                 }
                 Label { Text("Billable") }
             }
-            Divider()
-            Header {
-                Icon("stopwatch")
-                Text("Select Duration")
-            }
-            Menu({ +scrolling }) {
-                Type.values().forEach { type ->
-                    Item({
-                        data("value", type.name)
-                    }) {
-                        Text(type.duration.toMoment(comparative = false))
-                    }
+            Type.values().forEach { type ->
+                Item({
+                    data("value", type.name)
+                }) {
+                    Text(type.duration.toMoment(comparative = false))
                 }
             }
         }

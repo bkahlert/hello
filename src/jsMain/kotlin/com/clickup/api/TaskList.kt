@@ -24,7 +24,7 @@ data class TaskList(
     @SerialName("due_date") val dueDate: Date?,
     @SerialName("start_dare") val startDate: Date?,
     @SerialName("folder") val folder: FolderPreview?,
-    @SerialName("space") val space: SpacePreview,
+    @SerialName("space") val space: SpacePreview?,
     @SerialName("archived") val archived: Boolean,
     @SerialName("override_statuses") val overrideStatuses: Boolean?,
     @SerialName("permission_level") val permissionLevel: String,
