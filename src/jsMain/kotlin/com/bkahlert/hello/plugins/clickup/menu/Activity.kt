@@ -106,15 +106,15 @@ data class ActivityGroup(
 
 val Iterable<ActivityGroup>.activities: List<Activity<*>> get() = flatMap { it.tasks }
 fun Iterable<ActivityGroup>.byIdOrNull(id: Identifier<*>): Activity<*>? = firstNotNullOfOrNull { it.tasks.byIdOrNull(id) }
-fun Iterable<ActivityGroup>.byId(id: Identifier<*>): Activity<*>? = firstNotNullOf { it.tasks.byId(id) }
+fun Iterable<ActivityGroup>.byId(id: Identifier<*>): Activity<*> = firstNotNullOf { it.tasks.byId(id) }
 fun Iterable<Activity<*>>.byIdOrNull(id: Identifier<*>): Activity<*>? = firstOrNull { it.id == id }
-fun Iterable<Activity<*>>.byId(id: Identifier<*>): Activity<*>? = first { it.id == id }
+fun Iterable<Activity<*>>.byId(id: Identifier<*>): Activity<*> = first { it.id == id }
 
 /**
  * Visual presentation of a [Task] ([TaskActivity]) or a [TimeEntry] ([RunningTaskActivity]).
  */
 sealed interface Activity<ID : Identifier<*>> {
-    val id: ID?
+    val id: ID
     val task: Task?
     val name: String
     val color: Color?

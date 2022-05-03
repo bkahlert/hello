@@ -289,10 +289,12 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
             minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
         }
     }) {
-        ActivityDropdown(rememberActivityDropdownState(
-            availableActivityGroups = activityGroups,
-            selectedActivity = selectedActivity,
-            onActivitySelect = { _, activity -> onSelect(listOfNotNull(activity?.id)) }))
+        ActivityDropdown(
+            rememberActivityDropdownState(
+                groups = activityGroups,
+                selection = selectedActivity,
+                onSelect = { _, activity -> onSelect(listOfNotNull(activity?.id)) })
+        )
     }
 
     Menu({ +Direction.Right }) {

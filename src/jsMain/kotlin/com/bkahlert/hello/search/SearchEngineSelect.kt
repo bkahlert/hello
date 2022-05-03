@@ -60,51 +60,51 @@ import com.semanticui.compose.element.List as SemanticList
 
 @Stable
 interface SearchEngineSelectState : MultipleDropdownState {
-    val availableEngines: List<SearchEngine>
-    var selectedEngines: List<SearchEngine>
+    val engines: List<SearchEngine>
+    var enginesSelection: List<SearchEngine>
 
-    var selectedEngineNames: Array<String>
-        get() = selectedEngines.toJsonArray { it.name }
+    var enginesSelectionNames: Array<String>
+        get() = enginesSelection.toJsonArray { it.name }
         set(value) {
-            selectedEngines = value.map { SearchEngine.valueOf(it) }
+            enginesSelection = value.map { SearchEngine.valueOf(it) }
         }
 
-    var selectedEnginesValue: String
-        get() = selectedEngines.joinToString(",") { it.name }
+    var enginesSelectionString: String
+        get() = enginesSelection.joinToString(",") { it.name }
         set(value) {
-            selectedEngines = value.split(",").mapNotNull { name ->
-                availableEngines.firstOrNull { it.name.equals(name, ignoreCase = true) }
+            enginesSelection = value.split(",").mapNotNull { name ->
+                engines.firstOrNull { it.name.equals(name, ignoreCase = true) }
             }
         }
 
-    val noEngines: Boolean get() = selectedEngines.isEmpty()
+    val noEngines: Boolean get() = enginesSelection.isEmpty()
     var allEngines: Boolean
 }
 
 class SearchEngineSelectStateImpl(
-    availableEngines: List<SearchEngine> = emptyList(),
-    selectedEngines: List<SearchEngine> = emptyList(),
-    onEngineSelect: (oldSelectedEngines: List<SearchEngine>, newSelectedEngines: List<SearchEngine>) -> Unit,
+    engines: List<SearchEngine> = emptyList(),
+    enginesSelection: List<SearchEngine> = emptyList(),
+    onEngineSelect: (old: List<SearchEngine>, new: List<SearchEngine>) -> Unit,
     options: Map<String, Any?>,
     private val toString: (SearchEngine) -> String = { it.name },
     private val fromString: (String) -> SearchEngine = run {
-        val mappings: Map<String, SearchEngine> = availableEngines.associateBy { it.name }
+        val mappings: Map<String, SearchEngine> = engines.associateBy { it.name }
         ({ mappings.getValue(it) })
     },
 ) : SearchEngineSelectState, MultipleDropdownState by MultipleDropdownStateImpl(
-    availableEngines.map { toString(it) },
-    selectedEngines.map { toString(it) },
+    engines.map { toString(it) },
+    enginesSelection.map { toString(it) },
     { old, new -> onEngineSelect(old.map(fromString), new.map(fromString)) },
     options,
 ) {
-    override var selectedEngines: List<SearchEngine>
-        get() = selectedValues.map { fromString(it) }
+    override var enginesSelection: List<SearchEngine>
+        get() = selection.map { fromString(it) }
         set(value) {
-            selectedValues = value.map { toString(it) }
+            selection = value.map { toString(it) }
         }
 
-    override val availableEngines: List<SearchEngine>
-        get() = availableValues.map { fromString(it) }
+    override val engines: List<SearchEngine>
+        get() = values.map { fromString(it) }
 
     override var allEngines: Boolean by ::allValues
 }
@@ -113,23 +113,22 @@ class SearchEngineSelectStateImpl(
 fun rememberSearchEngineSelectState(
     vararg engines: SearchEngine = SearchEngine.values(),
     selected: (SearchEngine) -> Boolean = { it == SearchEngine.Default },
-    onEngineSelect: (oldSelectedEngines: List<SearchEngine>, newSelectedEngines: List<SearchEngine>) -> Unit = { old, new ->
+    onEngineSelect: (old: List<SearchEngine>, new: List<SearchEngine>) -> Unit = { old, new ->
         console.log("selection changed from $old to $new")
     },
     debug: Boolean = false,
 ): SearchEngineSelectState {
-    val selectedEngines = engines.filter(selected)
-    val availableEngines = engines.toList()
+    val enginesSelection = engines.filter(selected)
     val options = mapOf(
         "debug" to debug,
         "message" to json("count" to "{count}/${engines.size} engine(s) selected"),
         "placeholder" to "no engine selected",
         "useLabels" to false,
     )
-    return remember(selectedEngines, availableEngines) {
+    return remember(enginesSelection, engines) {
         SearchEngineSelectStateImpl(
-            availableEngines = availableEngines,
-            selectedEngines = selectedEngines,
+            engines = engines.toList(),
+            enginesSelection = enginesSelection,
             onEngineSelect = onEngineSelect,
             options = options,
         )
@@ -164,7 +163,7 @@ fun SearchEngineSelect(
                 })
             }
         } else {
-            state.selectedEngines.forEach { engine ->
+            state.enginesSelection.forEach { engine ->
                 Item({
                     style {
                         flex("0 1 auto")
@@ -172,7 +171,7 @@ fun SearchEngineSelect(
                         marginLeft(0.px)
                     }
                 }) {
-                    ClosableSearchEngineButton(engine) { state.selectedEngines -= engine }
+                    ClosableSearchEngineButton(engine) { state.enginesSelection -= engine }
                 }
             }
         }
@@ -192,7 +191,7 @@ fun SearchEngineDropdown(
     debug: Boolean = false,
 ) {
     InlineMultipleDropdown(state) {
-        Input(Hidden) { name("engine");value(state.selectedEnginesValue) }
+        Input(Hidden) { name("engine");value(state.enginesSelectionString) }
         // it's virtually impossible to provide a custom text its always updated by SemanticUI, even with a custom action
         Text({ classes("default");style { display(DisplayStyle.None) } }) { Text("no engines selected") }
         Div({
@@ -203,10 +202,10 @@ fun SearchEngineDropdown(
                 lineHeight(1.21428571.em)
             }
         }) {
-            when (val num = state.selectedEngines.size) {
+            when (val num = state.enginesSelection.size) {
                 0 -> Text("no engines selected")
-                state.availableEngines.size -> Text("all engines selected")
-                else -> Text("$num/${state.availableEngines.size} engines selected")
+                state.engines.size -> Text("all engines selected")
+                else -> Text("$num/${state.engines.size} engines selected")
             }
         }
         Icon("dropdown")
@@ -225,7 +224,7 @@ fun SearchEngineDropdown(
                 Text("Select Search Engines")
             }
             Menu({ +scrolling }) {
-                state.availableEngines.forEach { engine ->
+                state.engines.forEach { engine ->
                     Item({
                         data("value", engine.name)
                     }) {
@@ -239,18 +238,18 @@ fun SearchEngineDropdown(
     }
 
     if (debug) {
-        state.availableEngines.forEach { engine ->
+        state.engines.forEach { engine ->
             Checkbox {
                 Input(Checkbox) {
                     onChange {
                         console.log("selection switched by checkbox of $engine to ${it.value}")
                         if (it.value) {
-                            state.selectedEngines += engine
+                            state.enginesSelection += engine
                         } else {
-                            state.selectedEngines -= engine
+                            state.enginesSelection -= engine
                         }
                     }
-                    checked(state.selectedEngines.contains(engine))
+                    checked(state.enginesSelection.contains(engine))
                 }
                 Label {
                     Icon(*engine.icon) { style { color(engine.color) } }

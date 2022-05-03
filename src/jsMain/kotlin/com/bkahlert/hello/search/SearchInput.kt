@@ -90,11 +90,11 @@ fun SearchInput(
 @Stable
 interface MultiSearchInputState : SearchInputState, SearchEngineSelectState {
     fun prev() {
-        selectedEngines = selectedEngines.map { it.prev(availableEngines) }
+        enginesSelection = enginesSelection.map { it.prev(engines) }
     }
 
     fun next() {
-        selectedEngines = selectedEngines.map { it.next(availableEngines) }
+        enginesSelection = enginesSelection.map { it.next(engines) }
     }
 }
 
@@ -122,30 +122,31 @@ fun MultiSearchInput(
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
     content: SemanticBuilder<InputElement, HTMLDivElement>? = null,
 ) {
-    SearchInput(state, {
-        attrs?.invoke(this)
-        +fluid
-        title("Press ↑ or ↓ to switch the search engine")
-        onKeyDown { event ->
-            when (event.code) {
-                "ArrowUp" -> {
-                    if (!event.defaultPrevented) state.prev()
+    SearchInput(
+        state, {
+            attrs?.invoke(this)
+            +fluid
+            title("Press ↑ or ↓ to switch the search engine")
+            onKeyDown { event ->
+                when (event.code) {
+                    "ArrowUp" -> {
+                        if (!event.defaultPrevented) state.prev()
+                    }
+                    "ArrowDown" -> if (!event.defaultPrevented) state.next()
+                    "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = true
                 }
-                "ArrowDown" -> if (!event.defaultPrevented) state.next()
-                "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = true
             }
-        }
-        onKeyUp { event ->
-            when (event.code) {
-                "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = false
+            onKeyUp { event ->
+                when (event.code) {
+                    "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = false
+                }
             }
-        }
-        onBlur {
-            // TODO
-            state.allEngines = false
-        }
-    },
-        onSearch = { query -> onSearch?.invoke(query, state.selectedEngines) },
+            onBlur {
+                // TODO
+                state.allEngines = false
+            }
+        },
+        onSearch = { query -> onSearch?.invoke(query, state.enginesSelection) },
         onPaste = onPaste
     ) {
         content?.invoke(this)

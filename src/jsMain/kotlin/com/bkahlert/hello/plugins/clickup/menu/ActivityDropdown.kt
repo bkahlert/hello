@@ -29,49 +29,43 @@ import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Text
 
 @Stable
-interface ActivityDropdownState : DropdownState {
-    val availableActivityGroups: List<ActivityGroup>
-    var selectedActivity: Activity<*>?
-    val onActivitySelect: (oldSelectedActivity: Activity<*>?, newSelectedActivity: Activity<*>?) -> Unit
+interface ActivityDropdownState : DropdownState<Activity<*>> {
+    val groups: List<ActivityGroup>
 }
 
 class ActivityDropdownStateImpl(
-    override val availableActivityGroups: List<ActivityGroup>,
-    selectedActivity: Activity<*>?,
-    override val onActivitySelect: (oldSelectedActivity: Activity<*>?, newSelectedActivity: Activity<*>?) -> Unit,
+    override val groups: List<ActivityGroup>,
+    selection: Activity<*>?,
+    override val onSelect: (old: Activity<*>?, new: Activity<*>?) -> Unit,
     options: Map<String, Any?>,
-    private val toString: (Activity<*>) -> String? = { it.id?.typedStringValue },
-    private val fromString: (String?) -> Activity<*> = run {
-        val mappings: Map<String?, Activity<*>> = availableActivityGroups.activities.associateBy { it.id?.typedStringValue }
+    serializer: (Activity<*>) -> String = { it.id.typedStringValue },
+    deserializer: (String) -> Activity<*> = run {
+        val mappings: Map<String?, Activity<*>> = groups.activities.associateBy { it.id.typedStringValue }
         ({ mappings.getValue(it) })
     },
-) : ActivityDropdownState, DropdownState by DropdownStateImpl(
-    availableValues = availableActivityGroups.activities.map { toString(it) ?: "" },
-    selectedValue = selectedActivity?.let { toString(it) },
-    onSelect = { old, new -> onActivitySelect(old?.let(fromString), new?.let(fromString)) },
-    options = options,
-) {
-    override var selectedActivity: Activity<*>?
-        get() = selectedValue?.let(fromString)
-        set(value) {
-            selectedValue = value?.let(toString)
-        }
-}
+) : ActivityDropdownState, DropdownState<Activity<*>> by DropdownStateImpl(
+    options,
+    groups.activities,
+    selection,
+    onSelect,
+    serializer,
+    deserializer,
+)
 
 @Composable
 fun rememberActivityDropdownState(
-    availableActivityGroups: List<ActivityGroup> = emptyList(),
-    selectedActivity: Activity<*>? = null,
-    onActivitySelect: (oldSelectedActivity: Activity<*>?, newSelectedActivity: Activity<*>?) -> Unit = { old, new ->
+    groups: List<ActivityGroup> = emptyList(),
+    selection: Activity<*>? = null,
+    onSelect: (old: Activity<*>?, new: Activity<*>?) -> Unit = { old, new ->
         console.log("selection changed from $old to $new")
     },
     debug: Boolean = false,
 ): ActivityDropdownState {
-    return remember(availableActivityGroups, selectedActivity, onActivitySelect) {
+    return remember(groups, selection, onSelect) {
         ActivityDropdownStateImpl(
-            availableActivityGroups = availableActivityGroups,
-            selectedActivity = selectedActivity,
-            onActivitySelect = onActivitySelect,
+            groups = groups,
+            selection = selection,
+            onSelect = onSelect,
             options = mapOf(
                 "debug" to debug,
                 "fullTextSearch" to true,
@@ -85,7 +79,7 @@ fun rememberActivityDropdownState(
 fun ActivityDropdown(
     state: ActivityDropdownState = rememberActivityDropdownState(),
 ) {
-    when (val selectedActivity = state.selectedActivity) {
+    when (val selectedActivity = state.selection) {
         null -> Icon { +Inverted }
         else -> ActivityIcon(selectedActivity)
     }
@@ -96,7 +90,7 @@ fun ActivityDropdown(
             minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
         }
     }) {
-        Input(Hidden) { name("activity");value(state.selectedActivity?.id?.typedStringValue ?: "") }
+        Input(Hidden) { name("activity");value(state.selection?.id?.typedStringValue ?: "") }
         Text({
             style {
                 maxWidth(100.percent)
@@ -104,7 +98,7 @@ fun ActivityDropdown(
                 lineHeight(1.1.em)
             }
         }) {
-            when (val task = state.selectedActivity) {
+            when (val task = state.selection) {
                 null -> Text("Select task...")
                 else -> Text(task.name)
             }
@@ -121,7 +115,7 @@ fun ActivityDropdown(
                 Icon("search")
             }
             Menu({ +scrolling }) {
-                state.availableActivityGroups.onEachIndexed { index, (meta, color, activities) ->
+                state.groups.onEachIndexed { index, (meta, color, activities) ->
                     if (index > 0) Divider()
                     Header({ style { color?.also { color(it) } } }) {
                         meta.forEachIndexed { index, meta ->

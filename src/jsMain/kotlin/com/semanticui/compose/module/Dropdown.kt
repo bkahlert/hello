@@ -51,53 +51,31 @@ fun Dropdown(
 }
 
 @Stable
-interface DropdownState {
-    val availableValues: List<String>
-    var selectedValue: String?
-    val onSelect: (oldSelectedValue: String?, newSelectedValue: String?) -> Unit
+interface DropdownState<T> {
     val options: Map<String, Any?>
+    val values: List<T>
+    var selection: T?
+    val onSelect: (old: T?, new: T?) -> Unit
+    val serializer: (T) -> String
+    val deserializer: (String) -> T
 }
 
-class DropdownStateImpl(
-    override val availableValues: List<String>,
-    selectedValue: String?,
-    override val onSelect: (oldSelectedValue: String?, newSelectedValue: String?) -> Unit,
+class DropdownStateImpl<T>(
     override val options: Map<String, Any?>,
-) : DropdownState {
-    private var _selectedValue by mutableStateOf(selectedValue)
-    override var selectedValue
-        get() = _selectedValue
+    override val values: List<T>,
+    selection: T?,
+    override val onSelect: (old: T?, new: T?) -> Unit,
+    override val serializer: (T) -> String,
+    override val deserializer: (String) -> T,
+) : DropdownState<T> {
+    private var _selection by mutableStateOf(selection)
+    override var selection
+        get() = _selection
         set(value) {
-            val oldSelectedValue = _selectedValue
-            val newSelectedValue = value?.takeUnless { it.isEmpty() }
-            if (oldSelectedValue != newSelectedValue) onSelect(oldSelectedValue, newSelectedValue)
-            _selectedValue = newSelectedValue
+            val old = _selection
+            if (old != value) onSelect(old, value)
+            _selection = value
         }
-}
-
-@Composable
-fun rememberDropdownState(
-    vararg availableValues: String = emptyArray(),
-    select: (String) -> Boolean = { false },
-    onSelect: (oldSelectedValue: String?, newSelectedValue: String?) -> Unit = { old, new -> console.log("selection changed from $old to $new") },
-    /** Whether to provide standard debug output to console. */
-    debug: Boolean = false,
-    /** Messages to appear on the dropdown. */
-    message: Map<String, String?> = emptyMap(),
-    /** What to display if nothing is selected. */
-    placeholder: String? = null,
-    additionalOptions: Map<String, Any?> = emptyMap(),
-): DropdownState {
-    val selectedValue = availableValues.firstOrNull(select)
-    val options = mapOf("debug" to debug, "message" to message.toJson(), "placeholder" to placeholder) + additionalOptions
-    return remember(selectedValue, availableValues, onSelect, options) {
-        DropdownStateImpl(
-            availableValues = availableValues.toList(),
-            selectedValue = selectedValue,
-            onSelect = onSelect,
-            options = options,
-        )
-    }
 }
 
 /**
@@ -105,8 +83,8 @@ fun rememberDropdownState(
  * using the specified [state] to determine if the visual representation needs to be re-created.
  */
 @Composable
-fun InlineDropdown(
-    state: DropdownState = rememberDropdownState(),
+fun <T> InlineDropdown(
+    state: DropdownState<T>,
     attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
     content: SemanticBuilder<DropdownElement, HTMLDivElement>? = null,
 ) {
@@ -123,16 +101,16 @@ fun InlineDropdown(
                 "onChange" to fun(value: String) {
                     if (scopeElement.data("muted") == null) {
                         if (state.options.get("debug") == true) console.log("selection changed by dropdown to $value")
-                        state.selectedValue = value.takeUnless { it.isEmpty() }
+                        state.selection = value.takeUnless { it.isEmpty() }?.let(state.deserializer)
                     }
                 },
             )
             onDispose { }
         }
-        DisposableEffect(state.selectedValue) {
+        DisposableEffect(state.selection) {
             jQuery(scopeElement)
                 .attr("data-muted", true)
-                .dropdown("set exactly", state.selectedValue.toJsonArrayOrEmpty())
+                .dropdown("set exactly", (state.selection?.let(state.serializer)).toJsonArrayOrEmpty())
                 .attr("data-muted", null)
             onDispose { }
         }
@@ -143,16 +121,16 @@ interface MultipleDropdownElement : DropdownElement
 
 @Stable
 interface MultipleDropdownState {
-    val availableValues: List<String>
-    var selectedValues: List<String>
+    val values: List<String>
+    var selection: List<String>
 
-    var selectedValuesString: String
-        get() = selectedValues.joinToString(",")
+    var selectionString: String
+        get() = selection.joinToString(",")
         set(value) {
-            selectedValues = value.split(",").filter { it.isNotEmpty() }
+            selection = value.split(",").filter { it.isNotEmpty() }
         }
 
-    val noValues: Boolean get() = selectedValues.isEmpty()
+    val noValues: Boolean get() = selection.isEmpty()
     var allValues: Boolean
 
     val onSelect: (oldSelectedValues: List<String>, newSelectedValues: List<String>) -> Unit
@@ -161,36 +139,36 @@ interface MultipleDropdownState {
 }
 
 class MultipleDropdownStateImpl(
-    override val availableValues: List<String> = emptyList(),
-    selectedValues: List<String> = emptyList(),
-    override val onSelect: (oldSelectedValues: List<String>, newSelectedValues: List<String>) -> Unit,
+    override val values: List<String> = emptyList(),
+    selection: List<String> = emptyList(),
+    override val onSelect: (old: List<String>, new: List<String>) -> Unit,
     override val options: Map<String, Any?>,
 ) : MultipleDropdownState {
-    private var _selectedValues by mutableStateOf(selectedValues)
-    override var selectedValues: List<String>
-        get() = if (_allValues) availableValues else _selectedValues
+    private var _selection by mutableStateOf(selection)
+    override var selection: List<String>
+        get() = if (_allValues) values else _selection
         set(value) {
-            val oldSelectedValues = _selectedValues
-            if (oldSelectedValues != value) onSelect(oldSelectedValues, value)
-            _selectedValues = value
-            if (!availableValues.all { _selectedValues.contains(it) }) {
+            val oldSelection = _selection
+            if (oldSelection != value) onSelect(oldSelection, value)
+            _selection = value
+            if (!values.all { _selection.contains(it) }) {
                 _allValues = false
             }
         }
 
     private var _allValues by mutableStateOf(false)
     override var allValues: Boolean
-        get() = _allValues || availableValues.all { _selectedValues.contains(it) }
+        get() = _allValues || values.all { _selection.contains(it) }
         set(value) {
-            _allValues = value && !availableValues.all { _selectedValues.contains(it) }
+            _allValues = value && !values.all { _selection.contains(it) }
         }
 }
 
 @Composable
 fun rememberMultipleDropdownState(
-    vararg availableValues: String = emptyArray(),
+    vararg values: String = emptyArray(),
     select: (String) -> Boolean = { false },
-    onSelect: (oldSelectedValues: List<String>, newSelectedValues: List<String>) -> Unit = { old, new -> console.log("selection changed from $old to $new") },
+    onSelect: (old: List<String>, new: List<String>) -> Unit = { old, new -> console.log("selection changed from $old to $new") },
     /** Whether to provide standard debug output to console. */
     debug: Boolean = false,
     /** Messages to appear on the dropdown. */
@@ -201,12 +179,12 @@ fun rememberMultipleDropdownState(
     useLabels: Boolean? = null,
     additionalOptions: Map<String, Any?> = emptyMap(),
 ): MultipleDropdownState {
-    val selectedValues = availableValues.filter(select)
+    val selection = values.filter(select)
     val options = mapOf("debug" to debug, "message" to message.toJson(), "placeholder" to placeholder, "useLabels" to useLabels) + additionalOptions
-    return remember(selectedValues, availableValues) {
+    return remember(selection, values) {
         MultipleDropdownStateImpl(
-            availableValues = availableValues.toList(),
-            selectedValues = selectedValues,
+            values = values.toList(),
+            selection = selection,
             onSelect = onSelect,
             options = options,
         )
@@ -236,16 +214,16 @@ fun InlineMultipleDropdown(
                 "onChange" to fun(value: String) {
                     if (scopeElement.data("muted") == null) {
                         if (state.options.get("debug") == true) console.log("selection changed by dropdown to $value")
-                        state.selectedValuesString = value
+                        state.selectionString = value
                     }
                 },
             )
             onDispose { }
         }
-        DisposableEffect(state.selectedValues) {
+        DisposableEffect(state.selection) {
             jQuery(scopeElement)
                 .attr("data-muted", true)
-                .dropdown("set exactly", state.selectedValues.toJsonArray())
+                .dropdown("set exactly", state.selection.toJsonArray())
                 .attr("data-muted", null)
             onDispose { }
         }

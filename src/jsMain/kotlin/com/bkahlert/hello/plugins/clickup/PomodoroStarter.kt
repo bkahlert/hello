@@ -34,13 +34,10 @@ import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Text
 
 @Stable
-interface PomodoroStarterState : DropdownState {
+interface PomodoroStarterState : DropdownState<Type> {
     val taskID: TaskID?
     var billable: Boolean
     val acousticFeedback: AcousticFeedback
-    val availableTypes: List<Type>
-    var selectedType: Type?
-    val onTypeSelect: (oldSelectedType: Type?, newSelectedType: Type?) -> Unit
     fun onStart()
     val onCloseTask: (() -> Unit)?
 }
@@ -49,33 +46,28 @@ class PomodoroStarterStateImpl(
     override val taskID: TaskID?,
     billable: Boolean,
     override val acousticFeedback: AcousticFeedback,
-    override val availableTypes: List<Type>,
-    selectedType: Type?,
-    override val onTypeSelect: (oldSelectedType: Type?, newSelectedType: Type?) -> Unit,
+    values: List<Type>,
+    selection: Type?,
+    onSelect: (old: Type?, new: Type?) -> Unit,
     private val onStart: (selectedType: Type?, billable: Boolean) -> Unit,
     override val onCloseTask: (() -> Unit)?,
     options: Map<String, Any?>,
-    private val toString: (Type) -> String = { it.name },
-    private val fromString: (String) -> Type = run {
-        val mappings: Map<String, Type> = availableTypes.associateBy { it.name }
+    serializer: (Type) -> String = { it.name },
+    deserializer: (String) -> Type = run {
+        val mappings: Map<String, Type> = values.associateBy { it.name }
         ({ mappings.getValue(it) })
     },
-) : PomodoroStarterState, DropdownState by DropdownStateImpl(
-    availableTypes.map { toString(it) },
-    selectedType?.let { toString(it) },
-    { old, new -> onTypeSelect(old?.let(fromString), new?.let(fromString)) },
+) : PomodoroStarterState, DropdownState<Type> by DropdownStateImpl(
     options,
+    values,
+    selection,
+    onSelect,
+    serializer,
+    deserializer,
 ) {
     override var billable: Boolean by mutableStateOf(billable)
-
-    override var selectedType: Type?
-        get() = selectedValue?.let { fromString(it) }
-        set(value) {
-            selectedValue = value?.let { toString(it) }
-        }
-
     override fun onStart() {
-        onStart(selectedType, billable)
+        onStart(selection, billable)
     }
 }
 
@@ -86,7 +78,7 @@ fun rememberPomodoroStarterState(
     acousticFeedback: AcousticFeedback = AcousticFeedback.NoFeedback,
     vararg types: Type = Type.values(),
     selected: (Type) -> Boolean = { it == Type.Default },
-    onTypeSelect: (oldSelectedType: Type?, newSelectedType: Type?) -> Unit = { old, new ->
+    onSelect: (old: Type?, new: Type?) -> Unit = { old, new ->
         console.log("selection changed from $old to $new")
     },
     onStart: (TaskID?, List<Tag>, billable: Boolean) -> Unit = { id, tags, bill ->
@@ -95,17 +87,16 @@ fun rememberPomodoroStarterState(
     onCloseTask: (() -> Unit)? = { console.log("close task") },
     debug: Boolean = false,
 ): PomodoroStarterState {
-    val selectedType = types.firstOrNull(selected)
-    val availableTypes = types.toList()
+    val selection = types.firstOrNull(selected)
     val options = mapOf("debug" to debug, "placeholder" to "Select duration...")
-    return remember(taskID, billable, acousticFeedback, selectedType, availableTypes, onTypeSelect, onStart) {
+    return remember(taskID, billable, acousticFeedback, selection, types, onSelect, onStart) {
         PomodoroStarterStateImpl(
             taskID = taskID,
             billable = billable,
             acousticFeedback = acousticFeedback,
-            availableTypes = availableTypes,
-            selectedType = selectedType,
-            onTypeSelect = onTypeSelect,
+            values = types.toList(),
+            selection = selection,
+            onSelect = onSelect,
             onStart = { type, billable -> onStart(taskID, listOf((type ?: Type.Default).tag), billable) },
             onCloseTask = onCloseTask,
             options = options,
@@ -132,8 +123,8 @@ fun PomodoroStarter(
         if (state.billable) Icon("green", "dollar") { +Position.Bottom + Position.Right + Corner }
     }
     InlineDropdown(state) {
-        Input(Hidden) { name("type");value((state.selectedType ?: Type.Default).name) }
-        Text { Text((state.selectedType ?: Type.Default).duration.format()) }
+        Input(Hidden) { name("type");value((state.selection ?: Type.Default).name) }
+        Text { Text((state.selection ?: Type.Default).duration.format()) }
         Icon("dropdown")
         Menu {
             Button({

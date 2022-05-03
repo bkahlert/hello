@@ -21,7 +21,7 @@ fun SemanticElementScope<DropdownMenuElement, *>.ActivityItem(
 ) {
     Item({
         attr("data-text", activity.name)
-        attr("data-value", activity.id?.typedStringValue ?: "")
+        attr("data-value", activity.id.typedStringValue)
         attr("data-variation", "mini")
         attr("data-offset", "0")
         attr("data-position", "left center")
