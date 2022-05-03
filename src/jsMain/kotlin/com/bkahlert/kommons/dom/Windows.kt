@@ -1,10 +1,7 @@
 package com.bkahlert.kommons.dom
 
-import com.bkahlert.kommons.text.withPrefix
 import io.ktor.http.Parameters
-import io.ktor.http.ParametersBuilder
 import io.ktor.http.Url
-import io.ktor.util.toMap
 import org.w3c.dom.Location
 import org.w3c.dom.Window
 
@@ -42,33 +39,6 @@ inline fun Window.openInNewTab(
     features: String? = null,
 ): Window? = open(url, "_blank", features)
 
-
-private fun CharSequence.deserialize(): Parameters =
-    Parameters.build {
-        split('&')
-            .mapNotNull {
-                it.split('=', limit = 2)
-                    .takeIf { it.size == 2 }
-                    ?.run { append(first(), last()) }
-            }
-    }
-
-private fun Parameters.serialize() =
-    toMap().toList().joinToString("&") { (key, values) ->
-        values.joinToString("&") { value -> "$key=$value" }
-    }
-
-/**
- * Builds a [Parameters] instance with the given [builder] function and
- * the builder initialized with a copy of this instance.
- * @param builder specifies a function to build a map
- */
-inline fun Parameters.copy(builder: ParametersBuilder.() -> Unit): Parameters =
-    ParametersBuilder()
-        .also { forEach { key, values -> it.appendAll(key, values) } }
-        .apply(builder)
-        .build()
-
 /**
  * Contains the [Url] of this location.
  */
@@ -79,46 +49,19 @@ var Location.url: URL
     }
 
 /**
- * Contains key-value pairs if they are encoded in the form:
- * `#param1=value1&param2=value2`
- */
-val Url.hashParameters: Parameters
-    get() = fragment.deserialize()
-
-/**
- * Contains both [parameters] and [hashParameters].
- */
-val Url.allParameters: Parameters
-    get() = Parameters.build {
-        parameters.toMap().forEach { (key, values) ->
-            appendAll(key, values)
-        }
-        hashParameters.toMap().forEach { (key, values) ->
-            appendAll(key, values)
-        }
-    }
-
-
-/**
- * Contains key-value pairs if they are encoded in the form:
- * `?param=1=value1&param2=value2`
+ * Query parameters
  */
 var Location.parameters: Parameters
-    get() = Url(url.toString()).parameters
+    get() = url.parameters
     set(value) {
-        value.serialize()
-            .takeIf { it != search.removePrefix("?") }
-            ?.also { search = it.withPrefix("?") }
+        search = value.formUrlEncode()
     }
 
 /**
- * Contains key-value pairs if they are encoded in the form:
- * `#param1=value1&param2=value2`
+ * Hash / fragment parameters
  */
-var Location.hashParameters: Parameters
-    get() = Url(url.toString()).hashParameters
+var Location.fragmentParameters: Parameters
+    get() = url.fragmentParameters
     set(value) {
-        value.serialize()
-            .takeIf { it != hash.removePrefix("#") }
-            ?.also { hash = it.withPrefix("#") }
+        hash = value.formUrlEncode()
     }

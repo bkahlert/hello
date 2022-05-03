@@ -5,10 +5,7 @@ import androidx.compose.runtime.Composition
 import com.bkahlert.hello.DebugModeState.Active
 import com.bkahlert.hello.DebugModeState.Inactive
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.kommons.dom.InMemoryStorage
-import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.body
-import com.bkahlert.kommons.dom.default
 import kotlinx.browser.document
 import kotlinx.dom.addClass
 import org.jetbrains.compose.web.dom.DOMScope
@@ -28,11 +25,10 @@ class DebugMode(
     private val eventTarget: EventTarget = document.body(),
     private val key: String = "F4",
     disableOnEscape: Boolean = true,
-    storage: Storage = InMemoryStorage(),
+    active: Boolean = false,
     private val onStateChange: (DebugModeState) -> Unit = {},
-    private val content: @Composable (DOMScope<HTMLDivElement>.() -> Unit),
+    private val content: @Composable DOMScope<HTMLDivElement>.() -> Unit,
 ) {
-    private var initial by storage default false
 
     var state: DebugModeState = Inactive
         private set(value) {
@@ -45,7 +41,6 @@ class DebugMode(
     var active: Boolean
         get() = state is Active
         set(value) {
-            initial = value
             state = when (val current = state) {
                 is Active -> {
                     if (value) {
@@ -81,21 +76,21 @@ class DebugMode(
                 { event ->
                     if (event.target == eventTarget) {
                         val pressed = (event as KeyboardEvent).key
-                        if (pressed == key) active = !active
-                        else if (pressed.equals("Escape", ignoreCase = true)) active = false
+                        if (pressed == key) this.active = !this.active
+                        else if (pressed.equals("Escape", ignoreCase = true)) this.active = false
                     }
                 }
             }
             else -> {
                 { event ->
                     if (event.target == eventTarget) {
-                        if ((event as KeyboardEvent).key == key) active = !active
+                        if ((event as KeyboardEvent).key == key) this.active = !active
                     }
                 }
             }
         }
         eventTarget.addEventListener("keydown", callback)
-        active = initial
+        this.active = active
     }
 
     companion object {

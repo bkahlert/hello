@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.Brand
+import com.bkahlert.Brand.colors
 import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
 import com.bkahlert.hello.AppStylesheet.GRADIENT_HEIGHT
 import com.bkahlert.hello.AppStylesheet.Grid.Custom
@@ -25,7 +25,7 @@ import com.bkahlert.hello.plugins.clickup.rememberClickUpMenuViewModel
 import com.bkahlert.hello.search.SearchFeature
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
-import com.bkahlert.hello.ui.demo.DebugUI
+import com.bkahlert.hello.ui.demo.renderDebugMode
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
@@ -34,11 +34,6 @@ import com.semanticui.compose.element.AnkerButton
 import com.semanticui.compose.element.ButtonGroupElementType.Icon
 import com.semanticui.compose.element.Buttons
 import com.semanticui.compose.element.Icon
-import com.semanticui.compose.module.Content
-import com.semanticui.compose.module.Modal
-import com.semanticui.compose.module.autofocus
-import com.semanticui.compose.module.blurring
-import com.semanticui.compose.module.centered
 import io.ktor.http.Url
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
@@ -90,10 +85,9 @@ import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
-// TODO start tasks
+// TODO create tasks
+// TODO rename tasks
 // TODO semantic UI progress https://semantic-ui.com/modules/progress.html#attached at top of page for Pomodoro timer
-// TODO fix starting a task will stop a running time entry without any notice
-// TODO support closing tasks
 
 interface Feature {
     val name: String
@@ -208,9 +202,13 @@ fun App(state: AppState = rememberAppState()) {
                 height(GRADIENT_HEIGHT)
                 transform { translateY(-GRADIENT_HEIGHT / 2) }
                 backgroundColor(Color.transparent)
-                backgroundImage(linearGradient(CUSTOM_BACKGROUND_COLOR.transparentize(0),
-                    CUSTOM_BACKGROUND_COLOR,
-                    CUSTOM_BACKGROUND_COLOR.transparentize(0)))
+                backgroundImage(
+                    linearGradient(
+                        CUSTOM_BACKGROUND_COLOR.transparentize(0),
+                        CUSTOM_BACKGROUND_COLOR,
+                        CUSTOM_BACKGROUND_COLOR.transparentize(0)
+                    )
+                )
             }
         })
         Div({
@@ -224,25 +222,9 @@ fun App(state: AppState = rememberAppState()) {
     }
 }
 
+
 fun main() {
-
-    DebugMode(
-        storage = localStorage.scoped("debug"),
-    ) {
-        Modal({
-            +Fullscreen
-            +Long
-            blurring = false // true will blur popups inside the debug mode, too
-            autofocus = false
-            centered = false
-        }) {
-            Content {
-                DebugUI(localStorage.scoped("debug-ui"))
-            }
-
-        }
-    }
-
+    renderDebugMode()
     renderComposable("root") {
         Style(AppStylesheet)
         Style(ClickUpStyleSheet)
@@ -267,7 +249,7 @@ object AppStylesheet : StyleSheet() {
 
     val HEADER_HEIGHT: CSSSizeValue<out CSSUnitLength> = 4.px
     val GRADIENT_HEIGHT: CSSSizeValue<out CSSUnitLength> = 0.3.cssRem
-    val CUSTOM_BACKGROUND_COLOR = Brand.colors.white
+    val CUSTOM_BACKGROUND_COLOR = colors.white
 
     enum class Grid {
         Links, Header, Search, Plugins, Margin, CustomGradient, Custom

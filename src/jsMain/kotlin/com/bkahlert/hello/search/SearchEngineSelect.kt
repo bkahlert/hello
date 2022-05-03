@@ -55,6 +55,7 @@ import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
+import kotlin.js.json
 import com.semanticui.compose.element.List as SemanticList
 
 @Stable
@@ -84,10 +85,7 @@ class SearchEngineSelectStateImpl(
     availableEngines: List<SearchEngine> = emptyList(),
     selectedEngines: List<SearchEngine> = emptyList(),
     onEngineSelect: (oldSelectedEngines: List<SearchEngine>, newSelectedEngines: List<SearchEngine>) -> Unit,
-    debug: Boolean,
-    message: Map<String, String?>,
-    placeholder: String?,
-    useLabels: Boolean?,
+    options: Map<String, Any?>,
     private val toString: (SearchEngine) -> String = { it.name },
     private val fromString: (String) -> SearchEngine = run {
         val mappings: Map<String, SearchEngine> = availableEngines.associateBy { it.name }
@@ -97,10 +95,7 @@ class SearchEngineSelectStateImpl(
     availableEngines.map { toString(it) },
     selectedEngines.map { toString(it) },
     { old, new -> onEngineSelect(old.map(fromString), new.map(fromString)) },
-    debug,
-    message,
-    placeholder,
-    useLabels,
+    options,
 ) {
     override var selectedEngines: List<SearchEngine>
         get() = selectedValues.map { fromString(it) }
@@ -122,21 +117,21 @@ fun rememberSearchEngineSelectState(
         console.log("selection changed from $old to $new")
     },
     debug: Boolean = false,
-    message: Map<String, String?> = mapOf("count" to "{count}/${engines.size} engine(s) selected"),
-    placeholder: String? = "no engine selected",
-    useLabels: Boolean? = false,
 ): SearchEngineSelectState {
     val selectedEngines = engines.filter(selected)
     val availableEngines = engines.toList()
+    val options = mapOf(
+        "debug" to debug,
+        "message" to json("count" to "{count}/${engines.size} engine(s) selected"),
+        "placeholder" to "no engine selected",
+        "useLabels" to false,
+    )
     return remember(selectedEngines, availableEngines) {
         SearchEngineSelectStateImpl(
             availableEngines = availableEngines,
             selectedEngines = selectedEngines,
             onEngineSelect = onEngineSelect,
-            debug = debug,
-            message = message,
-            placeholder = placeholder,
-            useLabels = useLabels,
+            options = options,
         )
     }
 }

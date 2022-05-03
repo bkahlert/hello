@@ -54,9 +54,7 @@ class PomodoroStarterStateImpl(
     override val onTypeSelect: (oldSelectedType: Type?, newSelectedType: Type?) -> Unit,
     private val onStart: (selectedType: Type?, billable: Boolean) -> Unit,
     override val onCloseTask: (() -> Unit)?,
-    debug: Boolean,
-    message: Map<String, String?>,
-    placeholder: String?,
+    options: Map<String, Any?>,
     private val toString: (Type) -> String = { it.name },
     private val fromString: (String) -> Type = run {
         val mappings: Map<String, Type> = availableTypes.associateBy { it.name }
@@ -66,9 +64,7 @@ class PomodoroStarterStateImpl(
     availableTypes.map { toString(it) },
     selectedType?.let { toString(it) },
     { old, new -> onTypeSelect(old?.let(fromString), new?.let(fromString)) },
-    debug,
-    message,
-    placeholder,
+    options,
 ) {
     override var billable: Boolean by mutableStateOf(billable)
 
@@ -98,12 +94,11 @@ fun rememberPomodoroStarterState(
     },
     onCloseTask: (() -> Unit)? = { console.log("close task") },
     debug: Boolean = false,
-    message: Map<String, String?> = emptyMap(),
-    placeholder: String? = "Select duration...",
 ): PomodoroStarterState {
     val selectedType = types.firstOrNull(selected)
     val availableTypes = types.toList()
-    return remember(taskID, billable, acousticFeedback, selectedType, availableTypes, onTypeSelect, onStart, onCloseTask, debug, message, placeholder) {
+    val options = mapOf("debug" to debug, "placeholder" to "Select duration...")
+    return remember(taskID, billable, acousticFeedback, selectedType, availableTypes, onTypeSelect, onStart) {
         PomodoroStarterStateImpl(
             taskID = taskID,
             billable = billable,
@@ -113,9 +108,7 @@ fun rememberPomodoroStarterState(
             onTypeSelect = onTypeSelect,
             onStart = { type, billable -> onStart(taskID, listOf((type ?: Type.Default).tag), billable) },
             onCloseTask = onCloseTask,
-            debug = debug,
-            message = message,
-            placeholder = placeholder
+            options = options,
         )
     }
 }
