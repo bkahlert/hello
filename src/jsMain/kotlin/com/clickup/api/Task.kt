@@ -58,37 +58,37 @@ data class Task(
     )
 
     override fun toString(): String = asString {
-        ::id.name to id
-        ::customId.name to customId
-        ::name.name to name
-        ::textContent.name to textContent
-        ::description.name to description
-        ::status.name to status
-        ::orderIndex.name to orderIndex
-        ::dateCreated.name to dateCreated
-        ::dateUpdated.name to dateUpdated
-        ::dateClosed.name to dateClosed
-        ::creator.name to creator
-        ::assignees.name to assignees
-        ::watchers.name to watchers
-        ::checklists.name to checklists
-        ::tags.name to tags
-        ::parent.name to parent
-        ::priority.name to priority
-        ::dueDate.name to dueDate
-        ::startDate.name to startDate
-        ::points.name to points
-        ::timeEstimate.name to timeEstimate
-        ::timeSpent.name to timeSpent
-        ::customFields.name to customFields
-        ::dependencies.name to dependencies
-        ::linkedTasks.name to linkedTasks
-        ::teamId.name to teamId
-        ::url.name to url
-        ::permissionLevel.name to permissionLevel
-        ::list.name to list
-        ::folder.name to folder
-        ::space.name to space
+        put(::id.name, id)
+        put(::customId.name, customId)
+        put(::name.name, name)
+        put(::textContent.name, textContent)
+        put(::description.name, description)
+        put(::status.name, status)
+        put(::orderIndex.name, orderIndex)
+        put(::dateCreated.name, dateCreated)
+        put(::dateUpdated.name, dateUpdated)
+        put(::dateClosed.name, dateClosed)
+        put(::creator.name, creator)
+        put(::assignees.name, assignees)
+        put(::watchers.name, watchers)
+        put(::checklists.name, checklists)
+        put(::tags.name, tags)
+        put(::parent.name, parent)
+        put(::priority.name, priority)
+        put(::dueDate.name, dueDate)
+        put(::startDate.name, startDate)
+        put(::points.name, points)
+        put(::timeEstimate.name, timeEstimate)
+        put(::timeSpent.name, timeSpent)
+        put(::customFields.name, customFields)
+        put(::dependencies.name, dependencies)
+        put(::linkedTasks.name, linkedTasks)
+        put(::teamId.name, teamId)
+        put(::url.name, url)
+        put(::permissionLevel.name, permissionLevel)
+        put(::list.name, list)
+        put(::folder.name, folder)
+        put(::space.name, space)
     }
 }
 

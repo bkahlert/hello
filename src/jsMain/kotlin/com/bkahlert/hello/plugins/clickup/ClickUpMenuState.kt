@@ -108,11 +108,11 @@ sealed class ClickUpMenuState {
                 ) : Connected(client, user, teams) {
 
                     override fun toString(): String = asString {
-                        ::user.name to user
-                        ::teams.name to teams
-                        ::selectedTeam.name to selectedTeam
-                        ::selected.name to selected
-                        ::data.name to data
+                        put(::user.name, user)
+                        put(::teams.name, teams)
+                        put(::selectedTeam.name, selectedTeam)
+                        put(::selected.name, selected)
+                        put(::data.name, data)
                     }
 
                     fun select(selected: Selection): TeamSelected = copy(selected = selected)
@@ -220,9 +220,9 @@ sealed class ClickUpMenuState {
                             override val spaces: List<Space>,
                         ) : Data(runningTimeEntry, tasks, spaces) {
                             override fun toString(): String = asString {
-                                ::runningTimeEntry.name to runningTimeEntry
-                                ::tasks.name to tasks.size
-                                ::spaces.name to spaces.size
+                                put(::runningTimeEntry.name, runningTimeEntry)
+                                put(::tasks.name, tasks.size)
+                                put(::spaces.name, spaces.size)
                             }
 
                             companion object {
@@ -254,12 +254,12 @@ sealed class ClickUpMenuState {
                             val folderLists: Map<FolderID, List<TaskList>>,
                         ) : Data(runningTimeEntry, tasks, spaces) {
                             override fun toString(): String = asString {
-                                ::runningTimeEntry.name to runningTimeEntry
-                                ::tasks.name to tasks.size
-                                ::spaces.name to spaces.size
-                                ::folders.name to folders.size
-                                ::spaceLists.name to spaceLists.size
-                                ::folderLists.name to folderLists.size
+                                put(::runningTimeEntry.name, runningTimeEntry)
+                                put(::tasks.name, tasks.size)
+                                put(::spaces.name, spaces.size)
+                                put(::folders.name, folders.size)
+                                put(::spaceLists.name, spaceLists.size)
+                                put(::folderLists.name, folderLists.size)
                             }
 
                             companion object {

@@ -21,7 +21,6 @@ import com.semanticui.compose.module.MultipleDropdownState
 import com.semanticui.compose.module.MultipleDropdownStateImpl
 import com.semanticui.compose.module.Text
 import com.semanticui.compose.module.scrolling
-import com.semanticui.compose.toJsonArray
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.name
@@ -59,55 +58,24 @@ import kotlin.js.json
 import com.semanticui.compose.element.List as SemanticList
 
 @Stable
-interface SearchEngineSelectState : MultipleDropdownState {
-    val engines: List<SearchEngine>
-    var enginesSelection: List<SearchEngine>
-
-    var enginesSelectionNames: Array<String>
-        get() = enginesSelection.toJsonArray { it.name }
-        set(value) {
-            enginesSelection = value.map { SearchEngine.valueOf(it) }
-        }
-
-    var enginesSelectionString: String
-        get() = enginesSelection.joinToString(",") { it.name }
-        set(value) {
-            enginesSelection = value.split(",").mapNotNull { name ->
-                engines.firstOrNull { it.name.equals(name, ignoreCase = true) }
-            }
-        }
-
-    val noEngines: Boolean get() = enginesSelection.isEmpty()
-    var allEngines: Boolean
-}
+interface SearchEngineSelectState : MultipleDropdownState<SearchEngine>
 
 class SearchEngineSelectStateImpl(
     engines: List<SearchEngine> = emptyList(),
-    enginesSelection: List<SearchEngine> = emptyList(),
-    onEngineSelect: (old: List<SearchEngine>, new: List<SearchEngine>) -> Unit,
+    selection: List<SearchEngine> = emptyList(),
+    onSelect: (old: List<SearchEngine>, new: List<SearchEngine>) -> Unit,
     options: Map<String, Any?>,
-    private val toString: (SearchEngine) -> String = { it.name },
-    private val fromString: (String) -> SearchEngine = run {
+    serializer: (SearchEngine) -> String = { it.name },
+    deserializer: (String) -> SearchEngine = run {
         val mappings: Map<String, SearchEngine> = engines.associateBy { it.name }
         ({ mappings.getValue(it) })
     },
-) : SearchEngineSelectState, MultipleDropdownState by MultipleDropdownStateImpl(
-    engines.map { toString(it) },
-    enginesSelection.map { toString(it) },
-    { old, new -> onEngineSelect(old.map(fromString), new.map(fromString)) },
+) : SearchEngineSelectState, MultipleDropdownState<SearchEngine> by MultipleDropdownStateImpl<SearchEngine>(
     options,
-) {
-    override var enginesSelection: List<SearchEngine>
-        get() = selection.map { fromString(it) }
-        set(value) {
-            selection = value.map { toString(it) }
-        }
-
-    override val engines: List<SearchEngine>
-        get() = values.map { fromString(it) }
-
-    override var allEngines: Boolean by ::allValues
-}
+    engines,
+    selection,
+    onSelect, serializer, deserializer,
+)
 
 @Composable
 fun rememberSearchEngineSelectState(
@@ -128,8 +96,8 @@ fun rememberSearchEngineSelectState(
     return remember(enginesSelection, engines) {
         SearchEngineSelectStateImpl(
             engines = engines.toList(),
-            enginesSelection = enginesSelection,
-            onEngineSelect = onEngineSelect,
+            selection = enginesSelection,
+            onSelect = onEngineSelect,
             options = options,
         )
     }
@@ -150,7 +118,7 @@ fun SearchEngineSelect(
         }
         attrs?.invoke(this)
     }) {
-        if (state.allEngines) {
+        if (state.allValues) {
             Item {
                 Div({
                     style {
@@ -163,7 +131,7 @@ fun SearchEngineSelect(
                 })
             }
         } else {
-            state.enginesSelection.forEach { engine ->
+            state.selection.forEach { engine ->
                 Item({
                     style {
                         flex("0 1 auto")
@@ -171,7 +139,7 @@ fun SearchEngineSelect(
                         marginLeft(0.px)
                     }
                 }) {
-                    ClosableSearchEngineButton(engine) { state.enginesSelection -= engine }
+                    ClosableSearchEngineButton(engine) { state.selection -= engine }
                 }
             }
         }
@@ -191,7 +159,7 @@ fun SearchEngineDropdown(
     debug: Boolean = false,
 ) {
     InlineMultipleDropdown(state) {
-        Input(Hidden) { name("engine");value(state.enginesSelectionString) }
+        Input(Hidden) { name("engine");value(state.selectionString) }
         // it's virtually impossible to provide a custom text its always updated by SemanticUI, even with a custom action
         Text({ classes("default");style { display(DisplayStyle.None) } }) { Text("no engines selected") }
         Div({
@@ -202,10 +170,10 @@ fun SearchEngineDropdown(
                 lineHeight(1.21428571.em)
             }
         }) {
-            when (val num = state.enginesSelection.size) {
+            when (val num = state.selection.size) {
                 0 -> Text("no engines selected")
-                state.engines.size -> Text("all engines selected")
-                else -> Text("$num/${state.engines.size} engines selected")
+                state.values.size -> Text("all engines selected")
+                else -> Text("$num/${state.values.size} engines selected")
             }
         }
         Icon("dropdown")
@@ -213,8 +181,8 @@ fun SearchEngineDropdown(
             Checkbox(Toggle, { classes("input") }) {
                 Input(Checkbox) {
                     tabIndex(0)
-                    checked(state.allEngines)
-                    onChange { state.allEngines = !state.allEngines }
+                    checked(state.allValues)
+                    onChange { state.allValues = !state.allValues }
                 }
                 Label { Text("All Engines") }
             }
@@ -224,7 +192,7 @@ fun SearchEngineDropdown(
                 Text("Select Search Engines")
             }
             Menu({ +scrolling }) {
-                state.engines.forEach { engine ->
+                state.values.forEach { engine ->
                     Item({
                         data("value", engine.name)
                     }) {
@@ -234,22 +202,21 @@ fun SearchEngineDropdown(
                 }
             }
         }
-
     }
 
     if (debug) {
-        state.engines.forEach { engine ->
+        state.values.forEach { engine ->
             Checkbox {
                 Input(Checkbox) {
                     onChange {
                         console.log("selection switched by checkbox of $engine to ${it.value}")
                         if (it.value) {
-                            state.enginesSelection += engine
+                            state.selection += engine
                         } else {
-                            state.enginesSelection -= engine
+                            state.selection -= engine
                         }
                     }
-                    checked(state.enginesSelection.contains(engine))
+                    checked(state.selection.contains(engine))
                 }
                 Label {
                     Icon(*engine.icon) { style { color(engine.color) } }

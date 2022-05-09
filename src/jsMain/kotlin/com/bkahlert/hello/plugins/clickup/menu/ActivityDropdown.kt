@@ -90,7 +90,7 @@ fun ActivityDropdown(
             minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
         }
     }) {
-        Input(Hidden) { name("activity");value(state.selection?.id?.typedStringValue ?: "") }
+        Input(Hidden) { name("activity");value(state.selectionString) }
         Text({
             style {
                 maxWidth(100.percent)

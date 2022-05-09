@@ -1,7 +1,6 @@
 package com.bkahlert.kommons.dom
 
 import io.ktor.http.Parameters
-import io.ktor.http.Url
 import org.w3c.dom.Location
 import org.w3c.dom.Window
 
@@ -39,29 +38,23 @@ inline fun Window.openInNewTab(
     features: String? = null,
 ): Window? = open(url, "_blank", features)
 
-/**
- * Contains the [Url] of this location.
- */
+/** The [URL] of `this` location. */
 var Location.url: URL
     get() = URL.parse(href)
     set(value) {
         href = value.toString()
     }
 
-/**
- * Query parameters
- */
-var Location.parameters: Parameters
-    get() = url.parameters
+/** The query [Parameters] of `this` location. */
+var Location.query: Parameters
+    get() = url.query
     set(value) {
         search = value.formUrlEncode()
     }
 
-/**
- * Hash / fragment parameters
- */
-var Location.fragmentParameters: Parameters
-    get() = url.fragmentParameters
+/** The hash/fragment [Parameters] of `this` location. */
+var Location.fragment: Parameters
+    get() = url.fragment
     set(value) {
         hash = value.formUrlEncode()
     }

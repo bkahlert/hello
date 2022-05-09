@@ -23,11 +23,11 @@ data class Team(
     @SerialName("members") val members: List<Named<User>>,
 ) {
     override fun toString(): String = asString {
-        ::id.name to id
-        ::name.name to name
-        ::color.name to color
-        ::avatar.name to avatar.toString().truncate()
-        ::members.name to members
+        put(::id.name, id)
+        put(::name.name, name)
+        put(::color.name, color)
+        put(::avatar.name, avatar.toString().truncate())
+        put(::members.name, members)
     }
 }
 

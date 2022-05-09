@@ -3,6 +3,7 @@ package com.bkahlert.kommons.dom
 import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
+import io.ktor.http.encodeURLPath
 import io.ktor.http.parseQueryString
 import org.w3c.dom.url.URL as DomURL
 
@@ -12,31 +13,28 @@ import org.w3c.dom.url.URL as DomURL
  */
 data class URL(
     val schema: String,
-    val host: String?,
-    val path: String,
-    val encodedQuery: String? = null,
-    val encodedFragment: String? = null,
+    val host: String? = null,
+    val port: Int? = null,
+    val path: List<String> = emptyList(),
+    val query: Parameters = Parameters.Empty,
+    val fragment: Parameters = Parameters.Empty,
 ) {
 
-    val parameters: Parameters by lazy {
-        parseQueryString(encodedQuery ?: "")
-    }
-
-    val fragmentParameters: Parameters by lazy {
-        parseQueryString(encodedFragment ?: "")
-    }
+    val encodedHost: String get() = host ?: ""
+    val encodedPort: String get() = port?.let { ":$it" } ?: ""
+    val encodedPath: String get() = path.joinToString("/") { it.encodeURLPath() }
+    val encodedQuery: String get() = query.takeUnless { it.isEmpty() }?.let { "?${it.formUrlEncode()}" } ?: ""
+    val encodedFragment: String get() = fragment.takeUnless { it.isEmpty() }?.let { "#${it.formUrlEncode()}" } ?: ""
 
     override fun toString(): String =
         if (schema == "data") {
-            "$schema:$path"
+            "$schema:${path.first()}"
         } else {
             buildString {
                 append(schema)
                 append("://")
-                append(host ?: "")
-                append(path)
-                append(encodedQuery?.let { "?$it" } ?: "")
-                append(encodedFragment?.let { "#$it" } ?: "")
+                listOfNotNull("$encodedHost$encodedPort", if (path.isEmpty()) null else encodedPath, "$encodedQuery$encodedFragment".takeIf { it.isNotEmpty() })
+                    .joinTo(this, "/")
             }
         }
 
@@ -45,17 +43,20 @@ data class URL(
             URL(
                 schema = "data",
                 host = null,
-                path = url.removePrefix("data:")
+                path = listOf(url.removePrefix("data:")),
             )
         } else {
-            Url(url).let {
-                it.parameters
+            Url(url).run {
                 URL(
-                    schema = it.protocol.name,
-                    host = it.host,
-                    path = it.encodedPath,
-                    encodedQuery = it.encodedQuery.takeUnless(String::isEmpty),
-                    encodedFragment = it.encodedFragment.takeUnless(String::isEmpty),
+                    schema = protocol.name,
+                    host = host,
+                    port = port.takeUnless { it == protocol.defaultPort },
+                    path = pathSegments.takeIf {
+                        val suffix = (encodedPathAndQuery + encodedFragment).removePrefix("/")
+                        url.endsWith(suffix) && url.removeSuffix(suffix).last() == '/'
+                    } ?: emptyList(),
+                    query = parseQueryString(encodedQuery),
+                    fragment = parseQueryString(encodedFragment),
                 )
             }
         }

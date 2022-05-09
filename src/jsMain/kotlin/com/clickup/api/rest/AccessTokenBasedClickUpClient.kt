@@ -178,9 +178,7 @@ data class AccessTokenBasedClickUpClient(
             task.teamId?.also { cache.forTasks(it).evict() }
             restClient.put(clickUpUrl / "task" / task.id) {
                 contentType(ContentType.Application.Json)
-                setBody(UpdateTaskRequest(
-                    status = task.status.status,
-                ))
+                setBody(UpdateTaskRequest(status = task.status.status))
             }.body()
         }
 
@@ -284,7 +282,7 @@ data class AccessTokenBasedClickUpClient(
         }
 
     override fun toString(): String = asString {
-        ::cacheStorage.name to cacheStorage
-        ::clickUpUrl.name to clickUpUrl
+        put(::cacheStorage.name, cacheStorage)
+        put(::clickUpUrl.name, clickUpUrl)
     }
 }

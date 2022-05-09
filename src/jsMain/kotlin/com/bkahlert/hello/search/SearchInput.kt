@@ -90,11 +90,11 @@ fun SearchInput(
 @Stable
 interface MultiSearchInputState : SearchInputState, SearchEngineSelectState {
     fun prev() {
-        enginesSelection = enginesSelection.map { it.prev(engines) }
+        selection = selection.map { it.prev(values) }
     }
 
     fun next() {
-        enginesSelection = enginesSelection.map { it.next(engines) }
+        selection = selection.map { it.next(values) }
     }
 }
 
@@ -133,20 +133,20 @@ fun MultiSearchInput(
                         if (!event.defaultPrevented) state.prev()
                     }
                     "ArrowDown" -> if (!event.defaultPrevented) state.next()
-                    "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = true
+                    "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allValues = true
                 }
             }
             onKeyUp { event ->
                 when (event.code) {
-                    "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allEngines = false
+                    "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allValues = false
                 }
             }
             onBlur {
                 // TODO
-                state.allEngines = false
+                state.allValues = false
             }
         },
-        onSearch = { query -> onSearch?.invoke(query, state.enginesSelection) },
+        onSearch = { query -> onSearch?.invoke(query, state.selection) },
         onPaste = onPaste
     ) {
         content?.invoke(this)

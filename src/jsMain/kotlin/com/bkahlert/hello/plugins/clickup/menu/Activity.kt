@@ -151,14 +151,14 @@ sealed interface Activity<ID : Identifier<*>> {
             }
 
         override fun toString(): String = asString {
-            ::id.name to id
-            ::task.name to task
-            ::name.name to name
-            ::color.name to color
-            ::url.name to url
-            ::meta.name to meta
-            ::descriptions.name to descriptions
-            ::tags.name to tags
+            put(::id.name, id)
+            put(::task.name, task)
+            put(::name.name, name)
+            put(::color.name, color)
+            put(::url.name, url)
+            put(::meta.name, meta)
+            put(::descriptions.name, descriptions)
+            put(::tags.name, tags)
         }
     }
 
@@ -201,14 +201,14 @@ sealed interface Activity<ID : Identifier<*>> {
         override val tags: Set<Tag> get() = task.tags.toSet()
 
         override fun toString(): String = asString {
-            ::id.name to id
-            ::task.name to task
-            ::name.name to name
-            ::color.name to color
-            ::url.name to url
-            ::meta.name to meta
-            ::descriptions.name to descriptions
-            ::tags.name to tags
+            put(::id.name, id)
+            put(::task.name, task)
+            put(::name.name, name)
+            put(::color.name, color)
+            put(::url.name, url)
+            put(::meta.name, meta)
+            put(::descriptions.name, descriptions)
+            put(::tags.name, tags)
         }
     }
 }

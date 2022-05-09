@@ -284,14 +284,14 @@ open class ClickUpTestClient(
     }
 
     override fun toString(): String = asString {
-        ::user.name to user
-        ::teams.name to teams
-        ::tasks.name to tasks
-        ::spaces.name to spaces
-        ::lists.name to lists
-        ::folders.name to folders
-        ::timeEntries.name to timeEntries
-        ::runningTimeEntry.name to runningTimeEntry
+        put(::user.name, user)
+        put(::teams.name, teams)
+        put(::tasks.name, tasks)
+        put(::spaces.name, spaces)
+        put(::lists.name, lists)
+        put(::folders.name, folders)
+        put(::timeEntries.name, timeEntries)
+        put(::runningTimeEntry.name, runningTimeEntry)
     }
 
     /**

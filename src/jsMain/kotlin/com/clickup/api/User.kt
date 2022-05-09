@@ -26,15 +26,15 @@ data class User(
     @SerialName("timezone") val timezone: String?,
 ) {
     override fun toString(): String = asString {
-        ::id.name to id
-        ::username.name to username
-        ::email.name to email
-        ::color.name to color
-        ::profilePicture.name to profilePicture.toString().truncate()
-        ::initials.name to initials
-        ::weekStartDay.name to weekStartDay
-        ::globalFontSupport.name to globalFontSupport
-        ::timezone.name to timezone
+        put(::id.name, id)
+        put(::username.name, username)
+        put(::email.name, email)
+        put(::color.name, color)
+        put(::profilePicture.name, profilePicture.toString().truncate())
+        put(::initials.name, initials)
+        put(::weekStartDay.name, weekStartDay)
+        put(::globalFontSupport.name, globalFontSupport)
+        put(::timezone.name, timezone)
     }
 }
 
@@ -49,11 +49,11 @@ data class UserPreview(
     @SerialName("profilePicture") val profilePicture: URL,
 ) {
     override fun toString(): String = asString {
-        ::id.name to id
-        ::username.name to username
-        ::color.name to color
-        ::profilePicture.name to profilePicture.toString().truncate()
-        ::initials.name to initials
+        put(::id.name, id)
+        put(::username.name, username)
+        put(::color.name, color)
+        put(::profilePicture.name, profilePicture.toString().truncate())
+        put(::initials.name, initials)
     }
 }
 

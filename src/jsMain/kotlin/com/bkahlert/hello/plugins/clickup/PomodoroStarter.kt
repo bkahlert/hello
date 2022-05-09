@@ -123,8 +123,8 @@ fun PomodoroStarter(
         if (state.billable) Icon("green", "dollar") { +Position.Bottom + Position.Right + Corner }
     }
     InlineDropdown(state) {
-        Input(Hidden) { name("type");value((state.selection ?: Type.Default).name) }
-        Text { Text((state.selection ?: Type.Default).duration.format()) }
+        Input(Hidden) { name("type");value(state.selectionString) }
+        Text { Text(state.selection?.duration?.format() ?: "") }
         Icon("dropdown")
         Menu {
             Button({

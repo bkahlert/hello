@@ -146,12 +146,12 @@ operator fun KMutableProperty0<Parameters>.provideDelegate(thisRef: Any?, proper
 
 /** Returns a property that binds to hash/fragments [Parameters] of `this` location. */
 inline operator fun Location.provideDelegate(thisRef: Any?, property: KProperty<*>): ParametersPropertyDelegate<String?> =
-    binding<String?>(this::fragmentParameters, null).provideDelegate(thisRef, property)
+    binding<String?>(this::fragment, null).provideDelegate(thisRef, property)
 
 /** Returns a property that binds to hash/fragments [Parameters] of `this` location using the specified [default]. */
 inline infix fun <reified V> Location.default(default: V): ParametersPropertyDelegateProvider<V> =
-    binding(this::fragmentParameters, default)
+    binding(this::fragment, default)
 
 /** Returns a property that binds to hash/fragments [Parameters] of `this` location using the specified [defaults]. */
 inline infix fun <reified V> Location.defaults(defaults: Pair<V, V>): ParametersPropertyDelegateProvider<V> =
-    binding(this::fragmentParameters, defaults.first, defaults.second)
+    binding(this::fragment, defaults.first, defaults.second)
