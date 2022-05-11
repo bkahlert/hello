@@ -13,6 +13,7 @@ import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.running
 import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.text.randomString
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
@@ -32,14 +33,20 @@ import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
 import com.clickup.api.User
+import com.clickup.api.asCreator
 import com.clickup.api.rest.ClickUpClient
+import com.clickup.api.rest.ClickUpException
+import com.clickup.api.rest.CreateTaskRequest
 import com.clickup.api.rest.CustomFieldFilter
+import com.clickup.api.rest.ErrorInfo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlin.js.Date
 import kotlin.time.Duration
+import kotlin.require as kotlinRequire
+import kotlin.requireNotNull as kotlinRequireNotNull
 
 open class ClickUpTestClient(
     private val initialUser: User = ClickUpFixtures.User,
@@ -135,6 +142,53 @@ open class ClickUpTestClient(
     override suspend fun getTeams(): List<Team> {
         adaptedDelay(2.5.seconds)
         return teams
+    }
+
+    override suspend fun createTask(listId: TaskListID, task: CreateTaskRequest): Task {
+        require(task.name.isNotEmpty()) { "invalid task name" }
+        adaptedDelay(.5.seconds)
+        val list = requireNotNull(lists.firstOrNull { it.id == listId }) {
+            "unknown list $listId"
+        }
+        val folder = requireNotNull(list.folder?.run { folders.firstOrNull { it.id == id } }) {
+            "no folder found for $list"
+        }
+        val space = requireNotNull(list.space) { "unknown space for $list" }
+        val taskId = TaskID(randomString(7))
+        adaptedDelay(1.seconds)
+        return Task(
+            id = taskId,
+            customId = null,
+            name = task.name,
+            textContent = null,
+            description = null,
+            status = folder.statuses.first().asPreview(),
+            orderIndex = tasks.size.toDouble(),
+            dateCreated = Now,
+            dateUpdated = Now,
+            dateClosed = null,
+            creator = user.asCreator(),
+            assignees = emptyList(),
+            watchers = emptyList(),
+            checklists = emptyList(),
+            tags = emptyList(),
+            parent = null,
+            priority = null,
+            dueDate = null,
+            startDate = null,
+            points = null,
+            timeEstimate = null,
+            timeSpent = Duration.ZERO,
+            customFields = emptyList(),
+            dependencies = emptyList(),
+            linkedTasks = emptyList(),
+            teamId = teams.first().id,
+            url = URL.parse("https://app.clickup.com/t/$taskId"),
+            permissionLevel = "create",
+            list = list.asPreview(),
+            folder = folder.asPreview(),
+            space = space,
+        ).also { tasks = tasks + it }
     }
 
     override suspend fun getTasks(
@@ -305,6 +359,18 @@ open class ClickUpTestClient(
         }.takeUnless { it == Duration.ZERO }
 
     companion object {
+        inline fun require(value: Boolean, lazyMessage: () -> Any): Unit {
+            kotlin.runCatching { kotlinRequire(value, lazyMessage) }.getOrElse {
+                throw ClickUpException(ErrorInfo("Task name invalid", "INPUT_005"), it)
+            }
+        }
+
+        inline fun <T : Any> requireNotNull(value: T?, lazyMessage: () -> Any): T {
+            return kotlin.runCatching { kotlinRequireNotNull(value, lazyMessage) }.getOrElse {
+                throw ClickUpException(ErrorInfo("error", "CODE-123"), it)
+            }
+        }
+
         fun Iterable<TaskList>.filterBy(space: Space) = filter { it.space?.id == space.id }
         fun Iterable<TaskList>.filterBy(folder: Folder) = filter { it.folder?.id == folder.id }
         fun Iterable<Folder>.filterBy(space: Space) = filter { folder -> folder.lists.any { it.space?.id == space.id } }

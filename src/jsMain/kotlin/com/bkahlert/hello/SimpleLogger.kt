@@ -1,5 +1,8 @@
 package com.bkahlert.hello
 
+import com.bkahlert.kommons.js.groupCatching
+import com.bkahlert.kommons.js.grouping
+import com.bkahlert.kommons.js.trace
 import com.bkahlert.kommons.toSimpleClassName
 import io.ktor.util.logging.Logger
 import io.ktor.client.plugins.logging.Logger as PluginLogger
@@ -46,22 +49,22 @@ class SimpleLogger(
 
     /** Logs the specified debug [message]. */
     override inline fun debug(message: String) {
-        console.log("DEBUG: $message")
+        console.log(message)
     }
 
     /** Logs the specified debug [message] and [cause]. */
     override inline fun debug(message: String, cause: Throwable) {
-        console.log("DEBUG: $message, cause: $cause")
+        console.log("$message, cause: $cause")
     }
 
     /** Logs the specified trace [message]. */
     override inline fun trace(message: String) {
-        console.log("TRACE: $message")
+        console.trace(message)
     }
 
     /** Logs the specified trace [message] and [cause]. */
     override inline fun trace(message: String, cause: Throwable) {
-        console.log("TRACE: $message, cause: $cause")
+        console.trace("$message, cause: $cause")
     }
 
     /** Logs the specified [message]. */
@@ -70,10 +73,14 @@ class SimpleLogger(
     }
 
     companion object {
-        private const val CLASS_PREFIX = "class "
-
         /** Creates a [SimpleLogger] for `this` object's [JsClass]. */
         fun Any.simpleLogger(): SimpleLogger =
-            SimpleLogger(toSimpleClassName().removePrefix(CLASS_PREFIX))
+            SimpleLogger(toSimpleClassName())
     }
 }
+
+inline fun <reified R> SimpleLogger.grouping(label: String? = null, collapsed: Boolean = true, crossinline block: () -> R): R =
+    console.grouping(label, collapsed, block)
+
+suspend inline fun <reified R> SimpleLogger.groupCatching(label: String? = null, collapsed: Boolean = true, crossinline block: suspend () -> R): Result<R> =
+    console.groupCatching(label, collapsed) { block() }

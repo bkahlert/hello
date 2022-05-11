@@ -11,9 +11,10 @@ import kotlin.test.assertEquals
 @Suppress("unused", "SpellCheckingInspection")
 class UrlSerializerTest : SerializerTest<URL>(
     UrlSerializer,
-    "https://example.com/".quoted to URL.parse("https://example.com"),
+    "https://example.com".quoted to URL.parse("https://example.com"),
     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7".quoted to URL.parse(
-        "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"),
+        "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+    ),
 ) {
 
     @Test

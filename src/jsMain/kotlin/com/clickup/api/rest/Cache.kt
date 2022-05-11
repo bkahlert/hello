@@ -2,6 +2,7 @@ package com.clickup.api.rest
 
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.dom.clear
 import com.clickup.api.FolderID
 import com.clickup.api.SpaceID
 import com.clickup.api.TeamID
@@ -11,6 +12,10 @@ import com.clickup.api.TeamID
  * to store cache entries.
  */
 class Cache(private val storage: Storage) {
+
+    fun clear() {
+        storage.clear()
+    }
 
     fun forUser() = CacheAccessor("user", storage::get, storage::set)
     fun forTeams() = CacheAccessor("teams", storage::get, storage::set)

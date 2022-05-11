@@ -1,8 +1,8 @@
 package com.bkahlert.kommons.serialization
 
-import com.bkahlert.kommons.Color
-import com.bkahlert.kommons.Color.HSL
-import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.HSL
+import com.bkahlert.kommons.color.Color.RGB
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializer
@@ -16,7 +16,8 @@ import kotlinx.serialization.encoding.Encoder
 object ColorSerializer : KSerializer<Color> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
-        "com.bkahlert.kommons.serialization.ColorSerializer", STRING)
+        "com.bkahlert.kommons.serialization.ColorSerializer", STRING
+    )
 
     override fun serialize(encoder: Encoder, value: Color) {
         encoder.encodeString((value.takeIf { (it as? HSL)?.a != 1.0 }?.toRGB() ?: value).toString())
@@ -31,7 +32,8 @@ object ColorSerializer : KSerializer<Color> {
 object RgbSerializer : KSerializer<RGB> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
-        "com.bkahlert.kommons.serialization.RGBSerializer", STRING)
+        "com.bkahlert.kommons.serialization.RGBSerializer", STRING
+    )
 
     override fun serialize(encoder: Encoder, value: RGB) {
         encoder.encodeString(value.toString())
@@ -46,7 +48,8 @@ object RgbSerializer : KSerializer<RGB> {
 object HslSerializer : KSerializer<HSL> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
-        "com.bkahlert.kommons.serialization.HSLSerializer", STRING)
+        "com.bkahlert.kommons.serialization.HSLSerializer", STRING
+    )
 
     override fun serialize(encoder: Encoder, value: HSL) {
         encoder.encodeString(value.toString())

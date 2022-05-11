@@ -2,6 +2,7 @@ package com.bkahlert.hello.plugins.clickup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,23 +26,60 @@ import org.jetbrains.compose.web.dom.Text
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
+@Stable
+interface PomodoroTimerState {
+    val timeEntry: TimeEntry
+    val pomodoro: Pomodoro
+    val fps: Double
+    val progressIndicating: Boolean
+    val acousticFeedback: AcousticFeedback
+    val onStop: (List<Tag>) -> Unit
+}
+
+class PomodoroTimerStateImpl(
+    override val timeEntry: TimeEntry,
+    override val fps: Double,
+    override val progressIndicating: Boolean,
+    override val acousticFeedback: AcousticFeedback,
+    override val onStop: (List<Tag>) -> Unit,
+) : PomodoroTimerState {
+    override val pomodoro: Pomodoro = Pomodoro.of(timeEntry)
+}
+
+@Composable
+fun rememberPomodoroTimerState(
+    timeEntry: TimeEntry,
+    fps: Double = 15.0,
+    progressIndicating: Boolean = false,
+    acousticFeedback: AcousticFeedback = AcousticFeedback.NoFeedback,
+    onStop: (TimeEntry, List<Tag>) -> Unit = { _, tags ->
+        console.log("stopped ${timeEntry.id} with $tags")
+    },
+): PomodoroTimerState {
+    return remember(timeEntry, fps, progressIndicating, acousticFeedback, onStop) {
+        PomodoroTimerStateImpl(
+            timeEntry = timeEntry,
+            fps = fps,
+            progressIndicating = progressIndicating,
+            acousticFeedback = acousticFeedback,
+            onStop = { tags -> onStop(timeEntry, tags) },
+        )
+    }
+}
+
 @Composable
 fun PomodoroTimer(
-    timeEntry: TimeEntry,
+    state: PomodoroTimerState,
     stop: () -> Boolean = { false },
-    onStop: (TimeEntry, List<Tag>) -> Unit = { _, _ -> },
-    fps: Double = 15.0,
-    progressIndicating: Boolean = true,
-    acousticFeedback: AcousticFeedback = AcousticFeedback.NoFeedback,
 ) {
-    var tick: Long by remember(timeEntry) { mutableStateOf(0L) }
-    val pomodoro = Pomodoro.of(timeEntry)
+    var tick: Long by remember(state) { mutableStateOf(0L) }
+    val pomodoro = state.pomodoro
     val status = pomodoro.status
-    val passed = tick.let { timeEntry.passed }
+    val passed = tick.let { state.timeEntry.passed }
     val remaining = pomodoro.duration - passed
     val progress = (passed / pomodoro.duration).coerceAtMost(1.0)
 
-    if (progressIndicating) {
+    if (state.progressIndicating) {
         Div({
             classes("ui", "top", "attached", "indicating", "progress")
             attr("data-value", "${passed.inWholeSeconds}")
@@ -61,7 +99,7 @@ fun PomodoroTimer(
         }
     }
 
-    if (timeEntry.ended) {
+    if (state.timeEntry.ended) {
         Div {
             if (status == Aborted) {
                 Icon("red", "times", "circle")
@@ -86,11 +124,11 @@ fun PomodoroTimer(
             Icon("red", "stop", "circle") {
                 +Link
                 if (stop()) {
-                    onStop(timeEntry, listOf(Aborted.tag))
+                    state.onStop(listOf(Aborted.tag))
                 }
                 onClick {
                     it.preventDefault()
-                    onStop(timeEntry, listOf(Aborted.tag))
+                    state.onStop(listOf(Aborted.tag))
                 }
             }
         }
@@ -102,14 +140,14 @@ fun PomodoroTimer(
     }
 
     if (remaining < 0.5.seconds) {
-        DisposableEffect(timeEntry) {
-            acousticFeedback.completed.play()
-            onStop(timeEntry, listOf(Completed.tag))
+        DisposableEffect(state) {
+            state.acousticFeedback.completed.play()
+            state.onStop(listOf(Completed.tag))
             onDispose { }
         }
     } else {
-        DisposableEffect(timeEntry) {
-            val timeout = 1.seconds / fps
+        DisposableEffect(state) {
+            val timeout = 1.seconds / state.fps
             // avoid flickering by initially waiting one second
             val handle: Int = window.setInterval({ tick++ }, timeout = timeout.inWholeMilliseconds.toInt())
             onDispose { window.clearInterval(handle) }

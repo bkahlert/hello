@@ -2,8 +2,8 @@
 
 package com.clickup.api
 
-import com.bkahlert.kommons.Color
-import com.bkahlert.kommons.coerceAtMost
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.coerceAtMost
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
@@ -22,7 +22,7 @@ data class Tag(
     val backgroundColor: Color by lazy { tagBackground ?: Color(0x000000) }
 
     val outlineForegroundColor: Color get() = foregroundColor
-    val outlineBackgroundColor: Color get() = foregroundColor.transparentize(.2)
+    val outlineBackgroundColor: Color get() = foregroundColor.withAlpha(.2)
     val outlineBorderColor: Color get() = foregroundColor
     val solidForegroundColor: Color get() = Color(0xffffff)
     val solidBackgroundColor: Color get() = backgroundColor.toHSL().coerceAtMost(lightness = 67.0)

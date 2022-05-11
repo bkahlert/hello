@@ -25,6 +25,7 @@ import com.clickup.api.rest.Cache
 import com.clickup.api.rest.CacheAccessor
 import com.clickup.api.rest.ClickUpClient
 import com.clickup.api.rest.ClickUpException.Companion.wrapOrNull
+import com.clickup.api.rest.CreateTaskRequest
 import com.clickup.api.rest.CustomFieldFilter
 import com.clickup.api.rest.StartTimeEntryRequest
 import com.clickup.api.rest.UpdateTaskRequest
@@ -119,6 +120,15 @@ data class AccessTokenBasedClickUpClient(
     override suspend fun getTeams(): List<Team> =
         runLogging("getting teams") {
             restClient.caching<Named<List<Team>>>({ it.forTeams() }, clickUpUrl / "team").value
+        }
+
+    override suspend fun createTask(listId: TaskListID, task: CreateTaskRequest): Task =
+        runLogging("creating task ${task.name} in $listId") {
+            cache.clear()
+            restClient.post(clickUpUrl / "list" / listId / "task") {
+                contentType(ContentType.Application.Json)
+                setBody(task)
+            }.body()
         }
 
     override suspend fun getTasks(

@@ -9,9 +9,9 @@ import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.Teams
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.timeEntry
 import com.bkahlert.hello.ui.demo.clickup.ClickUpTestClient
 import com.bkahlert.hello.ui.demo.clickup.rememberClickUpMenuTestViewModel
-import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.appendJQuery
 import com.bkahlert.kommons.appendSemanticUI
+import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
 import com.bkahlert.kommons.time.seconds
@@ -45,7 +45,8 @@ class ClickUpMenuTest {
             ClickUpMenu(rememberClickUpMenuTestViewModel { Disabled })
         }
 
-        shouldRender("""
+        shouldRender(
+            """
             <div>
                 <div class="ui mini dimmable fluid one item menu">
                     <div class="ui inverted dimmer">
@@ -55,7 +56,8 @@ class ClickUpMenuTest {
                     <div class="link item"><img class="mini" src="clickup-icon.svg" alt="ClickUp">Connect to ClickUp</div>
                 </div>
             </div>
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     @Test
@@ -67,7 +69,8 @@ class ClickUpMenuTest {
         }
         waitForRecompositionComplete()
 
-        shouldRender("""
+        shouldRender(
+            """
             <div>
                 <div class="ui mini dimmable fluid one item menu">
                     <div class="ui inverted dimmer">
@@ -76,7 +79,8 @@ class ClickUpMenuTest {
                     <div class="link item"><img class="mini" src="clickup-icon.svg" alt="ClickUp">Connect to ClickUp</div>
                 </div>
             </div>
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     @Test
@@ -88,7 +92,8 @@ class ClickUpMenuTest {
         }
         waitForRecompositionComplete()
 
-        shouldRender("""
+        shouldRender(
+            """
             <div>
                 <div class="ui mini dimmable menu">
                     <div class="ui inverted dimmer">
@@ -106,7 +111,8 @@ class ClickUpMenuTest {
                     <div class="borderless link item"><img class="avatar" src="${Teams[1].avatar}" alt="Team Kommons"><span>Kommons</span></div>
                 </div>
             </div>
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     @Test
@@ -118,7 +124,8 @@ class ClickUpMenuTest {
         }
         waitForRecompositionComplete()
 
-        shouldRender("""
+        shouldRender(
+            """
             <div>
                 <div class="ui mini dimmable menu">
                     <div class="ui inverted dimmer">
@@ -135,7 +142,8 @@ class ClickUpMenuTest {
                     <div class="borderless link item"><img class="avatar" src="${Teams[0].avatar}" alt="Team Pear"><span>Pear</span></div>
                 </div>
             </div>
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     @Test
@@ -147,7 +155,8 @@ class ClickUpMenuTest {
         }
         waitForRecompositionComplete()
 
-        shouldRender("""
+        shouldRender(
+            """
             <div>
                 <div class="ui mini dimmable menu">
                     <div class="ui inverted dimmer">
@@ -163,7 +172,8 @@ class ClickUpMenuTest {
                     <div class="borderless disabled link item"><span>No teams found</span></div>
                 </div>
             </div>
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
 
@@ -176,7 +186,8 @@ class ClickUpMenuTest {
         }
         waitForRecompositionComplete()
 
-        shouldRender("""
+        shouldRender(
+            """
             <div>
                 <div class="ui mini dimmable menu">
                     <div class="ui inverted dimmer">
@@ -212,7 +223,8 @@ class ClickUpMenuTest {
                     </div>
                 </div>
             </div>
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     @Test
@@ -224,11 +236,13 @@ class ClickUpMenuTest {
         }
         waitForRecompositionComplete()
 
-        shouldRenderPartially("""
+        shouldRenderPartially(
+            """
             <div class="header" style="color: rgb(255, 0, 0);">
                 <i class="clone icon" title="project"></i>Space<i class="inverted icon"></i>
                 <i class="list icon" title="list"></i>Task List</div>
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 
     @Test

@@ -25,11 +25,20 @@ import com.bkahlert.hello.plugins.clickup.rememberClickUpMenuViewModel
 import com.bkahlert.hello.search.SearchFeature
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.center
+import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
 import com.bkahlert.hello.ui.demo.renderDebugMode
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
+import com.bkahlert.kommons.compose.Length
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.url
+import com.bkahlert.kommons.js.Object
+import com.bkahlert.kommons.js.data
+import com.bkahlert.kommons.js.entries
+import com.bkahlert.kommons.js.grouping
+import com.bkahlert.kommons.js.table
+import com.bkahlert.kommons.js.toJson
+import com.clickup.api.Task
 import com.semanticui.compose.element.AnkerButton
 import com.semanticui.compose.element.ButtonGroupElementType.Icon
 import com.semanticui.compose.element.Buttons
@@ -40,8 +49,6 @@ import kotlinx.browser.window
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.CSSBuilder
-import org.jetbrains.compose.web.css.CSSSizeValue
-import org.jetbrains.compose.web.css.CSSUnitLength
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
@@ -84,6 +91,8 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
+import kotlin.js.Json
+import kotlin.reflect.KClass
 
 // TODO create tasks
 // TODO rename tasks
@@ -204,9 +213,9 @@ fun App(state: AppState = rememberAppState()) {
                 backgroundColor(Color.transparent)
                 backgroundImage(
                     linearGradient(
-                        CUSTOM_BACKGROUND_COLOR.transparentize(0),
+                        CUSTOM_BACKGROUND_COLOR.withAlpha(0),
                         CUSTOM_BACKGROUND_COLOR,
-                        CUSTOM_BACKGROUND_COLOR.transparentize(0)
+                        CUSTOM_BACKGROUND_COLOR.withAlpha(0)
                     )
                 )
             }
@@ -222,9 +231,28 @@ fun App(state: AppState = rememberAppState()) {
     }
 }
 
-
 fun main() {
-    renderDebugMode()
+    renderDebugMode {
+        val task = ClickUpFixtures.task()
+        val data = Object.keys(task)
+        console.table(data)
+        console.grouping("Test log") {
+            console.info(ClickUpFixtures.User)
+            console.data(*(0..100).map { ClickUpFixtures.task() }.toTypedArray())
+        }
+        console.table(arrayOf(task.toJson()))
+        console.table(task.entries.toJson())
+        console.table(task)
+        console.table(listOf(task))
+        console.table(task, arrayOf("id_1", "name_1"))
+        console.table(arrayOf(task), arrayOf("id_1", "name_1"))
+        val json: Json = JSON.parse<Json>(task.serialize())
+        console.log(json)
+        println(json)
+//        println(json.to)
+        val clazz: KClass<Task> = Task::class
+
+    }
     renderComposable("root") {
         Style(AppStylesheet)
         Style(ClickUpStyleSheet)
@@ -247,8 +275,8 @@ fun Grid(
 
 object AppStylesheet : StyleSheet() {
 
-    val HEADER_HEIGHT: CSSSizeValue<out CSSUnitLength> = 4.px
-    val GRADIENT_HEIGHT: CSSSizeValue<out CSSUnitLength> = 0.3.cssRem
+    val HEADER_HEIGHT: Length = 4.px
+    val GRADIENT_HEIGHT: Length = 0.3.cssRem
     val CUSTOM_BACKGROUND_COLOR = colors.white
 
     enum class Grid {

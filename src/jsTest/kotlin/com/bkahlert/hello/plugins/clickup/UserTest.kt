@@ -2,7 +2,7 @@ package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.hello.ui.demo.ImageFixtures
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
-import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.SerializerTest
 import com.clickup.api.User

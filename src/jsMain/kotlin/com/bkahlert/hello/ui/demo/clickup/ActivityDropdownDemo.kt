@@ -11,7 +11,7 @@ import com.bkahlert.hello.plugins.clickup.menu.rememberActivityDropdownState
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
 import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownFixtures.select
-import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.color.Color
 import com.clickup.api.FolderPreview
 import com.clickup.api.Space
 import com.clickup.api.Task

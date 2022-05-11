@@ -21,7 +21,14 @@ data class Folder(
     @SerialName("statuses") val statuses: List<Status>,
     @SerialName("lists") val lists: List<TaskList>,
     @SerialName("permission_level") val permissionLevel: String,
-)
+) {
+    fun asPreview() = FolderPreview(
+        id = id,
+        name = name,
+        hidden = hidden,
+        access = true,
+    )
+}
 
 @Serializable value class FolderID(override val id: String) : Identifier<String>
 

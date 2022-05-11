@@ -1,7 +1,7 @@
 package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
-import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.serialization.SerializerTest
 import com.clickup.api.Assignee
 import com.clickup.api.FolderID
@@ -16,7 +16,8 @@ import com.clickup.api.asAssignee
 import kotlin.js.Date
 
 @Suppress("unused")
-class TaskListTest : SerializerTest<TaskList>(TaskList.serializer(),
+class TaskListTest : SerializerTest<TaskList>(
+    TaskList.serializer(),
     // language=JSON
     """
         {
@@ -50,7 +51,8 @@ class TaskListTest : SerializerTest<TaskList>(TaskList.serializer(),
             "override_statuses": false,
             "permission_level": "create"
         }
-    """.trimIndent() to taskList())
+    """.trimIndent() to taskList()
+)
 
 
 fun taskList(

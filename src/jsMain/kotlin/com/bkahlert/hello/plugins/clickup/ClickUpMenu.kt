@@ -25,8 +25,10 @@ import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.DimmingLoader
 import com.bkahlert.hello.ui.textOverflow
 import com.bkahlert.kommons.dom.open
+import com.bkahlert.kommons.time.Now
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
+import com.clickup.api.TaskListID
 import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
@@ -248,6 +250,7 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
     activityGroups: List<ActivityGroup>,
     selectedActivity: Activity<*>?,
     onSelect: (Selection) -> Unit,
+    onCreateTask: (TaskListID, String) -> Unit,
     onCloseTask: (TaskID) -> Unit,
     onTimeEntryStart: (TaskID?, List<Tag>, Boolean) -> Unit,
     onTimeEntryStop: (TimeEntry, List<Tag>) -> Unit,
@@ -261,11 +264,13 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
         when (selectedActivity) {
             is RunningTaskActivity -> {
                 PomodoroTimer(
-                    timeEntry = selectedActivity.timeEntry,
+                    rememberPomodoroTimerState(
+                        timeEntry = selectedActivity.timeEntry,
+                        progressIndicating = false,
+                        acousticFeedback = AcousticFeedback.PomodoroFeedback,
+                        onStop = onTimeEntryStop,
+                    ),
                     stop = { clicked },
-                    onStop = onTimeEntryStop,
-                    progressIndicating = false,
-                    acousticFeedback = AcousticFeedback.PomodoroFeedback,
                 )
             }
             else -> {
@@ -293,7 +298,9 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
             rememberActivityDropdownState(
                 groups = activityGroups,
                 selection = selectedActivity,
-                onSelect = { _, activity -> onSelect(listOfNotNull(activity?.id)) })
+                onSelect = { _, activity -> onSelect(listOfNotNull(activity?.id)) },
+                onCreate = { taskListID, name -> onCreateTask(taskListID, name ?: "new task created $Now") },
+            )
         )
     }
 
@@ -411,6 +418,7 @@ fun ClickUpMenu(
                     activityGroups = state.activityGroups,
                     selectedActivity = state.selectedActivity,
                     onSelect = viewModel::select,
+                    onCreateTask = viewModel::createTask,
                     onCloseTask = viewModel::closeTask,
                     onTimeEntryStart = viewModel::startTimeEntry,
                     onTimeEntryStop = viewModel::stopTimeEntry,

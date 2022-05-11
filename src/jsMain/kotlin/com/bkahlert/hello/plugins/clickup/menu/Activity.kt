@@ -4,8 +4,8 @@ import com.bkahlert.Brand
 import com.bkahlert.Brand.colors
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.TaskActivity
-import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.asString
+import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
@@ -17,6 +17,7 @@ import com.clickup.api.Tag
 import com.clickup.api.Task
 import com.clickup.api.TaskID
 import com.clickup.api.TaskList
+import com.clickup.api.TaskListID
 import com.clickup.api.TaskListPreview
 import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
@@ -58,6 +59,7 @@ data class Meta(
  * and an optional [color].
  */
 data class ActivityGroup(
+    val listId: TaskListID?,
     val name: List<Meta>,
     val color: Color?,
     val tasks: List<Activity<*>>,
@@ -66,6 +68,7 @@ data class ActivityGroup(
         fun of(
             runningTaskActivity: RunningTaskActivity,
         ): ActivityGroup = ActivityGroup(
+            null,
             listOf(Meta("running timer", "stop", "circle", text = "Running")),
             colors.red,
             listOf(runningTaskActivity),
@@ -77,10 +80,12 @@ data class ActivityGroup(
         ): ActivityGroup = of(RunningTaskActivity(timeEntry, task))
 
         fun of(
+            listId: TaskListID?,
             tasks: List<Task>,
             color: Color?,
             vararg meta: Meta?,
         ): ActivityGroup = ActivityGroup(
+            listId = listId,
             name = listOfNotNull(*meta),
             color = color,
             tasks = tasks.map { task -> TaskActivity(task) },
@@ -92,7 +97,7 @@ data class ActivityGroup(
             list: TaskList?,
             color: Color?,
             tasks: List<Task>,
-        ): ActivityGroup = of(tasks, color, Meta.of(space), Meta.of(folder), Meta.of(list))
+        ): ActivityGroup = of(list?.id, tasks, color, Meta.of(space), Meta.of(folder), Meta.of(list))
 
         fun of(
             space: Space?,
@@ -100,7 +105,7 @@ data class ActivityGroup(
             listPreview: TaskListPreview?,
             color: Color?,
             tasks: List<Task>,
-        ): ActivityGroup = of(tasks, color, Meta.of(space), Meta.of(folder), Meta.of(listPreview))
+        ): ActivityGroup = of(listPreview?.id, tasks, color, Meta.of(space), Meta.of(folder), Meta.of(listPreview))
     }
 }
 
@@ -132,7 +137,7 @@ sealed interface Activity<ID : Identifier<*>> {
         override val name: String
             get() = timeEntry.task?.name ?: taskActivity?.name ?: "— Timer with no associated task —"
         override val color: Color?
-            get() = timeEntry.task?.status?.color ?: taskActivity?.color ?: Brand.colors.white.transparentize(1.0)
+            get() = timeEntry.task?.status?.color ?: taskActivity?.color ?: Brand.colors.white.withAlpha(1.0)
         override val url: URL? get() = timeEntry.url ?: timeEntry.url ?: taskActivity?.url
         override val meta: List<Meta>
             get() = buildList {

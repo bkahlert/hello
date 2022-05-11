@@ -96,7 +96,7 @@ object CustomStyleSheet : StyleSheet() {
 
 @OptIn(ExperimentalComposeWebApi::class)
 fun CSSBuilder.spinner() {
-    backgroundImage(Spinner(colors.black.transparentize(.67)))
+    backgroundImage(Spinner(colors.black.withAlpha(.67)))
     backgroundRepeat("no-repeat")
     backgroundPosition("center center")
 }

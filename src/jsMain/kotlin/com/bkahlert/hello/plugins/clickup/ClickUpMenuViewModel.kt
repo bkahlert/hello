@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
+import com.bkahlert.hello.groupCatching
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Failed
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Connected
@@ -16,8 +17,10 @@ import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
 import com.bkahlert.kommons.time.seconds
+import com.bkahlert.kommons.toSimpleClassName
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
+import com.clickup.api.TaskListID
 import com.clickup.api.Team
 import com.clickup.api.TeamID
 import com.clickup.api.TimeEntry
@@ -34,7 +37,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.time.measureTime
 
 interface ClickUpMenuViewModel {
     val state: StateFlow<ClickUpMenuState>
@@ -44,6 +46,7 @@ interface ClickUpMenuViewModel {
     fun selectTeam(teamID: TeamID)
     fun refresh(background: Boolean = false)
     fun select(selection: Selection)
+    fun createTask(taskListID: TaskListID, name: String)
     fun closeTask(taskID: TaskID)
     fun startTimeEntry(taskID: TaskID?, tags: List<Tag>, billable: Boolean)
     fun stopTimeEntry(timeEntry: TimeEntry, tags: List<Tag>)
@@ -62,11 +65,13 @@ fun rememberClickUpMenuViewModel(
     createClient: (AccessToken, Storage, CoroutineDispatcher) -> ClickUpClient = ::AccessTokenBasedClickUpClient,
 ): ClickUpMenuViewModel =
     remember(createClient, dispatcher, initialState, storage) {
-        ClickUpMenuViewModelImpl(initialState,
+        ClickUpMenuViewModelImpl(
+            initialState,
             dispatcher,
             refreshCoroutineScope,
             storage,
-            createClient)
+            createClient
+        )
     }
 
 
@@ -91,21 +96,16 @@ class ClickUpMenuViewModelImpl(
     private fun update(name: String, background: Boolean = false, operation: suspend CoroutineScope.(Succeeded) -> ClickUpMenuState) {
         if (!background) {
             _state.update { currentState ->
-                logger.debug("INTERNAL STATE started $name\n- STATE: $currentState")
+                logger.debug("started $name in state ${currentState.toSimpleClassName()}")
                 Transitioning(currentState.lastSucceededState)
             }
         }
         if (!background || _state.value !is Failed) {
             updateJob = coroutineScope.launch {
                 _state.update { currentState ->
-                    logger.debug("INTERNAL STATE is $name\n- STATE: $currentState")
-                    kotlin.runCatching {
-                        val newState: ClickUpMenuState
-                        val duration = measureTime { newState = operation(currentState.lastSucceededState) }
-                        logger.debug("INTERNAL STATE finished $name within $duration\n- NEW STATE: $newState")
-                        newState
+                    logger.groupCatching("$name in state ${currentState.toSimpleClassName()}") {
+                        operation(currentState.lastSucceededState)
                     }.getOrElse {
-                        logger.error("INTERNAL STATE failed $name", it)
                         Failed(
                             operation = name,
                             cause = it,
@@ -124,7 +124,6 @@ class ClickUpMenuViewModelImpl(
             delay(5.seconds)
             while (isActive) {
                 while (updateJob?.isActive == true) delay(1.seconds)
-                logger.info("Refreshing")
                 refresh(background = true)
                 delay(15.seconds)
             }
@@ -215,6 +214,17 @@ class ClickUpMenuViewModelImpl(
                 is TeamSelected -> {
                     storage.selections[state.selectedTeam] = selection
                     state.select(selection)
+                }
+                else -> state.also { console.warn("unexpected state $state") }
+            }
+        }
+    }
+
+    override fun createTask(taskListID: TaskListID, name: String) {
+        update("creating $name in $taskListID") { state ->
+            when (state) {
+                is TeamSelected -> {
+                    state.createTask(taskListID, name)
                 }
                 else -> state.also { console.warn("unexpected state $state") }
             }

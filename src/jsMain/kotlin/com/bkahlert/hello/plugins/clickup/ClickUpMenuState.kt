@@ -22,11 +22,13 @@ import com.clickup.api.Tag
 import com.clickup.api.Task
 import com.clickup.api.TaskID
 import com.clickup.api.TaskList
+import com.clickup.api.TaskListID
 import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.User
 import com.clickup.api.closed
 import com.clickup.api.rest.ClickUpClient
+import com.clickup.api.rest.CreateTaskRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -116,6 +118,12 @@ sealed class ClickUpMenuState {
                     }
 
                     fun select(selected: Selection): TeamSelected = copy(selected = selected)
+
+                    suspend fun createTask(taskListID: TaskListID, name: String): TeamSelected {
+                        val task = client.createTask(taskListID, CreateTaskRequest(name))
+                        return refresh().select(listOf(task.id) + selected)
+                    }
+
                     suspend fun closeTask(taskID: TaskID): TeamSelected {
                         val task = data.tasks.first { it.id == taskID }
                         client.updateTask(task.copy(status = client.getPossibleStatuses(task).closed.asPreview()))

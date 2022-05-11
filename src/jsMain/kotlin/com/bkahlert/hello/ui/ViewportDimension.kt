@@ -1,7 +1,7 @@
 package com.bkahlert.hello.ui
 
-import org.jetbrains.compose.web.css.CSSSizeValue
-import org.jetbrains.compose.web.css.CSSUnitLength
+import com.bkahlert.kommons.compose.Length
+import com.semanticui.compose.BreakPoints
 import org.jetbrains.compose.web.css.px
 
 object ViewportDimension {
@@ -9,20 +9,20 @@ object ViewportDimension {
     /**
      * Small tablets and large smartphones (landscape view)
      */
-    inline val small: CSSSizeValue<out CSSUnitLength> get() = 576.px
+    inline val small: Length get() = 576.px
 
     /**
      * Small tablets (portrait view)
      */
-    inline val medium: CSSSizeValue<out CSSUnitLength> get() = 768.px
+    inline val medium: Length get() = BreakPoints.TabletBreakpoint
 
     /**
      * Tablets and small desktops
      */
-    inline val large: CSSSizeValue<out CSSUnitLength> get() = 992.px
+    inline val large: Length get() = BreakPoints.ComputerBreakpoint
 
     /**
      * Large tablets and desktops
      */
-    inline val xLarge: CSSSizeValue<out CSSUnitLength> get() = 1200.px
+    inline val xLarge: Length get() = BreakPoints.LargeMonitorBreakpoint
 }

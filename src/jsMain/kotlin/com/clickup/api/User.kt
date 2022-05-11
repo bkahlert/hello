@@ -2,8 +2,8 @@
 
 package com.clickup.api
 
-import com.bkahlert.kommons.Color
 import com.bkahlert.kommons.asString
+import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer

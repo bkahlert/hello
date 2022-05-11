@@ -4,8 +4,8 @@ package com.bkahlert.hello.plugins.clickup
 
 import com.bkahlert.Brand
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type.Companion.duration
-import com.bkahlert.kommons.Color
-import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer

@@ -1,8 +1,8 @@
-package com.bkahlert.kommons
+package com.bkahlert.kommons.color
 
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import com.bkahlert.kommons.Color.HSL
+import com.bkahlert.kommons.color.Color.HSL
 import com.bkahlert.kommons.text.quoted
 import io.kotest.matchers.shouldBe
 import org.jetbrains.compose.web.css.deg
@@ -14,7 +14,7 @@ class HSLTest {
 
     inner class Parsing {
         @Test fun withoutAlpha() {
-            HSL.parseOrNull("hsl(100, 100%, 50%)") shouldBe color.transparentize(1)
+            HSL.parseOrNull("hsl(100, 100%, 50%)") shouldBe color.withAlpha(1)
         }
 
         @Test fun withAlpha() {
@@ -22,7 +22,7 @@ class HSLTest {
         }
 
         @Test fun spaceSeparatedWithoutAlpha() {
-            HSL.parseOrNull("hsl(100 100% 50%)") shouldBe color.transparentize(1)
+            HSL.parseOrNull("hsl(100 100% 50%)") shouldBe color.withAlpha(1)
         }
 
         @Test fun spaceSeparatedWithAlpha() {
@@ -30,11 +30,11 @@ class HSLTest {
         }
 
         @Test fun hslaWithoutAlpha() {
-            HSL.parseOrNull("hsla(100, 100%, 50%)") shouldBe color.transparentize(1)
+            HSL.parseOrNull("hsla(100, 100%, 50%)") shouldBe color.withAlpha(1)
         }
 
         @Test fun withoutSpaces() {
-            HSL.parseOrNull("hsla(100,100%,50%)") shouldBe color.transparentize(1)
+            HSL.parseOrNull("hsla(100,100%,50%)") shouldBe color.withAlpha(1)
         }
     }
 

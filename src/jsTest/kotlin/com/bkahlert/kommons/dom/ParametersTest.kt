@@ -58,8 +58,11 @@ class ParametersTest {
         nullableExplicit shouldBe null
         nonNullableExplicit shouldBe -2
 
+        @Suppress("UNUSED_VALUE")
         raw = "value"
+        @Suppress("UNUSED_VALUE")
         nullableExplicit = 42
+        @Suppress("UNUSED_VALUE")
         nonNullableExplicit = -1
 
         parameters shouldBe parametersOf(

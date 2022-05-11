@@ -1,8 +1,8 @@
 package com.bkahlert
 
-import com.bkahlert.kommons.Color
-import com.bkahlert.kommons.Color.HSL
-import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.HSL
+import com.bkahlert.kommons.color.Color.RGB
 import org.jetbrains.compose.web.css.deg
 
 object Brand {

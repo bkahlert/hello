@@ -2,8 +2,8 @@ package com.bkahlert.hello.search
 
 import com.bkahlert.hello.search.SearchEngine.Google
 import com.bkahlert.hello.ui.fmod
-import com.bkahlert.kommons.Color
-import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.dom.URL
 
 /**

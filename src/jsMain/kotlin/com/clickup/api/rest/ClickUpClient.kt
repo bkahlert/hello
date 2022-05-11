@@ -1,5 +1,10 @@
+@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
+
 package com.clickup.api.rest
 
+import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
+import com.bkahlert.kommons.serialization.UrlSerializer
 import com.clickup.api.Folder
 import com.clickup.api.FolderID
 import com.clickup.api.Space
@@ -14,12 +19,20 @@ import com.clickup.api.Team
 import com.clickup.api.TimeEntry
 import com.clickup.api.TimeEntryID
 import com.clickup.api.User
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import kotlin.js.Date
 
 interface ClickUpClient {
     suspend fun getUser(): User
 
     suspend fun getTeams(): List<Team>
+
+    suspend fun createTask(
+        listId: TaskListID,
+        task: CreateTaskRequest,
+    ): Task
 
     suspend fun getTasks(
         team: Team,
@@ -107,3 +120,21 @@ interface ClickUpClient {
         tags: List<Tag>,
     ): Unit
 }
+
+@Serializable
+data class CreateTaskRequest(
+    @SerialName("name") val name: String,
+)
+
+@Serializable
+data class UpdateTaskRequest(
+    @SerialName("status") val status: String?,
+)
+
+@Serializable
+data class StartTimeEntryRequest(
+    val tid: TaskID?,
+    val description: String?,
+    val billable: Boolean,
+    val tags: List<Tag>,
+)

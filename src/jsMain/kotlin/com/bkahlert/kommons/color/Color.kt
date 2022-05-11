@@ -1,8 +1,9 @@
-package com.bkahlert.kommons
+package com.bkahlert.kommons.color
 
 import com.bkahlert.Brand.colors
 import com.bkahlert.hello.ui.fmod
-import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.color.Color.HSL
+import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.math.toHexadecimalString
 import com.bkahlert.kommons.serialization.ColorSerializer
 import com.bkahlert.kommons.serialization.HslSerializer
@@ -20,10 +21,85 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
+interface Normalizable {
+    val normalized: Double
+}
+
+/** Values with allowed values 0..255 */
+value class Primary(val value: Double) : Normalizable {
+    init {
+        require(value in Range) { "$value must be in range [$Range]" }
+    }
+
+    override val normalized: Double get() = value / Range.endInclusive
+    override fun toString(): String = "$value"
+
+    companion object {
+        fun of(value: Number) = Primary(value.toDouble())
+        val Min: Double = 0.0
+        val Max: Double = 255.0
+        val Range: ClosedRange<Double> = Min..Max
+    }
+}
+
+/** Values with allowed values 0°..360° */
+value class Degree(val value: Double) : Normalizable {
+    init {
+        require(value in Range) { "$value must be in range [$Range]" }
+    }
+
+    override val normalized: Double get() = value / Range.endInclusive
+    override fun toString(): String = "$value°"
+
+    companion object {
+        fun of(value: Number) = Primary(value.toDouble())
+        val Min: Double = 0.0
+        val Max: Double = 360.0
+        val Range: ClosedRange<Double> = Min..Max
+    }
+}
+
+/** Values with allowed values 0%..100% */
+value class Percent(val value: Double) : Normalizable {
+    init {
+        require(value in Range) { "$value must be in range [$Range]" }
+    }
+
+    override val normalized: Double get() = value / Range.endInclusive
+    override fun toString(): String = "$value%"
+
+    companion object {
+        fun of(value: Number) = Primary(value.toDouble())
+        val Min: Double = 0.0
+        val Max: Double = 100.0
+        val Range: ClosedRange<Double> = Min..Max
+    }
+}
+
+/** Values with allowed values 0..1 */
+value class Normalized(val value: Double) : Normalizable {
+    init {
+        require(value in Range) { "$value must be in range [$Range]" }
+    }
+
+    override val normalized: Double get() = value
+    override fun toString(): String = "$value%"
+
+    companion object {
+        val Min: Double = 0.0
+        val Max: Double = 1.0
+        val Range: ClosedRange<Double> = Min..Max
+    }
+}
+
 @Serializable(with = ColorSerializer::class)
 abstract class Color : CSSColorValue {
-    abstract fun transparentize(a: Double): Color
-    fun transparentize(a: Number): Color = transparentize(a.toDouble())
+
+    /** Returns a copy of this color with the specified [a]. */
+    abstract fun withAlpha(a: Double): Color
+
+    /** Returns a copy of this color with the specified [a]. */
+    fun withAlpha(a: Number): Color = withAlpha(a.toDouble())
     abstract fun toRGB(): RGB
     abstract fun toHSL(): HSL
 
@@ -41,28 +117,28 @@ abstract class Color : CSSColorValue {
 
     @Serializable(with = RgbSerializer::class)
     data class RGB(
-        val r: Double,
-        val g: Double,
-        val b: Double,
-        val a: Double = 1.0,
+        val red: Double,
+        val green: Double,
+        val blue: Double,
+        val alpha: Double = Normalized.Max,
     ) : Color() {
         constructor(r: Number, g: Number, b: Number, a: Number = 1.0) : this(r.toDouble(), g.toDouble(), b.toDouble(), a.toDouble())
 
         init {
-            require(r in 0.0..255.0) { "red must be in range [0..255] but was $r" }
-            require(g in 0.0..255.0) { "green must be in range [0..255] but was $g" }
-            require(b in 0.0..255.0) { "blue must be in range [0..255] but was $b" }
-            require(a in 0.0..1.0) { "alpha must be in range [0..1] but was $a" }
+            require(red in 0.0..255.0) { "red must be in range [0..255] but was $red" }
+            require(green in 0.0..255.0) { "green must be in range [0..255] but was $green" }
+            require(blue in 0.0..255.0) { "blue must be in range [0..255] but was $blue" }
+            require(alpha in 0.0..1.0) { "alpha must be in range [0..1] but was $alpha" }
         }
 
-        override fun transparentize(a: Double): Color = RGB(r, g, b, a)
+        override fun withAlpha(a: Double): Color = RGB(red, green, blue, a)
 
         override fun toRGB(): RGB = this
 
         override fun toHSL(): HSL {
-            val scaledR = r / 255.0
-            val scaledG = g / 255.0
-            val scaledB = b / 255.0
+            val scaledR = red / 255.0
+            val scaledG = green / 255.0
+            val scaledB = blue / 255.0
             val min: Double = minOf(scaledR, scaledG, scaledB)
             val max: Double = maxOf(scaledR, scaledG, scaledB)
             val delta: Double = max - min
@@ -79,22 +155,22 @@ abstract class Color : CSSColorValue {
                     else -> ((delta / (1 - abs(max + min - 1))) * 100.0)
                 },
                 l = (((max + min) / 2.0) * 100.0),
-                a = a,
+                a = alpha,
             )
         }
 
         override fun toString(): String =
-            if (a >= 1.0) buildString {
+            if (alpha >= 1.0) buildString {
                 append("#")
-                append(r.toInt().toHexadecimalString())
-                append(g.toInt().toHexadecimalString())
-                append(b.toInt().toHexadecimalString())
+                append(red.toInt().toHexadecimalString())
+                append(green.toInt().toHexadecimalString())
+                append(blue.toInt().toHexadecimalString())
             }
             else rgba(
-                r.roundToInt(),
-                g.roundToInt(),
-                b.roundToInt(),
-                a,
+                red.roundToInt(),
+                green.roundToInt(),
+                blue.roundToInt(),
+                alpha,
             ).toString()
 
         companion object {
@@ -113,26 +189,26 @@ abstract class Color : CSSColorValue {
                     getOrNull(1)?.isNotEmpty() == true -> get(1).run {
                         when (length) {
                             3 -> RGB(
-                                r = substring(0, 1).repeat(2).toInt(16).toDouble(),
-                                g = substring(1, 2).repeat(2).toInt(16).toDouble(),
-                                b = substring(2, 3).repeat(2).toInt(16).toDouble(),
+                                red = substring(0, 1).repeat(2).toInt(16).toDouble(),
+                                green = substring(1, 2).repeat(2).toInt(16).toDouble(),
+                                blue = substring(2, 3).repeat(2).toInt(16).toDouble(),
                             )
                             4 -> RGB(
-                                r = substring(0, 1).repeat(2).toInt(16).toDouble(),
-                                g = substring(1, 2).repeat(2).toInt(16).toDouble(),
-                                b = substring(2, 3).repeat(2).toInt(16).toDouble(),
-                                a = substring(3, 4).repeat(2).toInt(16).toDouble() / 255.0,
+                                red = substring(0, 1).repeat(2).toInt(16).toDouble(),
+                                green = substring(1, 2).repeat(2).toInt(16).toDouble(),
+                                blue = substring(2, 3).repeat(2).toInt(16).toDouble(),
+                                alpha = substring(3, 4).repeat(2).toInt(16).toDouble() / 255.0,
                             )
                             6 -> RGB(
-                                r = substring(0, 2).toInt(16).toDouble(),
-                                g = substring(2, 4).toInt(16).toDouble(),
-                                b = substring(4, 6).toInt(16).toDouble(),
+                                red = substring(0, 2).toInt(16).toDouble(),
+                                green = substring(2, 4).toInt(16).toDouble(),
+                                blue = substring(4, 6).toInt(16).toDouble(),
                             )
                             8 -> RGB(
-                                r = substring(0, 2).toInt(16).toDouble(),
-                                g = substring(2, 4).toInt(16).toDouble(),
-                                b = substring(4, 6).toInt(16).toDouble(),
-                                a = substring(6, 8).toInt(16).toDouble() / 255.0,
+                                red = substring(0, 2).toInt(16).toDouble(),
+                                green = substring(2, 4).toInt(16).toDouble(),
+                                blue = substring(4, 6).toInt(16).toDouble(),
+                                alpha = substring(6, 8).toInt(16).toDouble() / 255.0,
                             )
                             else -> null
                         }
@@ -141,15 +217,15 @@ abstract class Color : CSSColorValue {
                     getOrNull(2)?.isNotEmpty() == true -> get(2).split(SPLIT_REGEX).map { it.trim() }.run {
                         when (size) {
                             3 -> RGB(
-                                r = get(0).toDouble(),
-                                g = get(1).toDouble(),
-                                b = get(2).toDouble(),
+                                red = get(0).toDouble(),
+                                green = get(1).toDouble(),
+                                blue = get(2).toDouble(),
                             )
                             4 -> RGB(
-                                r = get(0).toDouble(),
-                                g = get(1).toDouble(),
-                                b = get(2).toDouble(),
-                                a = get(3).toDouble(),
+                                red = get(0).toDouble(),
+                                green = get(1).toDouble(),
+                                blue = get(2).toDouble(),
+                                alpha = get(3).toDouble(),
                             )
                             else -> null
                         }
@@ -177,7 +253,7 @@ abstract class Color : CSSColorValue {
             require(a in 0.0..1.0) { "alpha must be in range [0..1] but was $a" }
         }
 
-        override fun transparentize(a: Double): Color = HSL(h, s, l, a)
+        override fun withAlpha(a: Double): Color = HSL(h, s, l, a)
 
         override fun toRGB(): RGB {
             val h: Double = h / 360.0
@@ -249,13 +325,13 @@ fun Color.RGB.coerceAtMost(
     blue: Double? = null,
     alpha: Double? = null,
 ) = copy(
-    r = red?.let { r.coerceAtMost(it) } ?: r,
-    g = green?.let { g.coerceAtMost(it) } ?: g,
-    b = blue?.let { b.coerceAtMost(it) } ?: b,
-    a = alpha?.let { a.coerceAtMost(it) } ?: a,
+    red = red?.let { this.red.coerceAtMost(it) } ?: this.red,
+    green = green?.let { this.green.coerceAtMost(it) } ?: this.green,
+    blue = blue?.let { this.blue.coerceAtMost(it) } ?: this.blue,
+    alpha = alpha?.let { this.alpha.coerceAtMost(it) } ?: this.alpha,
 )
 
-fun Color.HSL.coerceAtMost(
+fun HSL.coerceAtMost(
     hue: Double? = null,
     saturation: Double? = null,
     lightness: Double? = null,

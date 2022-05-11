@@ -1,8 +1,8 @@
 import com.bkahlert.hello.plugins.clickup.otherUser
 import com.bkahlert.hello.plugins.clickup.user
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
-import com.bkahlert.kommons.Color
-import com.bkahlert.kommons.Color.RGB
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.SerializerTest

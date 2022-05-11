@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.plugins.clickup.Pomodoro.Type
 import com.bkahlert.hello.plugins.clickup.PomodoroTimer
+import com.bkahlert.hello.plugins.clickup.rememberPomodoroTimerState
 import com.bkahlert.hello.ui.demo.Demo
 import com.bkahlert.hello.ui.demo.Demos
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
@@ -46,11 +47,13 @@ fun ViewModelDemo() {
 
             testViewModel.timeEntry?.also {
                 PomodoroTimer(
-                    timeEntry = it,
-                    onStop = { timeEntry, tags ->
-                        console.info("stopping $timeEntry with $tags")
-                        testViewModel.stop(it, tags)
-                    },
+                    rememberPomodoroTimerState(
+                        timeEntry = it,
+                        onStop = { timeEntry, tags ->
+                            console.info("stopping ${timeEntry.id} with $tags")
+                            testViewModel.stop(it, tags)
+                        },
+                    )
                 )
             }
 

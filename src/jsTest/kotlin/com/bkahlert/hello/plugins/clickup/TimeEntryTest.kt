@@ -8,8 +8,6 @@ import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.minus
-import com.bkahlert.kommons.time.plus
-import com.bkahlert.kommons.time.seconds
 import com.clickup.api.TimeEntry
 import io.kotest.matchers.string.shouldContain
 import org.jetbrains.compose.web.testutils.runTest
@@ -17,7 +15,8 @@ import kotlin.test.Test
 import kotlin.time.Duration.Companion.minutes
 
 @Suppress("unused")
-class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(TimeEntry.serializer()),
+class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(
+    NamedSerializer(TimeEntry.serializer()),
     // language=JSON
     """
     {
@@ -74,7 +73,8 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
         "task_url": "https://app.clickup.com/t/null"
       }
     }
-    """.trimIndent()) {
+    """.trimIndent()
+) {
 
     val request = """
         {
@@ -97,7 +97,7 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(NamedSerializer(Time
     @Test
     fun testTimeFormat() = runTest {
         composition {
-            PomodoroTimer(ClickUpFixtures.timeEntry(start = Now - 2.minutes))
+            PomodoroTimer(rememberPomodoroTimerState(ClickUpFixtures.timeEntry(start = Now - 2.minutes)))
         }
 
         console.log(root.innerHTML)

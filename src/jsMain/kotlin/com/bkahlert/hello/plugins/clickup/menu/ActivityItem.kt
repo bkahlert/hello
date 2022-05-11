@@ -10,6 +10,8 @@ import com.semanticui.compose.module.DropdownMenuElement
 import com.semanticui.compose.module.DropdownMenuItemElement
 import com.semanticui.compose.module.Item
 import com.semanticui.compose.popup
+import org.jetbrains.compose.web.css.maxWidth
+import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 
@@ -27,6 +29,7 @@ fun SemanticElementScope<DropdownMenuElement, *>.ActivityItem(
         attr("data-position", "left center")
         attr("data-html", activity.popupHtml())
         style { textOverflow() }
+        style { maxWidth(100.percent) }
         onMouseEnter { jQuery(it.target).popup("lastResort" to true).popup("show") }
         attrs?.invoke(this)
     }) {

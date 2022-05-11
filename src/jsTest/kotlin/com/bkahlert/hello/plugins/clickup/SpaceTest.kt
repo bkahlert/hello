@@ -1,6 +1,6 @@
 package com.bkahlert.hello.plugins.clickup
 
-import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.serialization.SerializerTest
 import com.clickup.api.Space
 import com.clickup.api.SpaceID
@@ -8,7 +8,8 @@ import com.clickup.api.Status
 import com.clickup.api.StatusID
 
 @Suppress("unused")
-class SpaceTest : SerializerTest<Space>(Space.serializer(),
+class SpaceTest : SerializerTest<Space>(
+    Space.serializer(),
     // language=JSON
     """
         {
@@ -40,7 +41,8 @@ class SpaceTest : SerializerTest<Space>(Space.serializer(),
             ],
             "multiple_assignees": false
         }
-    """.trimIndent() to space())
+    """.trimIndent() to space()
+)
 
 fun space(
     id: SpaceID = SpaceID("1"),

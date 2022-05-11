@@ -3,7 +3,7 @@ package com.bkahlert.hello.ui.demo.clickup
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.plugins.clickup.Pomodoro
 import com.bkahlert.hello.ui.demo.ImageFixtures
-import com.bkahlert.kommons.Color
+import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.text.randomString
 import com.bkahlert.kommons.time.Now
@@ -341,60 +341,66 @@ object ClickUpFixtures {
         (Space1FolderLists + Space1FolderlessLists + Space2FolderLists + Space2FolderlessLists).forEach { taskList ->
             val folder = checkNotNull(taskList.folder)
             Spaces.first { it.id == taskList.space?.id }.statuses.forEach { status ->
-                add(task(
-                    list = taskList.asPreview(), folder = folder, space = checkNotNull(taskList.space), status = status.asPreview(),
-                    name = "Task with status ${status.status}",
-                    description = "This is a sample task with status ${status.status}",
-                    startDate = when (status.status.lowercase()) {
-                        "to do" -> null
-                        else -> Now - 2.days
-                    },
-                    timeSpent = when (status.status.lowercase()) {
-                        "to do" -> null
-                        "closed" -> 18.hours
-                        else -> 6.hours
-                    },
-                    tags = when (status.status.lowercase()) {
-                        "to do" -> emptyList()
-                        "closed" -> listOf(Pomodoro.Type.values().random().tag, Pomodoro.Status.Completed.tag)
-                        else -> listOf(Pomodoro.Type.values().random().tag)
-                    },
-                ))
+                add(
+                    task(
+                        list = taskList.asPreview(), folder = folder, space = checkNotNull(taskList.space), status = status.asPreview(),
+                        name = "Task with status ${status.status}",
+                        description = "This is a sample task with status ${status.status}",
+                        startDate = when (status.status.lowercase()) {
+                            "to do" -> null
+                            else -> Now - 2.days
+                        },
+                        timeSpent = when (status.status.lowercase()) {
+                            "to do" -> null
+                            "closed" -> 18.hours
+                            else -> 6.hours
+                        },
+                        tags = when (status.status.lowercase()) {
+                            "to do" -> emptyList()
+                            "closed" -> listOf(Pomodoro.Type.values().random().tag, Pomodoro.Status.Completed.tag)
+                            else -> listOf(Pomodoro.Type.values().random().tag)
+                        },
+                    )
+                )
             }
             @Suppress("SpellCheckingInspection")
-            add(task(
-                list = taskList.asPreview(), folder = folder, space = checkNotNull(taskList.space),
-                name = "Task with most meta data set",
-                description = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\nAt vero eos et accusam et justo duo dolores et ea rebum.<br><strong>Stet clita kasd gubergren,</strong> no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-                dateCreated = Now - 3.days,
-                dateUpdated = Now - 4.hours,
-                dateClosed = null,
-                tags = listOf(
-                    Pomodoro.Type.Debug.tag,
-                    tag("random tag ${randomString(2)}"),
-                ),
-                priority = TaskPriority.High,
-                dueDate = Now + 2.days,
-                startDate = Now - 3.days + 2.hours + 26.minutes,
-                points = 4.5,
-                timeEstimate = 12.hours,
-                timeSpent = 3.5.hours,
-            ))
+            add(
+                task(
+                    list = taskList.asPreview(), folder = folder, space = checkNotNull(taskList.space),
+                    name = "Task with most meta data set",
+                    description = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\nAt vero eos et accusam et justo duo dolores et ea rebum.<br><strong>Stet clita kasd gubergren,</strong> no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+                    dateCreated = Now - 3.days,
+                    dateUpdated = Now - 4.hours,
+                    dateClosed = null,
+                    tags = listOf(
+                        Pomodoro.Type.Debug.tag,
+                        tag("random tag ${randomString(2)}"),
+                    ),
+                    priority = TaskPriority.High,
+                    dueDate = Now + 2.days,
+                    startDate = Now - 3.days + 2.hours + 26.minutes,
+                    points = 4.5,
+                    timeEstimate = 12.hours,
+                    timeSpent = 3.5.hours,
+                )
+            )
 
-            add(task(
-                list = taskList.asPreview(), folder = folder, space = taskList.space,
-                name = "minimal task",
-                dateCreated = null,
-                dateUpdated = null,
-                dateClosed = null,
-                tags = emptyList(),
-                priority = null,
-                dueDate = null,
-                startDate = null,
-                points = null,
-                timeEstimate = null,
-                timeSpent = null,
-            ))
+            add(
+                task(
+                    list = taskList.asPreview(), folder = folder, space = taskList.space,
+                    name = "minimal task",
+                    dateCreated = null,
+                    dateUpdated = null,
+                    dateClosed = null,
+                    tags = emptyList(),
+                    priority = null,
+                    dueDate = null,
+                    startDate = null,
+                    points = null,
+                    timeEstimate = null,
+                    timeSpent = null,
+                )
+            )
         }
     }
 
