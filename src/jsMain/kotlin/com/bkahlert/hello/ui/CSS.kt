@@ -161,12 +161,12 @@ fun radialGradient(colors: List<CSSColorValue>): String =
 
 fun metalicGradient(color: Color): String =
     radialGradient(
-        color.withAlpha(1.0),
-        color.withAlpha(0.8),
-        color.withAlpha(1.0),
-        color.withAlpha(0.9),
-        color.withAlpha(1.0),
-        color.withAlpha(0.9),
+        color.fade(1.0),
+        color.fade(0.8),
+        color.fade(1.0),
+        color.fade(0.9),
+        color.fade(1.0),
+        color.fade(0.9),
     )
 
 fun StyleScope.fontFamily(fonts: List<String>) = fontFamily(*fonts.toTypedArray())

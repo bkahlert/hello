@@ -70,7 +70,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-                implementation("com.bkahlert.kommons:kommons:1.12.0-dev.6.uncommitted+17a6503")
+                implementation("com.bkahlert.kommons:kommons:1.12.0-SNAPSHOT")
             }
 
             languageSettings.apply {

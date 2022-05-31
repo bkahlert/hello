@@ -1,7 +1,6 @@
 import com.bkahlert.hello.JsonSerializer
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.serialize
-import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.div
 import com.bkahlert.kommons.serialization.Named
@@ -290,9 +289,4 @@ data class AccessTokenBasedClickUpClient(
                 setBody(AddTagsToTimeEntriesRequest(timeEntryIDs, tags))
             }
         }
-
-    override fun toString(): String = asString {
-        put(::cacheStorage.name, cacheStorage)
-        put(::clickUpUrl.name, clickUpUrl)
-    }
 }

@@ -4,7 +4,6 @@ import com.bkahlert.Brand
 import com.bkahlert.Brand.colors
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.TaskActivity
-import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.time.Now
@@ -137,7 +136,7 @@ sealed interface Activity<ID : Identifier<*>> {
         override val name: String
             get() = timeEntry.task?.name ?: taskActivity?.name ?: "— Timer with no associated task —"
         override val color: Color?
-            get() = timeEntry.task?.status?.color ?: taskActivity?.color ?: Brand.colors.white.withAlpha(1.0)
+            get() = timeEntry.task?.status?.color ?: taskActivity?.color ?: Brand.colors.white.fade(1.0)
         override val url: URL? get() = timeEntry.url ?: timeEntry.url ?: taskActivity?.url
         override val meta: List<Meta>
             get() = buildList {
@@ -154,17 +153,6 @@ sealed interface Activity<ID : Identifier<*>> {
                 addAll(timeEntry.tags)
                 taskActivity?.also { addAll(it.tags) }
             }
-
-        override fun toString(): String = asString {
-            put(::id.name, id)
-            put(::task.name, task)
-            put(::name.name, name)
-            put(::color.name, color)
-            put(::url.name, url)
-            put(::meta.name, meta)
-            put(::descriptions.name, descriptions)
-            put(::tags.name, tags)
-        }
     }
 
     data class TaskActivity(
@@ -204,16 +192,5 @@ sealed interface Activity<ID : Identifier<*>> {
             }
         override val descriptions: Map<String, String?> get() = mapOf("Task" to task.description?.takeUnless { it.isBlank() })
         override val tags: Set<Tag> get() = task.tags.toSet()
-
-        override fun toString(): String = asString {
-            put(::id.name, id)
-            put(::task.name, task)
-            put(::name.name, name)
-            put(::color.name, color)
-            put(::url.name, url)
-            put(::meta.name, meta)
-            put(::descriptions.name, descriptions)
-            put(::tags.name, tags)
-        }
     }
 }

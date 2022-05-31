@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.ui.textOverflow
-import com.bkahlert.kommons.text.quoted
-import com.bkahlert.kommons.text.takeUnlessBlank
+import com.bkahlert.kommons.debug.quoted
+import com.bkahlert.kommons.takeUnlessBlank
 import com.clickup.api.TaskListID
 import com.semanticui.compose.element.Icon
 import com.semanticui.compose.element.Input
@@ -68,7 +68,7 @@ fun rememberActivityDropdownState(
         console.log("selection changed from $old to $new")
     },
     onCreate: (TaskListID, String?) -> Unit = { taskListId, name ->
-        console.log("task added to $taskListId with name ${name.quoted}")
+        console.log("task added to $taskListId with name ${name?.quoted}")
     },
     debug: Boolean = false,
 ): ActivityDropdownState {
@@ -119,8 +119,8 @@ fun ActivityDropdown(
         }
         Menu({
             style {
-                minWidth(200.px) // https://css-tricks.com/flexbox-truncated-text/
-                maxWidth(100.percent)
+                minWidth(350.px) // https://css-tricks.com/flexbox-truncated-text/
+                maxWidth(150.percent)
             }
         }) {
             Header {

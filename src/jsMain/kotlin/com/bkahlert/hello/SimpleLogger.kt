@@ -1,9 +1,10 @@
 package com.bkahlert.hello
 
-import com.bkahlert.kommons.js.groupCatching
-import com.bkahlert.kommons.js.grouping
-import com.bkahlert.kommons.js.trace
-import com.bkahlert.kommons.toSimpleClassName
+import com.bkahlert.kommons.debug.console
+import com.bkahlert.kommons.debug.groupCatching
+import com.bkahlert.kommons.debug.grouping
+import com.bkahlert.kommons.debug.renderType
+import com.bkahlert.kommons.debug.toJson
 import io.ktor.util.logging.Logger
 import io.ktor.client.plugins.logging.Logger as PluginLogger
 
@@ -75,12 +76,22 @@ class SimpleLogger(
     companion object {
         /** Creates a [SimpleLogger] for `this` object's [JsClass]. */
         fun Any.simpleLogger(): SimpleLogger =
-            SimpleLogger(toSimpleClassName())
+            SimpleLogger(renderType())
     }
 }
 
-inline fun <reified R> SimpleLogger.grouping(label: String? = null, collapsed: Boolean = true, crossinline block: () -> R): R =
-    console.grouping(label, collapsed, block)
+inline fun <reified R> SimpleLogger.grouping(
+    label: String? = null,
+    collapsed: Boolean = true,
+    render: (R) -> Any? = { it.toJson() },
+    crossinline block: () -> R
+): R =
+    console.grouping(label, collapsed, render, block)
 
-suspend inline fun <reified R> SimpleLogger.groupCatching(label: String? = null, collapsed: Boolean = true, crossinline block: suspend () -> R): Result<R> =
-    console.groupCatching(label, collapsed) { block() }
+suspend inline fun <reified R> SimpleLogger.groupCatching(
+    label: String? = null,
+    collapsed: Boolean = true,
+    render: (R) -> Any? = { it.toJson() },
+    crossinline block: suspend () -> R
+): Result<R> =
+    console.groupCatching(label, collapsed, render) { block() }

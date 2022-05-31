@@ -12,7 +12,6 @@ import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.ActivityGroup
 import com.bkahlert.hello.plugins.clickup.menu.byIdOrNull
 import com.bkahlert.hello.search.next
-import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.text.toSentenceCaseString
 import com.clickup.api.Folder
 import com.clickup.api.FolderID
@@ -108,14 +107,6 @@ sealed class ClickUpMenuState {
                     /** The data related to the [selectedTeam]. */
                     val data: Data,
                 ) : Connected(client, user, teams) {
-
-                    override fun toString(): String = asString {
-                        put(::user.name, user)
-                        put(::teams.name, teams)
-                        put(::selectedTeam.name, selectedTeam)
-                        put(::selected.name, selected)
-                        put(::data.name, data)
-                    }
 
                     fun select(selected: Selection): TeamSelected = copy(selected = selected)
 
@@ -227,12 +218,6 @@ sealed class ClickUpMenuState {
                             override val tasks: List<Task>,
                             override val spaces: List<Space>,
                         ) : Data(runningTimeEntry, tasks, spaces) {
-                            override fun toString(): String = asString {
-                                put(::runningTimeEntry.name, runningTimeEntry)
-                                put(::tasks.name, tasks.size)
-                                put(::spaces.name, spaces.size)
-                            }
-
                             companion object {
                                 suspend fun load(user: User, team: Team, client: ClickUpClient): CoreData = withContext(Dispatchers.Default) {
                                     val deferredRunningTimeEntry = async { client.getRunningTimeEntry(team, user) }
@@ -261,14 +246,6 @@ sealed class ClickUpMenuState {
                             /** The task lists and the folders they belong to. */
                             val folderLists: Map<FolderID, List<TaskList>>,
                         ) : Data(runningTimeEntry, tasks, spaces) {
-                            override fun toString(): String = asString {
-                                put(::runningTimeEntry.name, runningTimeEntry)
-                                put(::tasks.name, tasks.size)
-                                put(::spaces.name, spaces.size)
-                                put(::folders.name, folders.size)
-                                put(::spaceLists.name, spaceLists.size)
-                                put(::folderLists.name, folderLists.size)
-                            }
 
                             companion object {
                                 suspend fun load(coreData: CoreData, client: ClickUpClient): FullData = withContext(Dispatchers.Default) {

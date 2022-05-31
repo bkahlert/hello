@@ -95,17 +95,17 @@ object SiteColors {
     inline val PinkBackground: Color get() = RGB(0xFFE3FB)
     inline val BrownBackground: Color get() = RGB(0xF1E2D3)
 
-//    inline val RedHeaderColor get() = "darken(@redTextColor, 5)"
-//    inline val OliveHeaderColor get() = "darken(@oliveTextColor, 5)"
-//    inline val GreenHeaderColor get() = "darken(@greenTextColor, 5)"
-//    inline val YellowHeaderColor get() = "darken(@yellowTextColor, 5)"
-//    inline val BlueHeaderColor get() = "darken(@blueTextColor, 5)"
-//    inline val TealHeaderColor get() = "darken(@tealTextColor, 5)"
-//    inline val PinkHeaderColor get() = "darken(@pinkTextColor, 5)"
-//    inline val VioletHeaderColor get() = "darken(@violetTextColor, 5)"
-//    inline val PurpleHeaderColor get() = "darken(@purpleTextColor, 5)"
-//    inline val OrangeHeaderColor get() = "darken(@orangeTextColor, 5)"
-//    inline val BrownHeaderColor get() = "darken(@brownTextColor, 5)"
+    inline val RedHeaderColor get() = RedTextColor.toHSL().darken(.05)
+    inline val OliveHeaderColor get() = OliveTextColor.toHSL().darken(.05)
+    inline val GreenHeaderColor get() = GreenTextColor.toHSL().darken(.05)
+    inline val YellowHeaderColor get() = YellowTextColor.toHSL().darken(.05)
+    inline val BlueHeaderColor get() = BlueTextColor.toHSL().darken(.05)
+    inline val TealHeaderColor get() = TealTextColor.toHSL().darken(.05)
+    inline val PinkHeaderColor get() = PinkTextColor.toHSL().darken(.05)
+    inline val VioletHeaderColor get() = VioletTextColor.toHSL().darken(.05)
+    inline val PurpleHeaderColor get() = PurpleTextColor.toHSL().darken(.05)
+    inline val OrangeHeaderColor get() = OrangeTextColor.toHSL().darken(.05)
+    inline val BrownHeaderColor get() = BrownTextColor.toHSL().darken(.05)
 
     inline val RedTextColor: Color get() = Red
     inline val OrangeTextColor: Color get() = Orange

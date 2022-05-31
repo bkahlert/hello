@@ -7,7 +7,8 @@ import com.clickup.api.Folder
 import kotlinx.serialization.builtins.ListSerializer
 
 @Suppress("unused")
-class FolderTest : BasicSerializerTest<Named<List<Folder>>>(NamedSerializer(ListSerializer(Folder.serializer())),
+class FolderTest : BasicSerializerTest<Named<List<Folder>>>(
+    NamedSerializer(ListSerializer(Folder.serializer())),
     // language=JSON
     """
     {
@@ -221,4 +222,5 @@ class FolderTest : BasicSerializerTest<Named<List<Folder>>>(NamedSerializer(List
             }
         ]
     }
-    """.trimIndent())
+    """.trimIndent()
+)

@@ -19,7 +19,7 @@ import com.bkahlert.hello.ui.demo.failedResponse
 import com.bkahlert.hello.ui.demo.misc.ViewModelDemoStuff.TestViewModel
 import com.bkahlert.hello.ui.demo.response
 import com.bkahlert.kommons.math.isOdd
-import com.bkahlert.kommons.text.randomString
+import com.bkahlert.kommons.randomString
 import com.bkahlert.kommons.time.Now
 import com.clickup.api.Tag
 import com.clickup.api.TaskID

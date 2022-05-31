@@ -22,7 +22,7 @@ object Brand {
     val fontFamily = fonts.joinToString(",") { "'$it'" }
 
     object colors {
-        val black: Color = HSL(0.deg, 0, 5)
+        val black: Color = HSL(0.deg, 0.0, 5.0)
         val red: Color = HSL(329.deg, 73.2, 43.9)
         val green: Color = HSL(101.deg, 45.2, 49.4)
         val yellow: Color = HSL(49.deg, 100.0, 57.8)
@@ -31,11 +31,10 @@ object Brand {
         val cyan: Color = HSL(186.deg, 98.6, 28.2)
         val white: Color = HSL(0.deg, 0.0, 86.3)
 
-        val primary: Color = blue
-        val secondary: Color = magenta
+        val primary: Color get() = blue
+        val secondary: Color get() = magenta
 
         val border: Color = RGB("#5f6368").toHSL()
-        val input: Color = HSL(0.deg, 100, 100)
     }
 
     val rainbow: List<Color> = listOf(

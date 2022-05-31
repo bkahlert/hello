@@ -13,6 +13,9 @@ import com.bkahlert.hello.ui.demo.clickup.ActivityDropdownDemo
 import com.bkahlert.hello.ui.demo.clickup.ClickUpMenuDemo
 import com.bkahlert.hello.ui.demo.clickup.PomodoroStarterDemo
 import com.bkahlert.hello.ui.demo.clickup.PomodoroTimerDemo
+import com.bkahlert.hello.ui.demo.kommons.ModifiedColorDemo
+import com.bkahlert.hello.ui.demo.kommons.RandomColorsDemo
+import com.bkahlert.hello.ui.demo.kommons.SiteColorsDemo
 import com.bkahlert.hello.ui.demo.misc.DimmingLoaderDemo
 import com.bkahlert.hello.ui.demo.misc.IdleDetectoryDemo
 import com.bkahlert.hello.ui.demo.misc.MutableFlowStateDemo
@@ -118,6 +121,17 @@ private fun DebugUI(
                     }
                     Column {
                         SearchInputDemos()
+                    }
+                }
+            },
+            "Kommons" to {
+                Grid {
+                    Column {
+                        SiteColorsDemo()
+                    }
+                    Column {
+                        RandomColorsDemo()
+                        ModifiedColorDemo()
                     }
                 }
             },

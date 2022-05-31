@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.Brand.colors
+import com.bkahlert.Brand
 import com.bkahlert.hello.AppStylesheet.CUSTOM_BACKGROUND_COLOR
 import com.bkahlert.hello.AppStylesheet.GRADIENT_HEIGHT
 import com.bkahlert.hello.AppStylesheet.Grid.Custom
@@ -30,14 +30,14 @@ import com.bkahlert.hello.ui.demo.renderDebugMode
 import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
 import com.bkahlert.kommons.compose.Length
+import com.bkahlert.kommons.debug.Object
+import com.bkahlert.kommons.debug.console
+import com.bkahlert.kommons.debug.entries
+import com.bkahlert.kommons.debug.grouping
+import com.bkahlert.kommons.debug.jsonTable
+import com.bkahlert.kommons.debug.toJson
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.url
-import com.bkahlert.kommons.js.Object
-import com.bkahlert.kommons.js.data
-import com.bkahlert.kommons.js.entries
-import com.bkahlert.kommons.js.grouping
-import com.bkahlert.kommons.js.table
-import com.bkahlert.kommons.js.toJson
 import com.clickup.api.Task
 import com.semanticui.compose.element.AnkerButton
 import com.semanticui.compose.element.ButtonGroupElementType.Icon
@@ -213,9 +213,9 @@ fun App(state: AppState = rememberAppState()) {
                 backgroundColor(Color.transparent)
                 backgroundImage(
                     linearGradient(
-                        CUSTOM_BACKGROUND_COLOR.withAlpha(0),
+                        CUSTOM_BACKGROUND_COLOR.fade(0.0),
                         CUSTOM_BACKGROUND_COLOR,
-                        CUSTOM_BACKGROUND_COLOR.withAlpha(0)
+                        CUSTOM_BACKGROUND_COLOR.fade(0.0)
                     )
                 )
             }
@@ -277,7 +277,7 @@ object AppStylesheet : StyleSheet() {
 
     val HEADER_HEIGHT: Length = 4.px
     val GRADIENT_HEIGHT: Length = 0.3.cssRem
-    val CUSTOM_BACKGROUND_COLOR = colors.white
+    val CUSTOM_BACKGROUND_COLOR = Brand.colors.white
 
     enum class Grid {
         Links, Header, Search, Plugins, Margin, CustomGradient, Custom

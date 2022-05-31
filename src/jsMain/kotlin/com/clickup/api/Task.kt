@@ -2,7 +2,6 @@
 
 package com.clickup.api
 
-import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
@@ -56,40 +55,6 @@ data class Task(
         status = status,
         customType = null,
     )
-
-    override fun toString(): String = asString {
-        put(::id.name, id)
-        put(::customId.name, customId)
-        put(::name.name, name)
-        put(::textContent.name, textContent)
-        put(::description.name, description)
-        put(::status.name, status)
-        put(::orderIndex.name, orderIndex)
-        put(::dateCreated.name, dateCreated)
-        put(::dateUpdated.name, dateUpdated)
-        put(::dateClosed.name, dateClosed)
-        put(::creator.name, creator)
-        put(::assignees.name, assignees)
-        put(::watchers.name, watchers)
-        put(::checklists.name, checklists)
-        put(::tags.name, tags)
-        put(::parent.name, parent)
-        put(::priority.name, priority)
-        put(::dueDate.name, dueDate)
-        put(::startDate.name, startDate)
-        put(::points.name, points)
-        put(::timeEstimate.name, timeEstimate)
-        put(::timeSpent.name, timeSpent)
-        put(::customFields.name, customFields)
-        put(::dependencies.name, dependencies)
-        put(::linkedTasks.name, linkedTasks)
-        put(::teamId.name, teamId)
-        put(::url.name, url)
-        put(::permissionLevel.name, permissionLevel)
-        put(::list.name, list)
-        put(::folder.name, folder)
-        put(::space.name, space)
-    }
 }
 
 @Serializable value class TaskID(override val id: String) : Identifier<String>

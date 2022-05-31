@@ -10,11 +10,10 @@ import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeede
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuViewModel
 import com.bkahlert.hello.plugins.clickup.rememberClickUpMenuViewModel
 import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures.running
-import com.bkahlert.kommons.asString
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.URL
-import com.bkahlert.kommons.text.randomString
+import com.bkahlert.kommons.randomString
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.compareTo
 import com.bkahlert.kommons.time.seconds
@@ -335,17 +334,6 @@ open class ClickUpTestClient(
         timeEntries = timeEntries.map {
             it.takeUnless { it.wid == team.id && timeEntryIDs.contains(it.id) } ?: it.copy(tags = buildSet { addAll(it.tags);addAll(tags) }.toList())
         }
-    }
-
-    override fun toString(): String = asString {
-        put(::user.name, user)
-        put(::teams.name, teams)
-        put(::tasks.name, tasks)
-        put(::spaces.name, spaces)
-        put(::lists.name, lists)
-        put(::folders.name, folders)
-        put(::timeEntries.name, timeEntries)
-        put(::runningTimeEntry.name, runningTimeEntry)
     }
 
     /**

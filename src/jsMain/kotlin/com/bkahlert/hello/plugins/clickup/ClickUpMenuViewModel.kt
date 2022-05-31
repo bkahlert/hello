@@ -13,11 +13,13 @@ import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeede
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.plugins.clickup.ClickUpMenuState.Transitioning
+import com.bkahlert.kommons.debug.CustomToString.Ignore
+import com.bkahlert.kommons.debug.render
+import com.bkahlert.kommons.debug.renderType
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
 import com.bkahlert.kommons.time.seconds
-import com.bkahlert.kommons.toSimpleClassName
 import com.clickup.api.Tag
 import com.clickup.api.TaskID
 import com.clickup.api.TaskListID
@@ -96,14 +98,21 @@ class ClickUpMenuViewModelImpl(
     private fun update(name: String, background: Boolean = false, operation: suspend CoroutineScope.(Succeeded) -> ClickUpMenuState) {
         if (!background) {
             _state.update { currentState ->
-                logger.debug("started $name in state ${currentState.toSimpleClassName()}")
+                logger.debug("started $name in state ${currentState.renderType()}")
                 Transitioning(currentState.lastSucceededState)
             }
         }
         if (!background || _state.value !is Failed) {
             updateJob = coroutineScope.launch {
                 _state.update { currentState ->
-                    logger.groupCatching("$name in state ${currentState.toSimpleClassName()}") {
+                    logger.groupCatching(
+                        label = "$name in state ${currentState.renderType()}",
+                        render = {
+                            it.render(customToString = Ignore) { _, prop ->
+                                prop != "client" && prop != "avatar" && prop != "profilePicture"
+                            }
+                        }
+                    ) {
                         operation(currentState.lastSucceededState)
                     }.getOrElse {
                         Failed(

@@ -1,7 +1,6 @@
 package com.bkahlert.hello.ui.demo.clickup
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.Brand
 import com.bkahlert.hello.plugins.clickup.menu.Activity
 import com.bkahlert.hello.plugins.clickup.menu.Activity.RunningTaskActivity
 import com.bkahlert.hello.plugins.clickup.menu.ActivityDropdown
@@ -17,7 +16,6 @@ import com.clickup.api.Space
 import com.clickup.api.Task
 import com.clickup.api.TaskList
 import com.clickup.api.TimeEntry
-import kotlin.random.Random
 
 @Composable
 fun ActivityDropdownDemo() {
@@ -54,7 +52,7 @@ object ActivityDropdownFixtures {
         space: Space? = ClickUpFixtures.Spaces.first(),
         folder: FolderPreview? = ClickUpFixtures.Space1FolderLists.first().folder,
         list: TaskList? = ClickUpFixtures.Space1FolderLists.first(),
-        color: Color? = Brand.colors.primary.toHSL().run { copy(h = Random.nextDouble(0.0, 360.0)) },
+        color: Color? = Color.random(),
         tasks: List<Task> = ClickUpFixtures.Tasks,
         fromIndex: Int = 0,
         toIndex: Int = tasks.size,

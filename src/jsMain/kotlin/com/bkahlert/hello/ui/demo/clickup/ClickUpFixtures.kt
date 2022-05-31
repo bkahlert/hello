@@ -5,7 +5,7 @@ import com.bkahlert.hello.plugins.clickup.Pomodoro
 import com.bkahlert.hello.ui.demo.ImageFixtures
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.URL
-import com.bkahlert.kommons.text.randomString
+import com.bkahlert.kommons.randomString
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.time.days
 import com.bkahlert.kommons.time.hours
@@ -45,7 +45,6 @@ import com.clickup.api.Watcher
 import com.clickup.api.asAssignee
 import com.clickup.api.asCreator
 import kotlin.js.Date
-import kotlin.random.Random
 import kotlin.time.Duration
 
 object ClickUpFixtures {
@@ -218,12 +217,12 @@ object ClickUpFixtures {
             taskList {
                 name = "Close friends"
                 taskCount = 3
-                status = TaskListStatus("private", Color.RGB(0x2ecd6f).toHSL().copy(h = 120.0))
+                status = TaskListStatus("private", Color.Default.copy(hue = .2))
             }
             taskList {
                 name = "Any friends"
                 taskCount = 5
-                status = TaskListStatus("private", Color.RGB(0x2ecd6f).toHSL().copy(h = 180.0))
+                status = TaskListStatus("private", Color.Default.copy(hue = .4))
             }
         })
     }
@@ -245,13 +244,13 @@ object ClickUpFixtures {
             space = Spaces[1]
             name = "Company A"
             taskCount = 6
-            status = TaskListStatus("private", Color.RGB(0x2ecd6f).toHSL().copy(h = 210.0))
+            status = TaskListStatus("private", Color.Default.copy(hue = .6))
         })
         add(TaskListBuilder.build {
             space = Spaces[1]
             name = "Company B"
             taskCount = 5
-            status = TaskListStatus("private", Color.RGB(0x2ecd6f).toHSL().copy(h = 250.0))
+            status = TaskListStatus("private", Color.Default.copy(hue = .8))
         })
     }
 
@@ -334,7 +333,7 @@ object ClickUpFixtures {
 
     fun tag(
         name: String,
-        color: Color = Pomodoro.Type.Default.tag.foregroundColor.toHSL().copy(Random.nextDouble(0.0, 360.0)),
+        color: Color = Pomodoro.Type.Default.tag.foregroundColor.toHSL().randomize(hue = 1.0),
     ) = Tag(name = name, tagForeground = color, tagBackground = color, creator = User.id)
 
     val Tasks: List<Task> = buildList {
