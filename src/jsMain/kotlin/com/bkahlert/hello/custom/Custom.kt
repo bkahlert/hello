@@ -12,7 +12,6 @@ import com.bkahlert.hello.ui.Spinner
 import com.bkahlert.kommons.backgroundImage
 import com.bkahlert.kommons.text.joinLinesToString
 import io.ktor.http.Url
-import org.jetbrains.compose.web.ExperimentalComposeWebApi
 import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.CSSBuilder
 import org.jetbrains.compose.web.css.Style
@@ -94,7 +93,6 @@ object CustomStyleSheet : StyleSheet() {
     }
 }
 
-@OptIn(ExperimentalComposeWebApi::class)
 fun CSSBuilder.spinner() {
     backgroundImage(Spinner(colors.black.fade(.67)))
     backgroundRepeat("no-repeat")

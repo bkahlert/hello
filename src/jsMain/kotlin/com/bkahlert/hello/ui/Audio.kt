@@ -1,7 +1,7 @@
 package com.bkahlert.hello.ui
 
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.plugins.clickup.Pomodoro
+import com.bkahlert.hello.clickup.ui.Pomodoro
 import com.bkahlert.kommons.text.truncateEnd
 import kotlinx.browser.document
 import org.w3c.dom.HTMLAudioElement

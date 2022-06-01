@@ -1,7 +1,7 @@
 package com.bkahlert.hello.ui
 
+import com.bkahlert.hello.semanticui.BreakPoints
 import com.bkahlert.kommons.compose.Length
-import com.semanticui.compose.BreakPoints
 import org.jetbrains.compose.web.css.px
 
 object ViewportDimension {

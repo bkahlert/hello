@@ -2,14 +2,14 @@ package com.bkahlert.hello.ui
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.SimpleLogger
-import com.semanticui.compose.SemanticAttrBuilder
-import com.semanticui.compose.SemanticBuilder
-import com.semanticui.compose.collection.Header
-import com.semanticui.compose.collection.Message
-import com.semanticui.compose.collection.MessageElement
-import com.semanticui.compose.collection.MessageElementType.Error
-import com.semanticui.compose.module.Accordion
-import com.semanticui.compose.module.Dropdown
+import com.bkahlert.hello.semanticui.SemanticAttrBuilder
+import com.bkahlert.hello.semanticui.SemanticBuilder
+import com.bkahlert.hello.semanticui.collection.Header
+import com.bkahlert.hello.semanticui.collection.Message
+import com.bkahlert.hello.semanticui.collection.MessageElement
+import com.bkahlert.hello.semanticui.collection.MessageElementType.Error
+import com.bkahlert.hello.semanticui.module.Accordion
+import com.bkahlert.hello.semanticui.module.Dropdown
 import org.jetbrains.compose.web.dom.Pre
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement

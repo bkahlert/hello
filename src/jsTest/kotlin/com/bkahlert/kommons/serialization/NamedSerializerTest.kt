@@ -1,9 +1,9 @@
 package com.bkahlert.kommons.serialization
 
-import com.bkahlert.hello.plugins.clickup.user
-import com.bkahlert.hello.ui.demo.clickup.ClickUpFixtures
-import com.clickup.api.User
-import com.clickup.api.UserID
+import com.bkahlert.hello.clickup.api.User
+import com.bkahlert.hello.clickup.api.UserID
+import com.bkahlert.hello.clickup.ui.user
+import com.bkahlert.hello.debug.clickup.ClickUpFixtures
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.nullable
 

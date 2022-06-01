@@ -1,13 +1,13 @@
 package com.bkahlert.hello.ui
 
 import androidx.compose.runtime.Composable
-import com.semanticui.compose.SemanticAttrBuilder
-import com.semanticui.compose.SemanticBuilder
-import com.semanticui.compose.element.Loader
-import com.semanticui.compose.element.LoaderElement
-import com.semanticui.compose.element.TextLoader
-import com.semanticui.compose.module.Dimmer
-import com.semanticui.compose.module.DimmerElement
+import com.bkahlert.hello.semanticui.SemanticAttrBuilder
+import com.bkahlert.hello.semanticui.SemanticBuilder
+import com.bkahlert.hello.semanticui.element.Loader
+import com.bkahlert.hello.semanticui.element.LoaderElement
+import com.bkahlert.hello.semanticui.element.TextLoader
+import com.bkahlert.hello.semanticui.module.Dimmer
+import com.bkahlert.hello.semanticui.module.DimmerElement
 import org.w3c.dom.HTMLDivElement
 
 /**
