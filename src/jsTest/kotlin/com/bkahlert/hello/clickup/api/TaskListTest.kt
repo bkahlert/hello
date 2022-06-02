@@ -1,15 +1,5 @@
-package com.bkahlert.hello.clickup.ui
+package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.hello.clickup.api.Assignee
-import com.bkahlert.hello.clickup.api.FolderID
-import com.bkahlert.hello.clickup.api.FolderPreview
-import com.bkahlert.hello.clickup.api.SpaceID
-import com.bkahlert.hello.clickup.api.SpacePreview
-import com.bkahlert.hello.clickup.api.TaskList
-import com.bkahlert.hello.clickup.api.TaskListID
-import com.bkahlert.hello.clickup.api.TaskListPriority
-import com.bkahlert.hello.clickup.api.TaskListStatus
-import com.bkahlert.hello.clickup.api.asAssignee
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.serialization.SerializerTest

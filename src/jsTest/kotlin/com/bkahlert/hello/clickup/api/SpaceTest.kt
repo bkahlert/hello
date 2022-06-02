@@ -1,9 +1,5 @@
-package com.bkahlert.hello.clickup.ui
+package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.hello.clickup.api.Space
-import com.bkahlert.hello.clickup.api.SpaceID
-import com.bkahlert.hello.clickup.api.Status
-import com.bkahlert.hello.clickup.api.StatusID
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.serialization.SerializerTest
 

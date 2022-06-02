@@ -72,8 +72,5 @@ data class Named<T>(
 
         inline fun <reified T : Any> ofMultiple(multiple: List<T>): Named<List<T>> =
             Named("${T::class.derivedName}s", multiple)
-
-        inline fun <reified T : Any> ofMultiple(vararg multiple: T): Named<Array<T>> =
-            Named("${T::class.derivedName}s", multiple.toList().toTypedArray())
     }
 }

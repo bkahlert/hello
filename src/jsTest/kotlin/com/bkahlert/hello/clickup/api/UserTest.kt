@@ -1,7 +1,5 @@
-package com.bkahlert.hello.clickup.ui
+package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.hello.clickup.api.User
-import com.bkahlert.hello.clickup.api.UserID
 import com.bkahlert.hello.debug.ImageFixtures
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures
 import com.bkahlert.kommons.color.Color

@@ -2,7 +2,7 @@ package com.bkahlert.kommons.serialization
 
 import com.bkahlert.hello.clickup.api.User
 import com.bkahlert.hello.clickup.api.UserID
-import com.bkahlert.hello.clickup.ui.user
+import com.bkahlert.hello.clickup.api.user
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.nullable
@@ -12,15 +12,18 @@ class NamedSerializerTest {
 
     inner class OfSingle {
 
-        inner class OfNull : SerializerTest<Named<User?>>(NamedSerializer(User.serializer().nullable),
+        inner class OfNull : SerializerTest<Named<User?>>(
+            NamedSerializer(User.serializer().nullable),
             // language=JSON
             """
                 {
                     "data": null
                 }
-            """.trimIndent() to Named.data<User?>(null))
+            """.trimIndent() to Named.data<User?>(null)
+        )
 
-        inner class OfNonNull : SerializerTest<Named<User>>(NamedSerializer(User.serializer()),
+        inner class OfNonNull : SerializerTest<Named<User>>(
+            NamedSerializer(User.serializer()),
             // language=JSON
             """
                 {
@@ -40,7 +43,8 @@ class NamedSerializerTest {
         )
     }
 
-    inner class OfMultiple : SerializerTest<Named<List<User>>>(NamedSerializer(ListSerializer(User.serializer())),
+    inner class OfMultiple : SerializerTest<Named<List<User>>>(
+        NamedSerializer(ListSerializer(User.serializer())),
         // language=JSON
         """
             {
@@ -69,5 +73,6 @@ class NamedSerializerTest {
                     }
                 ]
             }
-        """.trimIndent() to Named.ofMultiple(listOf(user(), user(id = UserID(43)))))
+        """.trimIndent() to Named.ofMultiple(listOf(user(), user(id = UserID(43))))
+    )
 }

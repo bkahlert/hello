@@ -1,6 +1,5 @@
-package com.bkahlert.hello.clickup.ui
+package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.hello.clickup.api.Folder
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer

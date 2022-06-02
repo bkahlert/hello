@@ -359,7 +359,7 @@ private fun testClient(
         ClickUpFixtures.task(id = "task-1", space = space.asPreview(), folder = folder, list = taskList.asPreview()),
         ClickUpFixtures.task(id = "task-2", space = space.asPreview(), folder = folder, list = taskList.asPreview()),
     ),
-    runningTimeEntry: TimeEntry? = ClickUpFixtures.timeEntry(
+    runningTimeEntry: TimeEntry? = timeEntry(
         id = "time-entry-1",
         task = tasks.firstOrNull()?.asPreview()
     ),

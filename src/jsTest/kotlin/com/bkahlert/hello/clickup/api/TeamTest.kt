@@ -1,8 +1,8 @@
 import com.bkahlert.hello.clickup.api.Team
 import com.bkahlert.hello.clickup.api.TeamID
 import com.bkahlert.hello.clickup.api.User
-import com.bkahlert.hello.clickup.ui.otherUser
-import com.bkahlert.hello.clickup.ui.user
+import com.bkahlert.hello.clickup.api.otherUser
+import com.bkahlert.hello.clickup.api.user
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.RGB

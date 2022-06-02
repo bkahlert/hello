@@ -1,7 +1,5 @@
-package com.bkahlert.hello.clickup.ui
+package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.hello.clickup.api.Task
-import com.bkahlert.hello.clickup.api.Team
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.Teams
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.UserJson
 import com.bkahlert.kommons.serialization.BasicSerializerTest
@@ -10,7 +8,8 @@ import com.bkahlert.kommons.serialization.NamedSerializer
 import kotlinx.serialization.builtins.ListSerializer
 
 @Suppress("unused")
-class TaskTest : BasicSerializerTest<Named<List<Task>>>(NamedSerializer(ListSerializer(Task.serializer())),
+class TaskTest : BasicSerializerTest<Named<List<Task>>>(
+    NamedSerializer(ListSerializer(Task.serializer())),
     // language=JSON
     """
     {
