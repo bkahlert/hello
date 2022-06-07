@@ -2,10 +2,12 @@ package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.semanticui.SemanticAttrBuilder
+import com.bkahlert.hello.semanticui.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.SemanticBuilder
 import com.bkahlert.hello.semanticui.SemanticDivElement
 import com.bkahlert.hello.semanticui.SemanticElement
 import com.bkahlert.hello.semanticui.SemanticElementType
+import com.bkahlert.hello.semanticui.Variation
 import org.jetbrains.compose.web.dom.A
 import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
@@ -20,6 +22,12 @@ enum class ButtonElementType(override vararg val classNames: String) : SemanticE
     Basic("basic"),
     Inverted("inverted"),
 }
+
+/** [Positive](https://semantic-ui.com/elements/button.html#positive) variation of a [button](https://semantic-ui.com/elements/button.html). */
+@Suppress("unused") val <TSemantic : ButtonElement> SemanticAttrsScope<TSemantic, *>.positive: Variation get() = Variation.Positive
+
+/** [Negative](https://semantic-ui.com/elements/button.html#negative) variation of a [button](https://semantic-ui.com/elements/button.html). */
+@Suppress("unused") val <TSemantic : ButtonElement> SemanticAttrsScope<TSemantic, *>.negative: Variation get() = Variation.Negative
 
 /**
  * Creates a [SemanticUI button](https://semantic-ui.com/elements/button.html)

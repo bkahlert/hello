@@ -16,8 +16,7 @@ import org.jetbrains.compose.web.css.width
 
 @Suppress("PublicApiImplicitType")
 object ClickUpStyleSheet : StyleSheet() {
-    private val size = 512
-    private val roundedMask = SVGImage(
+    private fun roundedMask(size: Int = 512) = SVGImage(
         //language=SVG
         """
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="$size" height="$size">
@@ -33,10 +32,16 @@ object ClickUpStyleSheet : StyleSheet() {
 
     init {
         "img.rounded" style {
-            property("mask-image", "url('${roundedMask.dataURI}')")
-            property("mask-position", "center")
-            property("mask-size", "100%")
-            property("mask-repeat", "no-repeat")
+            val maskImage = "url('${roundedMask().dataURI}')"
+            val maskPosition = "0 0"
+            val maskSize = "100%"
+            val maskRepeat = "no-repeat"
+            property("-webkit-mask", "$maskImage $maskPosition/$maskSize $maskRepeat")
+            property("mask", "$maskImage $maskPosition/$maskSize $maskRepeat")
+            property("mask-image", maskImage)
+            property("mask-position", maskPosition)
+            property("mask-size", maskSize)
+            property("mask-repeat", maskRepeat)
         }
 
         ".ui.menu:first-child:last-child" style {

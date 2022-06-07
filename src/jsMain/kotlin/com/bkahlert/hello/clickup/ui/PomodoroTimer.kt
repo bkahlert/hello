@@ -99,8 +99,8 @@ fun PomodoroTimer(
         }
     }
 
-    if (state.timeEntry.ended) {
-        Div {
+    Div {
+        if (state.timeEntry.ended) {
             if (status == Aborted) {
                 Icon("red", "times", "circle")
                 Span({
@@ -118,9 +118,7 @@ fun PomodoroTimer(
                     }
                 }) { Text(Duration.ZERO.format()) }
             }
-        }
-    } else {
-        Div {
+        } else {
             Icon("red", "stop", "circle") {
                 +Link
                 if (stop()) {
@@ -131,12 +129,12 @@ fun PomodoroTimer(
                     state.onStop(listOf(Aborted.tag))
                 }
             }
+            Span({
+                style {
+                    fontWeight(700)
+                }
+            }) { Text(remaining.format()) }
         }
-        Span({
-            style {
-                fontWeight(700)
-            }
-        }) { Text(remaining.format()) }
     }
 
     if (remaining < 0.5.seconds) {

@@ -25,16 +25,36 @@ import kotlin.time.Duration.Companion.seconds
 fun PomodoroTimerDemo() {
     Demos("Pomodoro Timer") {
         Demo("aborted") {
-            PomodoroTimer(rememberPomodoroTimerState(ClickUpFixtures.TimeEntry.aborted()))
+            PomodoroTimer(
+                rememberPomodoroTimerState(
+                    ClickUpFixtures.TimeEntry.aborted(),
+                    progressIndicating = true,
+                )
+            )
         }
         Demo("completed") {
-            PomodoroTimer(rememberPomodoroTimerState(ClickUpFixtures.TimeEntry.completed()))
+            PomodoroTimer(
+                rememberPomodoroTimerState(
+                    ClickUpFixtures.TimeEntry.completed(),
+                    progressIndicating = true,
+                )
+            )
         }
         Demo("completed and exceeded") {
-            PomodoroTimer(rememberPomodoroTimerState(ClickUpFixtures.TimeEntry.completed(start = Now - 1.days)))
+            PomodoroTimer(
+                rememberPomodoroTimerState(
+                    ClickUpFixtures.TimeEntry.completed(start = Now - 1.days),
+                    progressIndicating = true,
+                )
+            )
         }
         Demo("exceeded") {
-            PomodoroTimer(rememberPomodoroTimerState(ClickUpFixtures.TimeEntry.running(start = Now - 1.days)))
+            PomodoroTimer(
+                rememberPomodoroTimerState(
+                    ClickUpFixtures.TimeEntry.running(start = Now - 1.days),
+                    progressIndicating = true,
+                )
+            )
         }
     }
     Demos("Pomodoro Timer (Running)") {
@@ -52,6 +72,7 @@ fun PomodoroTimerDemo() {
                 PomodoroTimer(
                     rememberPomodoroTimerState(
                         timeEntry = timeEntry,
+                        progressIndicating = true,
                         onStop = { entry, tags ->
                             scope.launch {
                                 delay(5.seconds)
