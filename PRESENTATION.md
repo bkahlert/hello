@@ -40,7 +40,7 @@
         - consequently can be used on JVM, natively on Windows, macOS, Android, Linux, etc. and JS (Node and Browser)
 - [ClickUp](clickup.com)
     - [REST API](https://clickup.com/api)
-    - operations like creating and manipulation of tasks, time tracking, etc.
+    - operations like creation and manipulation of tasks, time tracking, etc.
     - specified with [Blueprint](https://apiblueprint.org/)
         - [OpenAPI](https://www.openapis.org/) alternative
         - bad support for Kotlin client generation (both, Blueprint and OpenAPI)

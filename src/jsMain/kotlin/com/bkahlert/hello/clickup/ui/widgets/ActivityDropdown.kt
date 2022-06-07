@@ -120,7 +120,7 @@ fun ActivityDropdown(
         Menu({
             style {
                 minWidth(350.px) // https://css-tricks.com/flexbox-truncated-text/
-                maxWidth(150.percent)
+                maxWidth(130.percent)
             }
         }) {
             Header {

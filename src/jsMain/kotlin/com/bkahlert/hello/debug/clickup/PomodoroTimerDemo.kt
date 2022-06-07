@@ -52,6 +52,7 @@ fun PomodoroTimerDemo() {
                 PomodoroTimer(
                     rememberPomodoroTimerState(
                         timeEntry = timeEntry,
+                        progressIndicating = true,
                         onStop = { entry, tags ->
                             scope.launch {
                                 delay(5.seconds)

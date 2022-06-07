@@ -71,6 +71,8 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
                 implementation("com.bkahlert.kommons:kommons:1.12.0-SNAPSHOT")
+
+                implementation("com.bkahlert.kommons:kommons-debug:0.3.1") { because("debug features like .trace") }
             }
 
             languageSettings.apply {

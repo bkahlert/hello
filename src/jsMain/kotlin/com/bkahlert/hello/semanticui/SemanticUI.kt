@@ -201,6 +201,8 @@ open class Variation(override vararg val classNames: String) : Modifier {
     object Inline : Variation("inline")
     object Fitted : Variation("fitted")
     object Compact : Variation("compact")
+    object Positive : Variation("positive")
+    object Negative : Variation("negative")
     object FullScreen : Variation("fullscreen")
     object Longer : Variation("longer")
     object Size {

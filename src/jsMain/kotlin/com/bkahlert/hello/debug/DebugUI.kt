@@ -171,6 +171,12 @@ private fun DebugUI(
  * Renders a `F4` key trigger-able [DebugMode] demonstrating various UI elements
  * and the optional [focusContent].
  */
+val renderDebugMode: Unit get() = renderDebugMode()
+
+/**
+ * Renders a `F4` key trigger-able [DebugMode] demonstrating various UI elements
+ * and the optional [focusContent].
+ */
 fun renderDebugMode(
     focusContent: TabContentBuilder? = null,
 ) {

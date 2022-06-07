@@ -6,6 +6,8 @@ import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.debug.ImageFixtures
 import com.bkahlert.hello.debug.ImageFixtures.KommonsLogo
 import com.bkahlert.hello.semanticui.SemanticUI
+import com.bkahlert.hello.semanticui.Variation.Negative
+import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Content
 import com.bkahlert.hello.semanticui.element.Description
 import com.bkahlert.hello.semanticui.element.Header
@@ -177,6 +179,15 @@ fun ElementsDemos() {
                     Line({ +Length.Short })
                     Line({ +Length.VeryShort })
                 }
+            }
+        }
+
+        Demo("Buttons") {
+            SemanticList {
+                Item { Button({ }) { Text("Button") } }
+                Item { Button({ +Basic }) { Text("Basic Button") } }
+                Item { Button({ +Negative }) { Text("Negative Button") } }
+                Item { Button({ +Negative + Basic }) { Text("Negative Basic Button") } }
             }
         }
 

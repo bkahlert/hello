@@ -16,13 +16,11 @@ import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Margin
 import com.bkahlert.hello.AppStylesheet.Grid.Plugins
 import com.bkahlert.hello.AppStylesheet.Grid.Search
-import com.bkahlert.hello.clickup.api.Task
 import com.bkahlert.hello.clickup.ui.ClickUpMenu
 import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.ui.ClickUpStyleSheet
 import com.bkahlert.hello.clickup.ui.rememberClickUpMenuViewModel
 import com.bkahlert.hello.custom.Custom
-import com.bkahlert.hello.debug.clickup.ClickUpFixtures
 import com.bkahlert.hello.debug.renderDebugMode
 import com.bkahlert.hello.links.Header
 import com.bkahlert.hello.semanticui.element.AnkerButton
@@ -35,16 +33,6 @@ import com.bkahlert.hello.ui.gridArea
 import com.bkahlert.hello.ui.linearGradient
 import com.bkahlert.hello.ui.search.SearchFeature
 import com.bkahlert.kommons.compose.Length
-import com.bkahlert.kommons.debug.Object
-import com.bkahlert.kommons.debug.console
-import com.bkahlert.kommons.debug.entries
-import com.bkahlert.kommons.debug.grouping
-import com.bkahlert.kommons.debug.inspect
-import com.bkahlert.kommons.debug.inspectJs
-import com.bkahlert.kommons.debug.jsonTable
-import com.bkahlert.kommons.debug.toJson
-import com.bkahlert.kommons.debug.trace
-import com.bkahlert.kommons.debug.traceJs
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.url
 import io.ktor.http.Url
@@ -95,8 +83,6 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
-import kotlin.js.Json
-import kotlin.reflect.KClass
 
 // TODO create tasks
 // TODO rename tasks
@@ -237,29 +223,7 @@ fun App(state: AppState = rememberAppState()) {
 
 
 fun main() {
-
-    renderDebugMode {
-        val task = ClickUpFixtures.task()
-        val data = Object.keys(task)
-
-        console.table(data)
-        console.grouping("Test log") {
-            console.info(ClickUpFixtures.User)
-            console.jsonTable(*(0..100).map { ClickUpFixtures.task() }.toTypedArray())
-        }
-        console.table(arrayOf(task.toJson()))
-        console.table(task.entries.toJson())
-        console.table(task)
-        console.table(listOf(task))
-        console.table(task, arrayOf("id_1", "name_1"))
-        console.table(arrayOf(task), arrayOf("id_1", "name_1"))
-        val json: Json = JSON.parse<Json>(task.serialize())
-        console.log(json)
-        println(json)
-//        println(json.to)
-        val clazz: KClass<Task> = Task::class
-
-    }
+    renderDebugMode()
     renderComposable("root") {
         Style(AppStylesheet)
         Style(ClickUpStyleSheet)
