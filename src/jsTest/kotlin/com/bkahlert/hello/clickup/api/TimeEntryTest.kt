@@ -5,13 +5,14 @@ import com.bkahlert.hello.clickup.ui.rememberPomodoroTimerState
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.Teams
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.UserJson
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.minus
 import com.bkahlert.kommons.serialization.BasicSerializerTest
 import com.bkahlert.kommons.serialization.Named
 import com.bkahlert.kommons.serialization.NamedSerializer
+import io.kotest.assertions.asClue
 import io.kotest.matchers.string.shouldContain
 import org.jetbrains.compose.web.testutils.runTest
+import kotlin.js.Date
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.minutes
 
@@ -98,11 +99,11 @@ class TimeEntryTest : BasicSerializerTest<Named<TimeEntry>>(
     @Test
     fun testTimeFormat() = runTest {
         composition {
-            PomodoroTimer(rememberPomodoroTimerState(ClickUpFixtures.timeEntry(start = Now - 2.minutes)))
+            PomodoroTimer(rememberPomodoroTimerState(ClickUpFixtures.timeEntry(start = Date() - 2.minutes)))
         }
 
-        console.log(root.innerHTML)
-
-        root.innerHTML shouldContain ">23:00<"
+        root.innerHTML.takeLast(50).asClue {
+            it shouldContain ">22:59<"
+        }
     }
 }

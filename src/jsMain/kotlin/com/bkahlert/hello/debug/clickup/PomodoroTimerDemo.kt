@@ -14,10 +14,10 @@ import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.aborted
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.completed
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.running
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.minus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.js.Date
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
@@ -43,7 +43,7 @@ fun PomodoroTimerDemo() {
         Demo("completed and exceeded") {
             PomodoroTimer(
                 rememberPomodoroTimerState(
-                    ClickUpFixtures.TimeEntry.completed(start = Now - 1.days),
+                    ClickUpFixtures.TimeEntry.completed(start = Date() - 1.days),
                     progressIndicating = true,
                 )
             )
@@ -51,7 +51,7 @@ fun PomodoroTimerDemo() {
         Demo("exceeded") {
             PomodoroTimer(
                 rememberPomodoroTimerState(
-                    ClickUpFixtures.TimeEntry.running(start = Now - 1.days),
+                    ClickUpFixtures.TimeEntry.running(start = Date() - 1.days),
                     progressIndicating = true,
                 )
             )
@@ -64,7 +64,7 @@ fun PomodoroTimerDemo() {
                 var timeEntry by remember {
                     mutableStateOf(
                         ClickUpFixtures.TimeEntry.running(
-                            start = Now,
+                            start = Date(),
                             type = type
                         )
                     )
@@ -76,7 +76,7 @@ fun PomodoroTimerDemo() {
                         onStop = { entry, tags ->
                             scope.launch {
                                 delay(5.seconds)
-                                timeEntry = entry.copy(end = Now, tags = entry.tags + tags)
+                                timeEntry = entry.copy(end = Date(), tags = entry.tags + tags)
                             }
                         },
                     )

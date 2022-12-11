@@ -2,7 +2,6 @@
 
 package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
@@ -48,7 +47,7 @@ data class Task(
     @SerialName("folder") val folder: FolderPreview,
     @SerialName("space") val space: SpacePreview,
 ) {
-    val overdue: Boolean? get() = dueDate?.let { Now > it }
+    val overdue: Boolean? get() = dueDate?.let { Date() > it }
     fun asPreview() = TaskPreview(
         id = id,
         name = name,

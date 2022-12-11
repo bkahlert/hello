@@ -35,7 +35,6 @@ import com.bkahlert.hello.clickup.api.asCreator
 import com.bkahlert.hello.clickup.ui.Pomodoro
 import com.bkahlert.hello.debug.ImageFixtures
 import com.bkahlert.hello.deserialize
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.minus
@@ -274,7 +273,7 @@ object ClickUpFixtures {
         description: String? = "Description of task $id",
         status: StatusPreview = Spaces.first().statuses.first().asPreview(),
         orderIndex: Double? = null,
-        dateCreated: Date? = Now - 3.days,
+        dateCreated: Date? = Date() - 3.days,
         dateUpdated: Date? = null,
         dateClosed: String? = null,
         creator: Creator = User.asCreator(),
@@ -359,7 +358,7 @@ object ClickUpFixtures {
                         description = "This is a sample task with status ${status.status}",
                         startDate = when (status.status.lowercase()) {
                             "to do" -> null
-                            else -> Now - 2.days
+                            else -> Date() - 2.days
                         },
                         timeSpent = when (status.status.lowercase()) {
                             "to do" -> null
@@ -380,16 +379,16 @@ object ClickUpFixtures {
                     list = taskList.asPreview(), folder = folder, space = checkNotNull(taskList.space),
                     name = "Task with most meta data set",
                     description = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\nAt vero eos et accusam et justo duo dolores et ea rebum.<br><strong>Stet clita kasd gubergren,</strong> no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-                    dateCreated = Now - 3.days,
-                    dateUpdated = Now - 4.hours,
+                    dateCreated = Date() - 3.days,
+                    dateUpdated = Date() - 4.hours,
                     dateClosed = null,
                     tags = listOf(
                         Pomodoro.Type.Debug.tag,
                         tag("random tag ${randomString(2)}"),
                     ),
                     priority = TaskPriority.High,
-                    dueDate = Now + 2.days,
-                    startDate = Now - 3.days + 2.hours + 26.minutes,
+                    dueDate = Date() + 2.days,
+                    startDate = Date() - 3.days + 2.hours + 26.minutes,
                     points = 4.5,
                     timeEstimate = 12.hours,
                     timeSpent = 3.5.hours,
@@ -421,7 +420,7 @@ object ClickUpFixtures {
         wid: TeamID = Teams.first().id,
         user: User = User,
         billable: Boolean = false,
-        start: Date = Now - Pomodoro.Type.Default.duration / 2,
+        start: Date = Date() - Pomodoro.Type.Default.duration / 2,
         end: Date? = null,
         description: String = "A time entry",
         tags: List<Tag> = listOf(Pomodoro.Type.Default.tag),
@@ -444,7 +443,7 @@ object ClickUpFixtures {
     val TimeEntry: TimeEntry = timeEntry()
 
     fun TimeEntry.running(
-        start: Date = Now - 3.5.minutes,
+        start: Date = Date() - 3.5.minutes,
         type: Pomodoro.Type? = null,
     ) = copy(
         start = start,
@@ -452,8 +451,8 @@ object ClickUpFixtures {
     )
 
     fun TimeEntry.aborted(
-        start: Date = Now - Pomodoro.Type.Default.duration / 2,
-        end: Date = Now,
+        start: Date = Date() - Pomodoro.Type.Default.duration / 2,
+        end: Date = Date(),
         type: Pomodoro.Type? = Pomodoro.Type.Default,
     ) = copy(
         start = start,
@@ -462,8 +461,8 @@ object ClickUpFixtures {
     )
 
     fun TimeEntry.completed(
-        start: Date = Now - Pomodoro.Type.Default.duration,
-        end: Date = Now,
+        start: Date = Date() - Pomodoro.Type.Default.duration,
+        end: Date = Date(),
         type: Pomodoro.Type? = Pomodoro.Type.Default,
     ) = copy(
         start = start,

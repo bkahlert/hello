@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.flow
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
+import kotlin.js.Date
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -63,7 +64,7 @@ fun ViewModelDemo() {
                 LaunchedEffect(Unit) {
                     while (true) {
                         delay(5.seconds)
-                        testViewModel.updateText(Now.toISOString().also { console.log("updating STATE to $it") })
+                        testViewModel.updateText(Date().toISOString().also { console.log("updating STATE to $it") })
                     }
                 }
 
@@ -94,8 +95,8 @@ fun ViewModelDemo() {
 private object ViewModelDemoStuff {
     suspend fun restCall(): Result<String> {
         delay(500)
-        return when (Now.getMilliseconds().isOdd) {
-            true -> response("rest response at ${Now.toTimeString()}")
+        return when (Now.epochSeconds.isOdd) {
+            true -> response("rest response at ${Date().toTimeString()}")
             else -> failedResponse()
         }
     }
@@ -138,7 +139,7 @@ private object ViewModelDemoStuff {
             private set
 
         fun start(taskID: TaskID?, type: Type) {
-            timeEntry = ClickUpFixtures.TimeEntry.running(start = Now).copy(
+            timeEntry = ClickUpFixtures.TimeEntry.running(start = Date()).copy(
                 id = TimeEntryID((taskID?.stringValue ?: "unknown") + "-${randomString()}"),
                 tags = type.addTag(ClickUpFixtures.TimeEntry.running().tags).also { console.log("$it") },
             )

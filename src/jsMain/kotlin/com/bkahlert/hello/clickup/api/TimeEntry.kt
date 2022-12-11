@@ -2,7 +2,6 @@
 
 package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.minus
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
@@ -30,7 +29,7 @@ data class TimeEntry(
     @SerialName("task_url") val taskUrl: URL?,
 ) {
     val duration: Duration? get() = end?.let { it - start }
-    val passed: Duration get() = Now - start
+    val passed: Duration get() = Date() - start
     val ended: Boolean get() = end != null
     val url: URL? get() = taskUrl?.takeUnless { Url(it.toString()).pathSegments.lastOrNull() == "null" }
 }

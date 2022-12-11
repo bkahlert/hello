@@ -31,7 +31,6 @@ import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Con
 import com.bkahlert.hello.clickup.ui.ClickUpMenuViewModel
 import com.bkahlert.hello.clickup.ui.rememberClickUpMenuViewModel
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.running
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
@@ -163,8 +162,8 @@ open class ClickUpTestClient(
             description = null,
             status = folder.statuses.first().asPreview(),
             orderIndex = tasks.size.toDouble(),
-            dateCreated = Now,
-            dateUpdated = Now,
+            dateCreated = Date(),
+            dateUpdated = Date(),
             dateClosed = null,
             creator = user.asCreator(),
             assignees = emptyList(),
@@ -295,7 +294,7 @@ open class ClickUpTestClient(
                     wid = team.id,
                     user = user,
                     billable = billable,
-                    start = Now,
+                    start = Date(),
                     end = null,
                     description = description ?: "",
                     tags = tags.toList(),
@@ -309,7 +308,7 @@ open class ClickUpTestClient(
             wid = team.id,
             user = user,
             billable = billable,
-            start = Now,
+            start = Date(),
             end = null,
             description = description ?: "",
             tags = tags.toList(),
@@ -323,7 +322,7 @@ open class ClickUpTestClient(
     override suspend fun stopTimeEntry(team: Team): TimeEntry? {
         adaptedDelay(1.seconds)
         return runningTimeEntry?.also {
-            val timeEntry = it.copy(end = Now)
+            val timeEntry = it.copy(end = Date())
             timeEntries = timeEntries + timeEntry
             runningTimeEntry = null
         }

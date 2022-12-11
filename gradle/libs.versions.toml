@@ -1,7 +1,7 @@
 [versions]
 dokka = "1.7.10"
 icu = "71.1"
-kommons = "2.2.0"
+kommons = "2.4.0"
 kotlin = "1.7.10"
 kotlin-logging = "2.1.23"
 kotest = "5.4.1"

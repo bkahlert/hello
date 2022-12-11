@@ -51,10 +51,14 @@ data class URL(
                     schema = protocol.name,
                     host = host,
                     port = port.takeUnless { it == protocol.defaultPort },
-                    path = pathSegments.takeIf {
+                    path = pathSegments.let {
                         val suffix = (encodedPathAndQuery + encodedFragment).removePrefix("/")
-                        url.endsWith(suffix) && url.removeSuffix(suffix).last() == '/'
-                    } ?: emptyList(),
+                        if (url.endsWith(suffix) && url.removeSuffix(suffix).last() == '/') it
+                        else emptyList()
+                    }.let {
+                        if (it.size > 1) it.dropWhile { it.isEmpty() }
+                        else it
+                    },
                     query = parseQueryString(encodedQuery),
                     fragment = parseQueryString(encodedFragment),
                 )
