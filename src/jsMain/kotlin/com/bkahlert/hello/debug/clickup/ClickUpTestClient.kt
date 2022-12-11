@@ -31,19 +31,19 @@ import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Con
 import com.bkahlert.hello.clickup.ui.ClickUpMenuViewModel
 import com.bkahlert.hello.clickup.ui.rememberClickUpMenuViewModel
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.running
+import com.bkahlert.kommons.Now
+import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.randomString
-import com.bkahlert.kommons.time.Now
-import com.bkahlert.kommons.time.compareTo
-import com.bkahlert.kommons.time.seconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlin.js.Date
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.require as kotlinRequire
 import kotlin.requireNotNull as kotlinRequireNotNull
 

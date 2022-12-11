@@ -1,9 +1,9 @@
 package com.bkahlert.kommons.serialization
 
+import com.bkahlert.kommons.ValueRange.Normalized
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.HSL
 import com.bkahlert.kommons.color.Color.RGB
-import com.bkahlert.kommons.math.ValueRange
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.Serializer
@@ -21,7 +21,7 @@ object ColorSerializer : KSerializer<Color> {
     )
 
     override fun serialize(encoder: Encoder, value: Color) {
-        encoder.encodeString((value.takeIf { (it as? HSL)?.alpha != ValueRange.Normalized.endInclusive }?.toRGB() ?: value).toString())
+        encoder.encodeString((value.takeIf { (it as? HSL)?.alpha != Normalized.endInclusive }?.toRGB() ?: value).toString())
     }
 
     override fun deserialize(decoder: Decoder): Color {

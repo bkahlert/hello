@@ -31,9 +31,9 @@ import com.bkahlert.kommons.serialization.Named
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
-import io.ktor.client.plugins.ContentNegotiation
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.plugin
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
@@ -70,9 +70,9 @@ data class AccessTokenBasedClickUpClient(
                 json(JsonSerializer)
             }
             HttpResponseValidator {
-                handleResponseException {
-                    logger.error("response validation", it)
-                    throw it.wrapOrNull() ?: it
+                handleResponseExceptionWithRequest { ex, _ ->
+                    logger.error("response validation", ex)
+                    throw ex.wrapOrNull() ?: ex
                 }
             }
             install("ClickUp-PersonalToken-Authorization") {

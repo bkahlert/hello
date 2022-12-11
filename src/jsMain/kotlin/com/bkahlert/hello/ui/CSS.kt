@@ -2,7 +2,7 @@ package com.bkahlert.hello.ui
 
 import com.bkahlert.kommons.SVGImage
 import com.bkahlert.kommons.color.Color
-import com.bkahlert.kommons.text.quoted
+import com.bkahlert.kommons.quoted
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.CSSColorValue

@@ -19,12 +19,11 @@ import com.bkahlert.hello.debug.clickup.ClickUpFixtures.Teams
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.timeEntry
 import com.bkahlert.hello.debug.clickup.ClickUpTestClient
 import com.bkahlert.hello.debug.clickup.rememberClickUpMenuTestViewModel
+import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.appendJQuery
 import com.bkahlert.kommons.appendSemanticUI
 import com.bkahlert.kommons.color.Color
-import com.bkahlert.kommons.time.Now
-import com.bkahlert.kommons.time.minus
-import com.bkahlert.kommons.time.seconds
+import com.bkahlert.kommons.minus
 import io.kotest.matchers.collections.contain
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.should
@@ -34,6 +33,7 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.web.testutils.TestScope
 import org.jetbrains.compose.web.testutils.runTest
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.seconds
 
 class ClickUpMenuTest {
 

@@ -2,21 +2,21 @@ package com.bkahlert.kommons.color
 
 import com.bkahlert.Brand
 import com.bkahlert.hello.ui.fmod
+import com.bkahlert.kommons.ValueRange.Angle
+import com.bkahlert.kommons.ValueRange.Bytes
+import com.bkahlert.kommons.ValueRange.Normalized
+import com.bkahlert.kommons.ValueRange.Percent
+import com.bkahlert.kommons.ValueRange.Scaling
 import com.bkahlert.kommons.color.Color.RGB
-import com.bkahlert.kommons.math.ValueRange.Angle
-import com.bkahlert.kommons.math.ValueRange.Bytes
-import com.bkahlert.kommons.math.ValueRange.Normalized
-import com.bkahlert.kommons.math.ValueRange.Percent
-import com.bkahlert.kommons.math.ValueRange.Scaling
-import com.bkahlert.kommons.math.map
-import com.bkahlert.kommons.math.normalize
-import com.bkahlert.kommons.math.round
-import com.bkahlert.kommons.math.scale
-import com.bkahlert.kommons.math.toHexadecimalString
-import com.bkahlert.kommons.ranges.random
+import com.bkahlert.kommons.map
+import com.bkahlert.kommons.normalize
+import com.bkahlert.kommons.random
+import com.bkahlert.kommons.round
+import com.bkahlert.kommons.scale
 import com.bkahlert.kommons.serialization.ColorSerializer
 import com.bkahlert.kommons.serialization.HslSerializer
 import com.bkahlert.kommons.serialization.RgbSerializer
+import com.bkahlert.kommons.toHexadecimalString
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.web.css.CSSAngleValue
 import org.jetbrains.compose.web.css.CSSColorValue
@@ -104,15 +104,15 @@ abstract class Color(
          * whereas all properties are coerced with their corresponding minimum and maximum value.
          */
         fun adjust(
-            red: Double = Normalized.Minimum,
-            green: Double = Normalized.Minimum,
-            blue: Double = Normalized.Minimum,
-            alpha: Double = Normalized.Minimum,
+            red: Double = Normalized.min,
+            green: Double = Normalized.min,
+            blue: Double = Normalized.min,
+            alpha: Double = Normalized.min,
         ): RGB = copy(
-            red = if (red == Normalized.Minimum) this.red else (this.red + red).round(0.001).coerceIn(Normalized),
-            green = if (green == Normalized.Minimum) this.green else (this.green + green).round(0.001).coerceIn(Normalized),
-            blue = if (blue == Normalized.Minimum) this.blue else (this.blue + blue).round(0.001).coerceIn(Normalized),
-            alpha = if (alpha == Normalized.Minimum) this.alpha else (this.alpha + alpha).round(0.001).coerceIn(Normalized),
+            red = if (red == Normalized.min) this.red else (this.red + red).round(0.001).coerceIn(Normalized),
+            green = if (green == Normalized.min) this.green else (this.green + green).round(0.001).coerceIn(Normalized),
+            blue = if (blue == Normalized.min) this.blue else (this.blue + blue).round(0.001).coerceIn(Normalized),
+            alpha = if (alpha == Normalized.min) this.alpha else (this.alpha + alpha).round(0.001).coerceIn(Normalized),
         )
 
         /** Increase the [alpha] of this color by the specified [amount]. */
@@ -183,12 +183,12 @@ abstract class Color(
             red: Double = 0.3,
             green: Double = 0.3,
             blue: Double = 0.3,
-            alpha: Double = Normalized.Minimum,
+            alpha: Double = Normalized.min,
         ): RGB = adjust(
-            if (red == Normalized.Minimum) red else Random.nextDouble(red / -2.0, red / 2.0),
-            if (green == Normalized.Minimum) green else Random.nextDouble(green / -2.0, green / 2.0),
-            if (blue == Normalized.Minimum) blue else Random.nextDouble(blue / -2.0, blue / 2.0),
-            if (alpha == Normalized.Minimum) alpha else Random.nextDouble(alpha / -2.0, alpha / 2.0),
+            if (red == Normalized.min) red else Random.nextDouble(red / -2.0, red / 2.0),
+            if (green == Normalized.min) green else Random.nextDouble(green / -2.0, green / 2.0),
+            if (blue == Normalized.min) blue else Random.nextDouble(blue / -2.0, blue / 2.0),
+            if (alpha == Normalized.min) alpha else Random.nextDouble(alpha / -2.0, alpha / 2.0),
         )
 
         override fun toRGB(): RGB = this
@@ -217,7 +217,7 @@ abstract class Color(
         override fun toString(): String =
             if (alpha >= Normalized.endInclusive) buildString {
                 append("#")
-                listOf(red, green, blue).forEach { append(it.map(Bytes).toHexadecimalString()) }
+                listOf(red, green, blue).forEach { append(it.map(Bytes).toByte().toHexadecimalString()) }
             }
             else rgba(red.map(Bytes), green.map(Bytes), blue.map(Bytes), alpha).toString()
 
@@ -339,15 +339,15 @@ abstract class Color(
          * and the resulting [hue] will wrap around its extrema.
          */
         fun adjust(
-            hue: Double = Normalized.Minimum,
-            saturation: Double = Normalized.Minimum,
-            lightness: Double = Normalized.Minimum,
-            alpha: Double = Normalized.Minimum,
+            hue: Double = Normalized.min,
+            saturation: Double = Normalized.min,
+            lightness: Double = Normalized.min,
+            alpha: Double = Normalized.min,
         ): HSL = copy(
-            hue = if (hue == Normalized.Minimum) this.hue else (this.hue + hue).round(0.001).mod(Normalized.Maximum),
-            saturation = if (saturation == Normalized.Minimum) this.saturation else (this.saturation + saturation).round(0.001).coerceIn(Normalized),
-            lightness = if (lightness == Normalized.Minimum) this.lightness else (this.lightness + lightness).round(0.001).coerceIn(Normalized),
-            alpha = if (alpha == Normalized.Minimum) this.alpha else (this.alpha + alpha).round(0.001).coerceIn(Normalized),
+            hue = if (hue == Normalized.min) this.hue else (this.hue + hue).round(0.001).mod(Normalized.max),
+            saturation = if (saturation == Normalized.min) this.saturation else (this.saturation + saturation).round(0.001).coerceIn(Normalized),
+            lightness = if (lightness == Normalized.min) this.lightness else (this.lightness + lightness).round(0.001).coerceIn(Normalized),
+            alpha = if (alpha == Normalized.min) this.alpha else (this.alpha + alpha).round(0.001).coerceIn(Normalized),
         )
 
         /** Rotates the [hue] angle of this color by the specified [amount] in the range `-1.0..+1.0`. */
@@ -355,7 +355,7 @@ abstract class Color(
 
         /** Rotates the [hue] angle of this color by the specified [amount] in the range `-360°..+360°`. */
         fun spin(amount: CSSAngleValue): HSL = copy(
-            hue = (hueAngle + amount.value.toDouble()).mod(Angle.Maximum).normalize(Angle)
+            hue = (hueAngle + amount.value.toDouble()).mod(Angle.max).normalize(Angle)
         )
 
         /** Increase the [saturation] of this color by the specified [amount]. */
@@ -427,14 +427,14 @@ abstract class Color(
          */
         fun randomize(
             hue: Double = 0.3,
-            saturation: Double = Normalized.Minimum,
-            lightness: Double = Normalized.Minimum,
-            alpha: Double = Normalized.Minimum,
+            saturation: Double = Normalized.min,
+            lightness: Double = Normalized.min,
+            alpha: Double = Normalized.min,
         ): HSL = adjust(
-            if (hue == Normalized.Minimum) hue else Random.nextDouble(hue / -2.0, hue / 2.0),
-            if (saturation == Normalized.Minimum) saturation else Random.nextDouble(saturation / -2.0, saturation / 2.0),
-            if (lightness == Normalized.Minimum) lightness else Random.nextDouble(lightness / -2.0, lightness / 2.0),
-            if (alpha == Normalized.Minimum) alpha else Random.nextDouble(alpha / -2.0, alpha / 2.0),
+            if (hue == Normalized.min) hue else Random.nextDouble(hue / -2.0, hue / 2.0),
+            if (saturation == Normalized.min) saturation else Random.nextDouble(saturation / -2.0, saturation / 2.0),
+            if (lightness == Normalized.min) lightness else Random.nextDouble(lightness / -2.0, lightness / 2.0),
+            if (alpha == Normalized.min) alpha else Random.nextDouble(alpha / -2.0, alpha / 2.0),
         )
 
         override fun toRGB(): RGB {
@@ -523,7 +523,7 @@ abstract class Color(
             val hueAngleValue = hueAngle.value.toDouble()
             val varianceValue = variance.value.toDouble()
             return Default.copy(
-                hue = ((hueAngleValue - varianceValue / 2.0)..(hueAngleValue + varianceValue / 2.0)).random().mod(Angle.Maximum).normalize(Angle)
+                hue = ((hueAngleValue - varianceValue / 2.0)..(hueAngleValue + varianceValue / 2.0)).random().mod(Angle.max).normalize(Angle)
             )
         }
     }

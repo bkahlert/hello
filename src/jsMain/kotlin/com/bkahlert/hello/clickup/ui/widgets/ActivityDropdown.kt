@@ -18,8 +18,8 @@ import com.bkahlert.hello.semanticui.module.Menu
 import com.bkahlert.hello.semanticui.module.Text
 import com.bkahlert.hello.semanticui.module.scrolling
 import com.bkahlert.hello.ui.textOverflow
-import com.bkahlert.kommons.debug.quoted
-import com.bkahlert.kommons.takeUnlessBlank
+import com.bkahlert.kommons.quoted
+import com.bkahlert.kommons.text.takeUnlessBlank
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.InputType.Text
 import org.jetbrains.compose.web.attributes.name

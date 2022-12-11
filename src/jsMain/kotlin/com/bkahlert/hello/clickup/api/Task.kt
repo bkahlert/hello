@@ -2,12 +2,12 @@
 
 package com.bkahlert.hello.clickup.api
 
+import com.bkahlert.kommons.Now
+import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
-import com.bkahlert.kommons.time.Now
-import com.bkahlert.kommons.time.compareTo
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers

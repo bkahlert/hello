@@ -2,6 +2,7 @@ package com.bkahlert.hello.ui
 
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.clickup.ui.Pomodoro
+import com.bkahlert.kommons.text.Char.characters
 import com.bkahlert.kommons.text.truncateEnd
 import kotlinx.browser.document
 import org.w3c.dom.HTMLAudioElement
@@ -29,7 +30,7 @@ class DataSoundEffect(
     private val logger = simpleLogger()
     override fun play() {
         kotlin.runCatching {
-            logger.debug("Playing sound effect ${data.truncateEnd(50)}")
+            logger.debug("Playing sound effect ${data.truncateEnd(50.characters)}")
             val parentElement = checkNotNull(document.body)
             val audioElement = document.createElement("audio") as HTMLAudioElement
             audioElement.apply {

@@ -2,7 +2,7 @@ package com.bkahlert.kommons.dom
 
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import com.bkahlert.kommons.text.toKebabCaseString
+import com.bkahlert.kommons.text.toKebabCasedString
 import org.w3c.dom.get
 import org.w3c.dom.set
 import kotlin.reflect.KProperty
@@ -181,7 +181,7 @@ value class StorageDelegate(
      * and if set returns it deserialized to [T]. Strings are returned unchanged.
      */
     inline operator fun <reified T> getValue(thisRef: Any?, property: KProperty<*>): T? {
-        val name = property.name.toKebabCaseString()
+        val name = property.name.toKebabCasedString()
         return when (T::class) {
             String::class -> storage[name]?.let { it as T? }
             else -> storage.getSerializable<T>(name)
@@ -193,7 +193,7 @@ value class StorageDelegate(
      * if not `null`. Otherwise, removes it. Strings are stored unchanged.
      */
     inline operator fun <reified T> setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
-        val name = property.name.toKebabCaseString()
+        val name = property.name.toKebabCasedString()
         when (T::class) {
             String::class -> storage[name] = value as String?
             else -> storage.setSerializable(name, value)

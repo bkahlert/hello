@@ -7,12 +7,14 @@ import com.bkahlert.hello.clickup.api.Tag
 import com.bkahlert.hello.clickup.api.TimeEntry
 import com.bkahlert.hello.clickup.api.TimeEntryID
 import com.bkahlert.hello.clickup.ui.Pomodoro.Type.Companion.duration
+import com.bkahlert.kommons.Creator.Companion.creator
+import com.bkahlert.kommons.Creator.Creator1
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.RGB
+import com.bkahlert.kommons.minus
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.UrlSerializer
-import com.bkahlert.kommons.time.minus
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlin.time.Duration
@@ -66,21 +68,21 @@ data class Pomodoro(
             add(tag)
         }
 
-        companion object {
-
-            /**
-             * Extracts a [Pomodoro.Type] from `this` [Tag].
-             *
-             * Matches the following tag names:
-             * - pomodoro-<NAME>
-             * - pomodoro-<MINUTES>
-             */
-            fun of(tag: Tag): Pomodoro.Type? = tag.suffix?.let { suffix ->
+        /**
+         * Extracts a [Pomodoro.Type] from `this` [Tag].
+         *
+         * Matches the following tag names:
+         * - pomodoro-<NAME>
+         * - pomodoro-<MINUTES>
+         */
+        companion object : Creator1<Tag, Pomodoro.Type> by (creator({ tag ->
+            tag.suffix?.let { suffix ->
                 when (val minutes = suffix.toLongOrNull()) {
                     null -> enumValues<Type>().firstOrNull { type -> type.name.equals(suffix, ignoreCase = true) }
                     else -> enumValues<Type>().firstOrNull { type -> type.duration.inWholeMinutes == minutes }
                 }
             }
+        })) {
 
             /**
              * Extracts a [Pomodoro.duration] from `this` [Tag].
@@ -124,7 +126,18 @@ data class Pomodoro(
         }
     }
 
-    companion object {
+    /**
+     * Creates a based on an existing [TimeEntry]
+     * by looking for a matching tag to determine the [Pomodoro.duration]
+     * (default: duration of [Pomodoro.Type.Default]).
+     */
+    companion object : Creator1<TimeEntry, Pomodoro> by (creator({ timeEntry: TimeEntry ->
+        Pomodoro(
+            timeEntryID = timeEntry.id,
+            duration = timeEntry.tags.firstNotNullOfOrNull { it.duration } ?: Type.Default.duration,
+            status = Status.of(timeEntry)
+        )
+    })) {
         private const val TAG_PREFIX = "pomodoro-"
         private val Tag.suffix: String? get() = name.takeIf { it.startsWith(TAG_PREFIX) }?.removePrefix(TAG_PREFIX)
 
@@ -141,16 +154,5 @@ data class Pomodoro(
             }.removePrefix("0")
             return if (isNegative()) "-$absoluteString" else absoluteString
         }
-
-        /**
-         * Creates a based on an existing [TimeEntry]
-         * by looking for a matching tag to determine the [Pomodoro.duration]
-         * (default: duration of [Pomodoro.Type.Default]).
-         */
-        fun of(timeEntry: TimeEntry): Pomodoro = Pomodoro(
-            timeEntryID = timeEntry.id,
-            duration = timeEntry.tags.firstNotNullOfOrNull { it.duration } ?: Type.Default.duration,
-            status = Status.of(timeEntry)
-        )
     }
 }

@@ -15,11 +15,11 @@ import com.bkahlert.hello.clickup.api.TimeEntry
 import com.bkahlert.hello.clickup.api.TimeEntryID
 import com.bkahlert.hello.clickup.ui.widgets.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.ui.widgets.Activity.TaskActivity
+import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.dom.URL
-import com.bkahlert.kommons.time.Now
-import com.bkahlert.kommons.time.compareTo
-import com.bkahlert.kommons.time.toMoment
+import com.bkahlert.kommons.toMomentString
 
 /**
  * Some king of icon like meta information
@@ -165,16 +165,16 @@ sealed interface Activity<ID : Identifier<*>> {
         override val meta: List<Meta>
             get() = buildList {
                 if (task.dateCreated != null) {
-                    add(Meta("created", "calendar", "alternate", "outline", text = task.dateCreated.toMoment()))
+                    add(Meta("created", "calendar", "alternate", "outline", text = task.dateCreated.toMomentString(true)))
                 }
                 when (task.dueDate?.compareTo(Now)) {
-                    -1 -> add(Meta("due", "red", "calendar", "times", "outline", text = task.dueDate.toMoment(false)))
-                    +1 -> add(Meta("due", "calendar", "outline", text = task.dueDate.toMoment(false)))
-                    0 -> add(Meta("due", "yellow", "calendar", "outline", text = task.dueDate.toMoment(false)))
+                    -1 -> add(Meta("due", "red", "calendar", "times", "outline", text = task.dueDate.toMomentString(false)))
+                    +1 -> add(Meta("due", "calendar", "outline", text = task.dueDate.toMomentString(false)))
+                    0 -> add(Meta("due", "yellow", "calendar", "outline", text = task.dueDate.toMomentString(false)))
                     else -> {}
                 }
                 if (task.timeEstimate != null) {
-                    add(Meta("estimated time", "hourglass", "outline", text = task.timeEstimate.toMoment(false)))
+                    add(Meta("estimated time", "hourglass", "outline", text = task.timeEstimate.toMomentString(false)))
                 }
                 if (task.timeSpent != null) {
                     when (task.timeEstimate?.compareTo(task.timeSpent)) {
@@ -183,10 +183,10 @@ sealed interface Activity<ID : Identifier<*>> {
                                 "spent time (critical)",
                                 "red",
                                 "stopwatch",
-                                text = task.timeSpent.toMoment(false)
+                                text = task.timeSpent.toMomentString(false)
                             )
                         )
-                        else -> add(Meta("spent time", "stopwatch", text = task.timeSpent.toMoment(false)))
+                        else -> add(Meta("spent time", "stopwatch", text = task.timeSpent.toMomentString(false)))
                     }
                 }
             }

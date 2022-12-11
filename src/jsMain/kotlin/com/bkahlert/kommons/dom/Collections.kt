@@ -18,13 +18,6 @@ inline fun <T, R> ItemArrayLike<T>.map(transform: (T) -> R): List<R> =
     asList().map(transform)
 
 /**
- * Returns a list containing the results of applying the given [transform] function
- * to each element of type [T] in the original collection.
- */
-inline fun <reified T, reified R> ItemArrayLike<Any?>.mapInstance(transform: (T) -> R): List<R> =
-    asList().filterIsInstance<T>().map(transform)
-
-/**
  * Performs the given [action] on each element.
  */
 inline fun <T> ItemArrayLike<T>.forEach(action: (T) -> Unit) {

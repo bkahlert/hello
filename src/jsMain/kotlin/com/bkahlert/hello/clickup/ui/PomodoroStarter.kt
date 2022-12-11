@@ -25,7 +25,7 @@ import com.bkahlert.hello.semanticui.module.Menu
 import com.bkahlert.hello.semanticui.module.Text
 import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.kommons.compose.data
-import com.bkahlert.kommons.time.toMoment
+import com.bkahlert.kommons.toMomentString
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.name
@@ -155,7 +155,7 @@ fun PomodoroStarter(
                 Item({
                     data("value", type.name)
                 }) {
-                    Text(type.duration.toMoment(comparative = false))
+                    Text(type.duration.toMomentString(descriptive = false))
                 }
             }
         }

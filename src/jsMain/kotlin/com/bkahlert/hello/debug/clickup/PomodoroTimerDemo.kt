@@ -14,8 +14,8 @@ import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.aborted
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.completed
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.running
-import com.bkahlert.kommons.time.Now
-import com.bkahlert.kommons.time.minus
+import com.bkahlert.kommons.Now
+import com.bkahlert.kommons.minus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.days

@@ -44,8 +44,8 @@ import com.bkahlert.hello.semanticui.module.Menu
 import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.DimmingLoader
 import com.bkahlert.hello.ui.textOverflow
+import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.dom.open
-import com.bkahlert.kommons.time.Now
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.attributes.target

@@ -27,7 +27,7 @@ import com.bkahlert.hello.clickup.ui.widgets.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.ui.widgets.ActivityGroup
 import com.bkahlert.hello.clickup.ui.widgets.byIdOrNull
 import com.bkahlert.hello.ui.search.next
-import com.bkahlert.kommons.text.toSentenceCaseString
+import com.bkahlert.kommons.text.simpleKebabCasedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -298,7 +298,7 @@ sealed class ClickUpMenuState {
             val retry: () -> Unit,
         ) : Transitioned() {
             /** The not-`null` message describing the [cause]. */
-            val message: String = cause.message ?: cause::class.simpleName?.toSentenceCaseString() ?: "unknown"
+            val message: String = cause.message ?: cause::class.simpleKebabCasedName?.replace('-', ' ') ?: "unknown"
         }
     }
 

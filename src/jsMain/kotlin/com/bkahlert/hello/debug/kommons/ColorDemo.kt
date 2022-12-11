@@ -6,7 +6,7 @@ import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.semanticui.SiteColors
 import com.bkahlert.kommons.color.Color
-import com.bkahlert.kommons.text.splitPascalCase
+import com.bkahlert.kommons.text.toKebabCasedString
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexWrap
@@ -138,7 +138,7 @@ fun SiteColorsDemo() {
             Demo(category) {
                 Tiles {
                     colors.forEach { (prop, color) ->
-                        ColoredTile(color, prop.name.splitPascalCase().joinToString(" ")) { style { width((100.0 / colors.size).percent) } }
+                        ColoredTile(color, prop.name.toKebabCasedString().replace('-', ' ')) { style { width((100.0 / colors.size).percent) } }
                     }
                 }
             }

@@ -168,6 +168,7 @@ fun App(state: AppState = rememberAppState()) {
                 AnkerButton("https://start.me/p/4K6MOy/dashboard") { Icon("globe") }
                 AnkerButton("https://home.bkahlert.com") { Icon("home") }
                 AnkerButton("https://github.com/bkahlert") { Icon("github") }
+                AnkerButton("https://console.aws.amazon.com/") { Icon("aws") }
             }
         }
         Div({

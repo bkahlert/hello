@@ -27,7 +27,6 @@ import com.bkahlert.kommons.debug.renderType
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
-import com.bkahlert.kommons.time.seconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +38,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 interface ClickUpMenuViewModel {
     val state: StateFlow<ClickUpMenuState>
@@ -108,8 +108,11 @@ class ClickUpMenuViewModelImpl(
                     logger.groupCatching(
                         label = "$name in state ${currentState.renderType()}",
                         render = {
-                            it.render(customToString = Ignore) { _, prop ->
-                                prop != "client" && prop != "avatar" && prop != "profilePicture"
+                            it.render {
+                                customToString = Ignore
+                                filterProperties { _, prop ->
+                                    prop != "client" && prop != "avatar" && prop != "profilePicture"
+                                }
                             }
                         }
                     ) {

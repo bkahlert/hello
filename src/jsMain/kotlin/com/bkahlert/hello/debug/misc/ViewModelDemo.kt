@@ -25,9 +25,9 @@ import com.bkahlert.hello.debug.response
 import com.bkahlert.hello.semanticui.element.Header
 import com.bkahlert.hello.semanticui.view.Item
 import com.bkahlert.hello.semanticui.view.Items
-import com.bkahlert.kommons.math.isOdd
+import com.bkahlert.kommons.Now
+import com.bkahlert.kommons.isOdd
 import com.bkahlert.kommons.randomString
-import com.bkahlert.kommons.time.Now
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow

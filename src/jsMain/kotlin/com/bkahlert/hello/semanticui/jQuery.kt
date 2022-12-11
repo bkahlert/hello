@@ -1,5 +1,6 @@
 package com.bkahlert.hello.semanticui
 
+import com.bkahlert.kommons.json
 import kotlin.js.Json
 import kotlin.js.json
 
@@ -49,6 +50,12 @@ fun jQuery.popup(vararg options: Pair<String, Any?>) = popup(json(*options))
  * using the specified [options].
  */
 fun jQuery.modal(vararg options: Pair<String, Any?>) = modal(json(*options))
+
+/**
+ * An interface to interact with a [SemanticUI modal](https://semantic-ui.com/modules/modal.html)
+ * using the specified [options].
+ */
+fun jQuery.modal(options: Map<String, Any?>) = modal(json(options))
 
 /**
  * An interface to interact with a [SemanticUI progress](https://semantic-ui.com/modules/progress.html)

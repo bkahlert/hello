@@ -1,0 +1,66 @@
+[versions]
+dokka = "1.7.10"
+icu = "71.1"
+kommons = "2.2.0"
+kotlin = "1.7.10"
+kotlin-logging = "2.1.23"
+kotest = "5.4.1"
+ktor = "1.6.3"
+logback-classic = "1.2.11"
+logstash-logback-encoder = "7.2"
+jvm = "1.8"
+jsr305 = "3.0.2"
+junit-jupiter = "5.9.0"
+junit-platform = "1.9.0"
+mordant = "2.0.0-beta7"
+nebula-release = "16.0.0"
+slf4j = "1.7.36"
+spring-dependency-management = "1.0.13.RELEASE"
+spring-boot = "2.7.3" # https://docs.spring.io/spring-boot/docs/2.7.3/
+stdlib-js = "0.0.9"
+plexus = "3.4.2"
+xregexp = "5.1.0"
+
+
+[libraries]
+kommons = { module = "com.bkahlert.kommons:kommons", version.ref = "kommons" }
+kommons-test = { module = "com.bkahlert.kommons:kommons-test", version.ref = "kommons" }
+
+kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
+
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-common = { module = "io.kotest:kotest-common", version.ref = "kotest" }
+
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
+logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder" }
+
+mordant = { module = "com.github.ajalt.mordant:mordant", version.ref = "mordant" }
+
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
+
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
+
+junit-platform-commons = { module = "org.junit.platform:junit-platform-commons", version.ref = "junit-platform" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
+
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+
+spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
+
+plexus-utils = { module = "org.codehaus.plexus:plexus-utils", version.ref = "plexus" }
+
+
+[bundles]
+junit-jupiter = ["junit-jupiter-api", "junit-jupiter-engine"]
+junit-platform = ["junit-platform-commons", "junit-platform-launcher"]
+
+
+[plugins]
+dokka = { id = "org.jetbrains.dokka:dokka", version.ref = "dokka" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+nebula = { id = "com.netflix.nebula:nebula-release-plugin", version.ref = "nebula-release" }

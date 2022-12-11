@@ -2,7 +2,7 @@ package com.bkahlert.kommons.dom
 
 import com.bkahlert.hello.deserialize
 import com.bkahlert.hello.serialize
-import com.bkahlert.kommons.text.toKebabCaseString
+import com.bkahlert.kommons.text.toKebabCasedString
 import io.ktor.http.Parameters
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.formUrlEncode
@@ -136,7 +136,7 @@ class ParametersPropertyDelegateProvider<V>(
     val deserialize: (String) -> V,
 ) : PropertyDelegateProvider<Any?, ParametersPropertyDelegate<V>> {
     override fun provideDelegate(thisRef: Any?, property: KProperty<*>): ParametersPropertyDelegate<V> {
-        return ParametersPropertyDelegate(parametersProperty, property.name.toKebabCaseString(), default, missing, serialize, deserialize)
+        return ParametersPropertyDelegate(parametersProperty, property.name.toKebabCasedString(), default, missing, serialize, deserialize)
     }
 }
 

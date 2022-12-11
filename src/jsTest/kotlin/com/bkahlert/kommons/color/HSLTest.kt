@@ -3,8 +3,8 @@ package com.bkahlert.kommons.color
 import com.bkahlert.hello.serialize
 import com.bkahlert.kommons.color.Color.HSL
 import com.bkahlert.kommons.color.Color.RGB
+import com.bkahlert.kommons.quoted
 import com.bkahlert.kommons.tests
-import com.bkahlert.kommons.text.quoted
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.comparables.shouldBeLessThanOrEqualTo
 import io.kotest.matchers.should

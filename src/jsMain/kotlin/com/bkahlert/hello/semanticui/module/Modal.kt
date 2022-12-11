@@ -21,7 +21,6 @@ import com.bkahlert.hello.semanticui.element.ButtonElementType
 import com.bkahlert.hello.semanticui.jQuery
 import com.bkahlert.hello.semanticui.modal
 import com.bkahlert.hello.ui.hideVisually
-import com.bkahlert.kommons.collections.pairArray
 import kotlinx.browser.document
 import org.jetbrains.compose.web.attributes.AttrsScopeBuilder
 import org.w3c.dom.HTMLDivElement
@@ -120,7 +119,7 @@ fun Modal(
             val insertionPoint = checkNotNull(scopeElement.parentElement) { "missing parent" } to scopeElement.nextSibling
             val jQueryElement = jQuery(scopeElement)
             jQueryElement
-                .modal(*scope.settings.pairArray)
+                .modal(scope.settings)
                 .modal("show")
             val invisiblePlaceholder = (document.createElement("span") as HTMLElement).apply { hideVisually() }
             insertionPoint.first.insertBefore(invisiblePlaceholder, insertionPoint.second)

@@ -14,7 +14,7 @@ import com.bkahlert.hello.semanticui.module.closable
 import com.bkahlert.hello.semanticui.module.onApprove
 import com.bkahlert.hello.semanticui.module.onDeny
 import com.bkahlert.hello.semanticui.module.size
-import com.bkahlert.kommons.time.toMoment
+import com.bkahlert.kommons.toMomentString
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Small
@@ -39,7 +39,7 @@ fun AlreadyRunningActivityModal(
         IconHeader(*icon) {
             Text("Already running session")
             Br()
-            Small { Text(pomodoro.duration.toMoment(comparative = false)) }
+            Small { Text(pomodoro.duration.toMomentString(descriptive = false)) }
         }
         Content {
             P { Text("A pomodoro session with ID ${runningTaskActivity.id.stringValue} is already running.") }

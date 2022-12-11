@@ -3,7 +3,7 @@
 package com.bkahlert.kommons.serialization
 
 import com.bkahlert.kommons.dom.URL
-import com.bkahlert.kommons.text.quoted
+import com.bkahlert.kommons.quoted
 import kotlinx.serialization.UseSerializers
 import kotlin.test.Test
 import kotlin.test.assertEquals

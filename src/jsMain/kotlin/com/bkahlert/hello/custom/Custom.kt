@@ -10,7 +10,6 @@ import com.bkahlert.hello.custom.Sandbox.ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION
 import com.bkahlert.hello.custom.Sandbox.Companion.sandbox
 import com.bkahlert.hello.ui.Spinner
 import com.bkahlert.kommons.backgroundImage
-import com.bkahlert.kommons.text.joinLinesToString
 import io.ktor.http.Url
 import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.CSSBuilder
@@ -140,7 +139,7 @@ enum class Sandbox {
 
     companion object {
         fun AttrsScope<HTMLIFrameElement>.sandbox(vararg permissions: Sandbox) {
-            attr("sandbox", permissions.joinLinesToString(" ") { it.name.lowercase().replace('_', '-') })
+            attr("sandbox", permissions.joinToString(" ") { it.name.lowercase().replace('_', '-') })
         }
     }
 }
