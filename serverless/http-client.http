@@ -1,0 +1,11 @@
+### Get foo property
+
+GET {{baseUrl}}/props/foo
+
+
+### Set foo property to bar
+
+POST {{baseUrl}}/props/foo
+Content-Type: text/plain; charset=utf-8
+
+bar

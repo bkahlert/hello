@@ -1,0 +1,4 @@
+# see https://www.serverless.com/framework/docs/guides/compose
+services:
+  serverless:
+    path: serverless
