@@ -47,4 +47,24 @@ serverless offline
 
 ```shell
 curl -X POST https://4p2r0qp2n1.execute-api.eu-central-1.amazonaws.com/props/abc  -H "Content-Type: application/json" -d "{\"id\": \"123\", \"price\": 12345, \"name\": \"myitem\"}"
+
+serverless invoke \
+  --log \
+  --function getProp \
+  --path events/getProp/foo.json
+
+serverless invoke \
+  --log \
+  --function setProp \
+  -d '
+{
+  "routeKey": "POST /props/{id}",
+  "pathParameters": {
+    "id": "some-id"
+  },
+  "id": "123",
+  "price": 12345, 
+  "name": "myitem"
+}
+'
 ```

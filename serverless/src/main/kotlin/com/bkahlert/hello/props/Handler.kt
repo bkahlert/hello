@@ -18,15 +18,14 @@ class Handler : EventHandler() {
     private val logger by SLF4J
     private val random = Random(20)
 
-    private val props = mutableMapOf<String, String?>()
-
-    override fun handleEvent(
+    override suspend fun handleEvent(
         event: APIGatewayV2HTTPEvent,
         context: Context,
     ): APIGatewayV2HTTPResponse = when (event.routeKey) {
         "GET /props/{id}" -> {
-            val id = requireNotNull(event.pathParameters["id"])
-            when (val value = props[id]) {
+            val propId = requireNotNull(event.pathParameters["id"])
+            logger.info("Getting $propId")
+            when (val value = PropsTable.getProp(propId)) {
                 null -> APIGatewayV2HTTPResponse.builder()
                     .withStatusCode(404)
                     .build()
@@ -39,27 +38,26 @@ class Handler : EventHandler() {
         }
 
         "POST /props/{id}" -> {
-            val id = requireNotNull(event.pathParameters["id"])
-            val value = event.decodedBody
-            props[id] = value
+            val propId = requireNotNull(event.pathParameters["id"])
+            logger.info("Setting $propId")
 
-            logger.info("env: ${System.getenv().entries.joinToString() { (k, v) -> "$k=$v" }}")
+            val value = event.decodedBody
+
             val tables = runBlocking {
 
                 val keyToGet = mutableMapOf<String, AttributeValue>()
-                keyToGet["id"] = AttributeValue.S(id)
+                keyToGet["id"] = AttributeValue.S(propId)
 
-                val table = System.getenv("DYNAMODB_PROPS_TABLE")
                 val request = GetItemRequest {
                     key = keyToGet
-                    tableName = table
+                    tableName = PropsTable.tableName
                 }
 
                 val request2 = PutItemRequest {
-                    tableName = table
+                    tableName = PropsTable.tableName
                     item = if (value != null)
                         mutableMapOf(
-                            "id" to AttributeValue.S(id),
+                            "id" to AttributeValue.S(propId),
                             "value" to AttributeValue.S(value),
                         )
                     else emptyMap()
