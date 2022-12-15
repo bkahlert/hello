@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="hello [jsBrowserRun] --continuous" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="./gradlew jsBrowserRun --continuous" />
+    <option name="SCRIPT_TEXT" value="./gradlew :web-app:jsBrowserRun --continuous" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />

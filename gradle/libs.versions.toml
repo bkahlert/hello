@@ -1,66 +1,64 @@
 [versions]
-dokka = "1.7.10"
-icu = "71.1"
-kommons = "2.4.0"
-kotlin = "1.7.10"
+aws-lambda-java-core = "1.2.2"
+aws-lambda-java-events = "3.11.0"
+aws-lambda-java-log4j2 = "1.5.1"
+aws-sdk-kotlin = "0.19.0-beta"
+compose = "1.3.0-rc01"
+compose-compiler = "1.4.0-alpha02"
+dokka = "1.7.21"
+kommons = "2.4.1"
+kotlin = "1.7.21"
 kotlin-logging = "2.1.23"
+kotlinx-serialization = "1.4.1"
 kotest = "5.4.1"
-ktor = "1.6.3"
-logback-classic = "1.2.11"
+ktor = "2.0.3"
 logstash-logback-encoder = "7.2"
-jvm = "1.8"
-jsr305 = "3.0.2"
-junit-jupiter = "5.9.0"
-junit-platform = "1.9.0"
 mordant = "2.0.0-beta7"
+node = "16.0.0"
 nebula-release = "16.0.0"
-slf4j = "1.7.36"
-spring-dependency-management = "1.0.13.RELEASE"
-spring-boot = "2.7.3" # https://docs.spring.io/spring-boot/docs/2.7.3/
-stdlib-js = "0.0.9"
-plexus = "3.4.2"
-xregexp = "5.1.0"
+shadow = "7.1.2"
 
 
 [libraries]
+aws-lambda-java-core = { module = "com.amazonaws:aws-lambda-java-core", version.ref = "aws-lambda-java-core" }
+aws-lambda-java-events = { module = "com.amazonaws:aws-lambda-java-events", version.ref = "aws-lambda-java-events" }
+aws-lambda-java-log4j2 = { module = "com.amazonaws:aws-lambda-java-log4j2", version.ref = "aws-lambda-java-log4j2" }
+aws-sdk-kotlin-s3 = { module = "aws.sdk.kotlin:s3", version.ref = "aws-sdk-kotlin" }
+aws-sdk-kotlin-lambda = { module = "aws.sdk.kotlin:lambda", version.ref = "aws-sdk-kotlin" }
+aws-sdk-kotlin-dynamodb = { module = "aws.sdk.kotlin:dynamodb", version.ref = "aws-sdk-kotlin" }
 kommons = { module = "com.bkahlert.kommons:kommons", version.ref = "kommons" }
 kommons-test = { module = "com.bkahlert.kommons:kommons-test", version.ref = "kommons" }
 
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
 
-kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-kotest-common = { module = "io.kotest:kotest-common", version.ref = "kotest" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 logstash-logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstash-logback-encoder" }
 
 mordant = { module = "com.github.ajalt.mordant:mordant", version.ref = "mordant" }
 
-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305" }
-
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
-
-junit-platform-commons = { module = "org.junit.platform:junit-platform-commons", version.ref = "junit-platform" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
-
-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
-
-spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot" }
-
-plexus-utils = { module = "org.codehaus.plexus:plexus-utils", version.ref = "plexus" }
 
 
 [bundles]
-junit-jupiter = ["junit-jupiter-api", "junit-jupiter-engine"]
-junit-platform = ["junit-platform-commons", "junit-platform-launcher"]
-
+aws-lambda-java = ["aws-lambda-java-core", "aws-lambda-java-events", "aws-lambda-java-log4j2"]
+aws-sdk-kotlin = ["aws-sdk-kotlin-s3", "aws-sdk-kotlin-lambda", "aws-sdk-kotlin-dynamodb"]
+ktor-client = ["ktor-client-core", "ktor-client-js", "ktor-client-auth", "ktor-client-logging", "ktor-client-serialization", "ktor-client-content-negotiation"]
 
 [plugins]
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 dokka = { id = "org.jetbrains.dokka:dokka", version.ref = "dokka" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 nebula = { id = "com.netflix.nebula:nebula-release-plugin", version.ref = "nebula-release" }
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }

@@ -1,6 +1,4 @@
-import org.jetbrains.compose.compose
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
 import org.jetbrains.kotlin.gradle.targets.js.webpack.WebpackDevtool
@@ -9,8 +7,8 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    kotlin("plugin.serialization") version "1.7.0"
-    id("org.jetbrains.compose") version "1.2.0-alpha01-dev741"
+    alias(libs.plugins.kotlin.plugin.serialization)
+    alias(libs.plugins.compose)
     id("org.hidetake.ssh")
 }
 
@@ -22,14 +20,6 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-    maven {
-        url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
-        name = "ktor-eap"
-    }
-    maven {
-        url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
-        name = "ktor-eap"
-    }
 }
 
 kotlin {
@@ -43,10 +33,12 @@ kotlin {
 
                     DEVELOPMENT -> {
                         devtool = WebpackDevtool.EVAL_SOURCE_MAP
-                        cssSupport.enabled = true
+                        cssSupport { enabled = true }
                         // main config in webpack.config.d directory
                     }
                 }
+
+                outputFileName = "hello.js"
             }
             testTask {
                 testLogging.showStandardStreams = true
@@ -66,11 +58,9 @@ kotlin {
             dependencies {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
-                @Suppress("LocalVariableName") val ktor_version = "2.0.3"
-                listOf("core", "js", "auth", "logging", "serialization", "content-negotiation").forEach { api("io.ktor:ktor-client-$it:$ktor_version") }
-                listOf("json").forEach { api("io.ktor:ktor-serialization-kotlinx-$it:$ktor_version") }
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-
+                implementation(libs.bundles.ktor.client)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kommons)
             }
 
@@ -98,8 +88,8 @@ kotlin {
     }
 }
 
-rootProject.plugins.withType<NodeJsRootPlugin> {
-    rootProject.the<NodeJsRootExtension>().nodeVersion = "16.0.0"
+compose {
+    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:${libs.versions.compose.compiler.get()}")
 }
 
 rootProject.extensions.configure<NodeJsRootExtension> {
