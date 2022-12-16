@@ -1,0 +1,6 @@
+{
+  "routeKey": "POST /props/{id}",
+  "pathParameters": {
+    "id": "bar"
+  }
+}

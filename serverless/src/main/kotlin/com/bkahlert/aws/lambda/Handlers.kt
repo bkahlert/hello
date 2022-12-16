@@ -36,9 +36,19 @@ abstract class EventHandler : RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2
     ): APIGatewayV2HTTPResponse
 }
 
-fun json(vararg pairs: Pair<String, String?>) = pairs
+object MimeTypes {
+    const val APPLICATION_JSON: String = "application/json"
+    const val TEXT_PLAIN: String = "text/plain"
+}
+
+fun APIGatewayV2HTTPResponse.APIGatewayV2HTTPResponseBuilder.withMimeType(provide: MimeTypes.() -> String) =
+    withHeaders(mapOf("Content-Type" to MimeTypes.provide()))
+
+fun json(map: Map<String, String?>) = map.entries
     .filter { (_, value) -> value != null }
     .joinToString(", ", "{ ", " }") { (key, value) -> "${key.quoted}: ${value.quoted}" }
+
+fun json(vararg pairs: Pair<String, String?>) = json(pairs.toMap())
 
 val APIGatewayV2HTTPEvent.decodedBody: String?
     get() = if (isBase64Encoded) body?.decodeBase64() else body

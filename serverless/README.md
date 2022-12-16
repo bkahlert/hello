@@ -42,29 +42,66 @@ serverless plugin install -n serverless-offline
 serverless offline
 ```
 
-
 ## TODO
 
 ```shell
-curl -X POST https://4p2r0qp2n1.execute-api.eu-central-1.amazonaws.com/props/abc  -H "Content-Type: application/json" -d "{\"id\": \"123\", \"price\": 12345, \"name\": \"myitem\"}"
+curl -X POST https://186dr8kbka.execute-api.eu-central-1.amazonaws.com/props/abc  -H "Content-Type: application/json" -d "{\"id\": \"123\", \"price\": 12345, \"name\": \"myitem\"}"
+```
 
+## Get props
+
+### Get foo
+
+```shell
 serverless invoke \
   --log \
   --function getProp \
   --path events/getProp/foo.json
+```
 
+### Get bar
+
+```shell
+serverless invoke \
+  --log \
+  --function getProp \
+  --path events/getProp/bar.json
+```
+
+## Set props
+
+### Set foo to value
+
+```shell
 serverless invoke \
   --log \
   --function setProp \
-  -d '
-{
-  "routeKey": "POST /props/{id}",
-  "pathParameters": {
-    "id": "some-id"
-  },
-  "id": "123",
-  "price": 12345, 
-  "name": "myitem"
-}
-'
+  --path events/setProp/foo-to-value.json
+```
+
+### Set bar to Base64 SVG
+
+```shell
+serverless invoke \
+  --log \
+  --function setProp \
+  --path events/setProp/bar-to-base64-svg.json
+```
+
+### Set foo to null
+
+```shell
+serverless invoke \
+  --log \
+  --function setProp \
+  --path events/setProp/foo-to-null.json
+```
+
+### Set bar to Base64 SVG
+
+```shell
+serverless invoke \
+  --log \
+  --function setProp \
+  --path events/setProp/bar-to-null.json
 ```
