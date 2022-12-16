@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
+import com.bkahlert.aws.lambda.ServerlessLocal.postProcess
 import com.bkahlert.kommons.quoted
 import com.bkahlert.kommons.text.simpleTitleCasedName
 import kotlinx.coroutines.runBlocking
@@ -28,7 +29,7 @@ abstract class EventHandler : RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2
             "message" to ex.message,
         )
         response
-    }
+    }.postProcess()
 
     abstract suspend fun handleEvent(
         event: APIGatewayV2HTTPEvent,

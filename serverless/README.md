@@ -38,9 +38,20 @@ serverless invoke local --function hello
 ## Extends
 
 ```shell
-serverless plugin install -n serverless-offline
-serverless offline
+serverless invoke local --verbose \
+  --function getProp \
+  --path events/getProp/foo.json
+  
+
+(
+  cd node_modules/serverless/lib/plugins/aws/invoke-local/runtime-wrappers/java || exit 1
+#  mvn test
+  mvn package -DskipTests
+)
 ```
+
+Change the all Jackson dependencies to `2.5.5` in `node_modules/serverless/lib/plugins/aws/invoke-local/runtime-wrappers/java/pom.xml` if problems with Jackson
+occur.
 
 ## TODO
 

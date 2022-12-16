@@ -101,6 +101,26 @@ functions.forEach { fn ->
         serverlessDeploy("function", "--function", fn)
     }
 
+    val eventFiles = mutableMapOf<String?, File?>().apply {
+        put(null, null)
+        project.file("events/$fn").listFiles()?.forEach { put(it.nameWithoutExtension, it) }
+    }
+
+    eventFiles.forEach { (name, eventFile) ->
+        tasks.register<Exec>("invoke-$fn${name?.let { "+$it" } ?: ""}") {
+            group = "$SERVERLESS_GROUP-$stage/$fn"
+            description = "Invokes the lambda function $fn${name?.let { " with event $it" } ?: ""}."
+            dependsOn(deploy)
+            serverless("invoke", "--function", fn, *eventFile?.let { arrayOf("--path", "$eventFile") } ?: emptyArray())
+        }
+        tasks.register<Exec>("invoke-local-$fn${name?.let { "+$it" } ?: ""}") {
+            group = "$SERVERLESS_GROUP-local/$fn"
+            description = "Locally invokes the lambda function $fn${name?.let { " with event $it" } ?: ""}."
+            dependsOn(tasks.shadowJar)
+            serverless("invoke", "local", "--function", fn, *eventFile?.let { arrayOf("--path", "$eventFile") } ?: emptyArray())
+        }
+    }
+
     val logs = tasks.register<Exec>("logs-$fn") {
         group = SERVERLESS_GROUP
         description = "Lets you watch the logs of the lambda function $fn."
@@ -113,7 +133,7 @@ functions.forEach { fn ->
         serverless("logs", "--function", fn, "--tail")
     }
 
-    val invoke = tasks.register<Exec>("invoke-$fn") {
+    val invokeWithAws = tasks.register<Exec>("awsInvoke-$fn") {
         group = AWS_LAMBDA_GROUP
         description = "Invokes the lambda function $fn."
         val tmp: File? = null
@@ -169,7 +189,7 @@ functions.forEach { fn ->
         group = AWS_LAMBDA_GROUP
         description = "Deploys and invokes the lambda function $fn."
         dependsOn(deploy)
-        finalizedBy(invoke)
+        finalizedBy(invokeWithAws)
     }
 }
 
