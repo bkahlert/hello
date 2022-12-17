@@ -1,29 +1,41 @@
 service: hello
 frameworkVersion: '3'
 
+# https://www.serverless.com/framework/docs/providers/aws/guide/serverless.yml
 provider:
   name: aws
   runtime: java11
 
   stage: ${opt:stage, 'dev'}
-  region: eu-central-1
+  region: ${opt:region, 'eu-central-1'}
   memorySize: 1472
   deploymentMethod: direct
+  tracing:
+    apiGateway: true
+    lambda: true
 
   environment:
+    DOMAIN: ${self:custom.customDomain.domainName}
+    STAGE: ${self:provider.stage}
     DYNAMODB_PROPS_TABLE: ${self:service}-props-${sls:stage}
 
   iam:
     role:
       statements:
-        - Effect: 'Allow'
+        - Effect: Allow
           Action:
-            - 'dynamodb:PutItem'
-            - 'dynamodb:Get*'
-            - 'dynamodb:Query'
-            - 'dynamodb:UpdateItem'
-            - 'dynamodb:DeleteItem'
+            - dynamodb:PutItem
+            - dynamodb:Get*
+            - dynamodb:Query
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
           Resource: arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:service}-props-${sls:stage}
+        - Effect: Allow
+          Action:
+            - xray:PutTraceSegments
+            - xray:PutTelemetryRecords
+          Resource:
+            - '*'
 
 # you can define service wide environment variables here
 #  environment:
@@ -33,6 +45,17 @@ package:
   artifact: build/libs/serverless-all.jar
 
 functions:
+  clickup:
+    handler: com.bkahlert.hello.clickup.Handler
+    events:
+      - httpApi:
+          path: /{path+}
+          method: any
+    environment:
+      CLICKUP_URL: https://api.clickup.com/api/v2
+      CLICKUP_API_TOKEN: ${ssm:/clickup_api_token}
+      CLICKUP_CLIENT_ID: ${ssm:/clickup_client_id}
+      CLICKUP_CLIENT_SECRET: ${ssm:/clickup_client_secret}
   getProp:
     handler: com.bkahlert.hello.props.Handler
     events:
@@ -88,13 +111,55 @@ functions:
 #      variable2: value2git
 
 custom:
+  domains:
+    prod:
+      domainName: api.hello.aws.choam.de
+      certificateName: api.hello.aws.choam.de
+    dev:
+      domainName: api-dev.hello.aws.choam.de
+      certificateName: api-dev.hello.aws.choam.de
+
+  # Amazon Certificate Manager
+  customCertificate:
+    # Route 53 Hosted Zone name
+    # don't forget the dot on the end!
+    hostedZoneNames: aws.choam.de.
+
+    # Here we get our certificate name inside custom.domain.STAGE.certificateName
+    # STAGE will be automatically filled with the value from "provider > stage"
+    certificateName: ${self:custom.domains.${self:provider.stage}.certificateName}
+
+    region: ${self:provider.region}
+
+  # Route53
+  customDomain:
+    # Get value from "domains" section using stage that is being deployed
+    domainName: ${self:custom.domains.${self:provider.stage}.domainName}
+
+    # Same case of certificaName inside customCertificate
+    certificateName: ${self:custom.domains.${self:provider.stage}.certificateName}
+
+    # Enable plugin to create an A Alias and AAAA Alias records in Route53
+    # mapping the domainName to the generated distribution domain name.
+    createRoute53Record: true
+
+    # Enable plugin to autorun create_domain/delete_domain as part of sls deploy/remove
+    autoDomain: true
+
+    apiType: http
+    basePath: ''
+    hostedZoneId: Z01449492IRUS6954XDJ4
+    endpointType: REGIONAL
+
+  #  aliasHostedZoneId: Z01449492IRUS6954XDJ4
+  #  aliasDNSName: s3-website.eu-central-1.amazonaws.com
   siteName: hello.aws.choam.de
-  aliasHostedZoneId: Z01449492IRUS6954XDJ4
-  aliasDNSName: s3-website.eu-central-1.amazonaws.com
   s3Sync:
     - bucketName: ${self:custom.siteName}
-      localDir: static # TODO add dependency to :web-app:jsBrowserProductionWebpack, see https://docs.gradle.org/current/userguide/cross_project_publications.html
-      # TODO filter application.dev.json
+      localDir: static
+    # TODO add dependency to :web-app:jsBrowserProductionWebpack, see https://docs.gradle.org/current/userguide/cross_project_publications.html
+  # TODO filter application.dev.json
+  # s3-website.eu-central-1.amazonaws.com.
 
 # see https://www.serverless.com/framework/docs/providers/aws/guide/resources
 resources:
@@ -128,16 +193,16 @@ resources:
                     "/*"
                   ]
                 ]
-    DnsRecord:
-      Type: "AWS::Route53::RecordSet"
-      Properties:
-        AliasTarget:
-          DNSName: ${self:custom.aliasDNSName}
-          HostedZoneId: ${self:custom.aliasHostedZoneId}
-        HostedZoneName: ${self:custom.siteName}.
-        Name:
-          Ref: StaticSite
-        Type: 'A'
+    #    DnsRecord:
+    #      Type: "AWS::Route53::RecordSet"
+    #      Properties:
+    #        AliasTarget:
+    #          DNSName: ${self:custom.aliasDNSName}
+    #          HostedZoneId: ${self:custom.aliasHostedZoneId}
+    #        HostedZoneName: ${self:custom.siteName}.
+    #        Name:
+    #          Ref: StaticSite
+    #        Type: 'A'
     PropsTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -166,3 +231,5 @@ resources:
 
 plugins:
   - serverless-s3-sync
+  - serverless-domain-manager
+  - serverless-certificate-creator

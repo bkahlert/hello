@@ -56,7 +56,7 @@ occur.
 ## TODO
 
 ```shell
-curl -X POST https://186dr8kbka.execute-api.eu-central-1.amazonaws.com/props/abc  -H "Content-Type: application/json" -d "{\"id\": \"123\", \"price\": 12345, \"name\": \"myitem\"}"
+curl -X POST https://jtyka1zrmg.execute-api.eu-central-1.amazonaws.com/props/abc  -H "Content-Type: application/json" -d "{\"id\": \"123\", \"price\": 12345, \"name\": \"myitem\"}"
 ```
 
 ## Get props
@@ -115,4 +115,18 @@ serverless invoke \
   --log \
   --function setProp \
   --path events/setProp/bar-to-null.json
+```
+
+## Certificates & Domains
+
+First a certificate is needed
+
+```shell
+serverless create-cert
+# or
+serverless create-cert --stage=prod
+```
+
+```shell
+serverless create_domain
 ```
