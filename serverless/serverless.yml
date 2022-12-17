@@ -87,9 +87,57 @@ functions:
 #    environment:
 #      variable2: value2git
 
+custom:
+  siteName: hello.aws.choam.de
+  aliasHostedZoneId: Z01449492IRUS6954XDJ4
+  aliasDNSName: s3-website.eu-central-1.amazonaws.com
+  s3Sync:
+    - bucketName: ${self:custom.siteName}
+      localDir: static # TODO add dependency to :web-app:jsBrowserProductionWebpack, see https://docs.gradle.org/current/userguide/cross_project_publications.html
+      # TODO filter application.dev.json
+
 # see https://www.serverless.com/framework/docs/providers/aws/guide/resources
 resources:
   Resources:
+    StaticSite:
+      Type: AWS::S3::Bucket
+      Properties:
+        AccessControl: PublicRead
+        BucketName: ${self:custom.siteName}
+        WebsiteConfiguration:
+          IndexDocument: index.html
+    StaticSiteS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: StaticSite
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action:
+                - s3:GetObject
+              Resource:
+                Fn::Join: [
+                  "", [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "StaticSite"
+                    },
+                    "/*"
+                  ]
+                ]
+    DnsRecord:
+      Type: "AWS::Route53::RecordSet"
+      Properties:
+        AliasTarget:
+          DNSName: ${self:custom.aliasDNSName}
+          HostedZoneId: ${self:custom.aliasHostedZoneId}
+        HostedZoneName: ${self:custom.siteName}.
+        Name:
+          Ref: StaticSite
+        Type: 'A'
     PropsTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -115,3 +163,6 @@ resources:
 #       Description: "Description for the output"
 #       Value: "Some output value"
 
+
+plugins:
+  - serverless-s3-sync
