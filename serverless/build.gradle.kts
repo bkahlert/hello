@@ -35,7 +35,7 @@ dependencies {
     implementation(libs.bundles.aws.sdk.kotlin)
     implementation("org.apache.logging.log4j:log4j-slf4j18-impl:2.18.0")
 
-//    implementation(libs.kommons)
+    implementation(libs.kommons)
 
     implementation("com.bkahlert.kommons:kommons:2.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-html:0.8.0")

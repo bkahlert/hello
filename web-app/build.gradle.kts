@@ -58,7 +58,7 @@ kotlin {
             dependencies {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
-                implementation(libs.bundles.ktor.client)
+                implementation(libs.bundles.ktor.js.client)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kommons)

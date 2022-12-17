@@ -52,7 +52,7 @@ mordant = { module = "com.github.ajalt.mordant:mordant", version.ref = "mordant"
 [bundles]
 aws-lambda-java = ["aws-lambda-java-core", "aws-lambda-java-events", "aws-lambda-java-log4j2"]
 aws-sdk-kotlin = ["aws-sdk-kotlin-s3", "aws-sdk-kotlin-lambda", "aws-sdk-kotlin-dynamodb"]
-ktor-client = ["ktor-client-core", "ktor-client-js", "ktor-client-auth", "ktor-client-logging", "ktor-client-serialization", "ktor-client-content-negotiation"]
+ktor-js-client = ["ktor-client-core", "ktor-client-js", "ktor-client-auth", "ktor-client-logging", "ktor-client-serialization", "ktor-client-content-negotiation"]
 
 [plugins]
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
