@@ -7,7 +7,6 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
 import com.bkahlert.aws.lambda.ServerlessLocal.postProcess
 import com.bkahlert.kommons.quoted
-import com.bkahlert.kommons.text.simpleTitleCasedName
 import kotlinx.coroutines.runBlocking
 
 abstract class EventHandler : RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
@@ -15,21 +14,12 @@ abstract class EventHandler : RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2
     override fun handleRequest(
         input: APIGatewayV2HTTPEvent?,
         context: Context?,
-    ): APIGatewayV2HTTPResponse = kotlin.runCatching {
-        checkNotNull(input) { "input must not be null" }
-        checkNotNull(context) { "context must not be null" }
-        runBlocking {
-            handleEvent(input, context)
-        }
-    }.getOrElse { ex ->
-        val response = APIGatewayV2HTTPResponse()
-        response.statusCode = 500
-        response.body = json(
-            "error" to ex::class.simpleTitleCasedName,
-            "message" to ex.message,
-        )
-        response
-    }.postProcess()
+    ): APIGatewayV2HTTPResponse = runBlocking {
+        handleEvent(
+            event = checkNotNull(input) { "input must not be null" },
+            context = checkNotNull(context) { "context must not be null" },
+        ).postProcess()
+    }
 
     abstract suspend fun handleEvent(
         event: APIGatewayV2HTTPEvent,

@@ -14,7 +14,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 
-class Handler : EventHandler() {
+class ClickUpHandler : EventHandler() {
 
     private val logger by SLF4J
     private val clickupUrl by lazy { System.getenv("CLICKUP_URL") }
@@ -44,7 +44,7 @@ class Handler : EventHandler() {
         return APIGatewayV2HTTPResponse.builder()
             .withStatusCode(200)
             .withMimeType { APPLICATION_JSON }
-            .withBody(response.body().trace)
+            .withBody(response.body().trace(out = { logger.info(it) }))
             .build()
     }
 }

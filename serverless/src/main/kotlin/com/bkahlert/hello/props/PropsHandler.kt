@@ -10,7 +10,7 @@ import com.bkahlert.aws.lambda.json
 import com.bkahlert.aws.lambda.withMimeType
 import com.bkahlert.kommons.logging.SLF4J
 
-class Handler : EventHandler() {
+class PropsHandler : EventHandler() {
 
     private val logger by SLF4J
 

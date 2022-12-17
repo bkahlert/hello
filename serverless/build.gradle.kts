@@ -36,9 +36,10 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j18-impl:2.18.0")
 
     implementation(libs.kommons)
-
-    implementation("com.bkahlert.kommons:kommons:2.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-html:0.8.0")
+
+    testImplementation(libs.kommons.test)
+    testImplementation(libs.aws.lambda.java.tests)
 }
 
 tasks.jar {
@@ -48,6 +49,14 @@ tasks.shadowJar {
     archiveVersion.set("")
     mergeServiceFiles()
     transform(Log4j2PluginsCacheFileTransformer::class.java)
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+
+    filter {
+        isFailOnNoMatchingTests = false
+    }
 }
 
 
@@ -72,7 +81,11 @@ fun Exec.serverlessDeploy(vararg args: String): Exec =
 
 val stage by extra("dev")
 val service = "hello" // TODO load from serverless.yaml, see Vaults.kt
-val functions = listOf("getProp", "setProp", "hello") // TODO load from serverless.yaml, see Vaults.kt
+val functionToEventsMapping: Map<String, List<File>> = sourceSets.map {
+    it.resources.matching { include("**/events/*/*.json") }.groupBy { it.parentFile.name }
+}.fold(mapOf<String, List<File>>()) { acc, map ->
+    acc.keys.plus(map.keys).associateWith { key -> setOfNotNull(acc[key], map[key]).flatten() }
+}
 
 val SERVERLESS_GROUP = "serverless"
 
@@ -93,7 +106,7 @@ tasks.register<Exec>("remove") {
     serverless("remove")
 }
 
-functions.forEach { fn ->
+functionToEventsMapping.forEach { (fn, eventFiles) ->
     val deploy = tasks.register<Exec>("deploy-$fn") {
         group = SERVERLESS_GROUP
         description = "Deploys the lambda function $fn."
@@ -101,12 +114,8 @@ functions.forEach { fn ->
         serverlessDeploy("function", "--function", fn)
     }
 
-    val eventFiles = mutableMapOf<String?, File?>().apply {
-        put(null, null)
-        project.file("events/$fn").listFiles()?.forEach { put(it.nameWithoutExtension, it) }
-    }
-
-    eventFiles.forEach { (name, eventFile) ->
+    listOf<File?>(null).plus(eventFiles).forEach { eventFile ->
+        val name = eventFile?.nameWithoutExtension
         tasks.register<Exec>("invoke-$fn${name?.let { "+$it" } ?: ""}") {
             group = "$SERVERLESS_GROUP-$stage/$fn"
             description = "Invokes the lambda function $fn${name?.let { " with event $it" } ?: ""}."
