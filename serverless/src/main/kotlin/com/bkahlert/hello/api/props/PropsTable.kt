@@ -16,18 +16,20 @@ object PropsTable {
 
     private val logger by SLF4J
     private val tableName by lazy { System.getenv("DYNAMODB_PROPS_TABLE") }
-    private val userId = "test-user"
 
     private val userIdAttributeName = "userId"
     private val propIdAttributeName = "propId"
     private val valueAttributeName = "value"
 
-    private fun keyOf(propId: String): Map<String, AttributeValue> = mapOf<String, AttributeValue>(
+    private fun keyOf(
+        userId: String,
+        propId: String,
+    ): Map<String, AttributeValue> = mapOf<String, AttributeValue>(
         userIdAttributeName to S(userId),
         propIdAttributeName to requireValidSortKey(checkNotBlank(propId)),
     )
 
-    suspend fun getProps(): Map<String, String?>? {
+    suspend fun getProps(userId: String): Map<String, String?>? {
         val request = QueryRequest {
             expressionAttributeNames = mapOf(
                 "#$userIdAttributeName" to userIdAttributeName,
@@ -48,9 +50,9 @@ object PropsTable {
         }
     }
 
-    suspend fun getProp(propId: String): String? {
+    suspend fun getProp(userId: String, propId: String): String? {
         val request = GetItemRequest {
-            key = keyOf(propId)
+            key = keyOf(userId, propId)
             tableName = PropsTable.tableName
         }
         return usingClient { ddb ->
@@ -61,9 +63,13 @@ object PropsTable {
         }
     }
 
-    suspend fun updateProp(propId: String, value: String): String? {
+    suspend fun updateProp(
+        userId: String,
+        propId: String,
+        value: String,
+    ): String? {
         val request = UpdateItemRequest {
-            key = keyOf(propId)
+            key = keyOf(userId, propId)
             returnValues = ReturnValue.UpdatedOld
             expressionAttributeNames = mapOf(
                 "#$valueAttributeName" to valueAttributeName,
@@ -82,9 +88,12 @@ object PropsTable {
         }
     }
 
-    suspend fun deleteProp(propId: String): String? {
+    suspend fun deleteProp(
+        userId: String,
+        propId: String,
+    ): String? {
         val request = DeleteItemRequest {
-            key = keyOf(propId)
+            key = keyOf(userId, propId)
             returnValues = ReturnValue.AllOld
             tableName = PropsTable.tableName
         }

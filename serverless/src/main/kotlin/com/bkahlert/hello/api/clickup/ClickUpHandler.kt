@@ -3,6 +3,7 @@ package com.bkahlert.hello.api.clickup
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
+import com.bkahlert.hello.api.requiredUserId
 import com.bkahlert.hello.aws.lambda.EventHandler
 import com.bkahlert.hello.aws.lambda.withMimeType
 import com.bkahlert.kommons.debug.trace
@@ -26,7 +27,9 @@ class ClickUpHandler : EventHandler() {
         event: APIGatewayV2HTTPEvent,
         context: Context,
     ): APIGatewayV2HTTPResponse {
-        logger.info("route key: ${event.routeKey}")
+        val userId = event.requiredUserId
+        logger.info("Successfully authenticated with as $userId")
+
         var httpClient = HttpClient.newBuilder().build();
 
         var host = clickupUrl;
