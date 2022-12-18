@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
 import org.jetbrains.kotlin.gradle.targets.js.webpack.WebpackDevtool
@@ -96,18 +97,17 @@ rootProject.extensions.configure<NodeJsRootExtension> {
     versions.webpackCli.version = "4.10.0" // fixes webpack-cli incompatibility by pinning the newest version
 }
 
-tasks {
-    withType<Test> {
-        useJUnitPlatform()
-    }
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}
 
-    val deploy by registering {
-        dependsOn(named("jsBrowserProductionWebpack"))
-        doLast {
-            ssh.runSessions {
-                session(vaults["ssh-remotes.yml", "remotes", "default"]) {
-                    put(buildDir.resolve("distributions").listFiles(), "./")
-                }
+val jsBrowserProductionWebpack = tasks.named<KotlinWebpack>("jsBrowserProductionWebpack")
+val deploy by tasks.registering {
+    dependsOn(jsBrowserProductionWebpack)
+    doLast {
+        ssh.runSessions {
+            session(vaults["ssh-remotes.yml", "remotes", "default"]) {
+                put(buildDir.resolve("distributions").listFiles(), "./")
             }
         }
     }

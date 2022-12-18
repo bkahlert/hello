@@ -1,4 +1,4 @@
-package com.bkahlert.aws.dynamodb
+package com.bkahlert.hello.aws.dynamodb
 
 import aws.sdk.kotlin.services.dynamodb.DynamoDbClient
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue.S

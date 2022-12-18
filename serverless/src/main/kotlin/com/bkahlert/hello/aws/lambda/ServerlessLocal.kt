@@ -1,4 +1,4 @@
-package com.bkahlert.aws.lambda
+package com.bkahlert.hello.aws.lambda
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
 import com.bkahlert.kommons.debug.render

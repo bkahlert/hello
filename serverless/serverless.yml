@@ -42,8 +42,14 @@ package:
   artifact: build/libs/serverless-all.jar
 
 functions:
-  clickup:
-    handler: com.bkahlert.hello.clickup.ClickUpHandler
+  handleRoot:
+    handler: com.bkahlert.hello.api.RootHandler
+    events:
+      - httpApi:
+          path: /
+          method: get
+  handleClickUp:
+    handler: com.bkahlert.hello.api.clickup.ClickUpHandler
     events:
       - httpApi:
           path: /clickup/{path+}
@@ -54,24 +60,17 @@ functions:
       CLICKUP_CLIENT_ID: ${ssm:/clickup_client_id}
       CLICKUP_CLIENT_SECRET: ${ssm:/clickup_client_secret}
   getProp:
-    handler: com.bkahlert.hello.props.PropsHandler
+    handler: com.bkahlert.hello.api.props.PropsHandler
     events:
       - httpApi:
           path: /props/{id}
           method: get
   setProp:
-    handler: com.bkahlert.hello.props.PropsHandler
+    handler: com.bkahlert.hello.api.props.PropsHandler
     events:
       - httpApi:
           path: /props/{id}
           method: post
-  # TODO remove
-  hello:
-    handler: com.serverless.Handler
-    events:
-      - httpApi:
-          path: /
-          method: get
 
 custom:
   domains:
@@ -104,7 +103,7 @@ custom:
 
   s3Sync:
     - bucketName: ${self:custom.domains.${self:provider.stage}.domainName}
-      localDir: static
+      localDir: build/web-app
     # TODO add dependency to :web-app:jsBrowserProductionWebpack, see https://docs.gradle.org/current/userguide/cross_project_publications.html
   # TODO filter application.dev.json
 

@@ -1,4 +1,4 @@
-package com.bkahlert.hello.props
+package com.bkahlert.hello.api.props
 
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue.S
@@ -7,8 +7,8 @@ import aws.sdk.kotlin.services.dynamodb.model.GetItemRequest
 import aws.sdk.kotlin.services.dynamodb.model.QueryRequest
 import aws.sdk.kotlin.services.dynamodb.model.ReturnValue
 import aws.sdk.kotlin.services.dynamodb.model.UpdateItemRequest
-import com.bkahlert.aws.dynamodb.requireValidSortKey
-import com.bkahlert.aws.dynamodb.usingClient
+import com.bkahlert.hello.aws.dynamodb.requireValidSortKey
+import com.bkahlert.hello.aws.dynamodb.usingClient
 import com.bkahlert.kommons.logging.SLF4J
 import com.bkahlert.kommons.text.checkNotBlank
 

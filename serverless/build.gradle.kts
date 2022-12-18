@@ -4,6 +4,8 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCach
 import org.jetbrains.kotlin.cli.common.repl.replRemoveLineBreaksInTheEnd
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.ByteArrayOutputStream
+import java.io.FilenameFilter
+import java.nio.file.Files
 import java.util.Base64
 
 @Suppress("DSL_SCOPE_VIOLATION")
@@ -89,10 +91,32 @@ val functionToEventsMapping: Map<String, List<File>> = sourceSets.map {
 
 val SERVERLESS_GROUP = "serverless"
 
-tasks.register<Exec>("deploy") {
+val buildWebApp by tasks.registering {
+    group = SERVERLESS_GROUP
+    description = "Builds the web app."
+    val webAppProject = gradle.includedBuild("web-app")
+    dependsOn(webAppProject.task(":jsBrowserProductionWebpack"))
+    doLast {
+        val output = project.buildDir.resolve("web-app")
+        val indexDocument = output.resolve("index.html")
+
+        val distributionsDirectory = file(webAppProject.projectDir.resolve("build/distributions"))
+        check(distributionsDirectory.exists()) { "Failed to determine distributions directory" }
+
+        check(output.deleteRecursively()) { "Failed to clean $output" }
+        Files.createDirectory(output.toPath())
+        distributionsDirectory.copyRecursively(output)
+        output.listFiles(FilenameFilter { _, name -> name.endsWith(".dev.json") })
+            ?.forEach { it.delete() }
+
+        check(indexDocument.exists()) { "Cannot find $indexDocument" }
+    }
+}
+
+val deploy by tasks.registering(Exec::class) {
     group = SERVERLESS_GROUP
     description = "Deploys the whole project."
-    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.shadowJar, buildWebApp)
     serverlessDeploy("--aws-s3-accelerate")
 }
 

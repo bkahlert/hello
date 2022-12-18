@@ -1,11 +1,11 @@
-package com.bkahlert.aws.lambda
+package com.bkahlert.hello.aws.lambda
 
 import aws.smithy.kotlin.runtime.util.decodeBase64
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
-import com.bkahlert.aws.lambda.ServerlessLocal.postProcess
+import com.bkahlert.hello.aws.lambda.ServerlessLocal.postProcess
 import com.bkahlert.kommons.quoted
 import kotlinx.coroutines.runBlocking
 

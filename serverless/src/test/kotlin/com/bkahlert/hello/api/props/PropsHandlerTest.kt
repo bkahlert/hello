@@ -1,8 +1,8 @@
-package com.bkahlert.hello.props
+package com.bkahlert.hello.api.props
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.tests.annotations.Event
-import com.bkahlert.hello.TestContext
+import com.bkahlert.hello.aws.TestContext
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.params.ParameterizedTest
 

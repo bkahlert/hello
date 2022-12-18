@@ -17,4 +17,6 @@ dependencyResolutionManagement {
     }
 }
 
+includeBuild("../web-app")
+
 rootProject.name = "serverless"

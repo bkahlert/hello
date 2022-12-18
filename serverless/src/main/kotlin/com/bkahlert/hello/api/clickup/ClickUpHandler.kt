@@ -1,10 +1,10 @@
-package com.bkahlert.hello.clickup
+package com.bkahlert.hello.api.clickup
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
-import com.bkahlert.aws.lambda.EventHandler
-import com.bkahlert.aws.lambda.withMimeType
+import com.bkahlert.hello.aws.lambda.EventHandler
+import com.bkahlert.hello.aws.lambda.withMimeType
 import com.bkahlert.kommons.debug.trace
 import com.bkahlert.kommons.logging.SLF4J
 import kotlinx.coroutines.Dispatchers

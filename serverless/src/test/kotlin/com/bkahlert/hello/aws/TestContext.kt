@@ -1,10 +1,9 @@
-package com.bkahlert.hello
+package com.bkahlert.hello.aws
 
 import com.amazonaws.services.lambda.runtime.ClientContext
 import com.amazonaws.services.lambda.runtime.CognitoIdentity
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.LambdaLogger
-import com.bkahlert.kommons.logging.SLF4J
 
 object TestContext : Context {
     override fun getAwsRequestId() = "495b12a8-xmpl-4eca-8168-160484189f99"
@@ -18,17 +17,4 @@ object TestContext : Context {
     override fun getRemainingTimeInMillis(): Int = 300000
     override fun getMemoryLimitInMB(): Int = 512
     override fun getLogger(): LambdaLogger = TestLogger
-}
-
-object TestLogger : LambdaLogger {
-
-    private val logger by SLF4J
-
-    override fun log(message: String) {
-        logger.info(message)
-    }
-
-    override fun log(message: ByteArray) {
-        logger.info(message.decodeToString())
-    }
 }
