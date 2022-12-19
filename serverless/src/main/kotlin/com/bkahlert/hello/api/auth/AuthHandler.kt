@@ -84,10 +84,15 @@ class AuthHandler : EventHandler() {
 
                  */
                 val payload = event.headers["authorization"]?.let {
+                    logger.debug("authorization: $it")
                     val (scheme, token) = it.split(' ', limit = 2)
+                    logger.debug("token: $token")
                     require(scheme == "Bearer") { "unexpected scheme $scheme" }
                     val (header, payload, signature) = token.split('.')
-                    payload.decodeBase64()
+                    payload.let {
+                        val fill = "=".repeat(4 - it.length.rem(4))
+                        "$it$fill".decodeBase64()
+                    }
                 }
                 when (payload) {
                     null -> throw IllegalArgumentException("Missing token")

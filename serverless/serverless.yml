@@ -7,7 +7,6 @@ provider:
   runtime: java11
   architecture: arm64
 
-  stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-central-1'}
   memorySize: 1000
   deploymentMethod: direct
@@ -17,7 +16,7 @@ provider:
 
   environment:
     DOMAIN: ${self:custom.customDomain.domainName}
-    STAGE: ${self:provider.stage}
+    STAGE: ${sls:stage}
     # TODO inject directly into web-app
     COGNITO_DOMAIN:
       Fn::Join: ['', ['https://', {Ref: UserPoolDomain}, '.auth.${aws:region}.amazoncognito.com']]
@@ -53,13 +52,12 @@ provider:
           - {Ref: UserPoolClient}
     cors:
       allowedOrigins:
-        - 'https://${self:custom.domains.${self:provider.stage}.domainName}'
+        - 'https://${self:custom.domains.${sls:stage}.domainName}'
         - 'https://${self:custom.customDomain.domainName}'
       allowedHeaders:
         - Content-Type
         - Authorization
-      allowedMethods:
-        - GET
+      allowedMethods: [GET, POST, OPTIONS, PATCH, DELETE]
       allowCredentials: true
 
 package:
@@ -117,9 +115,11 @@ functions:
 custom:
   domains:
     prod:
+      shortName: hello
       domainName: hello.aws.choam.de
       certificateName: hello.aws.choam.de
     dev:
+      shortName: hello-dev
       domainName: hello-dev.aws.choam.de
       certificateName: hello-dev.aws.choam.de
 
@@ -127,14 +127,14 @@ custom:
   customCertificate:
     region: us-east-1 # required for CloudFront
     hostedZoneNames: aws.choam.de.
-    certificateName: ${self:custom.domains.${self:provider.stage}.certificateName}
+    certificateName: ${self:custom.domains.${sls:stage}.certificateName}
     subjectAlternativeNames:
-      - '*.${self:custom.domains.${self:provider.stage}.certificateName}'
+      - '*.${self:custom.domains.${sls:stage}.certificateName}'
 
   # Route53
   customDomain:
-    domainName: 'api.${self:custom.domains.${self:provider.stage}.domainName}'
-    certificateName: ${self:custom.domains.${self:provider.stage}.certificateName}
+    domainName: 'api.${self:custom.domains.${sls:stage}.domainName}'
+    certificateName: ${self:custom.domains.${sls:stage}.certificateName}
     createRoute53Record: true # creates A and AAAA records
     autoDomain: true # runs as part of deploy and remove
 
@@ -144,22 +144,23 @@ custom:
     endpointType: REGIONAL
 
   s3Sync:
-    - bucketName: ${self:custom.domains.${self:provider.stage}.domainName}
+    - bucketName: ${self:custom.domains.${sls:stage}.domainName}
       localDir: build/web-app
     # TODO add dependency to :web-app:jsBrowserProductionWebpack, see https://docs.gradle.org/current/userguide/cross_project_publications.html
   # TODO filter application.dev.json
 
-  # TODO create CloudFront distribution with alternate domain name ${self:custom.domains.${self:provider.stage}.domainName}
-  # TODO create CNAME for ${self:custom.domains.${self:provider.stage}.domainName} pointing to distribution domain name
+  # TODO create CloudFront distribution with alternate domain name ${self:custom.domains.${sls:stage}.domainName}
+  # TODO create CNAME for ${self:custom.domains.${sls:stage}.domainName} pointing to distribution domain name
 
 # see https://www.serverless.com/framework/docs/providers/aws/guide/resources
+# TODO outsource using https://www.serverless.com/framework/docs/providers/aws/guide/variables#multiple-configuration-files
 resources:
   Resources:
     StaticSite:
       Type: AWS::S3::Bucket
       Properties:
         AccessControl: PublicRead
-        BucketName: ${self:custom.domains.${self:provider.stage}.domainName}
+        BucketName: ${self:custom.domains.${sls:stage}.domainName}
         WebsiteConfiguration:
           IndexDocument: index.html
     StaticSiteS3BucketPolicy:
@@ -180,12 +181,12 @@ resources:
     UserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: hello-dev
+        UserPoolName: ${self:custom.domains.${sls:stage}.shortName}
 
     UserPoolDomain:
       Type: AWS::Cognito::UserPoolDomain
       Properties:
-        Domain: hello-dev
+        Domain: '${self:custom.domains.${sls:stage}.shortName}-bkahlert-com'
         UserPoolId: {Ref: UserPool}
 
     SignInWithApple:
@@ -193,11 +194,10 @@ resources:
       Properties:
         ProviderDetails:
           # https://eu-central-1.console.aws.amazon.com/secretsmanager/listsecrets?region=eu-central-1
-          client_id:
-            Fn::Join: ['', ['{{resolve:secretsmanager:SignInWithApple:SecretString:client_id_prefix}}','.hello-${self:provider.stage}-service']]
-          key_id: '{{resolve:secretsmanager:SignInWithApple:SecretString:key_id}}'
-          private_key: '{{resolve:secretsmanager:SignInWithApple:SecretString:private_key}}'
-          team_id: '{{resolve:secretsmanager:SignInWithApple:SecretString:team_id}}'
+          team_id: '{{resolve:secretsmanager:${sls:stage}/${self:service}/SignInWithApple:SecretString:team_id}}'
+          client_id: '{{resolve:secretsmanager:${sls:stage}/${self:service}/SignInWithApple:SecretString:client_id}}'
+          key_id: '{{resolve:secretsmanager:${sls:stage}/${self:service}/SignInWithApple:SecretString:key_id}}'
+          private_key: '{{resolve:secretsmanager:${sls:stage}/${self:service}/SignInWithApple:SecretString:private_key}}'
         ProviderName: SignInWithApple
         ProviderType: SignInWithApple
         UserPoolId: {Ref: UserPool}
@@ -214,7 +214,7 @@ resources:
           - COGNITO
           - !Ref SignInWithApple
         CallbackURLs:
-          - 'https://${self:custom.domains.${self:provider.stage}.domainName}'
+          - 'https://${self:custom.domains.${sls:stage}.domainName}'
 
     PropsTable:
       Type: AWS::DynamoDB::Table

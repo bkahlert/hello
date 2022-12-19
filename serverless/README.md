@@ -53,11 +53,6 @@ serverless invoke local --verbose \
 Change the all Jackson dependencies to `2.5.5` in `node_modules/serverless/lib/plugins/aws/invoke-local/runtime-wrappers/java/pom.xml` if problems with Jackson
 occur.
 
-## TODO
-
-```shell
-curl -X POST https://jtyka1zrmg.execute-api.eu-central-1.amazonaws.com/props/abc  -H "Content-Type: application/json" -d "{\"id\": \"123\", \"price\": 12345, \"name\": \"myitem\"}"
-```
 
 ## Get props
 
