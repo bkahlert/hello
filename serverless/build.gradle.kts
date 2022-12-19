@@ -94,13 +94,16 @@ val SERVERLESS_GROUP = "serverless"
 val buildWebApp by tasks.registering {
     group = SERVERLESS_GROUP
     description = "Builds the web app."
+
     val webAppProject = gradle.includedBuild("web-app")
     dependsOn(webAppProject.task(":jsBrowserProductionWebpack"))
     doLast {
         val output = project.buildDir.resolve("web-app")
         val indexDocument = output.resolve("index.html")
 
-        val distributionsDirectory = file(webAppProject.projectDir.resolve("build/distributions"))
+//        val distributionsDirectory = file(webAppProject.projectDir.resolve("build/distributions"))
+        logger.warn("Currently only deploying web-app for testing auth")
+        val distributionsDirectory = file(projectDir.resolve("../web-app-test"))
         check(distributionsDirectory.exists()) { "Failed to determine distributions directory" }
 
         check(output.deleteRecursively()) { "Failed to clean $output" }

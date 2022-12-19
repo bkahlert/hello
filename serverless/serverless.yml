@@ -18,6 +18,10 @@ provider:
   environment:
     DOMAIN: ${self:custom.customDomain.domainName}
     STAGE: ${self:provider.stage}
+    # TODO inject directly into web-app
+    COGNITO_DOMAIN:
+      Fn::Join: ['', ['https://', {Ref: UserPoolDomain}, '.auth.${aws:region}.amazoncognito.com']]
+    COGNITO_WEB_APP_CLIENT_ID: {Ref: UserPoolClient}
     DYNAMODB_PROPS_TABLE: ${self:service}-props-${sls:stage}
 
   iam:
@@ -38,6 +42,26 @@ provider:
           Resource:
             - '*'
 
+  httpApi:
+    authorizers:
+      cognitoJwtAuthorizer:
+        type: jwt
+        identitySource: $request.header.Authorization
+        issuerUrl:
+          Fn::Join: ['', ['https://cognito-idp.${aws:region}.amazonaws.com/', {Ref: UserPool}]]
+        audience:
+          - {Ref: UserPoolClient}
+    cors:
+      allowedOrigins:
+        - 'https://${self:custom.domains.${self:provider.stage}.domainName}'
+        - 'https://${self:custom.customDomain.domainName}'
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET
+      allowCredentials: true
+
 package:
   artifact: build/libs/serverless-all.jar
 
@@ -48,13 +72,27 @@ functions:
       - httpApi:
           path: /
           method: get
+  auth:
+    handler: com.bkahlert.hello.api.auth.AuthHandler
+    events:
+      - httpApi:
+          path: /auth
+          method: get
+      - httpApi:
+          path: /user
+          method: get
+          authorizer:
+            name: cognitoJwtAuthorizer
   handleClickUp:
     handler: com.bkahlert.hello.api.clickup.ClickUpHandler
     events:
       - httpApi:
           path: /clickup/{path+}
           method: any
+          authorizer:
+            name: cognitoJwtAuthorizer
     environment:
+      # https://eu-central-1.console.aws.amazon.com/systems-manager/parameters/?region=eu-central-1&tab=Table
       CLICKUP_URL: https://api.clickup.com/api/v2
       CLICKUP_API_TOKEN: ${ssm:/clickup_api_token}
       CLICKUP_CLIENT_ID: ${ssm:/clickup_client_id}
@@ -65,12 +103,16 @@ functions:
       - httpApi:
           path: /props/{id}
           method: get
+          authorizer:
+            name: cognitoJwtAuthorizer
   setProp:
     handler: com.bkahlert.hello.api.props.PropsHandler
     events:
       - httpApi:
           path: /props/{id}
           method: post
+          authorizer:
+            name: cognitoJwtAuthorizer
 
 custom:
   domains:
@@ -87,11 +129,11 @@ custom:
     hostedZoneNames: aws.choam.de.
     certificateName: ${self:custom.domains.${self:provider.stage}.certificateName}
     subjectAlternativeNames:
-      - "*.${self:custom.domains.${self:provider.stage}.certificateName}"
+      - '*.${self:custom.domains.${self:provider.stage}.certificateName}'
 
   # Route53
   customDomain:
-    domainName: "api.${self:custom.domains.${self:provider.stage}.domainName}"
+    domainName: 'api.${self:custom.domains.${self:provider.stage}.domainName}'
     certificateName: ${self:custom.domains.${self:provider.stage}.certificateName}
     createRoute53Record: true # creates A and AAAA records
     autoDomain: true # runs as part of deploy and remove
@@ -129,19 +171,51 @@ resources:
           Statement:
             - Sid: PublicReadGetObject
               Effect: Allow
-              Principal: "*"
+              Principal: '*'
               Action:
                 - s3:GetObject
               Resource:
-                Fn::Join: [
-                  "", [
-                    "arn:aws:s3:::",
-                    {
-                      "Ref": "StaticSite"
-                    },
-                    "/*"
-                  ]
-                ]
+                Fn::Join: ['', ['arn:aws:s3:::', {Ref: StaticSite}, '/*']]
+
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: hello-dev
+
+    UserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        Domain: hello-dev
+        UserPoolId: {Ref: UserPool}
+
+    SignInWithApple:
+      Type: AWS::Cognito::UserPoolIdentityProvider
+      Properties:
+        ProviderDetails:
+          # https://eu-central-1.console.aws.amazon.com/secretsmanager/listsecrets?region=eu-central-1
+          client_id:
+            Fn::Join: ['', ['{{resolve:secretsmanager:SignInWithApple:SecretString:client_id_prefix}}','.hello-${self:provider.stage}-service']]
+          key_id: '{{resolve:secretsmanager:SignInWithApple:SecretString:key_id}}'
+          private_key: '{{resolve:secretsmanager:SignInWithApple:SecretString:private_key}}'
+          team_id: '{{resolve:secretsmanager:SignInWithApple:SecretString:team_id}}'
+        ProviderName: SignInWithApple
+        ProviderType: SignInWithApple
+        UserPoolId: {Ref: UserPool}
+
+    UserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: web-app
+        UserPoolId: {Ref: UserPool}
+        AllowedOAuthFlows: ['code']
+        AllowedOAuthScopes: ['openid']
+        AllowedOAuthFlowsUserPoolClient: true
+        SupportedIdentityProviders:
+          - COGNITO
+          - !Ref SignInWithApple
+        CallbackURLs:
+          - 'https://${self:custom.domains.${self:provider.stage}.domainName}'
+
     PropsTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -157,15 +231,6 @@ resources:
             KeyType: HASH
           - AttributeName: propId
             KeyType: RANGE
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
 
 
 plugins:
