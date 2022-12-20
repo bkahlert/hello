@@ -40,6 +40,9 @@ dependencies {
     implementation(libs.kommons)
     implementation("org.jetbrains.kotlinx:kotlinx-html:0.8.0")
 
+    implementation("com.auth0:java-jwt:4.2.1")
+    implementation("com.auth0:jwks-rsa:0.21.2")
+
     testImplementation(libs.kommons.test)
     testImplementation(libs.aws.lambda.java.tests)
 }
@@ -114,6 +117,13 @@ val buildWebApp by tasks.registering {
 
         check(indexDocument.exists()) { "Cannot find $indexDocument" }
     }
+}
+
+val s3Sync by tasks.registering(Exec::class) {
+    group = SERVERLESS_GROUP
+    description = "Syncs the static S3 files."
+    dependsOn(buildWebApp)
+    serverless("s3sync")
 }
 
 val deploy by tasks.registering(Exec::class) {

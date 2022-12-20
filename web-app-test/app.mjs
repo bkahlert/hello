@@ -1,4 +1,4 @@
-import { apiUrl, clientId, cognitoLoginUrl } from './config.js'
+import { apiUrl, clientId, hostedUiUrl } from './config.js'
 
 const sha256 = async (str) => {
   return await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
@@ -23,7 +23,7 @@ const redirectToLogin = async () => {
   const codeVerifier = await generateNonce()
   sessionStorage.setItem(`codeVerifier-${state}`, codeVerifier)
   const codeChallenge = base64URLEncode(await sha256(codeVerifier))
-  window.location = `${cognitoLoginUrl}/login?response_type=code&client_id=${clientId}&state=${state}&code_challenge_method=S256&code_challenge=${codeChallenge}&redirect_uri=${window.location.origin}`
+  window.location = `${hostedUiUrl}/login?response_type=code&client_id=${clientId}&state=${state}&code_challenge_method=S256&code_challenge=${codeChallenge}&redirect_uri=${window.location.origin}`
 }
 
 document.querySelector('#loginButton').addEventListener('click', () => {
@@ -79,7 +79,7 @@ const init = async (tokens) => {
       const revokeButton = buttonsCell.querySelector('.revoke')
       revokeButton.addEventListener('click', async () => {
         revokeButton.disabled = true
-        const res = await fetch(`${cognitoLoginUrl}/oauth2/revoke`, {
+        const res = await fetch(`${hostedUiUrl}/oauth2/revoke`, {
           method: 'POST',
           headers: new Headers({ 'content-type': 'application/x-www-form-urlencoded' }),
           body: Object.entries({
@@ -95,7 +95,7 @@ const init = async (tokens) => {
       const requestButton = buttonsCell.querySelector('.request')
       requestButton.addEventListener('click', async () => {
         requestButton.disabled = true
-        const res = await fetch(`${cognitoLoginUrl}/oauth2/token`, {
+        const res = await fetch(`${hostedUiUrl}/oauth2/token`, {
           method: 'POST',
           headers: new Headers({ 'content-type': 'application/x-www-form-urlencoded' }),
           body: Object.entries({
@@ -117,13 +117,13 @@ const init = async (tokens) => {
     const statusCell = row.insertCell()
     refreshStatus.push(async () => {
       statusCell.innerHTML = ''
-      const userInfoRes = await fetch(`${cognitoLoginUrl}/oauth2/userInfo`, {
+      const userInfoRes = await fetch(`${hostedUiUrl}/oauth2/userInfo`, {
         headers: new Headers({ 'Authorization': `Bearer ${tokens.access_token}` }),
       })
-      const apiRes = await fetch('/api/user', {
+      const apiRes = await fetch(`${apiUrl}/user`, {
         headers: new Headers({ 'Authorization': `Bearer ${tokens.access_token}` }),
       })
-      const apiResIdToken = await fetch('/api/user', {
+      const apiResIdToken = await fetch(`${apiUrl}/user`, {
         headers: new Headers({ 'Authorization': `Bearer ${tokens.id_token}` }),
       })
       statusCell.innerText = `userInfo: ${userInfoRes.ok}\napi access_token: ${apiRes.ok}\napi id_token: ${apiResIdToken.ok}`
@@ -143,7 +143,7 @@ if (searchParams.get('code') !== null) {
   if (codeVerifier === null) {
     throw new Error('Unexpected code')
   }
-  const res = await fetch(`${cognitoLoginUrl}/oauth2/token`, {
+  const res = await fetch(`${hostedUiUrl}/oauth2/token`, {
     method: 'POST',
     headers: new Headers({ 'content-type': 'application/x-www-form-urlencoded' }),
     body: Object.entries({
@@ -169,3 +169,25 @@ if (searchParams.get('code') !== null) {
     redirectToLogin()
   }
 }
+
+const getPropButton = document.querySelector('#getProp')
+getPropButton.addEventListener('click', async () => {
+  const tokens = JSON.parse(localStorage.getItem('tokens'))
+  init(tokens)
+  const apiRes = await fetch(`${apiUrl}/props/foo`, {
+    headers: new Headers({ 'Authorization': `Bearer ${tokens.access_token}` }),
+  })
+  console.info('getProp', apiRes)
+})
+
+const setPropButton = document.querySelector('#setProp')
+setPropButton.addEventListener('click', async () => {
+  const tokens = JSON.parse(localStorage.getItem('tokens'))
+  init(tokens)
+  const apiRes = await fetch(`${apiUrl}/props/foo`, {
+    method: 'POST',
+    headers: new Headers({ 'Authorization': `Bearer ${tokens.access_token}` }),
+    body: 'Hello World'
+  })
+  console.info('setProp', apiRes)
+})

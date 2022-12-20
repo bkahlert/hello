@@ -17,10 +17,6 @@ provider:
   environment:
     DOMAIN: ${self:custom.customDomain.domainName}
     STAGE: ${sls:stage}
-    # TODO inject directly into web-app
-    COGNITO_DOMAIN:
-      Fn::Join: ['', ['https://', {Ref: UserPoolDomain}, '.auth.${aws:region}.amazoncognito.com']]
-    COGNITO_WEB_APP_CLIENT_ID: {Ref: UserPoolClient}
     DYNAMODB_PROPS_TABLE: ${self:service}-props-${sls:stage}
 
   iam:
@@ -46,10 +42,9 @@ provider:
       cognitoJwtAuthorizer:
         type: jwt
         identitySource: $request.header.Authorization
-        issuerUrl:
-          Fn::Join: ['', ['https://cognito-idp.${aws:region}.amazonaws.com/', {Ref: UserPool}]]
+        issuerUrl: !Join ['', ['https://cognito-idp.${aws:region}.amazonaws.com/', !Ref UserPool]]
         audience:
-          - {Ref: UserPoolClient}
+          - !Ref UserPoolClient
     cors:
       allowedOrigins:
         - 'https://${self:custom.domains.${sls:stage}.domainName}'
@@ -70,17 +65,18 @@ functions:
       - httpApi:
           path: /
           method: get
-  auth:
-    handler: com.bkahlert.hello.api.auth.AuthHandler
+  user:
+    handler: com.bkahlert.hello.api.user.UserHandler
     events:
-      - httpApi:
-          path: /auth
-          method: get
       - httpApi:
           path: /user
           method: get
-          authorizer:
-            name: cognitoJwtAuthorizer
+    #          authorizer:
+    #            name: cognitoJwtAuthorizer
+    environment:
+      IDENTITY_PROVIDER_URI: !Join ['', ['https://cognito-idp.${aws:region}.amazonaws.com/', !Ref UserPool]]
+      HOSTED_UI_URI: !Join ['', ['https://', !Ref UserPoolDomain, '.auth.${aws:region}.amazoncognito.com']]
+      WEB_APP_CLIENT_ID: !Ref UserPoolClient
   handleClickUp:
     handler: com.bkahlert.hello.api.clickup.ClickUpHandler
     events:
@@ -176,7 +172,7 @@ resources:
               Action:
                 - s3:GetObject
               Resource:
-                Fn::Join: ['', ['arn:aws:s3:::', {Ref: StaticSite}, '/*']]
+                Fn::Join: ['', ['arn:aws:s3:::', !Ref StaticSite, '/*']]
 
     UserPool:
       Type: AWS::Cognito::UserPool
@@ -187,7 +183,7 @@ resources:
       Type: AWS::Cognito::UserPoolDomain
       Properties:
         Domain: '${self:custom.domains.${sls:stage}.shortName}-bkahlert-com'
-        UserPoolId: {Ref: UserPool}
+        UserPoolId: !Ref UserPool
 
     SignInWithApple:
       Type: AWS::Cognito::UserPoolIdentityProvider
@@ -200,13 +196,13 @@ resources:
           private_key: '{{resolve:secretsmanager:${sls:stage}/${self:service}/SignInWithApple:SecretString:private_key}}'
         ProviderName: SignInWithApple
         ProviderType: SignInWithApple
-        UserPoolId: {Ref: UserPool}
+        UserPoolId: !Ref UserPool
 
     UserPoolClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
         ClientName: web-app
-        UserPoolId: {Ref: UserPool}
+        UserPoolId: !Ref UserPool
         AllowedOAuthFlows: ['code']
         AllowedOAuthScopes: ['openid']
         AllowedOAuthFlowsUserPoolClient: true
@@ -232,6 +228,17 @@ resources:
           - AttributeName: propId
             KeyType: RANGE
 
+  Outputs:
+    HostedUiUrl:
+      Description: URL of the Cognito domain hosting the OAuth 2.0 token, login, etc. endpoints
+      Value: !Join ['', ['https://', !Ref UserPoolDomain, '.auth.${aws:region}.amazoncognito.com']]
+      Export:
+        Name: !Join ['-', ['sls', '${self:service}', '${sls:stage}', 'HostedUiUrl']]
+    WebAppClientID:
+      Description: client_id to be used by the wep-app client for authentication
+      Value: !Ref UserPoolClient
+      Export:
+        Name: !Join ['-', ['sls', '${self:service}', '${sls:stage}', 'WebAppClientID']]
 
 plugins:
   - serverless-s3-sync

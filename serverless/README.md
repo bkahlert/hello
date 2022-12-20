@@ -16,10 +16,53 @@ npm install -g serverless
 ./gradlew clean build
 ```
 
+## Debug
+
+```shell
+# Prints fully resolved config file
+serverless print
+
+# Prints only the specified path
+serverless print --path provider
+
+# Prints info including stack output
+serverless info --verbose
+
+# Prints outputs of all stacks
+aws cloudformation describe-stacks
+```
+
 ## Deploy
 
 ```shell
-./gradlew deploy
+# To default stage = dev
+serverless deploy
+
+# To specific stage
+serverless deploy --stage qa
+
+# Only sync static files
+serverless s3sync
+```
+
+### Certificates
+
+```shell
+# To default stage = dev 
+serverless create-cert
+
+# To specific stage
+serverless create-cert --stage qa
+```
+
+### Domains
+
+```shell
+# To default stage = dev 
+serverless create_domain
+
+# To specific stage
+serverless create_domain --stage qa
 ```
 
 ## Invoke function
@@ -35,7 +78,7 @@ serverless invoke --function hello --log
 serverless invoke local --function hello
 ```
 
-## Extends
+## Invoke function --local
 
 ```shell
 serverless invoke local --verbose \
@@ -110,18 +153,4 @@ serverless invoke \
   --log \
   --function setProp \
   --path events/setProp/bar-to-null.json
-```
-
-## Certificates & Domains
-
-First a certificate is needed
-
-```shell
-serverless create-cert
-# or
-serverless create-cert --stage=prod
-```
-
-```shell
-serverless create_domain
 ```

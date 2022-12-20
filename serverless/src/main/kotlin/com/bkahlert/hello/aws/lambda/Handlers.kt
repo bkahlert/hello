@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
+import com.auth0.jwt.exceptions.JWTVerificationException
 import com.bkahlert.hello.aws.lambda.ServerlessLocal.postProcess
 import com.bkahlert.kommons.quoted
 import kotlinx.coroutines.runBlocking
@@ -34,6 +35,18 @@ object MimeTypes {
 
 fun APIGatewayV2HTTPResponse.APIGatewayV2HTTPResponseBuilder.withMimeType(provide: MimeTypes.() -> String) =
     withHeaders(mapOf("Content-Type" to MimeTypes.provide()))
+
+
+fun APIGatewayV2HTTPResponse.APIGatewayV2HTTPResponseBuilder.withException(exception: Throwable) =
+    withStatusCode(
+        when (exception) {
+            is JWTVerificationException -> 401
+            is IllegalArgumentException -> 400
+            else -> 500
+        }
+    )
+        .withMimeType { APPLICATION_JSON }
+        .withBody(json("errorType" to exception::class.simpleName, "errorMessage" to exception.message))
 
 fun json(map: Map<String, String?>) = map.entries
     .filter { (_, value) -> value != null }

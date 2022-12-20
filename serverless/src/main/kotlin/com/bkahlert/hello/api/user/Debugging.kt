@@ -1,4 +1,4 @@
-package com.bkahlert.hello.api.auth
+package com.bkahlert.hello.api.user
 
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
