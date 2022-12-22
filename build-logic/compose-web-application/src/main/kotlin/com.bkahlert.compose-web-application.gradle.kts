@@ -1,16 +1,6 @@
 plugins {
-    kotlin("multiplatform") version "1.7.21"
-    kotlin("plugin.serialization") version "1.7.21"
-    id("org.jetbrains.compose") version "1.3.0-rc01"
-}
-
-group = "com.bkahlert.hello"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    google()
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    kotlin("multiplatform")
+    id("org.jetbrains.compose")
 }
 
 kotlin {
@@ -29,13 +19,8 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("com.bkahlert.hello.model:kommons-web")
                 implementation(compose.web.core)
                 implementation(compose.runtime)
-                implementation(libs.bundles.ktor.js.client)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.ktor.serialization.kotlinx.json)
-                implementation(npm("amazon-cognito-identity-js", "2.0.2", generateExternals = true))
             }
 
             languageSettings.apply {
@@ -57,7 +42,22 @@ kotlin {
     }
 }
 
-
 compose {
-    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:${libs.versions.compose.compiler.get()}")
+    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.0-alpha02")
+}
+
+//val jsBrowserRunContinuous by tasks.registering(Exec::class) {
+//    group = "kotlin browser"
+//    commandLine("gradlew", "jsBrowserRun", "--continuous")
+//}
+
+val jsBrowserRun = tasks.named("jsBrowserRun")
+
+val jsBrowserRunContinuous by tasks.registering {
+    group = "kotlin browser"
+    doFirst {
+        gradle.startParameter.isContinuous = true
+    }
+    dependsOn(jsBrowserRun)
+//    commandLine("gradlew", "jsBrowserRun", "--continuous")
 }
