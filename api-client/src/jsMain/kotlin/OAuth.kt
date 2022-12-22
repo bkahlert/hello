@@ -171,7 +171,7 @@ fun authenticatedClient(
             }
             sendWithoutRequest { request ->
                 request.url.buildString().let {
-                    it.startsWith(authorizationEndpoint) || it.startsWith(tokenEndpoint) || it.contains("api.hello")
+                    it.contains("api.hello")
                 }
             }
         }
