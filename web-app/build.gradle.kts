@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.plugin.serialization)
     alias(libs.plugins.compose)
-    id("org.hidetake.ssh")
 }
 
 group = "com.bkahlert"
@@ -102,13 +101,3 @@ tasks.withType<Test>().configureEach {
 }
 
 val jsBrowserProductionWebpack = tasks.named<KotlinWebpack>("jsBrowserProductionWebpack")
-val deploy by tasks.registering {
-    dependsOn(jsBrowserProductionWebpack)
-    doLast {
-        ssh.runSessions {
-            session(vaults["ssh-remotes.yml", "remotes", "default"]) {
-                put(buildDir.resolve("distributions").listFiles(), "./")
-            }
-        }
-    }
-}
