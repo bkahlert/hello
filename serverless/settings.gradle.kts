@@ -1,3 +1,8 @@
+@file:Suppress("UnstableApiUsage")
+
+enableFeaturePreview("VERSION_CATALOGS")
+
+// == Define locations for build logic ==
 pluginManagement {
     repositories {
         mavenCentral()
@@ -5,9 +10,7 @@ pluginManagement {
     }
 }
 
-enableFeaturePreview("VERSION_CATALOGS")
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
+// == Define locations for components ==
 dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     versionCatalogs {
@@ -19,4 +22,5 @@ dependencyResolutionManagement {
 
 includeBuild("../web-app")
 
+// == Define the inner structure of this component ==
 rootProject.name = "serverless"

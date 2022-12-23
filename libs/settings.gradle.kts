@@ -1,3 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+
+// == Define locations for build logic ==
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -5,11 +8,13 @@ pluginManagement {
     includeBuild("../build-logic")
 }
 
+// == Define locations for components ==
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
     }
 }
 
+// == Define the inner structure of this component ==
 rootProject.name = "libs"
 include("kommons-web")

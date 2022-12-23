@@ -1,3 +1,8 @@
+@file:Suppress("UnstableApiUsage")
+
+enableFeaturePreview("VERSION_CATALOGS")
+
+// == Define locations for build logic ==
 pluginManagement {
     repositories {
         mavenCentral()
@@ -6,8 +11,7 @@ pluginManagement {
     }
 }
 
-enableFeaturePreview("VERSION_CATALOGS")
-
+// == Define locations for components ==
 dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     versionCatalogs {
@@ -17,4 +21,5 @@ dependencyResolutionManagement {
     }
 }
 
+// == Define the inner structure of this component ==
 rootProject.name = "web-app"

@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 
 plugins {
-    id("com.bkahlert.hello.kotlin-library")
+    id("com.bkahlert.kotlin-project")
 }
 
 kotlin {

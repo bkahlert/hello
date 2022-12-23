@@ -33,7 +33,7 @@ fun main() {
     var count: Int by mutableStateOf(0)
     var status: String by mutableStateOf("—")
 
-    console.log("YEAH", x)
+    console.log("YEAHY", x)
 
     val tokensStorage = BearerTokensStorage.from(localStorage)
 

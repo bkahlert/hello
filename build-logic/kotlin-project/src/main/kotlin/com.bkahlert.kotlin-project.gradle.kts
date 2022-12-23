@@ -6,8 +6,6 @@ plugins {
 }
 
 kotlin {
-    explicitApi()
-
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonTest by getting {

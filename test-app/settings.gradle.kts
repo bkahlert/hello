@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 // == Define locations for build logic ==
 pluginManagement {
     repositories {
