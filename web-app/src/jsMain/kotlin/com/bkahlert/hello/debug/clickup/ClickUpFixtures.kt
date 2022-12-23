@@ -34,12 +34,12 @@ import com.bkahlert.hello.clickup.api.asAssignee
 import com.bkahlert.hello.clickup.api.asCreator
 import com.bkahlert.hello.clickup.ui.Pomodoro
 import com.bkahlert.hello.debug.ImageFixtures
-import com.bkahlert.hello.deserialize
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.minus
 import com.bkahlert.kommons.plus
 import com.bkahlert.kommons.randomString
+import com.bkahlert.kommons.serialization.deserialize
 import kotlin.js.Date
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days

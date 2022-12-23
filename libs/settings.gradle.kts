@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+enableFeaturePreview("VERSION_CATALOGS")
+
 // == Define locations for build logic ==
 pluginManagement {
     repositories {
@@ -13,8 +15,14 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
     }
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
 }
 
 // == Define the inner structure of this component ==
 rootProject.name = "libs"
+include("kommons-ktor")
 include("kommons-web")

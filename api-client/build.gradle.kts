@@ -9,10 +9,9 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(libs.bundles.ktor.js.client)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kommons)
+                implementation("com.bkahlert.kommons:kommons-ktor")
                 implementation("com.bkahlert.kommons:kommons-web")
             }
         }

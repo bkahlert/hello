@@ -1,4 +1,4 @@
-package com.bkahlert.kommons.serialization
+package com.bkahlert.kommons.ktor
 
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.matchers.shouldBe

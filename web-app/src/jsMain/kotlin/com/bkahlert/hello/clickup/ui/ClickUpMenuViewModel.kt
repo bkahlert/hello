@@ -152,6 +152,7 @@ class ClickUpMenuViewModelImpl(
                     is Disabled -> {
                         Disconnected
                     }
+
                     else -> {
                         logger.warn("ClickUp is already $state; doing nothing.")
                         state
@@ -185,6 +186,7 @@ class ClickUpMenuViewModelImpl(
                     val team = state.teams.first { it.id == teamID }
                     internalSelectTeam(state, team)
                 }
+
                 else -> state.also { console.warn("unexpected state $state") }
             }
         }
@@ -215,6 +217,7 @@ class ClickUpMenuViewModelImpl(
                     storage.cache.clear()
                     state.refresh()
                 }
+
                 else -> state
             }
         }
@@ -227,6 +230,7 @@ class ClickUpMenuViewModelImpl(
                     storage.selections[state.selectedTeam] = selection
                     state.select(selection)
                 }
+
                 else -> state.also { console.warn("unexpected state $state") }
             }
         }
@@ -238,6 +242,7 @@ class ClickUpMenuViewModelImpl(
                 is TeamSelected -> {
                     state.createTask(taskListID, name)
                 }
+
                 else -> state.also { console.warn("unexpected state $state") }
             }
         }
@@ -249,6 +254,7 @@ class ClickUpMenuViewModelImpl(
                 is TeamSelected -> {
                     state.closeTask(taskID)
                 }
+
                 else -> state.also { console.warn("unexpected state $state") }
             }
         }

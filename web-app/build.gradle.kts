@@ -3,9 +3,10 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.D
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
 import org.jetbrains.kotlin.gradle.targets.js.webpack.WebpackDevtool
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.bkahlert.compose-web-application")
-    kotlin("plugin.serialization") version "1.7.21"
+    alias(libs.plugins.kotlin.plugin.serialization)
 }
 
 group = "$group.hello"
@@ -35,11 +36,15 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(libs.bundles.ktor.js.client)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kommons)
+                implementation("com.bkahlert.kommons:kommons-ktor")
                 implementation("com.bkahlert.kommons:kommons-web")
+            }
+
+            languageSettings.apply {
+                optIn("kotlin.RequiresOptIn")
+                optIn("kotlinx.serialization.ExperimentalSerializationApi")
             }
         }
     }

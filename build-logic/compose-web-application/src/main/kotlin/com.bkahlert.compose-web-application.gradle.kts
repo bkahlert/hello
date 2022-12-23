@@ -22,7 +22,6 @@ kotlin {
                 optIn("kotlin.time.ExperimentalTime")
                 optIn("kotlin.contracts.ExperimentalContracts")
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
-                optIn("kotlinx.serialization.ExperimentalSerializationApi")
                 optIn("org.jetbrains.compose.web.ExperimentalComposeWebApi")
                 progressiveMode = true // false by default
             }

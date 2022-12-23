@@ -1,7 +1,7 @@
 package com.bkahlert.kommons.dom
 
-import com.bkahlert.hello.deserialize
-import com.bkahlert.hello.serialize
+import com.bkahlert.kommons.serialization.deserialize
+import com.bkahlert.kommons.serialization.serialize
 import com.bkahlert.kommons.text.toKebabCasedString
 import io.ktor.http.Parameters
 import io.ktor.http.ParametersBuilder
