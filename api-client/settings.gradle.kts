@@ -18,6 +18,6 @@ dependencyResolutionManagement {
     }
 }
 
-includeBuild("../frontend")
+includeBuild("../libs")
 
 rootProject.name = "api-client"

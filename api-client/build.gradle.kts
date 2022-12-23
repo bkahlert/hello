@@ -29,7 +29,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("com.bkahlert.hello.model:kommons-web")
+                implementation("com.bkahlert.kommons:kommons-web")
                 implementation(compose.web.core)
                 implementation(compose.runtime)
                 implementation(libs.bundles.ktor.js.client)

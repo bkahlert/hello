@@ -8,7 +8,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("com.bkahlert.hello.model:kommons-web")
+                implementation("com.bkahlert.kommons:kommons-web")
             }
         }
     }

@@ -1,6 +1,6 @@
 includeBuild("build-logic")
-includeBuild("frontend")
-includeBuild("serverless")
+includeBuild("libs")
 includeBuild("web-app")
 includeBuild("api-client")
 includeBuild("test-app")
+includeBuild("serverless")

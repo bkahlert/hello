@@ -1,4 +1,5 @@
 plugins {
+    id("com.bkahlert.commons")
     kotlin("multiplatform")
     id("org.jetbrains.compose")
 }
@@ -44,20 +45,4 @@ kotlin {
 
 compose {
     kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.0-alpha02")
-}
-
-//val jsBrowserRunContinuous by tasks.registering(Exec::class) {
-//    group = "kotlin browser"
-//    commandLine("gradlew", "jsBrowserRun", "--continuous")
-//}
-
-val jsBrowserRun = tasks.named("jsBrowserRun")
-
-val jsBrowserRunContinuous by tasks.registering {
-    group = "kotlin browser"
-    doFirst {
-        gradle.startParameter.isContinuous = true
-    }
-    dependsOn(jsBrowserRun)
-//    commandLine("gradlew", "jsBrowserRun", "--continuous")
 }

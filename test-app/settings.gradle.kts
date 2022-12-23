@@ -14,7 +14,7 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
-includeBuild("../frontend")
+includeBuild("../libs")
 
 // == Define the inner structure of this component ==
 rootProject.name = "test-app" // the component name

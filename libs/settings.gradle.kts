@@ -11,5 +11,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "frontend"
+rootProject.name = "libs"
 include("kommons-web")
