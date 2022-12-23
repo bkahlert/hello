@@ -4,5 +4,5 @@ plugins {
 
 dependencies {
     implementation(project(":commons"))
-    implementation(project(":kotlin-project"))
+    api(project(":kotlin-project"))
 }

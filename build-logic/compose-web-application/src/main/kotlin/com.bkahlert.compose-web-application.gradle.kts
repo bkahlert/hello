@@ -1,22 +1,14 @@
 plugins {
-    id("com.bkahlert.commons")
-    kotlin("multiplatform")
+    id("com.bkahlert.kotlin-js-browser-project")
     id("org.jetbrains.compose")
 }
 
 kotlin {
     js(IR) {
-        browser {
-            testTask {
-                testLogging.showStandardStreams = true
-                useKarma {
-                    useChromeHeadless()
-                    useFirefox()
-                }
-            }
-        }
         binaries.executable()
     }
+
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val jsMain by getting {
             dependencies {
@@ -37,7 +29,11 @@ kotlin {
         }
         val jsTest by getting {
             dependencies {
-                implementation(kotlin("test-js"))
+                implementation(compose.web.testUtils)
+            }
+
+            languageSettings.apply {
+                optIn("org.jetbrains.compose.web.testutils.ComposeWebExperimentalTestsApi")
             }
         }
     }
