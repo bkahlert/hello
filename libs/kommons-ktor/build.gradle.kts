@@ -14,6 +14,7 @@ kotlin {
                 api(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kommons)
+                implementation(project(":kommons-web"))
             }
 
             languageSettings.apply {

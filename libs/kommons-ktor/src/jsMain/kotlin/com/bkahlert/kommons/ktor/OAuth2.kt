@@ -1,14 +1,18 @@
-import SimpleLogger.Companion.simpleLogger
+package com.bkahlert.kommons.ktor
+
+import com.bkahlert.kommons.SimpleLogger.Companion.simpleLogger
+import com.bkahlert.kommons.debug.asString
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.provideDelegate
 import com.bkahlert.kommons.serialization.JsonSerializer
+import com.bkahlert.kommons.text.Char.characters
+import com.bkahlert.kommons.text.truncate
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.engine.js.Js
-import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -23,8 +27,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.logging.KtorSimpleLogger
-import io.ktor.util.logging.Logger
 import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.browser.sessionStorage
@@ -42,38 +44,37 @@ import org.w3c.dom.url.URL
 import kotlin.js.Promise
 import kotlin.js.json
 
-data class OAuthIdentityProvider(
+public data class OAuthIdentityProvider(
     val identifier: String,
     val clientId: String,
     val authorizationEndpoint: String,
     val tokenEndpoint: String,
     val revokeEndpoint: String,
-    val resources: List<OAuthResource>,
-) {
-    val endpoints by lazy { arrayOf(authorizationEndpoint, tokenEndpoint, revokeEndpoint) }
-}
-
-data class OAuthResource(
-    /** Name of the resource. */
-    val name: String,
-    /** Predicate that returns whether the given URI belongs to the resource. */
-    val predicate: (Url) -> Boolean,
 )
+
+public interface OAuthResource {
+    /** Name of the resource. */
+    public val name: String
+
+    /** Returns whether the given URI belongs to the resource. */
+    public fun matches(url: Url): Boolean
+}
 
 /**
  * State of the [Authorization Code Flow with Proof Key for Code Exchange (PKCE)](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce)
  * using the specified [identityProvider].
  */
 @Suppress("LongLine")
-sealed class OAuthAuthorizationState(
-    open val identityProvider: OAuthIdentityProvider,
+public sealed class OAuthAuthorizationState(
+    protected open val identityProvider: OAuthIdentityProvider,
 ) {
 
-    data class Unauthorized(
+    public data class Unauthorized(
         override val identityProvider: OAuthIdentityProvider,
     ) : OAuthAuthorizationState(identityProvider) {
         private val logger = simpleLogger()
-        suspend fun authorize(): OAuthAuthorizationState {
+
+        public suspend fun authorize(): OAuthAuthorizationState {
             logger.info("Preparing authorization with ${identityProvider.authorizationEndpoint}")
             val state = generateNonce()
             val codeVerifier = generateNonce()
@@ -97,14 +98,15 @@ sealed class OAuthAuthorizationState(
         }
     }
 
-    data class Authorizing(
+    public data class Authorizing(
         override val identityProvider: OAuthIdentityProvider,
         val tokensStorage: BearerTokensStorage,
         val authorizationCode: String,
         val state: String?,
     ) : OAuthAuthorizationState(identityProvider) {
         private val logger = simpleLogger()
-        suspend fun getTokens(): Authorized {
+
+        public suspend fun getTokens(): Authorized {
             logger.info("Authorization code received: $authorizationCode")
             window.history.replaceState(json(), document.title, "/")
             val state = checkNotNull(state) { "Failed to validate code due to missing state parameter" }
@@ -113,7 +115,7 @@ sealed class OAuthAuthorizationState(
             sessionStorage.removeItem("codeVerifier-$state")
             checkNotNull(codeVerifier) { "Code is not valid" }
 
-            logger.info("Getting tokens")
+            logger.info("Getting tokens using code verifier: $codeVerifier")
             val tokenInfo: TokenInfo = minimalClient().submitForm(
                 url = identityProvider.tokenEndpoint,
                 formParameters = Parameters.build {
@@ -126,23 +128,26 @@ sealed class OAuthAuthorizationState(
             ) { expectSuccess = true }.body()
             tokensStorage.accessToken = tokenInfo.accessToken
             tokensStorage.refreshToken = checkNotNull(tokenInfo.refreshToken) { "Refresh token missing" }
-            logger.info("Authorization code flow succeeded")
+            logger.info("Authorization successful")
 
             return Authorized(identityProvider, tokensStorage)
         }
     }
 
-    data class Authorized(
+    public data class Authorized(
         override val identityProvider: OAuthIdentityProvider,
         val tokensStorage: BearerTokensStorage,
     ) : OAuthAuthorizationState(identityProvider) {
         private val logger = simpleLogger()
 
-        fun buildClient(config: HttpClientConfig<HttpClientEngineConfig>.() -> Unit = {}): HttpClient = minimalClient {
+        public fun buildClient(
+            vararg resources: OAuthResource,
+            config: HttpClientConfig<HttpClientEngineConfig>.() -> Unit = {},
+        ): HttpClient = minimalClient {
             install(Auth) {
                 bearer {
                     loadTokens {
-                        tokensStorage.bearerTokens.also { console.log("Loaded tokens", it) }
+                        tokensStorage.bearerTokens.also { logger.debug("Loaded tokens: $it") }
                     }
                     refreshTokens {
                         logger.info("Refreshing tokens")
@@ -160,14 +165,14 @@ sealed class OAuthAuthorizationState(
                     }
                     sendWithoutRequest { request ->
                         val url = request.url.build()
-                        identityProvider.resources.any { it.predicate(url) }
+                        resources.any { it.matches(url) }
                     }
                 }
             }
             config()
         }
 
-        suspend fun revokeTokens(client: HttpClient? = null): OAuthAuthorizationState {
+        public suspend fun revokeTokens(client: HttpClient? = null): OAuthAuthorizationState {
             logger.info("Revoking tokens")
 
             val auth = client?.pluginOrNull(Auth.Plugin)
@@ -204,51 +209,48 @@ sealed class OAuthAuthorizationState(
         }
     }
 
-    companion object {
+    public companion object {
 
-        private val logger = simpleLogger()
         private fun minimalClient(config: HttpClientConfig<HttpClientEngineConfig>.() -> Unit = {}) = HttpClient(Js) {
             install(ContentNegotiation) { json(JsonSerializer) }
             config()
         }
 
-        fun of(identityProvider: OAuthIdentityProvider): OAuthAuthorizationState {
+        /**
+         * Returns the
+         */
+        public fun of(identityProvider: OAuthIdentityProvider): OAuthAuthorizationState {
             val bearerTokensStorage = BearerTokensStorage(localStorage.scoped(identityProvider.identifier))
 
             val searchParams = URL(window.location.href).searchParams
-            logger.debug("searchParams $searchParams")
             return when (val authorizationCode = searchParams.get("code")) {
-                null -> {
-                    when (bearerTokensStorage.bearerTokens) {
-                        null -> Unauthorized(identityProvider)
-                        else -> Authorized(identityProvider, bearerTokensStorage)
-                    }
+                null -> when (bearerTokensStorage.bearerTokens) {
+                    null -> Unauthorized(identityProvider)
+                    else -> Authorized(identityProvider, bearerTokensStorage)
                 }
 
-                else -> {
-                    Authorizing(
-                        identityProvider,
-                        bearerTokensStorage,
-                        authorizationCode,
-                        searchParams.get("state"),
-                    )
-                }
+                else -> Authorizing(
+                    identityProvider,
+                    bearerTokensStorage,
+                    authorizationCode,
+                    searchParams.get("state"),
+                )
             }
         }
     }
 }
 
-class BearerTokensStorage(
-    storage: Storage = Storage.of(localStorage),
+public class BearerTokensStorage(
+    storage: Storage,
 ) {
 
     private val logger = simpleLogger()
 
-    var accessToken: String? by storage
-    var refreshToken: String? by storage
+    public var accessToken: String? by storage
+    public var refreshToken: String? by storage
 
-    var bearerTokens: BearerTokens?
-        get() = accessToken.to(refreshToken).let { (a, r) ->
+    public var bearerTokens: BearerTokens?
+        get() = (accessToken to refreshToken).let { (a, r) ->
             if (a != null && r != null) BearerTokens(a, r)
             else {
                 if (a != null || r != null) logger.error("Incomplete tokens found")
@@ -259,11 +261,18 @@ class BearerTokensStorage(
             accessToken = value?.accessToken
             refreshToken = value?.refreshToken
         }
+
+    override fun toString(): String {
+        return asString {
+            put("accessToken", accessToken?.truncate(20.characters))
+            put("refreshToken", refreshToken?.truncate(20.characters))
+        }
+    }
 }
 
 
 @Serializable
-data class TokenInfo(
+private data class TokenInfo(
     @SerialName("access_token") val accessToken: String,
     @SerialName("refresh_token") val refreshToken: String? = null, // only if grant_type was authorization_code
     @SerialName("id_token") val idToken: String? = null,
@@ -272,146 +281,29 @@ data class TokenInfo(
 )
 
 @Serializable
-data class ErrorInfo(
+private data class ErrorInfo(
     @SerialName("error") val error: String,
     @SerialName("error_description") val errorDescription: String? = null,
 )
 
-/**
- * Triggers the [Authorization Code Flow with Proof Key for Code Exchange (PKCE)](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce)
- * using the specified [clientId], [authorizationEndpoint] and [tokenEndpoint].
- */
-@Suppress("LongLine")
-suspend fun authorizationCodeFlow(
-    clientId: String,
-    authorizationEndpoint: String,
-    tokenEndpoint: String,
-    tokensStorage: BearerTokensStorage = BearerTokensStorage(localStorage.scoped("hello-api")),
-    logger: Logger = KtorSimpleLogger("AuthorizationCodeFlow"),
-): HttpClient {
-    val searchParams = URL(window.location.href).searchParams
-    logger.debug("searchParams $searchParams")
-    return when (val authorizationCode = searchParams.get("code")) {
-        null -> {
-            logger.info("Preparing authorization with $authorizationEndpoint")
-            val state = generateNonce()
-            val codeVerifier = generateNonce()
-            sessionStorage.setItem("codeVerifier-$state", codeVerifier)
-            val codeChallenge = base64URLEncode(sha256(codeVerifier))
-
-            val authorizationUrl = URLBuilder(authorizationEndpoint).apply {
-                parameters.apply {
-                    append("response_type", "code")
-                    append("client_id", clientId)
-                    append("state", state)
-                    append("code_challenge_method", "S256")
-                    append("code_challenge", codeChallenge)
-                    append("redirect_uri", window.location.origin)
-                }
-            }.buildString()
-            logger.info("Redirecting to $authorizationUrl")
-            window.location.href = authorizationUrl
-            coroutineScope { cancel("Redirection to $authorizationEndpoint") }.unsafeCast<HttpClient>()
-        }
-
-        else -> {
-            logger.info("Authorization code received: $authorizationCode")
-            window.history.replaceState(json(), document.title, "/")
-            val state = checkNotNull(searchParams.get("state")) { "State missing in $searchParams" }
-            logger.debug("Checking state $state")
-            val codeVerifier = sessionStorage.getItem("codeVerifier-$state")
-            sessionStorage.removeItem("codeVerifier-$state")
-            checkNotNull(codeVerifier) { "Code is not valid" }
-
-            val client = authenticatedClient(clientId, authorizationEndpoint, tokenEndpoint, tokensStorage)
-
-            logger.info("Getting tokens")
-            val tokenInfo: TokenInfo = client.submitForm(
-                url = tokenEndpoint,
-                formParameters = Parameters.build {
-                    append("grant_type", "authorization_code")
-                    append("client_id", clientId)
-                    append("code", authorizationCode)
-                    append("code_verifier", codeVerifier)
-                    append("redirect_uri", window.location.origin)
-                }
-            ).body()
-            tokensStorage.accessToken = tokenInfo.accessToken
-            tokensStorage.refreshToken = checkNotNull(tokenInfo.refreshToken) { "Refresh token missing" }
-            logger.info("Authorization code flow succeeded")
-
-            return client
-        }
-    }
-}
-
-// TODO move parameter to TokenStorage
-fun authenticatedClient(
-    clientId: String,
-    authorizationEndpoint: String,
-    tokenEndpoint: String,
-    tokensStorage: BearerTokensStorage = BearerTokensStorage(localStorage.scoped("hello-api")),
-    logger: Logger = KtorSimpleLogger("AuthenticatedClient"),
-) = HttpClient(Js) {
-    install(ContentNegotiation) {
-        json(JsonSerializer)
-    }
-    install(Auth) {
-        bearer {
-            loadTokens { tokensStorage.bearerTokens.also { console.log("Loaded tokens", it) } }
-            refreshTokens {
-//                logger.info("Refreshing tokens")
-//                val refreshTokenInfo: TokenInfo = client.submitForm(
-//                    url = tokenEndpoint,
-//                    formParameters = Parameters.build {
-//                        append("grant_type", "refresh_token")
-//                        append("client_id", clientId)
-//                        append("redirect_uri", window.location.origin)
-//                        append("refresh_token", oldTokens?.refreshToken ?: "")
-//                    }
-//                ) { markAsRefreshTokenRequest() }.body()
-//                tokensStorage.save(refreshTokenInfo.accessToken)
-                tokensStorage.bearerTokens!!
-            }
-            sendWithoutRequest { request ->
-                request.url.buildString().let {
-                    it.contains("api.hello")
-                }
-            }
-        }
-    }
-
-    HttpResponseValidator {
-        handleResponseExceptionWithRequest { ex, _ ->
-            console.error("response validation", ex)
-            throw ex
-        }
-    }
-}
-
-external object crypto {
+private external object crypto {
     fun getRandomValues(array: Uint32Array): Uint32Array
     val subtle: SubtleCrypto
 }
 
-external class SubtleCrypto {
+private external class SubtleCrypto {
     fun digest(algorithm: String, data: Uint8Array): Promise<ArrayBuffer>
 }
 
-external class TextEncoder {
+private external class TextEncoder {
     fun encode(input: String): Uint8Array
 }
 
-@JsName("Array")
-external object ArrayX {
-    fun from(arrayLike: Uint8Array): Array<Int>
-}
-
-suspend fun sha256(str: String): ArrayBuffer {
+private suspend fun sha256(str: String): ArrayBuffer {
     return crypto.subtle.digest("SHA-256", TextEncoder().encode(str)).await()
 }
 
-suspend fun generateNonce(): String {
+private suspend fun generateNonce(): String {
     val uint32Array = Uint32Array(4)
     console.log("uint32Array", uint32Array)
     val randomValues = crypto.getRandomValues(uint32Array)
@@ -428,6 +320,6 @@ suspend fun generateNonce(): String {
     }
 }
 
-fun base64URLEncode(string: ArrayBuffer): String {
-    return js("btoa(String.fromCharCode.apply(null, new Uint8Array(string))).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '')")
-}
+private fun base64URLEncode(
+    @Suppress("UNUSED_PARAMETER") string: ArrayBuffer,
+): String = js("btoa(String.fromCharCode.apply(null, new Uint8Array(string))).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '')") as String
