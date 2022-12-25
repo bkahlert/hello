@@ -24,5 +24,6 @@ dependencyResolutionManagement {
 
 // == Define the inner structure of this component ==
 rootProject.name = "libs"
+include("kommons-deployment")
 include("kommons-ktor")
 include("kommons-web")

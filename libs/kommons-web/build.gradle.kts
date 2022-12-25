@@ -1,7 +1,6 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.bkahlert.kotlin-js-library")
-    alias(libs.plugins.kotlin.plugin.serialization)
+    id("com.bkahlert.kotlin-js-browser-library")
+    id("com.bkahlert.kotlin-serialization-json-feature")
 }
 
 group = "$group.kommons"
@@ -10,7 +9,6 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kommons)
             }
 

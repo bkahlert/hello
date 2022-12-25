@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 
 plugins {
-    id("com.bkahlert.kotlin-project")
+    id("com.bkahlert.kotlin-project") apply false
 }
 
 kotlin {

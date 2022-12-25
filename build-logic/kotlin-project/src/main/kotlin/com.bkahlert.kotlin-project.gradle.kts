@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.bkahlert.commons")
-    kotlin("multiplatform")
+    kotlin("multiplatform") apply false
 }
 
 kotlin {

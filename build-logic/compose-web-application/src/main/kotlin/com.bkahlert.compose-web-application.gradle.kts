@@ -1,11 +1,13 @@
 plugins {
-    id("com.bkahlert.kotlin-js-browser-project")
-    id("org.jetbrains.compose")
+    id("com.bkahlert.kotlin-js-browser-project") apply false
+    id("org.jetbrains.compose") apply false
 }
 
 kotlin {
-    js(IR) {
-        binaries.executable()
+    targets {
+        js(IR) {
+            binaries.executable()
+        }
     }
 
     @Suppress("UNUSED_VARIABLE")

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.SimpleLogger
+import com.bkahlert.kommons.deployment.BackendInfo
 import com.bkahlert.kommons.ktor.OAuthAuthorizationState
 import com.bkahlert.kommons.ktor.OAuthAuthorizationState.Authorized
 import com.bkahlert.kommons.ktor.OAuthAuthorizationState.Authorizing
@@ -31,10 +32,15 @@ val config = mapOf(
     "sls-hello-dev-HostedUiUrl" to "https://hello-dev-bkahlert-com.auth.eu-central-1.amazoncognito.com",
     "sls-hello-dev-WebAppClientID" to "7lhdbv12q1ud9rgg7g779u8va7",
 )
-private val apiHost: String = "${config["sls-hello-dev-DomainNameHttp"]}"
-private val apiUrl: String = "https://$apiHost"
-private val hostedUiUrl: String = config["sls-hello-dev-HostedUiUrl"]!!
-private val userinfoEndpoint = "$hostedUiUrl/oauth2/userInfo"
+
+//private val apiHost: String = "${config["sls-hello-dev-DomainNameHttp"]}"
+//private val apiUrl: String = "https://$apiHost"
+//private val hostedUiUrl: String = config["sls-hello-dev-HostedUiUrl"]!!
+//private val userinfoEndpoint = "$hostedUiUrl/oauth2/userInfo"
+private val apiHost = BackendInfo.apiHost
+private val apiUrl = BackendInfo.apiUrl
+private val hostedUiUrl = BackendInfo.hostedUiUrl
+private val userinfoEndpoint = BackendInfo.userinfoEndpoint
 
 val cognitoIdentityProvider = OAuthIdentityProvider(
     identifier = "https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_2kcGMqneE",
@@ -103,8 +109,10 @@ suspend fun main() {
 
     val logger = SimpleLogger("main")
 
+    logger.warn("server: ${BackendInfo.apiHost}")
+
     var helloClient by mutableStateOf(HelloClient.resolve())
-    logger.debug("State of authorization $helloClient")
+    logger.debug("${HelloClient::class.simpleName} $helloClient")
 
     var count: Int by mutableStateOf(0)
     var status: String by mutableStateOf("—")

@@ -1,7 +1,6 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.bkahlert.kotlin-js-library")
-    alias(libs.plugins.kotlin.plugin.serialization)
+    id("com.bkahlert.kotlin-js-browser-library")
+    id("com.bkahlert.kotlin-serialization-json-feature")
 }
 
 group = "$group.kommons"
@@ -12,14 +11,8 @@ kotlin {
             dependencies {
                 api(libs.bundles.ktor.js.client)
                 api(libs.ktor.serialization.kotlinx.json)
-                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kommons)
                 implementation(project(":kommons-web"))
-            }
-
-            languageSettings.apply {
-                optIn("kotlin.RequiresOptIn")
-                optIn("kotlinx.serialization.ExperimentalSerializationApi")
             }
         }
     }

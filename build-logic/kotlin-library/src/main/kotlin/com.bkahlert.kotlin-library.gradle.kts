@@ -1,5 +1,5 @@
 plugins {
-    id("com.bkahlert.kotlin-project")
+    id("com.bkahlert.kotlin-project") apply false
 }
 
 kotlin {
