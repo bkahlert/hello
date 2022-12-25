@@ -11,11 +11,6 @@ kotlin {
             dependencies {
                 implementation(libs.kommons)
             }
-
-            languageSettings.apply {
-                optIn("kotlin.RequiresOptIn")
-                optIn("kotlinx.serialization.ExperimentalSerializationApi")
-            }
         }
     }
 }

@@ -17,25 +17,18 @@ kotlin {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
             }
-
-            languageSettings.apply {
-                optIn("kotlin.RequiresOptIn")
-                optIn("kotlin.ExperimentalUnsignedTypes")
-                optIn("kotlin.time.ExperimentalTime")
-                optIn("kotlin.contracts.ExperimentalContracts")
-                optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
-                optIn("org.jetbrains.compose.web.ExperimentalComposeWebApi")
-                progressiveMode = true // false by default
-            }
         }
         val jsTest by getting {
             dependencies {
                 implementation(compose.web.testUtils)
             }
 
-            languageSettings.apply {
-                optIn("org.jetbrains.compose.web.testutils.ComposeWebExperimentalTestsApi")
-            }
+            languageSettings.optIn("org.jetbrains.compose.web.testutils.ComposeWebExperimentalTestsApi")
+        }
+
+        all {
+            languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
+            languageSettings.optIn("org.jetbrains.compose.web.ExperimentalComposeWebApi")
         }
     }
 }

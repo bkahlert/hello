@@ -40,11 +40,6 @@ kotlin {
                 implementation("com.bkahlert.kommons:kommons-ktor")
                 implementation("com.bkahlert.kommons:kommons-web")
             }
-
-            languageSettings.apply {
-                optIn("kotlin.RequiresOptIn")
-                optIn("kotlinx.serialization.ExperimentalSerializationApi")
-            }
         }
     }
 }
