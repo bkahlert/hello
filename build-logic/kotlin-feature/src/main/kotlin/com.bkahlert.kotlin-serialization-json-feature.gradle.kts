@@ -1,6 +1,6 @@
 plugins {
-    id("com.bkahlert.kotlin-project") apply false
-    id("com.bkahlert.kotlin-serialization-feature") apply false
+    id("com.bkahlert.kotlin-project")
+    id("com.bkahlert.kotlin-serialization-feature")
 }
 
 kotlin {

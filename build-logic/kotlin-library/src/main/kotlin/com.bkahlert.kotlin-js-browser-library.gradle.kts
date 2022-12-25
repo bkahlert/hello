@@ -1,4 +1,4 @@
 plugins {
-    id("com.bkahlert.kotlin-library") apply false
-    id("com.bkahlert.kotlin-js-browser-project")  apply false
+    id("com.bkahlert.kotlin-library")
+    id("com.bkahlert.kotlin-js-browser-project")
 }
