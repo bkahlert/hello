@@ -1,5 +1,5 @@
 plugins {
-    id("com.bkahlert.kotlin-js-browser-library")
+    id("com.bkahlert.kotlin-js-library")
     id("com.bkahlert.kotlin-serialization-json-feature")
 }
 
