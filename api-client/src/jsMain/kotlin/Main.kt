@@ -4,14 +4,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.bkahlert.hello.client.Config
 import com.bkahlert.kommons.SimpleLogger
-import com.bkahlert.kommons.deployment.BackendInfo
-import com.bkahlert.kommons.ktor.OAuthAuthorizationState
-import com.bkahlert.kommons.ktor.OAuthAuthorizationState.Authorized
-import com.bkahlert.kommons.ktor.OAuthAuthorizationState.Authorizing
-import com.bkahlert.kommons.ktor.OAuthAuthorizationState.Unauthorized
-import com.bkahlert.kommons.ktor.OAuthIdentityProvider
-import com.bkahlert.kommons.ktor.OAuthResource
+import com.bkahlert.kommons.SimpleLogger.Companion.simpleLogger
+import com.bkahlert.kommons.auth.OpenIDProvider
+import com.bkahlert.kommons.ktor.OAuth2AuthorizationServer
+import com.bkahlert.kommons.ktor.OAuth2AuthorizationState
+import com.bkahlert.kommons.ktor.OAuth2AuthorizationState.Authorized
+import com.bkahlert.kommons.ktor.OAuth2AuthorizationState.Authorizing
+import com.bkahlert.kommons.ktor.OAuth2AuthorizationState.Unauthorized
+import com.bkahlert.kommons.ktor.OAuth2Resource
+import com.bkahlert.kommons.ktor.loadOpenIDConfiguration
 import com.bkahlert.kommons.text.simpleKebabCasedName
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -27,27 +30,10 @@ import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 
-val config = mapOf(
-    "sls-hello-dev-DomainNameHttp" to "api.hello-dev.aws.choam.de",
-    "sls-hello-dev-HostedUiUrl" to "https://hello-dev-bkahlert-com.auth.eu-central-1.amazoncognito.com",
-    "sls-hello-dev-WebAppClientID" to "7lhdbv12q1ud9rgg7g779u8va7",
-)
-
-//private val apiHost: String = "${config["sls-hello-dev-DomainNameHttp"]}"
-//private val apiUrl: String = "https://$apiHost"
-//private val hostedUiUrl: String = config["sls-hello-dev-HostedUiUrl"]!!
-//private val userinfoEndpoint = "$hostedUiUrl/oauth2/userInfo"
-private val apiHost = BackendInfo.apiHost
-private val apiUrl = BackendInfo.apiUrl
-private val hostedUiUrl = BackendInfo.hostedUiUrl
-private val userinfoEndpoint = BackendInfo.userinfoEndpoint
-
-val cognitoIdentityProvider = OAuthIdentityProvider(
-    identifier = "https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_2kcGMqneE",
-    clientId = config["sls-hello-dev-WebAppClientID"]!!,
-    authorizationEndpoint = "$hostedUiUrl/oauth2/authorize",
-    tokenEndpoint = "$hostedUiUrl/oauth2/token",
-    revokeEndpoint = "$hostedUiUrl/oauth2/revoke",
+val manualConfig = Config(
+    openIdProvider = "https://hello-dev-bkahlert-com.auth.eu-central-1.amazoncognito.com",
+    clientId = "7lhdbv12q1ud9rgg7g779u8va7",
+    apiDomain = "api.hello-dev.aws.choam.de",
 )
 
 sealed class HelloClient {
@@ -75,7 +61,7 @@ sealed class HelloClient {
         suspend fun logOut(): HelloClient =
             resolve(authorizationState.revokeTokens(httpClient), apiEndpoint)
 
-        private class SubResource(baseUrl: String, path: String) : OAuthResource {
+        private class SubResource(baseUrl: String, path: String) : OAuth2Resource {
             val url: String = "$baseUrl/$path"
             override val name: String = path
             override fun matches(url: Url): Boolean = url.toString().startsWith(this.url)
@@ -84,22 +70,37 @@ sealed class HelloClient {
     }
 
     companion object {
+
+        private val logger = HelloClient.simpleLogger()
+
         suspend fun resolve(
-            identityProvider: OAuthIdentityProvider = cognitoIdentityProvider,
-            apiEndpoint: String = apiUrl,
+            config: Config = Config.DEFAULT,
         ): HelloClient {
-            return resolve(OAuthAuthorizationState.of(identityProvider), apiEndpoint)
+            val metadata = OpenIDProvider(config.openIdProvider).loadOpenIDConfiguration()
+            val authServer = OAuth2AuthorizationServer.from(metadata)
+            return resolve(authServer, config.clientId, "https://${config.apiDomain}")
+        }
+
+        suspend fun resolve(
+            authServer: OAuth2AuthorizationServer,
+            clientId: String,
+            apiEndpoint: String,
+        ): HelloClient {
+            val authorizationState = OAuth2AuthorizationState.compute(authServer, clientId)
+            return resolve(authorizationState, apiEndpoint)
         }
 
         private suspend fun resolve(
-            authorizationState: OAuthAuthorizationState,
+            authorizationState: OAuth2AuthorizationState,
             apiEndpoint: String,
         ): HelloClient {
-            return when (authorizationState) {
+            val helloClient = when (authorizationState) {
                 is Unauthorized -> LoggedOut(authorizationState)
                 is Authorizing -> LoggedIn(authorizationState.getTokens(), apiEndpoint)
                 is Authorized -> LoggedIn(authorizationState, apiEndpoint)
             }
+            logger.debug("$helloClient")
+            return helloClient
         }
     }
 }
@@ -109,10 +110,7 @@ suspend fun main() {
 
     val logger = SimpleLogger("main")
 
-    logger.warn("server: ${BackendInfo.apiHost}")
-
     var helloClient by mutableStateOf(HelloClient.resolve())
-    logger.debug("${HelloClient::class.simpleName} $helloClient")
 
     var count: Int by mutableStateOf(0)
     var status: String by mutableStateOf("—")

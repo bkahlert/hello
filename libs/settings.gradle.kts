@@ -21,9 +21,11 @@ dependencyResolutionManagement {
         }
     }
 }
+includeBuild("../platforms")
 
 // == Define the inner structure of this component ==
 rootProject.name = "libs"
+include("kommons-auth")
 include("kommons-deployment")
 include("kommons-ktor")
 include("kommons-web")

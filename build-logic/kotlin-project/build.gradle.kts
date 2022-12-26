@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+    implementation(platform("com.bkahlert.platform:plugins-platform"))
     implementation(project(":commons"))
-    api("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    implementation("org.jetbrains.kotlin:kotlin-serialization")
 }

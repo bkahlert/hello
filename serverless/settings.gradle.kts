@@ -18,8 +18,8 @@ dependencyResolutionManagement {
         }
     }
 }
-
-includeBuild("../web-app")
+//includeBuild("../platforms")
+//includeBuild("../web-app")
 
 // == Define the inner structure of this component ==
 rootProject.name = "serverless"

@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.WebpackDevtool
 
 plugins {
     id("com.bkahlert.compose-web-application")
-    id("com.bkahlert.kotlin-serialization-json-feature")
 }
 
 group = "$group.hello"
@@ -33,13 +32,26 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        val commonMain by getting {
             dependencies {
                 implementation(libs.kommons)
+                implementation(libs.kotlinx.serialization.json)
                 implementation("com.bkahlert.kommons:kommons-deployment")
                 implementation("com.bkahlert.kommons:kommons-ktor")
                 implementation("com.bkahlert.kommons:kommons-web")
             }
+        }
+
+        val jsMain by getting {
+            dependencies {
+                api(libs.bundles.ktor.js.client)
+                api(libs.ktor.serialization.kotlinx.json)
+            }
+        }
+
+        all {
+            languageSettings.optIn("kotlin.RequiresOptIn")
+            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
 }

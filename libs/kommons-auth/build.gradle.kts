@@ -1,5 +1,6 @@
 plugins {
     id("com.bkahlert.kotlin-js-project")
+    id("com.bkahlert.kotlin-jvm-project")
     id("com.bkahlert.aws")
 }
 
@@ -12,7 +13,12 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.bkahlert.kommons:kommons")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core")
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }
         }

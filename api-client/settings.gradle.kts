@@ -23,6 +23,7 @@ dependencyResolutionManagement {
         }
     }
 }
+includeBuild("../platforms")
 includeBuild("../libs")
 
 // == Define the inner structure of this component ==

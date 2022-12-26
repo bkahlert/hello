@@ -3,14 +3,21 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("com.bkahlert.commons")
     kotlin("multiplatform") apply false
+    kotlin("plugin.serialization") apply false
 }
 
 kotlin {
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(project.dependencies.platform("com.bkahlert.platform:product-platform"))
+            }
+        }
         val commonTest by getting {
             dependencies {
-                implementation("com.bkahlert.kommons:kommons-test:2.5.0")
+                implementation(project.dependencies.platform("com.bkahlert.platform:test-platform"))
+                implementation("com.bkahlert.kommons:kommons-test")
             }
         }
 

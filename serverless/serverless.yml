@@ -229,16 +229,16 @@ resources:
             KeyType: RANGE
 
   Outputs:
-    HostedUiUrl:
-      Description: URL of the Cognito domain hosting the OAuth 2.0 token, login, etc. endpoints
-      Value: !Join ['', ['https://', !Ref UserPoolDomain, '.auth.${aws:region}.amazoncognito.com']]
+    OpenIDProvider:
+      Description: URL of the OpenID Connect identity provider
+      Value: !Join ['', ['https://cognito-idp.${aws:region}.amazonaws.com/', !Ref UserPool]]
       Export:
-        Name: !Join ['-', ['sls', '${self:service}', '${sls:stage}', 'HostedUiUrl']]
-    WebAppClientID:
-      Description: client_id to be used by the wep-app client for authentication
+        Name: !Join ['-', ['sls', '${self:service}', '${sls:stage}', 'OpenIDProvider']]
+    OAuth2ClientID:
+      Description: OAuth 2.0 client_id to be used by the wep-app client for authentication
       Value: !Ref UserPoolClient
       Export:
-        Name: !Join ['-', ['sls', '${self:service}', '${sls:stage}', 'WebAppClientID']]
+        Name: !Join ['-', ['sls', '${self:service}', '${sls:stage}', 'OAuth2ClientID']]
 
 plugins:
   - serverless-s3-sync

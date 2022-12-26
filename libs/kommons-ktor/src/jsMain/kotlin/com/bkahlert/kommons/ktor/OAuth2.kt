@@ -1,6 +1,8 @@
 package com.bkahlert.kommons.ktor
 
 import com.bkahlert.kommons.SimpleLogger.Companion.simpleLogger
+import com.bkahlert.kommons.auth.OpenIDProvider
+import com.bkahlert.kommons.auth.OpenIDProviderMetadata
 import com.bkahlert.kommons.debug.asString
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
@@ -21,6 +23,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.plugins.pluginOrNull
 import io.ktor.client.request.forms.submitForm
+import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
@@ -44,15 +47,54 @@ import org.w3c.dom.url.URL
 import kotlin.js.Promise
 import kotlin.js.json
 
-public data class OAuthIdentityProvider(
-    val identifier: String,
-    val clientId: String,
-    val authorizationEndpoint: String,
-    val tokenEndpoint: String,
-    val revokeEndpoint: String,
-)
+private fun minimalClient(config: HttpClientConfig<HttpClientEngineConfig>.() -> Unit = {}) = HttpClient(Js) {
+    install(ContentNegotiation) { json(JsonSerializer) }
+    config()
+}
 
-public interface OAuthResource {
+private val openIdClient by lazy { minimalClient() }
+
+/**
+ * Loads the [OpenID Provider Configuration Information](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig)
+ */
+public suspend fun OpenIDProvider.loadOpenIDConfiguration(
+    tokenEndpointFallback: (OpenIDProviderMetadata) -> String? = { it.tokenEndpoint?.replace("/token", "/revoke") },
+): OpenIDProviderMetadata {
+    val metadata = openIdClient.get(openIDConfigurationUri).body<OpenIDProviderMetadata>()
+    return metadata.takeUnless { it.revocationEndpoint == null } ?: metadata.copy(revocationEndpoint = tokenEndpointFallback(metadata))
+}
+
+/**
+ * OAuth 2.0 authorization server
+ */
+public data class OAuth2AuthorizationServer(
+    /** @see [OpenIDProviderMetadata.issuer] */
+    val issuer: String,
+    /** @see [OpenIDProviderMetadata.authorizationEndpoint] */
+    val authorizationEndpoint: String,
+    /** @see [OpenIDProviderMetadata.tokenEndpoint] */
+    val tokenEndpoint: String,
+    /**
+     * Optional token revocation endpoint.
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc7009">OAuth 2.0 Token Revocation</a>
+     */
+    val revocationEndpoint: String?,
+) {
+    public companion object {
+
+        /**
+         * Creates a [OAuth2AuthorizationServer] from the specified [metadata].
+         */
+        public fun from(metadata: OpenIDProviderMetadata): OAuth2AuthorizationServer = OAuth2AuthorizationServer(
+            issuer = metadata.issuer,
+            authorizationEndpoint = metadata.authorizationEndpoint,
+            tokenEndpoint = requireNotNull(metadata.tokenEndpoint),
+            revocationEndpoint = metadata.revocationEndpoint,
+        )
+    }
+}
+
+public interface OAuth2Resource {
     /** Name of the resource. */
     public val name: String
 
@@ -62,29 +104,31 @@ public interface OAuthResource {
 
 /**
  * State of the [Authorization Code Flow with Proof Key for Code Exchange (PKCE)](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce)
- * using the specified [identityProvider].
+ * using the specified [authorizationServer].
  */
 @Suppress("LongLine")
-public sealed class OAuthAuthorizationState(
-    protected open val identityProvider: OAuthIdentityProvider,
+public sealed class OAuth2AuthorizationState(
+    protected open val authorizationServer: OAuth2AuthorizationServer,
+    protected open val clientId: String,
 ) {
 
     public data class Unauthorized(
-        override val identityProvider: OAuthIdentityProvider,
-    ) : OAuthAuthorizationState(identityProvider) {
+        override val authorizationServer: OAuth2AuthorizationServer,
+        override val clientId: String,
+    ) : OAuth2AuthorizationState(authorizationServer, clientId) {
         private val logger = simpleLogger()
 
-        public suspend fun authorize(): OAuthAuthorizationState {
-            logger.info("Preparing authorization with ${identityProvider.authorizationEndpoint}")
+        public suspend fun authorize(): OAuth2AuthorizationState {
+            logger.info("Preparing authorization with ${authorizationServer.authorizationEndpoint}")
             val state = generateNonce()
             val codeVerifier = generateNonce()
             sessionStorage.setItem("codeVerifier-$state", codeVerifier)
             val codeChallenge = base64URLEncode(sha256(codeVerifier))
 
-            val authorizationUrl = URLBuilder(identityProvider.authorizationEndpoint).apply {
+            val authorizationUrl = URLBuilder(authorizationServer.authorizationEndpoint).apply {
                 parameters.apply {
                     append("response_type", "code")
-                    append("client_id", identityProvider.clientId)
+                    append("client_id", clientId)
                     append("state", state)
                     append("code_challenge_method", "S256")
                     append("code_challenge", codeChallenge)
@@ -93,17 +137,18 @@ public sealed class OAuthAuthorizationState(
             }.buildString()
             logger.info("Redirecting to $authorizationUrl")
             window.location.href = authorizationUrl
-            coroutineScope { cancel("Redirection to ${identityProvider.authorizationEndpoint}") }
-            return of(identityProvider)
+            coroutineScope { cancel("Redirection to ${authorizationServer.authorizationEndpoint}") }
+            return compute(authorizationServer, clientId)
         }
     }
 
     public data class Authorizing(
-        override val identityProvider: OAuthIdentityProvider,
+        override val authorizationServer: OAuth2AuthorizationServer,
+        override val clientId: String,
         val tokensStorage: BearerTokensStorage,
         val authorizationCode: String,
         val state: String?,
-    ) : OAuthAuthorizationState(identityProvider) {
+    ) : OAuth2AuthorizationState(authorizationServer, clientId) {
         private val logger = simpleLogger()
 
         public suspend fun getTokens(): Authorized {
@@ -117,10 +162,10 @@ public sealed class OAuthAuthorizationState(
 
             logger.info("Getting tokens using code verifier: $codeVerifier")
             val tokenInfo: TokenInfo = minimalClient().submitForm(
-                url = identityProvider.tokenEndpoint,
+                url = authorizationServer.tokenEndpoint,
                 formParameters = Parameters.build {
                     append("grant_type", "authorization_code")
-                    append("client_id", identityProvider.clientId)
+                    append("client_id", clientId)
                     append("code", authorizationCode)
                     append("code_verifier", codeVerifier)
                     append("redirect_uri", window.location.origin)
@@ -130,18 +175,19 @@ public sealed class OAuthAuthorizationState(
             tokensStorage.refreshToken = checkNotNull(tokenInfo.refreshToken) { "Refresh token missing" }
             logger.info("Authorization successful")
 
-            return Authorized(identityProvider, tokensStorage)
+            return Authorized(authorizationServer, clientId, tokensStorage)
         }
     }
 
     public data class Authorized(
-        override val identityProvider: OAuthIdentityProvider,
+        override val authorizationServer: OAuth2AuthorizationServer,
+        override val clientId: String,
         val tokensStorage: BearerTokensStorage,
-    ) : OAuthAuthorizationState(identityProvider) {
+    ) : OAuth2AuthorizationState(authorizationServer, clientId) {
         private val logger = simpleLogger()
 
         public fun buildClient(
-            vararg resources: OAuthResource,
+            vararg resources: OAuth2Resource,
             config: HttpClientConfig<HttpClientEngineConfig>.() -> Unit = {},
         ): HttpClient = minimalClient {
             install(Auth) {
@@ -152,10 +198,10 @@ public sealed class OAuthAuthorizationState(
                     refreshTokens {
                         logger.info("Refreshing tokens")
                         val refreshTokenInfo: TokenInfo = this@refreshTokens.client.submitForm(
-                            url = identityProvider.tokenEndpoint,
+                            url = authorizationServer.tokenEndpoint,
                             formParameters = Parameters.build {
                                 append("grant_type", "refresh_token")
-                                append("client_id", identityProvider.clientId)
+                                append("client_id", clientId)
                                 append("redirect_uri", window.location.origin)
                                 append("refresh_token", oldTokens?.refreshToken ?: "")
                             }
@@ -172,9 +218,14 @@ public sealed class OAuthAuthorizationState(
             config()
         }
 
-        public suspend fun revokeTokens(client: HttpClient? = null): OAuthAuthorizationState {
-            logger.info("Revoking tokens")
+        public suspend fun revokeTokens(client: HttpClient? = null): OAuth2AuthorizationState {
+            val revocationEndpoint = authorizationServer.revocationEndpoint
+            if (revocationEndpoint == null) {
+                logger.warn("No token revocation endpoint configured. Doing nothing.")
+                return this
+            }
 
+            logger.info("Revoking tokens")
             val auth = client?.pluginOrNull(Auth.Plugin)
             auth?.providers?.removeAll {
                 if (it is BearerAuthProvider) {
@@ -189,10 +240,10 @@ public sealed class OAuthAuthorizationState(
                 null -> logger.info("No tokens found")
                 else -> {
                     val response = minimalClient().submitForm(
-                        url = identityProvider.revokeEndpoint,
+                        url = revocationEndpoint,
                         formParameters = Parameters.build {
                             append("token", token)
-                            append("client_id", identityProvider.clientId)
+                            append("client_id", clientId)
                         }
                     ) {
                         expectSuccess = false
@@ -205,32 +256,32 @@ public sealed class OAuthAuthorizationState(
                     tokensStorage.bearerTokens = null
                 }
             }
-            return of(identityProvider)
+            return compute(authorizationServer, clientId)
         }
     }
 
     public companion object {
 
-        private fun minimalClient(config: HttpClientConfig<HttpClientEngineConfig>.() -> Unit = {}) = HttpClient(Js) {
-            install(ContentNegotiation) { json(JsonSerializer) }
-            config()
-        }
-
         /**
-         * Returns the
+         * Computes the current [OAuth2AuthorizationState] based on the specified [authorizationServer]
+         * and [clientId].
          */
-        public fun of(identityProvider: OAuthIdentityProvider): OAuthAuthorizationState {
-            val bearerTokensStorage = BearerTokensStorage(localStorage.scoped(identityProvider.identifier))
+        public fun compute(
+            authorizationServer: OAuth2AuthorizationServer,
+            clientId: String,
+        ): OAuth2AuthorizationState {
+            val bearerTokensStorage = BearerTokensStorage(localStorage.scoped(authorizationServer.issuer))
 
             val searchParams = URL(window.location.href).searchParams
             return when (val authorizationCode = searchParams.get("code")) {
                 null -> when (bearerTokensStorage.bearerTokens) {
-                    null -> Unauthorized(identityProvider)
-                    else -> Authorized(identityProvider, bearerTokensStorage)
+                    null -> Unauthorized(authorizationServer, clientId)
+                    else -> Authorized(authorizationServer, clientId, bearerTokensStorage)
                 }
 
                 else -> Authorizing(
-                    identityProvider,
+                    authorizationServer,
+                    clientId,
                     bearerTokensStorage,
                     authorizationCode,
                     searchParams.get("state"),

@@ -16,6 +16,7 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
+includeBuild("../platforms")
 includeBuild("../libs")
 
 // == Define the inner structure of this component ==

@@ -1,5 +1,5 @@
 plugins {
-    id("com.bkahlert.kotlin-js-browser-project") apply false
+    id("com.bkahlert.kotlin-js-project") apply false
     id("org.jetbrains.compose") apply false
 }
 
