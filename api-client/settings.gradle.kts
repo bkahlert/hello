@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-enableFeaturePreview("VERSION_CATALOGS")
-
 // == Define locations for build logic ==
 pluginManagement {
     repositories {
@@ -19,7 +17,8 @@ dependencyResolutionManagement {
     }
 }
 includeBuild("../platforms")
-includeBuild("../libs")
+includeBuild("../libs/hello-libs")
+includeBuild("../libs/kommons-libs")
 
 // == Define the inner structure of this component ==
 rootProject.name = "api-client"

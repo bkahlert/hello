@@ -1,13 +1,13 @@
 @file:Suppress("UnstableApiUsage")
 
-enableFeaturePreview("VERSION_CATALOGS")
+import java.io.FileFilter
 
 // == Define locations for build logic ==
 pluginManagement {
     repositories {
         gradlePluginPortal()
     }
-    includeBuild("../build-logic")
+    includeBuild("../../build-logic")
 }
 
 // == Define locations for components ==
@@ -16,11 +16,12 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-includeBuild("../platforms")
+includeBuild("../../platforms")
 
 // == Define the inner structure of this component ==
-rootProject.name = "libs"
-include("kommons-auth")
-include("kommons-deployment")
-include("kommons-auth-ktor")
-include("kommons-web")
+rootProject.name = "kommons-libs"
+rootDir.listFiles(FileFilter { file ->
+    file.resolve("build.gradle.kts").exists()
+})?.forEach { projectDir ->
+    include(projectDir.name)
+}

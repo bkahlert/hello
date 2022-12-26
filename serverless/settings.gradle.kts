@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-enableFeaturePreview("VERSION_CATALOGS")
-
 // == Define locations for build logic ==
 pluginManagement {
     repositories {

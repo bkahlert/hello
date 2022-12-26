@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+import java.io.FileFilter
+
 // == Define locations for components ==
 dependencyResolutionManagement {
     repositories {
@@ -14,7 +16,8 @@ dependencyResolutionManagement {
 includeBuild("../platforms")
 
 rootProject.name = "platforms"
-
-include("product-platform")
-include("test-platform")
-include("plugins-platform")
+rootDir.listFiles(FileFilter { file ->
+    file.resolve("build.gradle.kts").exists()
+})?.forEach { projectDir ->
+    include(projectDir.name)
+}
