@@ -9,9 +9,9 @@ kotlin {
         js(IR) {
             browser {
                 testTask {
-                    testLogging.showStandardStreams = true
                     useKarma {
-                        useChromeHeadless()
+//                        useChromeHeadless()
+                        useFirefoxHeadless()
                     }
                 }
             }

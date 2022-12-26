@@ -1,4 +1,13 @@
 {
+  "requestContext": {
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "john.doe"
+        }
+      }
+    }
+  },
   "routeKey": "GET /props/{id}",
   "pathParameters": {
     "id": "foo"

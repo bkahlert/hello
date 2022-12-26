@@ -13,10 +13,10 @@ val APIGatewayV2HTTPEvent.userId
     get() = claims["sub"]
 
 val APIGatewayV2HTTPEvent.requiredUserId
-    get() = userId ?: throw IllegalStateException("unauthorized")
+    get() = userId ?: throw IllegalStateException("Unauthorized")
 
 val APIGatewayV2HTTPEvent.username
     get() = claims["username"]
 
 val APIGatewayV2HTTPEvent.requiredUsername
-    get() = username ?: throw IllegalStateException("unauthorized")
+    get() = username ?: throw IllegalStateException("Unauthorized")

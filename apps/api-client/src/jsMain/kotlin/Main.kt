@@ -1,3 +1,4 @@
+import HelloClient.Anonymous
 import HelloClient.LoggedIn
 import HelloClient.LoggedOut
 import androidx.compose.runtime.getValue
@@ -15,11 +16,23 @@ import com.bkahlert.kommons.auth.OAuth2AuthorizationState.Unauthorized
 import com.bkahlert.kommons.auth.OAuth2Resource
 import com.bkahlert.kommons.auth.OpenIDProvider
 import com.bkahlert.kommons.auth.loadOpenIDConfiguration
+import com.bkahlert.kommons.serialization.JsonSerializer
+import com.bkahlert.kommons.serialization.serialize
 import com.bkahlert.kommons.text.simpleKebabCasedName
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.js.Js
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.Url
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Button
@@ -35,8 +48,30 @@ val manualConfig = Config(
     clientId = "7lhdbv12q1ud9rgg7g779u8va7",
     apiDomain = "api.hello-dev.aws.choam.de",
 )
+val manualConfig2 = Config(
+    openIdProvider = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_o3rAtwpX5",
+    clientId = "6874dpnigtpb9uht7osf0ijn6b",
+    apiDomain = null,
+    apiPath = "/api",
+)
 
 sealed class HelloClient {
+
+    data class Anonymous(
+        private val apiEndpoint: String,
+    ) : HelloClient() {
+        private val httpClient = HttpClient(Js) {
+            install(ContentNegotiation) { json(JsonSerializer) }
+        }
+
+        suspend fun echo(message: String): String {
+            val response = httpClient.post("$apiEndpoint/echo") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("message" to message))
+            }
+            return response.bodyAsText()
+        }
+    }
 
     data class LoggedOut(
         private val authorizationState: Unauthorized,
@@ -53,8 +88,23 @@ sealed class HelloClient {
         private val propsEndpoint = SubResource(apiEndpoint, "prop")
         private val httpClient = authorizationState.buildClient(propsEndpoint)
 
+        suspend fun getProps(): String {
+            val response = httpClient.get("$apiEndpoint/props")
+            return response.bodyAsText()
+        }
+
         suspend fun getProp(id: String): String {
             val response = httpClient.get("$apiEndpoint/props/$id")
+            return response.bodyAsText()
+        }
+
+        suspend fun setProp(id: String, value: JsonObject): String {
+            val response = httpClient.post("$apiEndpoint/props") {
+                setBody(buildMap {
+                    value.keys.forEach { put(it, value[it]) }
+                    put("propId", JsonPrimitive(id))
+                }.serialize())
+            }
             return response.bodyAsText()
         }
 
@@ -74,11 +124,13 @@ sealed class HelloClient {
         private val logger = HelloClient.simpleLogger()
 
         suspend fun resolve(
-            config: Config = Config.DEFAULT,
+            config: Config?,
         ): HelloClient {
+            if (config == null) return Anonymous("/api")
+
             val metadata = OpenIDProvider(config.openIdProvider).loadOpenIDConfiguration()
             val authServer = OAuth2AuthorizationServer.from(metadata)
-            return resolve(authServer, config.clientId, "https://${config.apiDomain}")
+            return resolve(authServer, config.clientId, config.apiUrl)
         }
 
         suspend fun resolve(
@@ -110,7 +162,7 @@ suspend fun main() {
 
     val logger = SimpleLogger("main")
 
-    var helloClient by mutableStateOf(HelloClient.resolve())
+    var helloClient by mutableStateOf(HelloClient.resolve(manualConfig2))
 
     var count: Int by mutableStateOf(0)
     var status: String by mutableStateOf("—")
@@ -124,6 +176,24 @@ suspend fun main() {
             when (val client = helloClient.also {
                 logger.info("${it::class.simpleKebabCasedName}")
             }) {
+                is Anonymous -> {
+                    Text("Your are ${helloClient::class.simpleKebabCasedName}")
+                    Div({ style { padding(25.px) } }) {
+
+                        Button(attrs = {
+                            onClick {
+                                helloClientScope.launch {
+                                    val response = client.echo("foo bar")
+                                    console.info("Response: $response")
+                                    status = response
+                                }
+                            }
+                        }) {
+                            Text("echo")
+                        }
+                    }
+                }
+
                 is LoggedOut -> {
                     Text("Your are ${helloClient::class.simpleKebabCasedName}")
                     Button(attrs = {
@@ -154,40 +224,76 @@ suspend fun main() {
                         Button(attrs = {
                             onClick {
                                 helloClientScope.launch {
+                                    val response = client.getProps()
+                                    console.info("Response: $response")
+                                    status = response
+                                }
+                            }
+                        }) {
+                            Text("GET props")
+                        }
+
+                        Button(attrs = {
+                            onClick {
+                                helloClientScope.launch {
                                     val response = client.getProp("foo")
                                     console.info("Response: $response")
                                     status = response
                                 }
                             }
                         }) {
-                            Text("GET api.hello-dev/props")
-                        }
-
-                        Button(attrs = {
-                            onClick { count -= 1 }
-                        }) {
-                            Text("-")
-                        }
-
-                        Span({ style { padding(15.px) } }) {
-                            Text("$count")
+                            Text("GET props/foo")
                         }
 
                         Button(attrs = {
                             onClick {
-                                count += 1
-                                status += "-yyyyyyyyyyyyyxxxxxxxxxxxx"
+                                helloClientScope.launch {
+                                    val response = client.setProp(
+                                        "foo",
+                                        JsonObject(
+                                            mapOf(
+                                                "foo" to JsonPrimitive("bar"),
+                                                "baz" to JsonPrimitive(null),
+                                            )
+                                        )
+                                    )
+                                    console.info("Response: $response")
+                                    status = response
+                                }
                             }
                         }) {
-                            Text("+")
-                        }
-                    }
-                    Pre {
-                        Code {
-                            Text(status)
+                            Text("POST props/foo")
                         }
                     }
                 }
+            }
+        }
+
+
+
+
+        Button(attrs = {
+            onClick { count -= 1 }
+        }) {
+            Text("-")
+        }
+
+        Span({ style { padding(15.px) } }) {
+            Text("$count")
+        }
+
+        Button(attrs = {
+            onClick {
+                count += 1
+                status += "-yyyyyyyyyyyyyxxxxxxxxxxxx"
+            }
+        }) {
+            Text("+")
+        }
+
+        Pre {
+            Code {
+                Text(status)
             }
         }
     }

@@ -38,7 +38,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j18-impl:2.18.0")
 
     implementation(libs.kommons)
-    implementation("org.jetbrains.kotlinx:kotlinx-html:0.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-html:0.8.1")
 
     implementation("com.auth0:java-jwt:4.2.1")
     implementation("com.auth0:jwks-rsa:0.21.2")

@@ -5,7 +5,7 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
     }
-    includeBuild("../build-logic")
+    includeBuild("../../build-logic")
 }
 
 // == Define locations for components ==
@@ -16,9 +16,9 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
-includeBuild("../platforms")
-includeBuild("../libs/hello-libs")
-includeBuild("../libs/kommons-libs")
+includeBuild("../../platforms")
+includeBuild("../../libs/hello-libs")
+includeBuild("../../libs/kommons-libs")
 
 // == Define the inner structure of this component ==
 rootProject.name = "web-app"

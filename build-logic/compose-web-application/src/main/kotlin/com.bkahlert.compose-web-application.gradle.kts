@@ -1,11 +1,22 @@
+import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
+
 plugins {
-    id("com.bkahlert.kotlin-js-project") apply false
+    id("com.bkahlert.kotlin-project") apply false
     id("org.jetbrains.compose") apply false
 }
 
 kotlin {
     targets {
         js(IR) {
+            browser {
+                testTask {
+                    useKarma {
+//                        useChromeHeadless()
+                        useFirefoxHeadless()
+                    }
+                }
+            }
+            yarn.ignoreScripts = false // suppress "warning Ignored scripts due to flag." warning
             binaries.executable()
         }
     }

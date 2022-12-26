@@ -4,10 +4,8 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.auth0.jwk.Jwk
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.UrlJwkProvider
-import com.auth0.jwt.exceptions.JWTDecodeException
 import com.bkahlert.hello.aws.TestContext
 import com.bkahlert.kommons.fixed
-import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -32,7 +30,9 @@ class UserHandlerTest {
     @Test
     fun `should reject refresh token`() {
         val handler = UserHandler(TestJsonWebTokenValidator())
-        shouldThrow<JWTDecodeException> { handler.handleRequest(event("Bearer ${TestTokens.RefreshToken}"), TestContext) }
+        val response = handler.handleRequest(event("Bearer ${TestTokens.RefreshToken}"), TestContext)
+        response.statusCode shouldBe 401
+        response.body shouldBe "{ \"errorType\": \"JWTDecodeException\", \"errorMessage\": \"The token was expected to have 3 parts, but got > 3.\" }"
     }
 
     private fun event(authorization: String): APIGatewayV2HTTPEvent =
