@@ -5,7 +5,6 @@ aws-lambda-java-log4j2 = "1.5.1"
 aws-lambda-java-tests = "1.1.1"
 aws-sdk-kotlin = "0.19.0-beta"
 compose = "1.3.0-rc01"
-compose-compiler = "1.4.0-alpha02"
 dokka = "1.7.21"
 kommons = "2.5.0"
 kotlin = "1.7.21"
@@ -62,7 +61,6 @@ aws-sdk-kotlin = ["aws-sdk-kotlin-s3", "aws-sdk-kotlin-lambda", "aws-sdk-kotlin-
 ktor-js-client = ["ktor-client-core", "ktor-client-js", "ktor-client-auth", "ktor-client-logging", "ktor-client-serialization", "ktor-client-content-negotiation"]
 
 [plugins]
-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 dokka = { id = "org.jetbrains.dokka:dokka", version.ref = "dokka" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

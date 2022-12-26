@@ -21,8 +21,13 @@ kotlin {
 
         val jsMain by getting {
             dependencies {
-                api(libs.bundles.ktor.js.client)
-                api(libs.ktor.serialization.kotlinx.json)
+                implementation("io.ktor:ktor-client-auth")
+                implementation("io.ktor:ktor-client-content-negotiation")
+                implementation("io.ktor:ktor-client-core")
+                implementation("io.ktor:ktor-client-js")
+                implementation("io.ktor:ktor-client-logging")
+                implementation("io.ktor:ktor-client-serialization")
+                implementation("io.ktor:ktor-serialization-kotlinx-json")
             }
         }
 

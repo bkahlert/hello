@@ -12,9 +12,4 @@ kotlin {
             }
         }
     }
-
-    sourceSets {
-        val jvmMain by getting
-        val jvmTest by getting
-    }
 }

@@ -1,8 +1,6 @@
-package com.bkahlert.kommons.ktor
+package com.bkahlert.kommons.auth
 
 import com.bkahlert.kommons.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.kommons.auth.OpenIDProvider
-import com.bkahlert.kommons.auth.OpenIDProviderMetadata
 import com.bkahlert.kommons.debug.asString
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
@@ -193,7 +191,10 @@ public sealed class OAuth2AuthorizationState(
             install(Auth) {
                 bearer {
                     loadTokens {
-                        tokensStorage.bearerTokens.also { logger.debug("Loaded tokens: $it") }
+                        val tokens = tokensStorage.bearerTokens
+                        if (tokens != null) logger.debug("Loaded tokens")
+                        else logger.debug("No tokens loaded")
+                        tokens
                     }
                     refreshTokens {
                         logger.info("Refreshing tokens")

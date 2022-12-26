@@ -6,9 +6,8 @@ group = "com.bkahlert.platform"
 
 dependencies {
     constraints {
-//        api("org.springframework.boot:org.springframework.boot.gradle.plugin:2.4.0")
-        api("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21")
-        api("org.jetbrains.kotlin:kotlin-serialization:1.7.21")
-        api("org.jetbrains.compose:compose-gradle-plugin:1.3.0-rc01")
+        api("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
+        api("org.jetbrains.kotlin:kotlin-serialization:${libs.versions.kotlin.asProvider().get()}")
+        api("org.jetbrains.compose:compose-gradle-plugin:${libs.versions.compose.get()}")
     }
 }

@@ -15,11 +15,6 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
     }
-    versionCatalogs {
-        create("libs") {
-            from(files("../gradle/libs.versions.toml"))
-        }
-    }
 }
 includeBuild("../platforms")
 
@@ -27,5 +22,5 @@ includeBuild("../platforms")
 rootProject.name = "libs"
 include("kommons-auth")
 include("kommons-deployment")
-include("kommons-ktor")
+include("kommons-auth-ktor")
 include("kommons-web")
