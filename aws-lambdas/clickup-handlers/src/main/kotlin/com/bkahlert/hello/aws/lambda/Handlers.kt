@@ -6,7 +6,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
 import com.auth0.jwt.exceptions.JWTVerificationException
-import com.bkahlert.hello.aws.lambda.ServerlessLocal.postProcess
 import com.bkahlert.kommons.quoted
 import kotlinx.coroutines.runBlocking
 
@@ -19,7 +18,7 @@ abstract class EventHandler : RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2
         handleEvent(
             event = checkNotNull(input) { "input must not be null" },
             context = checkNotNull(context) { "context must not be null" },
-        ).postProcess()
+        )
     }
 
     abstract suspend fun handleEvent(

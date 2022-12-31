@@ -15,5 +15,6 @@ dependencies {
 
     constraints {
         api("com.bkahlert.kommons:kommons:2.5.0")
+        api("com.bkahlert.kommons:kommons-debug:2.5.0")
     }
 }

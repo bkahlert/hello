@@ -5,6 +5,7 @@ import aws.sdk.kotlin.services.dynamodb.model.AttributeValue.S
 import aws.sdk.kotlin.services.dynamodb.model.GetItemRequest
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.bkahlert.hello.props.DynamoTable.filterKeys
 
 class GetOneHandler : EventHandler() {
     override suspend fun handleEvent(input: APIGatewayProxyRequestEvent, context: Context): GatewayResponse {
@@ -33,7 +34,7 @@ class GetOneHandler : EventHandler() {
         return DynamoTable.usingClient { ddb ->
             ddb.getItem(getItemRequest)
                 .item
-                ?.filterKeys { it != DynamoTable.partitionKey && it != DynamoTable.sortKey }
+                ?.filterKeys()
                 ?.toJsonObject()
                 ?.encodeToString()
         }

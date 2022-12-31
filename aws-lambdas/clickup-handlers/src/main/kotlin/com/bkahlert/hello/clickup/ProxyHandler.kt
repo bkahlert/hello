@@ -1,11 +1,8 @@
-package com.bkahlert.hello.api.clickup
+package com.bkahlert.hello.clickup
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
-import com.bkahlert.hello.api.requiredUserId
-import com.bkahlert.hello.aws.lambda.EventHandler
-import com.bkahlert.hello.aws.lambda.withMimeType
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.bkahlert.hello.aws.lambda.MimeTypes
 import com.bkahlert.kommons.debug.trace
 import com.bkahlert.kommons.logging.SLF4J
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +12,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 
-class ClickUpHandler : EventHandler() {
+class ProxyHandler : EventHandler() {
 
     private val logger by SLF4J
     private val clickupUrl by lazy { System.getenv("CLICKUP_URL") }
@@ -24,10 +21,16 @@ class ClickUpHandler : EventHandler() {
     private val clickupClientSecret by lazy { System.getenv("CLICKUP_CLIENT_SECRET") }
 
     override suspend fun handleEvent(
-        event: APIGatewayV2HTTPEvent,
+        event: APIGatewayProxyRequestEvent,
         context: Context,
-    ): APIGatewayV2HTTPResponse {
-        val userId = event.requiredUserId
+    ): GatewayResponse {
+        if (true) {
+            logger.debug("EVENT:\n$event")
+            logger.debug("CONTEXT:\n$context")
+            return GatewayResponse("EVENT:\n$event", 200, "Content-Type" to MimeTypes.TEXT_PLAIN)
+        }
+
+        val userId = "todo" // event.requiredUserId
         logger.info("Successfully authenticated with as $userId")
 
         var httpClient = HttpClient.newBuilder().build();
@@ -44,10 +47,6 @@ class ClickUpHandler : EventHandler() {
             httpClient.send(request, BodyHandlers.ofString())
         };
 
-        return APIGatewayV2HTTPResponse.builder()
-            .withStatusCode(200)
-            .withMimeType { APPLICATION_JSON }
-            .withBody(response.body().trace(out = { logger.info(it) }))
-            .build()
+        return GatewayResponse(response.body().trace(out = { logger.info(it) }))
     }
 }

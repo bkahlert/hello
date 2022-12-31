@@ -5,6 +5,7 @@ import aws.sdk.kotlin.services.dynamodb.model.AttributeValue.S
 import aws.sdk.kotlin.services.dynamodb.model.DeleteItemRequest
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.bkahlert.hello.props.DynamoTable.filterKeys
 
 class DeleteOneHandler : EventHandler() {
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): GatewayResponse {
@@ -37,7 +38,7 @@ class DeleteOneHandler : EventHandler() {
         return DynamoTable.usingClient { ddb ->
             ddb.deleteItem(deleteItemRequest)
                 .attributes
-                ?.filterKeys { it != DynamoTable.partitionKey && it != DynamoTable.sortKey }
+                ?.filterKeys()
                 ?.toJsonObject()
                 ?.encodeToString()
         }

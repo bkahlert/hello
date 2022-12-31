@@ -6,6 +6,7 @@ import aws.sdk.kotlin.services.dynamodb.model.Condition
 import aws.sdk.kotlin.services.dynamodb.model.QueryRequest
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.bkahlert.hello.props.DynamoTable.filterKeys
 import kotlinx.serialization.encodeToString
 
 class GetAllHandler : EventHandler() {
@@ -33,14 +34,8 @@ class GetAllHandler : EventHandler() {
             ddb.query(queryRequest)
                 .items.orEmpty()
                 .associateBy { it[DynamoTable.sortKey]?.asSOrNull() }
-                .mapValues {
-                    it.value
-                        .filterKeys { key ->
-                            key != DynamoTable.partitionKey && key != DynamoTable.sortKey
-                        }.toJsonObject()
-                }.let {
-                    json.encodeToString(it)
-                }
+                .mapValues { it.value.filterKeys().toJsonObject() }
+                .let { json.encodeToString(it) }
         }
     }
 }

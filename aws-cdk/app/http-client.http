@@ -1,17 +1,43 @@
-### Get props unauthorized
+### GET tasks unauthorized
 
-GET {{baseUrl}}
+GET {{clickUpEndpoint}}/tasks
+
+
+### GET tasks
+
+GET {{clickUpEndpoint}}/tasks
+Authorization: {{token_type}} {{access_token}}
+
+
+### POST task
+
+POST {{clickUpEndpoint}}/tasks
+Authorization: {{token_type}} {{access_token}}
+
+
+### GET task
+
+GET {{clickUpEndpoint}}/tasks/my-task
+Authorization: {{token_type}} {{access_token}}
+
+
+
+
+
+### GET props unauthorized
+
+GET {{userPropsEndpoint}}
 
 
 ### GET props
 
-GET {{baseUrl}}
+GET {{userPropsEndpoint}}
 Authorization: {{token_type}} {{access_token}}
 
 
 ### POST prop with userId
 
-POST {{baseUrl}}
+POST {{userPropsEndpoint}}
 Authorization: {{token_type}} {{access_token}}
 Content-Type: application/json; charset=utf-8
 
@@ -22,7 +48,7 @@ Content-Type: application/json; charset=utf-8
 
 ### POST prop primitive
 
-POST {{baseUrl}}
+POST {{userPropsEndpoint}}
 Authorization: {{token_type}} {{access_token}}
 Content-Type: application/json; charset=utf-8
 
@@ -33,7 +59,7 @@ Content-Type: application/json; charset=utf-8
 
 ### POST prop object
 
-POST {{baseUrl}}
+POST {{userPropsEndpoint}}
 Authorization: {{token_type}} {{access_token}}
 Content-Type: application/json; charset=utf-8
 
@@ -47,5 +73,5 @@ Content-Type: application/json; charset=utf-8
 
 ### GET prop
 
-GET {{baseUrl}}/6b52eb64-7d86-4f4d-a9d3-fde6756c3178
+GET {{userPropsEndpoint}}/6b52eb64-7d86-4f4d-a9d3-fde6756c3178
 Authorization: {{token_type}} {{access_token}}

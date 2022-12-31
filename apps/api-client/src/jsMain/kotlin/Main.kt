@@ -16,6 +16,7 @@ import com.bkahlert.kommons.auth.OAuth2AuthorizationState.Unauthorized
 import com.bkahlert.kommons.auth.OAuth2Resource
 import com.bkahlert.kommons.auth.OpenIDProvider
 import com.bkahlert.kommons.auth.loadOpenIDConfiguration
+import com.bkahlert.kommons.randomString
 import com.bkahlert.kommons.serialization.JsonSerializer
 import com.bkahlert.kommons.serialization.serialize
 import com.bkahlert.kommons.text.simpleKebabCasedName
@@ -23,6 +24,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
@@ -99,12 +101,14 @@ sealed class HelloClient {
         }
 
         suspend fun setProp(id: String, value: JsonObject): String {
-            val response = httpClient.post("$apiEndpoint/props") {
-                setBody(buildMap {
-                    value.keys.forEach { put(it, value[it]) }
-                    put("propId", JsonPrimitive(id))
-                }.serialize())
+            val response = httpClient.patch("$apiEndpoint/props/$id") {
+                setBody(value.serialize())
             }
+            return response.bodyAsText()
+        }
+
+        suspend fun clickUp(): String {
+            val response = httpClient.get("$apiEndpoint/clickup")
             return response.bodyAsText()
         }
 
@@ -254,6 +258,7 @@ suspend fun main() {
                                             mapOf(
                                                 "foo" to JsonPrimitive("bar"),
                                                 "baz" to JsonPrimitive(null),
+                                                "random" to JsonPrimitive(randomString()),
                                             )
                                         )
                                     )
@@ -263,6 +268,18 @@ suspend fun main() {
                             }
                         }) {
                             Text("POST props/foo")
+                        }
+
+                        Button(attrs = {
+                            onClick {
+                                helloClientScope.launch {
+                                    val response = client.clickUp()
+                                    console.info("Response: $response")
+                                    status = response
+                                }
+                            }
+                        }) {
+                            Text("GET clickup")
                         }
                     }
                 }

@@ -8,16 +8,17 @@ import software.amazon.awscdk.services.apigateway.CorsOptions
 import software.amazon.awscdk.services.apigateway.LambdaIntegration
 import software.amazon.awscdk.services.apigateway.MethodOptions
 import software.amazon.awscdk.services.apigateway.RestApi
+import software.amazon.awscdk.services.apigateway.StageOptions
 import software.amazon.awscdk.services.cognito.UserPool
 import software.amazon.awscdk.services.dynamodb.Attribute
 import software.amazon.awscdk.services.dynamodb.AttributeType.STRING
 import software.amazon.awscdk.services.dynamodb.Table
-import software.amazon.awscdk.services.dynamodb.TableProps
 import software.amazon.awscdk.services.lambda.Architecture
 import software.amazon.awscdk.services.lambda.Code
 import software.amazon.awscdk.services.lambda.Function
 import software.amazon.awscdk.services.lambda.FunctionProps
 import software.amazon.awscdk.services.lambda.Runtime
+import software.amazon.awscdk.services.lambda.Tracing
 import software.amazon.awscdk.services.logs.RetentionDays
 import software.constructs.Construct
 
@@ -31,14 +32,11 @@ class UserProps(
 ) : Construct(scope, id) {
 
     /** The DynamoDB table storing used. */
-    val table = Table(
-        this, "Table", TableProps.builder()
-            .partitionKey(Attribute.builder().name("userId").type(STRING).build())
-            .sortKey(Attribute.builder().name("propId").type(STRING).build())
-            .removalPolicy(DESTROY)
-            .build()
-    )
-
+    val table = Table.Builder.create(this, "Table")
+        .partitionKey(Attribute.builder().name("userId").type(STRING).build())
+        .sortKey(Attribute.builder().name("propId").type(STRING).build())
+        .removalPolicy(DESTROY)
+        .build()
 
     val functionEnvironment: Map<String, String> = mapOf(
         "TABLE_NAME" to table.tableName,
@@ -71,7 +69,7 @@ class UserProps(
 
     val api = RestApi.Builder.create(this, "RestApi")
         .restApiName("UserProps API")
-        .cloudWatchRole(true)
+        .deployOptions(StageOptions.builder().tracingEnabled(true).build())
         .defaultCorsPreflightOptions(
             CorsOptions.builder()
                 .allowCredentials(false)
@@ -88,6 +86,7 @@ class UserProps(
             addMethod("POST", LambdaIntegration(createOneFunction), methodOptions)
             addResource("{id}").apply {
                 addMethod("GET", LambdaIntegration(getOneFunction), methodOptions)
+                addMethod("POST", LambdaIntegration(createOneFunction), methodOptions)
                 addMethod("PATCH", LambdaIntegration(updateOneFunction), methodOptions)
                 addMethod("DELETE", LambdaIntegration(deleteOneFunction), methodOptions)
             }
@@ -104,6 +103,7 @@ class UserProps(
             .timeout(Duration.seconds(30))
             .memorySize(1024)
             .logRetention(RetentionDays.FIVE_DAYS)
+            .tracing(Tracing.ACTIVE)
             .build()
     }
 }

@@ -11,7 +11,7 @@ dependencies {
     implementation("aws.sdk.kotlin:dynamodb")
 
     // TODO remove
-    implementation("com.bkahlert.kommons:kommons-debug:2.5.0")
+    implementation("com.bkahlert.kommons:kommons-debug")
 
     testImplementation("com.amazonaws:aws-lambda-java-tests")
 }
@@ -23,4 +23,4 @@ kotlin {
             languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
-}
+}0

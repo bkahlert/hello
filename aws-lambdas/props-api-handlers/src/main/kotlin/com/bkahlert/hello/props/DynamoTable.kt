@@ -2,11 +2,19 @@ package com.bkahlert.hello.props
 
 import aws.sdk.kotlin.services.dynamodb.DynamoDbClient
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue.S
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 
 object DynamoTable {
     val tableName: String by lazy { System.getenv("TABLE_NAME") }
     val partitionKey: String by lazy { System.getenv("PARTITION_KEY") }
     val sortKey: String by lazy { System.getenv("SORT_KEY") }
+
+    fun JsonObject.filterKeys(): Map<String, JsonElement> =
+        filterKeys { it != partitionKey && it != sortKey }
+
+    fun <V> Map<String, V>.filterKeys(): Map<String, V> =
+        filterKeys { it != partitionKey && it != sortKey }
 
     /**
      * Runs the specified [block] using a [DynamoDbClient]

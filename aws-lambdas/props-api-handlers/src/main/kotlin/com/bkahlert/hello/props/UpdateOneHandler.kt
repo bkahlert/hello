@@ -8,6 +8,7 @@ import aws.sdk.kotlin.services.dynamodb.model.ReturnValue
 import aws.sdk.kotlin.services.dynamodb.model.UpdateItemRequest
 import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
+import com.bkahlert.hello.props.DynamoTable.filterKeys
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.jsonObject
 
@@ -38,7 +39,7 @@ class UpdateOneHandler : EventHandler() {
             tableName = DynamoTable.tableName
             attributeUpdates = buildMap {
                 json.parseToJsonElement(body).jsonObject
-                    .filterKeys { it != DynamoTable.partitionKey && it != DynamoTable.sortKey }
+                    .filterKeys()
                     .forEach {
                         val attributeValue = S(json.encodeToString(it.value))
                         put(
@@ -55,7 +56,7 @@ class UpdateOneHandler : EventHandler() {
         return DynamoTable.usingClient { ddb ->
             ddb.updateItem(updateItemRequest)
                 .attributes!!
-                .filterKeys { it != DynamoTable.partitionKey && it != DynamoTable.sortKey }
+                .filterKeys()
                 .toJsonObject()
                 .encodeToString()
         }
