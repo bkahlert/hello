@@ -1,7 +1,6 @@
 plugins {
     id("com.bkahlert.kotlin-js-project")
     id("com.bkahlert.kotlin-jvm-project")
-    id("com.bkahlert.aws")
 }
 
 group = "$group.kommons"

@@ -3,5 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
+    implementation(platform("com.bkahlert.platform:plugins-platform"))
+    implementation(project(":commons"))
+    implementation(project(":kotlin-project"))
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    implementation("gradle.plugin.com.github.johnrengelman:shadow")
 }

@@ -1,0 +1,51 @@
+### Get props unauthorized
+
+GET {{baseUrl}}
+
+
+### GET props
+
+GET {{baseUrl}}
+Authorization: {{token_type}} {{access_token}}
+
+
+### POST prop with userId
+
+POST {{baseUrl}}
+Authorization: {{token_type}} {{access_token}}
+Content-Type: application/json; charset=utf-8
+
+{
+  "userId": "someone-else"
+}
+
+
+### POST prop primitive
+
+POST {{baseUrl}}
+Authorization: {{token_type}} {{access_token}}
+Content-Type: application/json; charset=utf-8
+
+{
+  "my-primitive": "my value"
+}
+
+
+### POST prop object
+
+POST {{baseUrl}}
+Authorization: {{token_type}} {{access_token}}
+Content-Type: application/json; charset=utf-8
+
+{
+  "my-object": {
+    "foo": "bar",
+    "baz": null
+  }
+}
+
+
+### GET prop
+
+GET {{baseUrl}}/6b52eb64-7d86-4f4d-a9d3-fde6756c3178
+Authorization: {{token_type}} {{access_token}}
