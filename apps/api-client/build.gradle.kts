@@ -12,7 +12,6 @@ kotlin {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons")
                 implementation("com.bkahlert.kommons:kommons-auth")
-                implementation("com.bkahlert.kommons:kommons-deployment")
                 implementation("com.bkahlert.kommons:kommons-auth-ktor")
                 implementation("com.bkahlert.kommons:kommons-web")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")

@@ -37,6 +37,7 @@ import software.amazon.awscdk.services.route53.targets.CloudFrontTarget
 import software.amazon.awscdk.services.s3.Bucket
 import software.amazon.awscdk.services.s3.deployment.BucketDeployment
 import software.amazon.awscdk.services.s3.deployment.ISource
+import software.amazon.awscdk.services.s3.deployment.Source
 import software.amazon.awscdk.services.secretsmanager.Secret
 import software.amazon.awscdk.services.secretsmanager.SecretAttributes
 import software.constructs.Construct
@@ -157,6 +158,7 @@ class HelloStack(
     }
 
     // APIs
+    val apiEndpoint = "/api"
     val apiPathRewrite = Function.Builder.create(this, "api-path-rewrite").code(
         FunctionCode.fromInline(
             // language=javascript
@@ -175,9 +177,9 @@ class HelloStack(
 
     init {
         mapOf(
-            userProps.api.url to "/api/props*",
-            userInfo.api.url to "/api/info*",
-            clickUp.api.url to "/api/clickup*",
+            userProps.api.url to "$apiEndpoint/props*",
+            userInfo.api.url to "$apiEndpoint/info*",
+            clickUp.api.url to "$apiEndpoint/clickup*",
         ).forEach { (url, pathPattern) ->
             cloudFrontOriginConfigs.add(
                 SourceConfiguration.builder()
@@ -252,7 +254,18 @@ class HelloStack(
     /* Site deployment to S3 bucket */
 
     val siteBucketDeployment = BucketDeployment.Builder.create(this, "SiteBucketDeployment")
-        .sources(listOf(siteBucketDeploymentSource))
+        .sources(
+            listOf(
+                siteBucketDeploymentSource,
+                Source.jsonData(
+                    "environment.json", mapOf(
+                        "USER_POOL_PROVIDER_URL" to userPoolProvider.userPool.userPoolProviderUrl,
+                        "USER_POOL_CLIENT_ID" to userPoolProvider.userPoolClient.userPoolClientId,
+                        "API_ENDPOINT" to apiEndpoint,
+                    )
+                ),
+            )
+        )
         .destinationBucket(siteBucket)
         .distribution(distribution)
         // .distributionPaths() TODO exclude /api

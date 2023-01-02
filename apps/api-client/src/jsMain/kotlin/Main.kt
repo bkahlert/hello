@@ -1,11 +1,11 @@
 import HelloClient.Anonymous
+import HelloClient.Config
 import HelloClient.LoggedIn
 import HelloClient.LoggedOut
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.client.Config
 import com.bkahlert.kommons.SimpleLogger
 import com.bkahlert.kommons.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.kommons.auth.OAuth2AuthorizationServer
@@ -21,17 +21,22 @@ import com.bkahlert.kommons.serialization.JsonSerializer
 import com.bkahlert.kommons.serialization.serialize
 import com.bkahlert.kommons.text.simpleKebabCasedName
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.browser.window
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Button
@@ -42,17 +47,30 @@ import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 
-val manualConfig = Config(
-    openIdProvider = "https://hello-dev-bkahlert-com.auth.eu-central-1.amazoncognito.com",
-    clientId = "7lhdbv12q1ud9rgg7g779u8va7",
-    apiDomain = "api.hello-dev.aws.choam.de",
-)
-val manualConfig2 = Config(
-    openIdProvider = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_o3rAtwpX5",
-    clientId = "6874dpnigtpb9uht7osf0ijn6b",
-    apiDomain = null,
-    apiPath = "/api",
-)
+open class Environment(
+    private val url: String,
+    private val httpClient: HttpClient = HttpClient(Js) {
+        install(ContentNegotiation) { json(JsonSerializer) }
+    },
+) {
+    private suspend fun load() = runCatching {
+        httpClient.get(url) { expectSuccess = true }.body<JsonObject>()
+    }.getOrElse {
+        console.error("Error loading $url", it.message)
+        JsonObject(emptyMap())
+    }
+
+    private var environment: JsonObject? = null
+    suspend fun getJsonElement(key: String): JsonElement? {
+        val env = environment ?: run { load().also { environment = it } }
+        return env[key]
+    }
+
+    suspend inline fun <reified T> get(key: String): T? =
+        getJsonElement(key)?.let { JsonSerializer.decodeFromJsonElement(it) }
+
+    companion object : Environment("./environment.json")
+}
 
 sealed class HelloClient(
     open val apiEndpoint: String,
@@ -116,11 +134,12 @@ sealed class HelloClient(
         private val logger = HelloClient.simpleLogger()
 
         suspend fun resolve(
-            config: Config?,
+            config: Config,
         ): HelloClient {
-            if (config == null) return Anonymous("/api")
+            logger.info("Config: $config")
+            if (config.openIDProvider == null || config.clientId == null) return Anonymous(config.apiEndpoint)
 
-            val metadata = OpenIDProvider(config.openIdProvider).loadOpenIDConfiguration()
+            val metadata = OpenIDProvider(config.openIDProvider).loadOpenIDConfiguration()
             val authServer = OAuth2AuthorizationServer.from(metadata)
             return resolve(authServer, config.clientId, config.apiUrl)
         }
@@ -147,6 +166,14 @@ sealed class HelloClient(
             return helloClient
         }
     }
+
+    data class Config(
+        val openIDProvider: String?,
+        val clientId: String?,
+        val apiEndpoint: String,
+    ) {
+        val apiUrl = apiEndpoint.takeUnless { it.startsWith("/") } ?: "https://${window.location.hostname}$apiEndpoint"
+    }
 }
 
 
@@ -154,7 +181,12 @@ suspend fun main() {
 
     val logger = SimpleLogger("main")
 
-    var helloClient by mutableStateOf(HelloClient.resolve(manualConfig2))
+    val helloClientConfig = Config(
+        openIDProvider = Environment.get("USER_POOL_PROVIDER_URL"),
+        clientId = Environment.get("USER_POOL_CLIENT_ID"),
+        apiEndpoint = Environment.get("API_ENDPOINT") ?: "/api",
+    )
+    var helloClient by mutableStateOf(HelloClient.resolve(helloClientConfig))
 
     var count: Int by mutableStateOf(0)
     var status: String by mutableStateOf("—")
