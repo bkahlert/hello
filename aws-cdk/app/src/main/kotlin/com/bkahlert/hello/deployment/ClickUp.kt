@@ -27,7 +27,7 @@ class ClickUp(
 ) : Construct(scope, id) {
 
     val proxyFunction = Function.Builder.create(this, "ProxyFunction")
-        .code(Code.fromAsset("../../aws-lambdas/clickup-handlers/build/libs/clickup-handlers-all.jar"))
+        .code(Code.fromAsset("../../aws-lambdas/clickup-api-handlers/build/libs/clickup-api-handlers-all.jar"))
         .handler("com.bkahlert.hello.clickup.ProxyHandler")
         .architecture(Architecture.ARM_64)
         .runtime(Runtime.JAVA_11)

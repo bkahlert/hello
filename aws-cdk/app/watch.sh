@@ -1,7 +1,7 @@
 #!/bin/bash
 
 declare -a continuous_builds=(
-  ':aws-lambdas:props-api-handlers:shadowJar'
+  ':aws-lambdas:userprops-api-handlers:shadowJar'
 )
 
 tmux set -g pane-border-status top

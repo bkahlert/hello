@@ -38,5 +38,8 @@ dependencies {
     // Misc
     constraints {
         api("ch.qos.logback:logback-classic:1.4.5")
+        api("org.apache.logging.log4j:log4j-api:2.19.0")
+        api("org.apache.logging.log4j:log4j-core:2.19.0")
+        api("org.apache.logging.log4j:log4j-slf4j18-impl:2.18.0")
     }
 }

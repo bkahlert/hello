@@ -1,6 +1,0 @@
-{
-  "routeKey": "GET /props/{id}",
-  "pathParameters": {
-    "id": "bar"
-  }
-}

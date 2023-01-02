@@ -43,11 +43,18 @@ val deploy by tasks.registering(Exec::class) {
     cdk("deploy", "--all", "--require-approval", "never")
 }
 
+/** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/apps.html#lifecycle">CDK — App lifecycle</a> */
+val deployNoRollback by tasks.registering(Exec::class) {
+    group = "cdk"
+    description = "Deploys one or more specified stacks"
+    cdk("deploy", "--all", "--require-approval", "never", "--no-rollback")
+}
+
 /** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/cli.html#cli-deploy-hotswap">Hot swapping</a> */
 val deployHotswap by tasks.registering(Exec::class) {
     group = "cdk"
     description = "Attempts to update resources directly instead of generating and deploying a CloudFormation changeset"
-    cdk("deploy", "--all", "--require-approval", "never", "--hotswap")
+    cdk("deploy", "--all", "--require-approval", "never", "--hotswap", "--no-rollback")
 }
 
 /** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/cli.html#cli-deploy-watch">Watch mode</a> */

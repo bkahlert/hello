@@ -88,13 +88,15 @@ class HelloStack(
         .export("UserPoolClientId", "ID of the user pool client") { it.userPoolClient.userPoolClientId }
 
 
-    /* User Props Table + API */
-
+    /* UserProps Table + API */
     val userProps = UserProps(this, "UserProps", userPoolProvider.userPool)
         .export("UserPropsApiExecuteUrl", "URL of the UserProps execute API") { it.api.url }
 
-    /* ClickUp API */
+    /* UserInfo API */
+    val userInfo = UserInfo(this, "UserInfo", userPoolProvider.userPool, userPoolProvider.userPoolClient.userPoolClientId)
+        .export("UserInfoApiExecuteUrl", "URL of the UserInfo execute API") { it.api.url }
 
+    /* ClickUp API */
     val clickUp = ClickUp(this, "ClickUp", userPoolProvider.userPool)
         .export("ClickUpApiExecuteUrl", "URL of the ClickUp execute API") { it.api.url }
 
@@ -174,6 +176,7 @@ class HelloStack(
     init {
         mapOf(
             userProps.api.url to "/api/props*",
+            userInfo.api.url to "/api/info*",
             clickUp.api.url to "/api/clickup*",
         ).forEach { (url, pathPattern) ->
             cloudFrontOriginConfigs.add(

@@ -25,12 +25,9 @@ import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
-import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
 import io.ktor.http.Url
-import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
@@ -57,38 +54,36 @@ val manualConfig2 = Config(
     apiPath = "/api",
 )
 
-sealed class HelloClient {
+sealed class HelloClient(
+    open val apiEndpoint: String,
+    val httpClient: HttpClient = HttpClient(Js) {
+        install(ContentNegotiation) { json(JsonSerializer) }
+    },
+) {
 
-    data class Anonymous(
-        private val apiEndpoint: String,
-    ) : HelloClient() {
-        private val httpClient = HttpClient(Js) {
-            install(ContentNegotiation) { json(JsonSerializer) }
-        }
-
-        suspend fun echo(message: String): String {
-            val response = httpClient.post("$apiEndpoint/echo") {
-                contentType(ContentType.Application.Json)
-                setBody(mapOf("message" to message))
-            }
-            return response.bodyAsText()
-        }
+    suspend fun getUserInfo(): String {
+        val response = httpClient.get("$apiEndpoint/info")
+        return response.bodyAsText()
     }
 
+    data class Anonymous(
+        override val apiEndpoint: String,
+    ) : HelloClient(apiEndpoint)
+
     data class LoggedOut(
+        override val apiEndpoint: String,
         private val authorizationState: Unauthorized,
-    ) : HelloClient() {
-        suspend fun logIn() {
-            authorizationState.authorize()
-        }
+    ) : HelloClient(apiEndpoint) {
+        suspend fun logIn(): OAuth2AuthorizationState = authorizationState.authorize()
     }
 
     data class LoggedIn(
+        override val apiEndpoint: String,
         private val authorizationState: Authorized,
-        private val apiEndpoint: String,
-    ) : HelloClient() {
-        private val propsEndpoint = SubResource(apiEndpoint, "prop")
-        private val httpClient = authorizationState.buildClient(propsEndpoint)
+    ) : HelloClient(apiEndpoint, authorizationState.buildClient(object : OAuth2Resource {
+        override val name: String get() = "api"
+        override fun matches(url: Url): Boolean = url.toString().startsWith(apiEndpoint)
+    })) {
 
         suspend fun getProps(): String {
             val response = httpClient.get("$apiEndpoint/props")
@@ -114,13 +109,6 @@ sealed class HelloClient {
 
         suspend fun logOut(): HelloClient =
             resolve(authorizationState.revokeTokens(httpClient), apiEndpoint)
-
-        private class SubResource(baseUrl: String, path: String) : OAuth2Resource {
-            val url: String = "$baseUrl/$path"
-            override val name: String = path
-            override fun matches(url: Url): Boolean = url.toString().startsWith(this.url)
-            override fun toString(): String = url
-        }
     }
 
     companion object {
@@ -151,9 +139,9 @@ sealed class HelloClient {
             apiEndpoint: String,
         ): HelloClient {
             val helloClient = when (authorizationState) {
-                is Unauthorized -> LoggedOut(authorizationState)
-                is Authorizing -> LoggedIn(authorizationState.getTokens(), apiEndpoint)
-                is Authorized -> LoggedIn(authorizationState, apiEndpoint)
+                is Unauthorized -> LoggedOut(apiEndpoint, authorizationState)
+                is Authorizing -> LoggedIn(apiEndpoint, authorizationState.getTokens())
+                is Authorized -> LoggedIn(apiEndpoint, authorizationState)
             }
             logger.debug("$helloClient")
             return helloClient
@@ -182,24 +170,34 @@ suspend fun main() {
             }) {
                 is Anonymous -> {
                     Text("Your are ${helloClient::class.simpleKebabCasedName}")
-                    Div({ style { padding(25.px) } }) {
-
-                        Button(attrs = {
-                            onClick {
-                                helloClientScope.launch {
-                                    val response = client.echo("foo bar")
-                                    console.info("Response: $response")
-                                    status = response
-                                }
+                    Button(attrs = {
+                        onClick {
+                            helloClientScope.launch {
+                                val response = client.getUserInfo()
+                                console.info("Response: $response")
+                                status = response
                             }
-                        }) {
-                            Text("echo")
                         }
+                    }) {
+                        Text("UserInfo")
                     }
                 }
 
                 is LoggedOut -> {
                     Text("Your are ${helloClient::class.simpleKebabCasedName}")
+
+                    Button(attrs = {
+                        onClick {
+                            helloClientScope.launch {
+                                val response = client.getUserInfo()
+                                console.info("Response: $response")
+                                status = response
+                            }
+                        }
+                    }) {
+                        Text("UserInfo")
+                    }
+
                     Button(attrs = {
                         onClick {
                             helloClientScope.launch {
@@ -213,6 +211,19 @@ suspend fun main() {
 
                 is LoggedIn -> {
                     Text("Your are ${helloClient::class.simpleKebabCasedName}")
+
+                    Button(attrs = {
+                        onClick {
+                            helloClientScope.launch {
+                                val response = client.getUserInfo()
+                                console.info("Response: $response")
+                                status = response
+                            }
+                        }
+                    }) {
+                        Text("UserInfo")
+                    }
+
                     Button(attrs = {
                         onClick {
                             helloClientScope.launch {

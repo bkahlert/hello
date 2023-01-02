@@ -44,7 +44,7 @@ class UserProps(
         "SORT_KEY" to checkNotNull(table.schema().sortKey) { "sort key missing" }.name,
     )
 
-    val packageName = "com.bkahlert.hello.props"
+    val packageName = "com.bkahlert.hello.user.props"
 
     val getAllFunction = Function(this, "GetAllFunction", FunctionProps(functionEnvironment, "$packageName.GetAllHandler"))
         .also { table.grantReadData(it) }
@@ -95,7 +95,7 @@ class UserProps(
 
     private fun FunctionProps(environment: Map<String, String>, handler: String): FunctionProps {
         return FunctionProps.builder()
-            .code(Code.fromAsset("../../aws-lambdas/props-api-handlers/build/libs/props-api-handlers-all.jar"))
+            .code(Code.fromAsset("../../aws-lambdas/userprops-api-handlers/build/libs/userprops-api-handlers-all.jar"))
             .handler(handler)
             .architecture(Architecture.ARM_64)
             .runtime(Runtime.JAVA_11)
