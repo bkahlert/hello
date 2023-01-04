@@ -1,6 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
-import gradle.kotlin.dsl.accessors._8031e8204a17d8ab5c478cc96d740be9.implementation
-import gradle.kotlin.dsl.accessors._8031e8204a17d8ab5c478cc96d740be9.testImplementation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -18,6 +16,7 @@ dependencies {
 
     testImplementation(platform("com.bkahlert.platform:test-platform"))
     testImplementation("com.bkahlert.kommons:kommons-test")
+    testImplementation("com.amazonaws:aws-lambda-java-tests")
 }
 
 kotlin {

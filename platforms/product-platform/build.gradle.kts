@@ -14,8 +14,8 @@ dependencies {
     api(platform(libs.ktor.bom))
 
     constraints {
-        api("com.bkahlert.kommons:kommons:2.5.0")
-        api("com.bkahlert.kommons:kommons-core:2.5.0")
-        api("com.bkahlert.kommons:kommons-debug:2.5.0")
+        api("com.bkahlert.kommons:kommons:${libs.versions.kommons.get()}")
+        api("com.bkahlert.kommons:kommons-core:${libs.versions.kommons.get()}")
+        api("com.bkahlert.kommons:kommons-debug:${libs.versions.kommons.get()}")
     }
 }

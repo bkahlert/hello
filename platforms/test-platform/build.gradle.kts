@@ -9,6 +9,6 @@ javaPlatform.allowDependencies()
 
 dependencies {
     constraints {
-        api("com.bkahlert.kommons:kommons-test:2.5.0")
+        api("com.bkahlert.kommons:kommons-test:${libs.versions.kommons.get()}")
     }
 }
