@@ -12,7 +12,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.put
 import org.slf4j.Logger
 
-class LambdaHandler : APIGatewayProxyRequestEventHandler {
+class LambdaHandler : APIGatewayProxyRequestEventHandler() {
 
     private val logger: Logger by SLF4J
 

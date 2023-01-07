@@ -52,7 +52,7 @@ class EventHandlerTest {
 }
 
 
-class TestHandler : APIGatewayProxyRequestEventHandler {
+class TestHandler : APIGatewayProxyRequestEventHandler() {
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
         val logger = context.logger
         logger.log("Lambda invoked: $event")

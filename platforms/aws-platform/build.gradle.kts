@@ -21,10 +21,11 @@ dependencies {
 
     // AWS SDK for Kotlin (BOM version does not exist)
     constraints {
-        val awsSdkKotlinVersion = "0.19.0-beta"
-        api("aws.sdk.kotlin:s3:$awsSdkKotlinVersion")
-        api("aws.sdk.kotlin:lambda:$awsSdkKotlinVersion")
+        val awsSdkKotlinVersion = "0.19.2-beta"
         api("aws.sdk.kotlin:dynamodb:$awsSdkKotlinVersion")
+        api("aws.sdk.kotlin:lambda:$awsSdkKotlinVersion")
+        api("aws.sdk.kotlin:s3:$awsSdkKotlinVersion")
+        api("aws.sdk.kotlin:secretsmanager:$awsSdkKotlinVersion")
     }
 
     // AWS Lambda support for Java

@@ -1,6 +1,8 @@
 package com.bkahlert.hello.deployment
 
+import com.bkahlert.aws.cdk.toEnvironment
 import software.amazon.awscdk.Duration
+import software.amazon.awscdk.services.apigateway.Cors
 import software.amazon.awscdk.services.apigateway.CorsOptions
 import software.amazon.awscdk.services.apigateway.LambdaIntegration
 import software.amazon.awscdk.services.apigateway.RestApi
@@ -26,6 +28,13 @@ class UserInfo(
 
     val packageName = "com.bkahlert.hello.user.info"
 
+    val corsOptions = CorsOptions.builder()
+        .allowCredentials(true)
+        .allowHeaders(Cors.DEFAULT_HEADERS)
+        .allowMethods(Cors.ALL_METHODS)
+        .allowOrigins(Cors.ALL_ORIGINS)
+        .build()
+
     val getFunction = Function.Builder.create(this, "GetFunction")
         .code(Code.fromAsset("../../aws-lambdas/userinfo-api-handlers/build/libs/userinfo-api-handlers-all.jar"))
         .handler("$packageName.GetHandler")
@@ -35,7 +44,7 @@ class UserInfo(
             mapOf(
                 "USER_POOL_PROVIDER_URL" to userPool.userPoolProviderUrl,
                 "USER_POOL_CLIENT_ID" to userPoolClientId,
-            )
+            ) + corsOptions.toEnvironment()
         )
         .timeout(Duration.seconds(30))
         .memorySize(1024)
@@ -46,18 +55,11 @@ class UserInfo(
     val api = RestApi.Builder.create(this, "RestApi")
         .restApiName("UserInfo API")
         .deployOptions(StageOptions.builder().tracingEnabled(true).build())
-        .defaultCorsPreflightOptions(
-            CorsOptions.builder()
-                .allowCredentials(true)
-                .allowHeaders(listOf("Content-Type", "Authorization"))
-                .allowMethods(listOf("OPTIONS", "GET"))
-                .allowOrigins(listOf("*"))
-                .build()
-        )
         .build()
 
     init {
         api.root.apply {
+            addCorsPreflight(corsOptions)
             addMethod("GET", LambdaIntegration(getFunction))
         }
     }

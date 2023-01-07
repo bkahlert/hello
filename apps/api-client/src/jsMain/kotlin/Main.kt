@@ -2,6 +2,7 @@ import HelloClient.Anonymous
 import HelloClient.Config
 import HelloClient.LoggedIn
 import HelloClient.LoggedOut
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -16,9 +17,9 @@ import com.bkahlert.kommons.auth.OAuth2AuthorizationState.Unauthorized
 import com.bkahlert.kommons.auth.OAuth2Resource
 import com.bkahlert.kommons.auth.OpenIDProvider
 import com.bkahlert.kommons.auth.loadOpenIDConfiguration
+import com.bkahlert.kommons.debug.asString
 import com.bkahlert.kommons.randomString
 import com.bkahlert.kommons.serialization.JsonSerializer
-import com.bkahlert.kommons.serialization.serialize
 import com.bkahlert.kommons.text.simpleKebabCasedName
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -29,7 +30,9 @@ import io.ktor.client.request.get
 import io.ktor.client.request.patch
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.Url
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.browser.window
 import kotlinx.coroutines.launch
@@ -46,6 +49,7 @@ import org.jetbrains.compose.web.dom.Pre
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
+import kotlin.reflect.KClass
 
 open class Environment(
     private val url: String,
@@ -72,61 +76,95 @@ open class Environment(
     companion object : Environment("./environment.json")
 }
 
+abstract class ApiClient(
+    val endpoint: String,
+    val httpClient: HttpClient,
+) {
+    val url = endpointToUrl(endpoint)
+
+    companion object {
+        fun endpointToUrl(endpoint: String): String =
+            endpoint.takeUnless { it.startsWith("/") } ?: "${window.location.protocol}://${window.location.hostname}$endpoint"
+    }
+}
+
+class ClickUpClient(
+    endpoint: String,
+    httpClient: HttpClient,
+) : ApiClient(endpoint, httpClient) {
+    suspend fun clickUp(): String {
+        val response = httpClient.get(url)
+        return response.bodyAsText()
+    }
+}
+
+class UserInfoClient(
+    endpoint: String,
+    httpClient: HttpClient,
+) : ApiClient(endpoint, httpClient) {
+    suspend fun info(): String {
+        val response = httpClient.get(url)
+        return response.bodyAsText()
+    }
+}
+
+class UserPropsClient(
+    endpoint: String,
+    httpClient: HttpClient,
+) : ApiClient(endpoint, httpClient) {
+    suspend fun getProps(): String {
+        val response = httpClient.get(url)
+        return response.bodyAsText()
+    }
+
+    suspend fun getProp(id: String): String {
+        val response = httpClient.get("$url/$id")
+        return response.bodyAsText()
+    }
+
+    suspend fun setProp(id: String, value: JsonObject): String {
+        val response = httpClient.patch("$url/$id") {
+            contentType(ContentType.Application.Json)
+            setBody(value)
+        }
+        return response.bodyAsText()
+    }
+}
+
 sealed class HelloClient(
-    open val apiEndpoint: String,
+    val apiClients: Map<KClass<out ApiClient>, String?>,
     val httpClient: HttpClient = HttpClient(Js) {
         install(ContentNegotiation) { json(JsonSerializer) }
     },
 ) {
+    val userInfo: UserInfoClient? = apiClients[UserInfoClient::class]?.let { UserInfoClient(it, httpClient) }
 
-    suspend fun getUserInfo(): String {
-        val response = httpClient.get("$apiEndpoint/info")
-        return response.bodyAsText()
-    }
+    override fun toString(): String = asString()
 
-    data class Anonymous(
-        override val apiEndpoint: String,
-    ) : HelloClient(apiEndpoint)
+    class Anonymous(
+        apiClients: Map<KClass<out ApiClient>, String?>,
+    ) : HelloClient(apiClients)
 
-    data class LoggedOut(
-        override val apiEndpoint: String,
+    class LoggedOut(
+        apiClients: Map<KClass<out ApiClient>, String?>,
         private val authorizationState: Unauthorized,
-    ) : HelloClient(apiEndpoint) {
+    ) : HelloClient(apiClients) {
         suspend fun logIn(): OAuth2AuthorizationState = authorizationState.authorize()
     }
 
-    data class LoggedIn(
-        override val apiEndpoint: String,
+    class LoggedIn(
+        apiClients: Map<KClass<out ApiClient>, String?>,
         private val authorizationState: Authorized,
-    ) : HelloClient(apiEndpoint, authorizationState.buildClient(object : OAuth2Resource {
+    ) : HelloClient(apiClients, authorizationState.buildClient(object : OAuth2Resource {
         override val name: String get() = "api"
-        override fun matches(url: Url): Boolean = url.toString().startsWith(apiEndpoint)
+        private val endpointUrls = apiClients.values.filterNotNull().map { ApiClient.endpointToUrl(it) }
+        override fun matches(url: Url): Boolean = url.toString().let { endpointUrls.any { endpointUrl -> it.startsWith(endpointUrl) } }
     })) {
-
-        suspend fun getProps(): String {
-            val response = httpClient.get("$apiEndpoint/props")
-            return response.bodyAsText()
-        }
-
-        suspend fun getProp(id: String): String {
-            val response = httpClient.get("$apiEndpoint/props/$id")
-            return response.bodyAsText()
-        }
-
-        suspend fun setProp(id: String, value: JsonObject): String {
-            val response = httpClient.patch("$apiEndpoint/props/$id") {
-                setBody(value.serialize())
-            }
-            return response.bodyAsText()
-        }
-
-        suspend fun clickUp(): String {
-            val response = httpClient.get("$apiEndpoint/clickup")
-            return response.bodyAsText()
-        }
+        val clickUp: ClickUpClient? = apiClients[ClickUpClient::class]?.let { ClickUpClient(it, httpClient) }
+        val userProps: UserPropsClient? = apiClients[UserPropsClient::class]?.let { UserPropsClient(it, httpClient) }
 
         suspend fun logOut(): HelloClient =
-            resolve(authorizationState.revokeTokens(httpClient), apiEndpoint)
+            resolve(authorizationState.revokeTokens(httpClient), apiClients)
     }
 
     companion object {
@@ -137,30 +175,30 @@ sealed class HelloClient(
             config: Config,
         ): HelloClient {
             logger.info("Config: $config")
-            if (config.openIDProvider == null || config.clientId == null) return Anonymous(config.apiEndpoint)
+            if (config.openIDProvider == null || config.clientId == null) return Anonymous(config.apiClients)
 
             val metadata = OpenIDProvider(config.openIDProvider).loadOpenIDConfiguration()
             val authServer = OAuth2AuthorizationServer.from(metadata)
-            return resolve(authServer, config.clientId, config.apiUrl)
+            return resolve(authServer, config.clientId, config.apiClients)
         }
 
         suspend fun resolve(
             authServer: OAuth2AuthorizationServer,
             clientId: String,
-            apiEndpoint: String,
+            apiClients: Map<KClass<out ApiClient>, String?>,
         ): HelloClient {
             val authorizationState = OAuth2AuthorizationState.compute(authServer, clientId)
-            return resolve(authorizationState, apiEndpoint)
+            return resolve(authorizationState, apiClients)
         }
 
         private suspend fun resolve(
             authorizationState: OAuth2AuthorizationState,
-            apiEndpoint: String,
+            apiClients: Map<KClass<out ApiClient>, String?>,
         ): HelloClient {
             val helloClient = when (authorizationState) {
-                is Unauthorized -> LoggedOut(apiEndpoint, authorizationState)
-                is Authorizing -> LoggedIn(apiEndpoint, authorizationState.getTokens())
-                is Authorized -> LoggedIn(apiEndpoint, authorizationState)
+                is Unauthorized -> LoggedOut(apiClients, authorizationState)
+                is Authorizing -> LoggedIn(apiClients, authorizationState.getTokens())
+                is Authorized -> LoggedIn(apiClients, authorizationState)
             }
             logger.debug("$helloClient")
             return helloClient
@@ -170,9 +208,13 @@ sealed class HelloClient(
     data class Config(
         val openIDProvider: String?,
         val clientId: String?,
-        val apiEndpoint: String,
+        val apiClients: Map<KClass<out ApiClient>, String?>,
     ) {
-        val apiUrl = apiEndpoint.takeUnless { it.startsWith("/") } ?: "https://${window.location.hostname}$apiEndpoint"
+        constructor(
+            openIDProvider: String?,
+            clientId: String?,
+            vararg apiClients: Pair<KClass<out ApiClient>, String?>,
+        ) : this(openIDProvider, clientId, mapOf(*apiClients))
     }
 }
 
@@ -184,7 +226,9 @@ suspend fun main() {
     val helloClientConfig = Config(
         openIDProvider = Environment.get("USER_POOL_PROVIDER_URL"),
         clientId = Environment.get("USER_POOL_CLIENT_ID"),
-        apiEndpoint = Environment.get("API_ENDPOINT") ?: "/api",
+        ClickUpClient::class to Environment.get("CLICK_UP_API_ENDPOINT"),
+        UserInfoClient::class to Environment.get("USER_INFO_API_ENDPOINT"),
+        UserPropsClient::class to Environment.get("USER_PROPS_API_ENDPOINT"),
     )
     var helloClient by mutableStateOf(HelloClient.resolve(helloClientConfig))
 
@@ -202,33 +246,12 @@ suspend fun main() {
             }) {
                 is Anonymous -> {
                     Text("Your are ${helloClient::class.simpleKebabCasedName}")
-                    Button(attrs = {
-                        onClick {
-                            helloClientScope.launch {
-                                val response = client.getUserInfo()
-                                console.info("Response: $response")
-                                status = response
-                            }
-                        }
-                    }) {
-                        Text("UserInfo")
-                    }
+                    UserInfo(client.userInfo) { status = it }
                 }
 
                 is LoggedOut -> {
                     Text("Your are ${helloClient::class.simpleKebabCasedName}")
-
-                    Button(attrs = {
-                        onClick {
-                            helloClientScope.launch {
-                                val response = client.getUserInfo()
-                                console.info("Response: $response")
-                                status = response
-                            }
-                        }
-                    }) {
-                        Text("UserInfo")
-                    }
+                    UserInfo(client.userInfo) { status = it }
 
                     Button(attrs = {
                         onClick {
@@ -243,18 +266,7 @@ suspend fun main() {
 
                 is LoggedIn -> {
                     Text("Your are ${helloClient::class.simpleKebabCasedName}")
-
-                    Button(attrs = {
-                        onClick {
-                            helloClientScope.launch {
-                                val response = client.getUserInfo()
-                                console.info("Response: $response")
-                                status = response
-                            }
-                        }
-                    }) {
-                        Text("UserInfo")
-                    }
+                    UserInfo(client.userInfo) { status = it }
 
                     Button(attrs = {
                         onClick {
@@ -266,63 +278,75 @@ suspend fun main() {
                         Text("Log out")
                     }
 
-                    Div({ style { padding(25.px) } }) {
-
-                        Button(attrs = {
-                            onClick {
-                                helloClientScope.launch {
-                                    val response = client.getProps()
-                                    console.info("Response: $response")
-                                    status = response
+                    when (val clickUpClient = client.clickUp) {
+                        null -> {}
+                        else -> {
+                            Div({ style { padding(25.px) } }) {
+                                Button(attrs = {
+                                    onClick {
+                                        helloClientScope.launch {
+                                            val response = clickUpClient.clickUp()
+                                            console.info("Response: $response")
+                                            status = response
+                                        }
+                                    }
+                                }) {
+                                    Text("GET clickup")
                                 }
                             }
-                        }) {
-                            Text("GET props")
                         }
+                    }
 
-                        Button(attrs = {
-                            onClick {
-                                helloClientScope.launch {
-                                    val response = client.getProp("foo")
-                                    console.info("Response: $response")
-                                    status = response
+                    when (val userPropsClient = client.userProps) {
+                        null -> {}
+                        else -> {
+                            Div({ style { padding(25.px) } }) {
+
+                                Button(attrs = {
+                                    onClick {
+                                        helloClientScope.launch {
+                                            val response = userPropsClient.getProps()
+                                            console.info("Response: $response")
+                                            status = response
+                                        }
+                                    }
+                                }) {
+                                    Text("GET props")
                                 }
-                            }
-                        }) {
-                            Text("GET props/foo")
-                        }
 
-                        Button(attrs = {
-                            onClick {
-                                helloClientScope.launch {
-                                    val response = client.setProp(
-                                        "foo",
-                                        JsonObject(
-                                            mapOf(
-                                                "foo" to JsonPrimitive("bar"),
-                                                "baz" to JsonPrimitive(null),
-                                                "random" to JsonPrimitive(randomString()),
+                                Button(attrs = {
+                                    onClick {
+                                        helloClientScope.launch {
+                                            val response = userPropsClient.getProp("foo")
+                                            console.info("Response: $response")
+                                            status = response
+                                        }
+                                    }
+                                }) {
+                                    Text("GET props/foo")
+                                }
+
+                                Button(attrs = {
+                                    onClick {
+                                        helloClientScope.launch {
+                                            val response = userPropsClient.setProp(
+                                                "foo",
+                                                JsonObject(
+                                                    mapOf(
+                                                        "foo" to JsonPrimitive("bar"),
+                                                        "baz" to JsonPrimitive(null),
+                                                        "random" to JsonPrimitive(randomString()),
+                                                    )
+                                                )
                                             )
-                                        )
-                                    )
-                                    console.info("Response: $response")
-                                    status = response
+                                            console.info("Response: $response")
+                                            status = response
+                                        }
+                                    }
+                                }) {
+                                    Text("POST props/foo")
                                 }
                             }
-                        }) {
-                            Text("POST props/foo")
-                        }
-
-                        Button(attrs = {
-                            onClick {
-                                helloClientScope.launch {
-                                    val response = client.clickUp()
-                                    console.info("Response: $response")
-                                    status = response
-                                }
-                            }
-                        }) {
-                            Text("GET clickup")
                         }
                     }
                 }
@@ -355,6 +379,33 @@ suspend fun main() {
             Code {
                 Text(status)
             }
+        }
+    }
+}
+
+
+@Composable
+fun UserInfo(
+    client: UserInfoClient?,
+    onResponse: (String) -> Unit,
+) {
+    if (client == null) {
+        Div { Text("userInfo unavailable") }
+        return
+    }
+
+    val clientScope = rememberCoroutineScope()
+    Div({ style { padding(25.px) } }) {
+        Button(attrs = {
+            onClick {
+                clientScope.launch {
+                    val response = client.info()
+                    console.info("Response: $response")
+                    onResponse(response)
+                }
+            }
+        }) {
+            Text("GET userInfo")
         }
     }
 }

@@ -10,7 +10,6 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
-import com.bkahlert.aws.lambda.SLF4J
 import com.bkahlert.aws.lambda.jsonResponse
 import com.bkahlert.aws.lambda.requiredUserId
 import com.bkahlert.aws.lambda.userId
@@ -20,9 +19,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-class UpdateOneHandler : APIGatewayProxyRequestEventHandler {
-
-    private val logger by SLF4J
+class UpdateOneHandler : APIGatewayProxyRequestEventHandler() {
 
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
         logger.debug("user: ${event.userId}")

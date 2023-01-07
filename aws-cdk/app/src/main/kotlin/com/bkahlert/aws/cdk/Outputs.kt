@@ -16,6 +16,7 @@ fun <T> T.export(
     CfnOutput.Builder.create(stack, name).run {
         if (description != null) description(description)
         value(transform(it))
+        exportName(name)
         build()
     }
 }

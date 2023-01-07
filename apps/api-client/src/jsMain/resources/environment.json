@@ -1,3 +1,7 @@
 {
-  "API_ENDPOINT": "/api"
+  "USER_POOL_PROVIDER_URL": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_o3rAtwpX5",
+  "USER_POOL_CLIENT_ID": "6874dpnigtpb9uht7osf0ijn6b",
+  "CLICK_UP_API_ENDPOINT": "https://doiot27raj.execute-api.us-east-1.amazonaws.com/prod",
+  "USER_INFO_API_ENDPOINT": "https://01l8bzsx51.execute-api.us-east-1.amazonaws.com/prod",
+  "USER_PROPS_API_ENDPOINT": "https://hm5w1tvk0b.execute-api.us-east-1.amazonaws.com/prod"
 }

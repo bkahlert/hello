@@ -1,7 +1,6 @@
 package com.bkahlert.hello.deployment
 
 import com.bkahlert.aws.cdk.requiredEnv
-import com.bkahlert.aws.cdk.toSource
 import software.amazon.awscdk.App
 import software.amazon.awscdk.Aspects
 import software.amazon.awscdk.IAspect
@@ -26,7 +25,7 @@ class HelloApp : App() {
         val helloStack = HelloStack(
             scope = this,
             id = "HelloStack",
-            siteBucketDeploymentSource = apiClientDistributions.toSource(),
+            siteBucketDeploymentSource = apiClientDistributions,
             props = StackProps.builder()
                 .requiredEnv(
                     account = "382728805609",

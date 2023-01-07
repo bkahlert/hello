@@ -1,5 +1,6 @@
 package com.bkahlert.hello.deployment
 
+import software.amazon.awscdk.Duration
 import software.amazon.awscdk.RemovalPolicy
 import software.amazon.awscdk.services.cognito.CognitoDomainOptions
 import software.amazon.awscdk.services.cognito.OAuthFlows
@@ -26,7 +27,7 @@ class UserPoolProvider(
     /** The domain prefix of the corresponding [userPoolDomain]. */
     val domainPrefix: String,
     /** The callback URL of the corresponding [userPoolClient]. */
-    val callbackUrl: String,
+    val callbackUrls: List<String>,
     /** The credentials of the corresponding [signInWithAppleIdentityProvider]. */
     val signInWithAppleSecret: ISecret? = null,
 ) : Construct(scope, id) {
@@ -35,7 +36,7 @@ class UserPoolProvider(
     @Suppress("MemberVisibilityCanBePrivate")
     val userPool: UserPool = UserPool.Builder.create(this, "UserPool")
         .userPoolName(name)
-//        .selfSignUpEnabled(true)
+        .selfSignUpEnabled(true)
 //        .signInAliases(SignInAliases.builder().email(true).username(true).build())
         .removalPolicy(RemovalPolicy.DESTROY)
         .build()
@@ -71,11 +72,14 @@ class UserPoolProvider(
         })
         .oAuth(
             OAuthSettings.builder()
-                .callbackUrls(listOf(callbackUrl))
+                .callbackUrls(callbackUrls)
                 .flows(OAuthFlows.builder().authorizationCodeGrant(true).build())
                 .scopes(listOf(OAuthScope.OPENID, OAuthScope.EMAIL))
                 .build()
         )
+        .refreshTokenValidity(Duration.days(14))
+        .accessTokenValidity(Duration.days(1))
+        .idTokenValidity(Duration.days(1))
         .build()
 
     init {

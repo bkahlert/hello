@@ -7,7 +7,6 @@ import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
-import com.bkahlert.aws.lambda.SLF4J
 import com.bkahlert.aws.lambda.requiredUserId
 import com.bkahlert.aws.lambda.response
 import com.bkahlert.aws.lambda.userId
@@ -18,9 +17,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import java.util.UUID
 
-class CreateOneHandler : APIGatewayProxyRequestEventHandler {
-
-    private val logger by SLF4J
+class CreateOneHandler : APIGatewayProxyRequestEventHandler() {
 
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
         logger.debug("user: ${event.userId}")
@@ -42,7 +39,7 @@ class CreateOneHandler : APIGatewayProxyRequestEventHandler {
         userId: String,
         id: String,
         body: String,
-    ): JsonObject {
+    ): JsonObject? {
         val key = mapOf<String, AttributeValue>(
             DynamoTable.partitionKey to S(userId),
             DynamoTable.sortKey to requireValidSortKey(id),
@@ -63,9 +60,9 @@ class CreateOneHandler : APIGatewayProxyRequestEventHandler {
 
         return DynamoTable.usingClient { ddb ->
             ddb.putItem(putItemRequest)
-                .attributes!!
-                .filterKeys()
-                .toJsonObject()
+                .attributes
+                ?.filterKeys()
+                ?.toJsonObject()
         }
     }
 }

@@ -4,6 +4,7 @@ import com.bkahlert.aws.cdk.domain
 import com.bkahlert.aws.cdk.export
 import com.bkahlert.aws.cdk.getContext
 import com.bkahlert.aws.cdk.path
+import com.bkahlert.kommons.text.toScreamingSnakeCasedString
 import software.amazon.awscdk.Duration
 import software.amazon.awscdk.RemovalPolicy
 import software.amazon.awscdk.Stack
@@ -36,16 +37,18 @@ import software.amazon.awscdk.services.route53.RecordTarget
 import software.amazon.awscdk.services.route53.targets.CloudFrontTarget
 import software.amazon.awscdk.services.s3.Bucket
 import software.amazon.awscdk.services.s3.deployment.BucketDeployment
-import software.amazon.awscdk.services.s3.deployment.ISource
 import software.amazon.awscdk.services.s3.deployment.Source
 import software.amazon.awscdk.services.secretsmanager.Secret
 import software.amazon.awscdk.services.secretsmanager.SecretAttributes
 import software.constructs.Construct
+import java.nio.file.Path
+import kotlin.io.path.listDirectoryEntries
+import kotlin.io.path.pathString
 
 class HelloStack(
     scope: Construct,
     id: String,
-    val siteBucketDeploymentSource: ISource,
+    val siteBucketDeploymentSource: Path,
     props: StackProps? = null,
 ) : Stack(scope, id, props) {
 
@@ -78,7 +81,13 @@ class HelloStack(
         id = "UserPoolProvider",
         name = siteDomain,
         domainPrefix = getContext("com.bkahlert.hello.cognito.domain-prefix"),
-        callbackUrl = siteUrl,
+        callbackUrls = listOf(
+            siteUrl,
+            "http://localhost:8080",
+            "http://localhost:8081",
+            "http://localhost:3000",
+            "https://example.com",
+        ),
         signInWithAppleSecret = Secret.fromSecretAttributes(
             this,
             "SignInWithAppleSecret",
@@ -88,6 +97,18 @@ class HelloStack(
         .export("UserPoolProviderUrl", "URL of the user pool provider") { it.userPool.userPoolProviderUrl }
         .export("UserPoolClientId", "ID of the user pool client") { it.userPoolClient.userPoolClientId }
 
+    /* ClickUp API */
+    val clickUp = ClickUp(
+        scope = this,
+        id = "ClickUp",
+        userPool = userPoolProvider.userPool,
+        secret = Secret.fromSecretAttributes(
+            this,
+            "ClickUpSecret",
+            SecretAttributes.builder().secretCompleteArn(getContext("com.bkahlert.hello.clickup")).build()
+        )
+    )
+        .export("ClickUpApiExecuteUrl", "URL of the ClickUp execute API") { it.api.url }
 
     /* UserProps Table + API */
     val userProps = UserProps(this, "UserProps", userPoolProvider.userPool)
@@ -96,10 +117,6 @@ class HelloStack(
     /* UserInfo API */
     val userInfo = UserInfo(this, "UserInfo", userPoolProvider.userPool, userPoolProvider.userPoolClient.userPoolClientId)
         .export("UserInfoApiExecuteUrl", "URL of the UserInfo execute API") { it.api.url }
-
-    /* ClickUp API */
-    val clickUp = ClickUp(this, "ClickUp", userPoolProvider.userPool)
-        .export("ClickUpApiExecuteUrl", "URL of the ClickUp execute API") { it.api.url }
 
     // CloudWatch role must be specified only once, see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway-readme.html#deployments
     // TODO separate cloud watch role; https://docs.aws.amazon.com/cdk/api/v1/docs/aws-logs-readme.html
@@ -175,53 +192,50 @@ class HelloStack(
         )
     ).build()
 
-    init {
-        mapOf(
-            userProps.api.url to "$apiEndpoint/props*",
-            userInfo.api.url to "$apiEndpoint/info*",
-            clickUp.api.url to "$apiEndpoint/clickup*",
-        ).forEach { (url, pathPattern) ->
-            cloudFrontOriginConfigs.add(
-                SourceConfiguration.builder()
-                    .customOriginSource(
-                        CustomOriginConfig.builder()
-                            .domainName(url.domain)
-                            .originPath(url.path)
-                            .allowedOriginSslVersions(listOf(OriginSslPolicy.TLS_V1_2))
-                            .originProtocolPolicy(OriginProtocolPolicy.HTTPS_ONLY)
-                            .build()
-                    ).behaviors(
-                        listOf(
-                            Behavior.builder()
-                                .forwardedValues(
-                                    CfnDistribution.ForwardedValuesProperty.builder()
-                                        .cookies(CfnDistribution.CookiesProperty.builder().forward("all").build())
-                                        .headers(listOf("Authorization"))
-                                        .queryString(true)
+    val apiMappings = mapOf(
+        clickUp.api to "$apiEndpoint/clickup*",
+        userInfo.api to "$apiEndpoint/user-info*",
+        userProps.api to "$apiEndpoint/user-props*",
+    ).onEach { (restApi, pathPattern) ->
+        cloudFrontOriginConfigs.add(
+            SourceConfiguration.builder()
+                .customOriginSource(
+                    CustomOriginConfig.builder()
+                        .domainName(restApi.url.domain)
+                        .originPath(restApi.url.path)
+                        .allowedOriginSslVersions(listOf(OriginSslPolicy.TLS_V1_2))
+                        .originProtocolPolicy(OriginProtocolPolicy.HTTPS_ONLY)
+                        .build()
+                ).behaviors(
+                    listOf(
+                        Behavior.builder()
+                            .forwardedValues(
+                                CfnDistribution.ForwardedValuesProperty.builder()
+                                    .cookies(CfnDistribution.CookiesProperty.builder().forward("all").build())
+                                    .headers(listOf("Authorization"))
+                                    .queryString(true)
+                                    .build()
+                            )
+                            .allowedMethods(CloudFrontAllowedMethods.ALL)
+                            .cachedMethods(CloudFrontAllowedCachedMethods.GET_HEAD)
+                            .isDefaultBehavior(false)
+                            .defaultTtl(Duration.minutes(0))
+                            .maxTtl(Duration.minutes(0))
+                            .minTtl(Duration.minutes(0))
+                            .pathPattern(pathPattern)
+                            .functionAssociations(
+                                listOf(
+                                    FunctionAssociation.builder()
+                                        .eventType(VIEWER_REQUEST)
+                                        .function(apiPathRewrite)
                                         .build()
                                 )
-                                .allowedMethods(CloudFrontAllowedMethods.ALL)
-                                .cachedMethods(CloudFrontAllowedCachedMethods.GET_HEAD)
-                                .isDefaultBehavior(false)
-                                .defaultTtl(Duration.minutes(0))
-                                .maxTtl(Duration.minutes(0))
-                                .minTtl(Duration.minutes(0))
-                                .pathPattern(pathPattern)
-                                .functionAssociations(
-                                    listOf(
-                                        FunctionAssociation.builder()
-                                            .eventType(VIEWER_REQUEST)
-                                            .function(apiPathRewrite)
-                                            .build()
-                                    )
-                                )
-                                .build()
-                        )
-                    ).build()
-            )
-        }
+                            )
+                            .build()
+                    )
+                ).build()
+        )
     }
-
 
     val distribution = CloudFrontWebDistribution.Builder.create(this, "Distribution")
         .viewerCertificate(
@@ -253,21 +267,26 @@ class HelloStack(
 
     /* Site deployment to S3 bucket */
 
+    val source = Source.asset(siteBucketDeploymentSource.pathString)
+
     val siteBucketDeployment = BucketDeployment.Builder.create(this, "SiteBucketDeployment")
         .sources(
             listOf(
-                siteBucketDeploymentSource,
+                source,
                 Source.jsonData(
-                    "environment.json", mapOf(
-                        "USER_POOL_PROVIDER_URL" to userPoolProvider.userPool.userPoolProviderUrl,
-                        "USER_POOL_CLIENT_ID" to userPoolProvider.userPoolClient.userPoolClientId,
-                        "API_ENDPOINT" to apiEndpoint,
-                    )
+                    "environment.json", buildMap {
+                        put("USER_POOL_PROVIDER_URL", userPoolProvider.userPool.userPoolProviderUrl)
+                        put("USER_POOL_CLIENT_ID", userPoolProvider.userPoolClient.userPoolClientId)
+                        apiMappings.forEach { (restApi, endpoint) ->
+                            val name = restApi.restApiName.substringBefore(' ').toScreamingSnakeCasedString()
+                            put("${name}_API_ENDPOINT", endpoint.removeSuffix("*"))
+                        }
+                    }
                 ),
             )
         )
         .destinationBucket(siteBucket)
         .distribution(distribution)
-        // .distributionPaths() TODO exclude /api
+        .distributionPaths(siteBucketDeploymentSource.listDirectoryEntries().map { "/${it.fileName}" })
         .build()
 }

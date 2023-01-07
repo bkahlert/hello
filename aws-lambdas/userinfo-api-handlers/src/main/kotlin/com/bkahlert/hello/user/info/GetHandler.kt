@@ -14,6 +14,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
 import com.bkahlert.aws.lambda.SLF4J
+import com.bkahlert.aws.lambda.caseInsensitiveHeaders
 import com.bkahlert.aws.lambda.jsonObjectResponse
 import com.bkahlert.kommons.toMomentString
 import kotlinx.datetime.Clock
@@ -23,9 +24,7 @@ import java.security.interfaces.RSAPublicKey
 
 class GetHandler(
     tokenValidator: JsonWebTokenValidator? = null,
-) : APIGatewayProxyRequestEventHandler {
-
-    private val logger by SLF4J
+) : APIGatewayProxyRequestEventHandler() {
 
     private val tokenValidator by lazy {
         tokenValidator ?: run {
@@ -42,7 +41,8 @@ class GetHandler(
     }
 
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
-        val authorization = event.headers["Authorization"] ?: return jsonObjectResponse(401) { put("message", "Authorization header missing") }
+        val authorization = event.caseInsensitiveHeaders["Authorization"].firstOrNull()
+            ?: return jsonObjectResponse(401) { put("message", "Authorization header missing") }
 
         return kotlin.runCatching {
             val token = tokenValidator.validate(authorization)

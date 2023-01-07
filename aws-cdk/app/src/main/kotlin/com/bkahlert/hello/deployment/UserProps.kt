@@ -1,9 +1,11 @@
 package com.bkahlert.hello.deployment
 
+import com.bkahlert.aws.cdk.toEnvironment
 import software.amazon.awscdk.Duration
 import software.amazon.awscdk.RemovalPolicy.DESTROY
 import software.amazon.awscdk.services.apigateway.AuthorizationType
 import software.amazon.awscdk.services.apigateway.CognitoUserPoolsAuthorizer
+import software.amazon.awscdk.services.apigateway.Cors
 import software.amazon.awscdk.services.apigateway.CorsOptions
 import software.amazon.awscdk.services.apigateway.LambdaIntegration
 import software.amazon.awscdk.services.apigateway.MethodOptions
@@ -44,18 +46,45 @@ class UserProps(
         "SORT_KEY" to checkNotNull(table.schema().sortKey) { "sort key missing" }.name,
     )
 
+    val corsOptions = CorsOptions.builder()
+        .allowCredentials(false)
+        .allowHeaders(Cors.DEFAULT_HEADERS)
+        .allowMethods(Cors.ALL_METHODS)
+        .allowOrigins(Cors.ALL_ORIGINS)
+        .build()
+
     val packageName = "com.bkahlert.hello.user.props"
 
-    val getAllFunction = Function(this, "GetAllFunction", FunctionProps(functionEnvironment, "$packageName.GetAllHandler"))
-        .also { table.grantReadData(it) }
-    val getOneFunction = Function(this, "GetOneFunction", FunctionProps(functionEnvironment, "$packageName.GetOneHandler"))
-        .also { table.grantReadData(it) }
-    val createOneFunction = Function(this, "CreateOneFunction", FunctionProps(functionEnvironment, "$packageName.CreateOneHandler"))
-        .also { table.grantReadWriteData(it) }
-    val updateOneFunction = Function(this, "UpdateOneFunction", FunctionProps(functionEnvironment, "$packageName.UpdateOneHandler"))
-        .also { table.grantReadWriteData(it) }
-    val deleteOneFunction = Function(this, "DeleteOneFunction", FunctionProps(functionEnvironment, "$packageName.DeleteOneHandler"))
-        .also { table.grantReadWriteData(it) }
+    val getAllFunction = Function(
+        this,
+        "GetAllFunction",
+        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.GetAllHandler")
+    ).also { table.grantReadData(it) }
+
+    val getOneFunction = Function(
+        this,
+        "GetOneFunction",
+        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.GetOneHandler")
+    ).also { table.grantReadData(it) }
+
+    val createOneFunction =
+        Function(
+            this,
+            "CreateOneFunction",
+            FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.CreateOneHandler")
+        ).also { table.grantReadWriteData(it) }
+
+    val updateOneFunction = Function(
+        this,
+        "UpdateOneFunction",
+        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.UpdateOneHandler")
+    ).also { table.grantReadWriteData(it) }
+
+    val deleteOneFunction = Function(
+        this,
+        "DeleteOneFunction",
+        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.DeleteOneHandler")
+    ).also { table.grantReadWriteData(it) }
 
     val authorizer = CognitoUserPoolsAuthorizer.Builder.create(this, "Authorizer")
         .cognitoUserPools(listOf(userPool))
@@ -70,21 +99,15 @@ class UserProps(
     val api = RestApi.Builder.create(this, "RestApi")
         .restApiName("UserProps API")
         .deployOptions(StageOptions.builder().tracingEnabled(true).build())
-        .defaultCorsPreflightOptions(
-            CorsOptions.builder()
-                .allowCredentials(false)
-                .allowHeaders(listOf("Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key", "X-Amz-Security-Token", "X-Amz-User-Agent"))
-                .allowMethods(listOf("OPTIONS", "GET", "PUT", "POST", "PATCH", "DELETE"))
-                .allowOrigins(listOf("*"))
-                .build()
-        )
         .build()
 
     init {
         api.root.apply {
+            addCorsPreflight(corsOptions)
             addMethod("GET", LambdaIntegration(getAllFunction), methodOptions)
             addMethod("POST", LambdaIntegration(createOneFunction), methodOptions)
             addResource("{id}").apply {
+                addCorsPreflight(corsOptions)
                 addMethod("GET", LambdaIntegration(getOneFunction), methodOptions)
                 addMethod("POST", LambdaIntegration(createOneFunction), methodOptions)
                 addMethod("PATCH", LambdaIntegration(updateOneFunction), methodOptions)
