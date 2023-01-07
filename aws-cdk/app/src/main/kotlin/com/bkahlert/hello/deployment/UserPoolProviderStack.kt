@@ -1,27 +1,34 @@
 package com.bkahlert.hello.deployment
 
+import com.bkahlert.aws.cdk.export
 import software.amazon.awscdk.Duration
 import software.amazon.awscdk.RemovalPolicy
+import software.amazon.awscdk.Stack
+import software.amazon.awscdk.StackProps
 import software.amazon.awscdk.services.cognito.CognitoDomainOptions
 import software.amazon.awscdk.services.cognito.OAuthFlows
 import software.amazon.awscdk.services.cognito.OAuthScope
 import software.amazon.awscdk.services.cognito.OAuthSettings
+import software.amazon.awscdk.services.cognito.SignInAliases
 import software.amazon.awscdk.services.cognito.UserPool
 import software.amazon.awscdk.services.cognito.UserPoolClient
 import software.amazon.awscdk.services.cognito.UserPoolClientIdentityProvider
 import software.amazon.awscdk.services.cognito.UserPoolDomain
 import software.amazon.awscdk.services.cognito.UserPoolIdentityProviderApple
-import software.amazon.awscdk.services.secretsmanager.ISecret
+import software.amazon.awscdk.services.secretsmanager.Secret
+import software.amazon.awscdk.services.secretsmanager.SecretAttributes
 import software.constructs.Construct
 
 /**
  * Defines a Cognito-backed OpenID provider.
  */
-class UserPoolProvider(
-    /** The scope in which to define this construct. */
-    scope: Construct,
+class UserPoolProviderStack(
+    /** The parent of this stack. */
+    parent: Construct? = null,
     /** The scoped construct ID. */
-    id: String,
+    id: String? = null,
+    /** The stack properties. */
+    props: StackProps? = null,
     /** The name of the corresponding [userPool]. */
     val name: String,
     /** The domain prefix of the corresponding [userPoolDomain]. */
@@ -29,17 +36,18 @@ class UserPoolProvider(
     /** The callback URL of the corresponding [userPoolClient]. */
     val callbackUrls: List<String>,
     /** The credentials of the corresponding [signInWithAppleIdentityProvider]. */
-    val signInWithAppleSecret: ISecret? = null,
-) : Construct(scope, id) {
+    val signInWithAppleSecretArn: String?,
+) : Stack(parent, id, props) {
 
     /** The user pool for storing user information. */
     @Suppress("MemberVisibilityCanBePrivate")
     val userPool: UserPool = UserPool.Builder.create(this, "UserPool")
         .userPoolName(name)
         .selfSignUpEnabled(true)
-//        .signInAliases(SignInAliases.builder().email(true).username(true).build())
+        .signInAliases(SignInAliases.builder().email(true).username(true).build())
         .removalPolicy(RemovalPolicy.DESTROY)
         .build()
+        .export("UserPoolProviderUrl", "URL of the user pool provider") { it.userPoolProviderUrl }
 
     /** The user pool domain hosting features like the sign-up feature. */
     @Suppress("MemberVisibilityCanBePrivate")
@@ -47,6 +55,10 @@ class UserPoolProvider(
         .userPool(userPool)
         .cognitoDomain(CognitoDomainOptions.builder().domainPrefix(domainPrefix).build())
         .build()
+
+    private val signInWithAppleSecret = signInWithAppleSecretArn?.let {
+        Secret.fromSecretAttributes(this, "SignInWithAppleSecret", SecretAttributes.builder().secretCompleteArn(it).build())
+    }
 
     /** The identity provider for SignInWithApple if [signInWithAppleSecret] are provided. */
     @Suppress("MemberVisibilityCanBePrivate")
@@ -81,6 +93,7 @@ class UserPoolProvider(
         .accessTokenValidity(Duration.days(1))
         .idTokenValidity(Duration.days(1))
         .build()
+        .export("UserPoolClientId", "ID of the user pool client") { it.userPoolClientId }
 
     init {
         signInWithAppleIdentityProvider?.also {

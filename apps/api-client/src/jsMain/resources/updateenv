@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+aws cloudformation list-exports \
+  --no-paginate \
+  --output json \
+  --query 'Exports[*].{Name:Name, Value:Value}' \
+  | jq '
+  def camel_to_snake:
+    [
+      splits("(?=[A-Z])")
+    ]
+    | map( select(. != "") | ascii_upcase )
+    | join("_")
+    ;
+  map({ (.Name): .Value })
+  | add
+  | with_entries( select(.key | contains(":") | not ) )
+  | with_entries( .key |= camel_to_snake )
+  ' > environment.json

@@ -1,7 +1,10 @@
 package com.bkahlert.hello.deployment
 
+import com.bkahlert.aws.cdk.export
 import com.bkahlert.aws.cdk.toEnvironment
 import software.amazon.awscdk.Duration
+import software.amazon.awscdk.Stack
+import software.amazon.awscdk.StackProps
 import software.amazon.awscdk.services.apigateway.Cors
 import software.amazon.awscdk.services.apigateway.CorsOptions
 import software.amazon.awscdk.services.apigateway.LambdaIntegration
@@ -16,15 +19,19 @@ import software.amazon.awscdk.services.lambda.Tracing
 import software.amazon.awscdk.services.logs.RetentionDays
 import software.constructs.Construct
 
-class UserInfo(
-    /** The scope in which to define this construct. */
-    scope: Construct,
+class UserInfoStack(
+    /** The parent of this stack. */
+    parent: Construct? = null,
     /** The scoped construct ID. */
-    id: String,
+    id: String? = null,
+    /** The stack properties. */
+    props: StackProps? = null,
+    /** Code that implements the API. */
+    code: Code,
     /** Used for authorization. */
     userPool: UserPool,
     userPoolClientId: String,
-) : Construct(scope, id) {
+) : Stack(parent, id, props) {
 
     val packageName = "com.bkahlert.hello.user.info"
 
@@ -36,7 +43,7 @@ class UserInfo(
         .build()
 
     val getFunction = Function.Builder.create(this, "GetFunction")
-        .code(Code.fromAsset("../../aws-lambdas/userinfo-api-handlers/build/libs/userinfo-api-handlers-all.jar"))
+        .code(code)
         .handler("$packageName.GetHandler")
         .architecture(Architecture.ARM_64)
         .runtime(Runtime.JAVA_11)
@@ -56,6 +63,7 @@ class UserInfo(
         .restApiName("UserInfo API")
         .deployOptions(StageOptions.builder().tracingEnabled(true).build())
         .build()
+        .export("UserInfoApiEndpoint", "URL of the API") { it.url }
 
     init {
         api.root.apply {

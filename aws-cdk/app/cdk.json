@@ -15,12 +15,6 @@
     ]
   },
   "context": {
-    "com.bkahlert.hello.zone-name:account=382728805609:region=us-east-1": "aws-dev.choam.de",
-    "com.bkahlert.hello.sub-domain-name": "hello",
-    "com.bkahlert.hello.certificate-arn:account=382728805609:region=us-east-1": "arn:aws:acm:us-east-1:382728805609:certificate/cb018018-e0e3-4fa7-bd07-abe7476657ad",
-    "com.bkahlert.hello.cognito.domain-prefix:account=382728805609:region=us-east-1": "hello-dev-bkahlert-com",
-    "com.bkahlert.hello.cognito.ip.sign-in-with-apple:account=382728805609:region=us-east-1": "arn:aws:secretsmanager:us-east-1:382728805609:secret:dev/hello/SignInWithApple-ZHPZwg",
-    "com.bkahlert.hello.clickup:account=382728805609:region=us-east-1": "arn:aws:secretsmanager:us-east-1:382728805609:secret:dev/hello/ClickUp-L2Pnag",
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [

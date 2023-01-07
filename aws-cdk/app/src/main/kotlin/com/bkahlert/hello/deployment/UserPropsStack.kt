@@ -1,8 +1,11 @@
 package com.bkahlert.hello.deployment
 
+import com.bkahlert.aws.cdk.export
 import com.bkahlert.aws.cdk.toEnvironment
 import software.amazon.awscdk.Duration
 import software.amazon.awscdk.RemovalPolicy.DESTROY
+import software.amazon.awscdk.Stack
+import software.amazon.awscdk.StackProps
 import software.amazon.awscdk.services.apigateway.AuthorizationType
 import software.amazon.awscdk.services.apigateway.CognitoUserPoolsAuthorizer
 import software.amazon.awscdk.services.apigateway.Cors
@@ -24,14 +27,18 @@ import software.amazon.awscdk.services.lambda.Tracing
 import software.amazon.awscdk.services.logs.RetentionDays
 import software.constructs.Construct
 
-class UserProps(
-    /** The scope in which to define this construct. */
-    scope: Construct,
+class UserPropsStack(
+    /** The parent of this stack. */
+    parent: Construct? = null,
     /** The scoped construct ID. */
-    id: String,
+    id: String? = null,
+    /** The stack properties. */
+    props: StackProps? = null,
+    /** Code that implements the API. */
+    code: Code,
     /** Used for authorization. */
     userPool: UserPool,
-) : Construct(scope, id) {
+) : Stack(parent, id, props) {
 
     /** The DynamoDB table storing used. */
     val table = Table.Builder.create(this, "Table")
@@ -58,32 +65,32 @@ class UserProps(
     val getAllFunction = Function(
         this,
         "GetAllFunction",
-        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.GetAllHandler")
+        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), code, "$packageName.GetAllHandler")
     ).also { table.grantReadData(it) }
 
     val getOneFunction = Function(
         this,
         "GetOneFunction",
-        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.GetOneHandler")
+        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), code, "$packageName.GetOneHandler")
     ).also { table.grantReadData(it) }
 
     val createOneFunction =
         Function(
             this,
             "CreateOneFunction",
-            FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.CreateOneHandler")
+            FunctionProps(functionEnvironment + corsOptions.toEnvironment(), code, "$packageName.CreateOneHandler")
         ).also { table.grantReadWriteData(it) }
 
     val updateOneFunction = Function(
         this,
         "UpdateOneFunction",
-        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.UpdateOneHandler")
+        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), code, "$packageName.UpdateOneHandler")
     ).also { table.grantReadWriteData(it) }
 
     val deleteOneFunction = Function(
         this,
         "DeleteOneFunction",
-        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), "$packageName.DeleteOneHandler")
+        FunctionProps(functionEnvironment + corsOptions.toEnvironment(), code, "$packageName.DeleteOneHandler")
     ).also { table.grantReadWriteData(it) }
 
     val authorizer = CognitoUserPoolsAuthorizer.Builder.create(this, "Authorizer")
@@ -100,6 +107,7 @@ class UserProps(
         .restApiName("UserProps API")
         .deployOptions(StageOptions.builder().tracingEnabled(true).build())
         .build()
+        .export("UserPropsApiEndpoint", "URL of the API") { it.url }
 
     init {
         api.root.apply {
@@ -116,9 +124,9 @@ class UserProps(
         }
     }
 
-    private fun FunctionProps(environment: Map<String, String>, handler: String): FunctionProps {
+    private fun FunctionProps(environment: Map<String, String>, code: Code, handler: String): FunctionProps {
         return FunctionProps.builder()
-            .code(Code.fromAsset("../../aws-lambdas/userprops-api-handlers/build/libs/userprops-api-handlers-all.jar"))
+            .code(code)
             .handler(handler)
             .architecture(Architecture.ARM_64)
             .runtime(Runtime.JAVA_11)

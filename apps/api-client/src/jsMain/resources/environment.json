@@ -1,7 +1,14 @@
 {
-  "USER_POOL_PROVIDER_URL": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_o3rAtwpX5",
-  "USER_POOL_CLIENT_ID": "6874dpnigtpb9uht7osf0ijn6b",
-  "CLICK_UP_API_ENDPOINT": "https://doiot27raj.execute-api.us-east-1.amazonaws.com/prod",
-  "USER_INFO_API_ENDPOINT": "https://01l8bzsx51.execute-api.us-east-1.amazonaws.com/prod",
-  "USER_PROPS_API_ENDPOINT": "https://hm5w1tvk0b.execute-api.us-east-1.amazonaws.com/prod"
+  "CDK_BOOTSTRAP-HNB659FDS-_FILE_ASSET_KEY_ARN": "AWS_MANAGED_KEY",
+  "CLICK_UP_API_ENDPOINT": "https://ocy249ihqj.execute-api.us-east-1.amazonaws.com/prod/",
+  "DISTRIBUTION_ID": "E1BTOMJ3F07FGP",
+  "DISTRIBUTION_URL": "https://d3dr0ulocuys1q.cloudfront.net",
+  "SITE_BUCKET_NAME": "hello.aws-dev.choam.de",
+  "SITE_CERTIFICATE_ARN": "arn:aws:acm:us-east-1:382728805609:certificate/977171d6-7229-4edd-8a5f-e67a8f75ce35",
+  "SITE_ENVIRONMENT_API_ENDPOINT": "https://q05bwy9skd.execute-api.us-east-1.amazonaws.com/prod/",
+  "SITE_URL": "https://hello.aws-dev.choam.de",
+  "USER_INFO_API_ENDPOINT": "https://td8rjq7xrc.execute-api.us-east-1.amazonaws.com/prod/",
+  "USER_POOL_CLIENT_ID": "7tf6n1ti8apbribdo8sn6vbm33",
+  "USER_POOL_PROVIDER_URL": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_NKOmhDC5e",
+  "USER_PROPS_API_ENDPOINT": "https://eflkg7ua7g.execute-api.us-east-1.amazonaws.com/prod/"
 }

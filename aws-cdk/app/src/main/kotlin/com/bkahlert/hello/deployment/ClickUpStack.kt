@@ -1,7 +1,10 @@
 package com.bkahlert.hello.deployment
 
+import com.bkahlert.aws.cdk.export
 import com.bkahlert.aws.cdk.toEnvironment
 import software.amazon.awscdk.Duration
+import software.amazon.awscdk.Stack
+import software.amazon.awscdk.StackProps
 import software.amazon.awscdk.services.apigateway.AuthorizationType
 import software.amazon.awscdk.services.apigateway.CognitoUserPoolsAuthorizer
 import software.amazon.awscdk.services.apigateway.Cors
@@ -17,19 +20,26 @@ import software.amazon.awscdk.services.lambda.Function
 import software.amazon.awscdk.services.lambda.Runtime
 import software.amazon.awscdk.services.lambda.Tracing
 import software.amazon.awscdk.services.logs.RetentionDays
-import software.amazon.awscdk.services.secretsmanager.ISecret
+import software.amazon.awscdk.services.secretsmanager.Secret
+import software.amazon.awscdk.services.secretsmanager.SecretAttributes
 import software.constructs.Construct
 
-class ClickUp(
-    /** The scope in which to define this construct. */
-    scope: Construct,
+class ClickUpStack(
+    /** The parent of this stack. */
+    parent: Construct? = null,
     /** The scoped construct ID. */
-    id: String,
+    id: String? = null,
+    /** The stack properties. */
+    props: StackProps? = null,
+    /** Code that implements the API. */
+    code: Code,
     /** Used for authorization. */
     userPool: UserPool,
     /** The credentials of the [ClickUp API](https://clickup.com/api/). */
-    val secret: ISecret,
-) : Construct(scope, id) {
+    secretArn: String,
+) : Stack(parent, id, props) {
+
+    private val secret = Secret.fromSecretAttributes(this, "ClickUpSecret", SecretAttributes.builder().secretCompleteArn(secretArn).build())
 
     val corsOptions = CorsOptions.builder()
         .allowCredentials(false)
@@ -39,7 +49,7 @@ class ClickUp(
         .build()
 
     val proxyFunction = Function.Builder.create(this, "ProxyFunction")
-        .code(Code.fromAsset("../../aws-lambdas/clickup-api-handlers/build/libs/clickup-api-handlers-all.jar"))
+        .code(code)
         .handler("com.bkahlert.hello.clickup.ProxyHandler")
         .environment(
             mapOf(
@@ -56,7 +66,6 @@ class ClickUp(
         .logRetention(RetentionDays.FIVE_DAYS)
         .tracing(Tracing.ACTIVE)
         .build()
-//        .also { secret.grantRead(it) }
 
     val authorizer = CognitoUserPoolsAuthorizer.Builder.create(this, "Authorizer")
         .cognitoUserPools(listOf(userPool))
@@ -72,6 +81,7 @@ class ClickUp(
         .restApiName("ClickUp API")
         .deployOptions(StageOptions.builder().tracingEnabled(true).build())
         .build()
+        .export("ClickUpApiEndpoint", "URL of the API") { it.url }
 
     init {
         api.root.apply {

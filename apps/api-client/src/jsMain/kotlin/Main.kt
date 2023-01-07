@@ -84,7 +84,7 @@ abstract class ApiClient(
 
     companion object {
         fun endpointToUrl(endpoint: String): String =
-            endpoint.takeUnless { it.startsWith("/") } ?: "${window.location.protocol}://${window.location.hostname}$endpoint"
+            endpoint.takeUnless { it.startsWith("/") } ?: "${window.location.protocol}//${window.location.hostname}$endpoint"
     }
 }
 
