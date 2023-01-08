@@ -16,11 +16,14 @@ import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
 import com.bkahlert.aws.lambda.SLF4J
 import com.bkahlert.aws.lambda.caseInsensitiveHeaders
 import com.bkahlert.aws.lambda.jsonObjectResponse
+import com.bkahlert.aws.lambda.jsonResponse
 import com.bkahlert.kommons.toMomentString
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinInstant
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.put
 import java.security.interfaces.RSAPublicKey
+import java.util.Base64
 
 class GetHandler(
     tokenValidator: JsonWebTokenValidator? = null,
@@ -48,7 +51,11 @@ class GetHandler(
             val token = tokenValidator.validate(authorization)
             val userId = token.subject
             logger.info("userId {}", userId)
-            jsonObjectResponse { put("userId", userId) }
+
+            val decodedPayload = Base64.getUrlDecoder().decode(JsonWebTokenValidator.extractToken(authorization).split('.')[1]).decodeToString()
+            logger.debug("Decoded payload: $decodedPayload")
+
+            jsonResponse(Json.parseToJsonElement(decodedPayload))
         }.getOrElse { exception ->
             jsonObjectResponse(
                 when (exception) {

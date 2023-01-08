@@ -9,6 +9,7 @@ import com.bkahlert.aws.lambda.TestContext
 import com.bkahlert.hello.user.info.GetHandler
 import com.bkahlert.hello.user.info.JsonWebTokenValidator
 import com.bkahlert.kommons.fixed
+import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -22,7 +23,35 @@ class GetHandlerTest {
         val handler = GetHandler(TestJsonWebTokenValidator())
         val response = handler.handleRequest(event, context)
         response.statusCode shouldBe 200
-        response.body shouldBe "{\"userId\":\"d2f87456-ed02-49af-8de4-96b9e627d270\"}"
+        // language=json
+        response.body shouldEqualJson """
+            {
+              "at_hash": "DA77KcPSw5NOJ1cVWbLk5A",
+              "sub": "d2f87456-ed02-49af-8de4-96b9e627d270",
+              "cognito:groups": [
+                "eu-central-1_2kcGMqneE_SignInWithApple"
+              ],
+              "iss": "https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_2kcGMqneE",
+              "cognito:username": "SignInWithApple_000340.3f6e937a36b84caaaa2a817ea7d5e69c.0331",
+              "origin_jti": "43c369dc-7c26-4ce1-afa9-012cdb4d98f2",
+              "aud": "7lhdbv12q1ud9rgg7g779u8va7",
+              "identities": [
+                {
+                  "userId": "000340.3f6e937a36b84caaaa2a817ea7d5e69c.0331",
+                  "providerName": "SignInWithApple",
+                  "providerType": "SignInWithApple",
+                  "issuer": null,
+                  "primary": "true",
+                  "dateCreated": "1671416345385"
+                }
+              ],
+              "token_use": "id",
+              "auth_time": 1671503541,
+              "exp": 1671507141,
+              "iat": 1671503541,
+              "jti": "46ed56e8-6145-413c-9dd0-b1d89a825f41"
+            }
+        """.trimIndent()
     }
 
     @ParameterizedTest
@@ -31,7 +60,26 @@ class GetHandlerTest {
         val handler = GetHandler(TestJsonWebTokenValidator())
         val response = handler.handleRequest(event, context)
         response.statusCode shouldBe 200
-        response.body shouldBe "{\"userId\":\"d2f87456-ed02-49af-8de4-96b9e627d270\"}"
+        // language=json
+        response.body shouldEqualJson """
+            {
+              "sub": "d2f87456-ed02-49af-8de4-96b9e627d270",
+              "cognito:groups": [
+                "eu-central-1_2kcGMqneE_SignInWithApple"
+              ],
+              "iss": "https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_2kcGMqneE",
+              "version": 2,
+              "client_id": "7lhdbv12q1ud9rgg7g779u8va7",
+              "origin_jti": "43c369dc-7c26-4ce1-afa9-012cdb4d98f2",
+              "token_use": "access",
+              "scope": "openid",
+              "auth_time": 1671503541,
+              "exp": 1671507141,
+              "iat": 1671503541,
+              "jti": "420799b1-0b66-414d-bc32-c2ed3091e89d",
+              "username": "SignInWithApple_000340.3f6e937a36b84caaaa2a817ea7d5e69c.0331"
+            }
+        """.trimIndent()
     }
 
     @ParameterizedTest
