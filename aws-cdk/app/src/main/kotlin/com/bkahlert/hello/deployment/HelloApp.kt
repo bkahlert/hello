@@ -111,7 +111,6 @@ class HelloApp : App() {
                 id = "ClickUp",
                 props = props,
                 code = stage.clickUpCode,
-                userPool = userPoolProviderStack.userPool,
                 secretArn = it,
             )
         }

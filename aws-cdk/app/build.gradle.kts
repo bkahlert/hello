@@ -57,6 +57,13 @@ val deployHotswap by tasks.registering(Exec::class) {
     cdk("deploy", "--all", "--require-approval", "never", "--hotswap", "--no-rollback")
 }
 
+/** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/cli.html#cli-deploy-hotswap">Hot swapping</a> */
+val deployHotswapClickUp by tasks.registering(Exec::class) {
+    group = "cdk"
+    description = "Attempts to update resources directly instead of generating and deploying a CloudFormation changeset"
+    cdk("deploy", "ClickUp", "--require-approval", "never", "--hotswap", "--no-rollback")
+}
+
 /** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/cli.html#cli-deploy-watch">Watch mode</a> */
 val deployWatch by tasks.registering(Exec::class) {
     group = "cdk"

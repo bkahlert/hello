@@ -4,20 +4,15 @@ import com.bkahlert.kommons.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.kommons.debug.asString
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
-import com.bkahlert.kommons.dom.provideDelegate
-import com.bkahlert.kommons.serialization.JsonSerializer
-import com.bkahlert.kommons.text.Char.characters
-import com.bkahlert.kommons.text.truncate
+import com.bkahlert.kommons.ktor.JsonHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngineConfig
-import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.plugins.pluginOrNull
 import io.ktor.client.request.forms.submitForm
@@ -27,7 +22,6 @@ import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.browser.sessionStorage
@@ -37,6 +31,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Uint32Array
 import org.khronos.webgl.Uint8Array
@@ -45,12 +41,7 @@ import org.w3c.dom.url.URL
 import kotlin.js.Promise
 import kotlin.js.json
 
-private fun minimalClient(config: HttpClientConfig<HttpClientEngineConfig>.() -> Unit = {}) = HttpClient(Js) {
-    install(ContentNegotiation) { json(JsonSerializer) }
-    config()
-}
-
-private val openIdClient by lazy { minimalClient() }
+private val openIdClient by lazy { JsonHttpClient() }
 
 /**
  * Loads the [OpenID Provider Configuration Information](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig)
@@ -143,7 +134,7 @@ public sealed class OAuth2AuthorizationState(
     public data class Authorizing(
         override val authorizationServer: OAuth2AuthorizationServer,
         override val clientId: String,
-        val tokensStorage: BearerTokensStorage,
+        val tokensStorage: TokenInfoStorage,
         val authorizationCode: String,
         val state: String?,
     ) : OAuth2AuthorizationState(authorizationServer, clientId) {
@@ -159,7 +150,7 @@ public sealed class OAuth2AuthorizationState(
             checkNotNull(codeVerifier) { "Code is not valid" }
 
             logger.info("Getting tokens using code verifier: $codeVerifier")
-            val tokenInfo: TokenInfo = minimalClient().submitForm(
+            val tokenInfo: TokenInfo = JsonHttpClient().submitForm(
                 url = authorizationServer.tokenEndpoint,
                 formParameters = Parameters.build {
                     append("grant_type", "authorization_code")
@@ -169,8 +160,7 @@ public sealed class OAuth2AuthorizationState(
                     append("redirect_uri", window.location.origin)
                 }
             ) { expectSuccess = true }.body()
-            tokensStorage.accessToken = tokenInfo.accessToken
-            tokensStorage.refreshToken = checkNotNull(tokenInfo.refreshToken) { "Refresh token missing" }
+            tokensStorage.set(tokenInfo)
             logger.info("Authorization successful")
 
             return Authorized(authorizationServer, clientId, tokensStorage)
@@ -180,43 +170,40 @@ public sealed class OAuth2AuthorizationState(
     public data class Authorized(
         override val authorizationServer: OAuth2AuthorizationServer,
         override val clientId: String,
-        val tokensStorage: BearerTokensStorage,
+        val tokensStorage: TokenInfoStorage,
     ) : OAuth2AuthorizationState(authorizationServer, clientId) {
         private val logger = simpleLogger()
 
-        public fun buildClient(
+        public fun installAuth(
+            config: HttpClientConfig<HttpClientEngineConfig>,
             vararg resources: OAuth2Resource,
-            config: HttpClientConfig<HttpClientEngineConfig>.() -> Unit = {},
-        ): HttpClient = minimalClient {
-            install(Auth) {
-                bearer {
-                    loadTokens {
-                        val tokens = tokensStorage.bearerTokens
-                        if (tokens != null) logger.debug("Loaded tokens")
-                        else logger.debug("No tokens loaded")
-                        tokens
-                    }
-                    refreshTokens {
-                        logger.info("Refreshing tokens")
-                        val refreshTokenInfo: TokenInfo = this@refreshTokens.client.submitForm(
-                            url = authorizationServer.tokenEndpoint,
-                            formParameters = Parameters.build {
-                                append("grant_type", "refresh_token")
-                                append("client_id", clientId)
-                                append("redirect_uri", window.location.origin)
-                                append("refresh_token", oldTokens?.refreshToken ?: "")
-                            }
-                        ) { markAsRefreshTokenRequest() }.body()
-                        tokensStorage.accessToken = refreshTokenInfo.accessToken
-                        tokensStorage.bearerTokens!!
-                    }
-                    sendWithoutRequest { request ->
-                        val url = request.url.build()
-                        resources.any { it.matches(url) }
-                    }
+        ): Unit = config.install(Auth) {
+            bearer {
+                loadTokens {
+                    val tokens = tokensStorage.get()?.bearerTokens
+                    if (tokens != null) logger.debug("Loaded tokens")
+                    else logger.debug("No tokens loaded")
+                    tokens
+                }
+                refreshTokens {
+                    logger.info("Refreshing tokens")
+                    val refreshTokenInfo: TokenInfo = this@refreshTokens.client.submitForm(
+                        url = authorizationServer.tokenEndpoint,
+                        formParameters = Parameters.build {
+                            append("grant_type", "refresh_token")
+                            append("client_id", clientId)
+                            append("redirect_uri", window.location.origin)
+                            append("refresh_token", oldTokens?.refreshToken ?: "")
+                        }
+                    ) { markAsRefreshTokenRequest() }.body()
+                    tokensStorage.set(refreshTokenInfo)
+                    refreshTokenInfo.bearerTokens
+                }
+                sendWithoutRequest { request ->
+                    val url = request.url.build()
+                    resources.any { it.matches(url) }
                 }
             }
-            config()
         }
 
         public suspend fun revokeTokens(client: HttpClient? = null): OAuth2AuthorizationState {
@@ -237,24 +224,22 @@ public sealed class OAuth2AuthorizationState(
                 }
             }
 
-            when (val token = tokensStorage.refreshToken ?: tokensStorage.accessToken) {
+            when (val token = tokensStorage.get()?.let { it.refreshToken ?: it.accessToken }) {
                 null -> logger.info("No tokens found")
                 else -> {
-                    val response = minimalClient().submitForm(
+                    val response = JsonHttpClient { expectSuccess = false }.submitForm(
                         url = revocationEndpoint,
                         formParameters = Parameters.build {
                             append("token", token)
                             append("client_id", clientId)
                         }
-                    ) {
-                        expectSuccess = false
-                    }
+                    )
                     if (response.status.isSuccess()) {
                         logger.info("Successfully revoked tokens")
                     } else {
                         logger.error("Failed to revoke tokens: ${response.bodyAsText()}")
                     }
-                    tokensStorage.bearerTokens = null
+                    tokensStorage.set(null)
                 }
             }
             return compute(authorizationServer, clientId)
@@ -271,19 +256,19 @@ public sealed class OAuth2AuthorizationState(
             authorizationServer: OAuth2AuthorizationServer,
             clientId: String,
         ): OAuth2AuthorizationState {
-            val bearerTokensStorage = BearerTokensStorage(localStorage.scoped(authorizationServer.issuer))
+            val tokenInfoStorage = TokenInfoStorageImpl(localStorage.scoped(authorizationServer.issuer))
 
             val searchParams = URL(window.location.href).searchParams
             return when (val authorizationCode = searchParams.get("code")) {
-                null -> when (bearerTokensStorage.bearerTokens) {
+                null -> when (tokenInfoStorage.get()?.bearerTokens) {
                     null -> Unauthorized(authorizationServer, clientId)
-                    else -> Authorized(authorizationServer, clientId, bearerTokensStorage)
+                    else -> Authorized(authorizationServer, clientId, tokenInfoStorage)
                 }
 
                 else -> Authorizing(
                     authorizationServer,
                     clientId,
-                    bearerTokensStorage,
+                    tokenInfoStorage,
                     authorizationCode,
                     searchParams.get("state"),
                 )
@@ -292,45 +277,29 @@ public sealed class OAuth2AuthorizationState(
     }
 }
 
-public class BearerTokensStorage(
-    storage: Storage,
-) {
+public val TokenInfo.bearerTokens: BearerTokens?
+    get() {
+        if (!tokenType.equals("bearer", ignoreCase = true)) return null
+        return refreshToken?.let { BearerTokens(accessToken, it) }
+    }
 
-    private val logger = simpleLogger()
 
-    public var accessToken: String? by storage
-    public var refreshToken: String? by storage
+private class TokenInfoStorageImpl(
+    private val storage: Storage,
+) : TokenInfoStorage {
 
-    public var bearerTokens: BearerTokens?
-        get() = (accessToken to refreshToken).let { (a, r) ->
-            if (a != null && r != null) BearerTokens(a, r)
-            else {
-                if (a != null || r != null) logger.error("Incomplete tokens found")
-                null
-            }
-        }
-        set(value) {
-            accessToken = value?.accessToken
-            refreshToken = value?.refreshToken
-        }
+    override fun get(): TokenInfo? =
+        storage["token-info"]?.let { kotlinx.serialization.json.Json.decodeFromString<TokenInfo>(it) }
 
-    override fun toString(): String {
-        return asString {
-            put("accessToken", accessToken?.truncate(20.characters))
-            put("refreshToken", refreshToken?.truncate(20.characters))
-        }
+    override fun set(tokenInfo: TokenInfo?) {
+        storage["token-info"] = tokenInfo?.let { kotlinx.serialization.json.Json.encodeToString(it) }
+    }
+
+    override fun toString(): String = asString {
+        put("tokenInfo", get())
     }
 }
 
-
-@Serializable
-private data class TokenInfo(
-    @SerialName("access_token") val accessToken: String,
-    @SerialName("refresh_token") val refreshToken: String? = null, // only if grant_type was authorization_code
-    @SerialName("id_token") val idToken: String? = null,
-    @SerialName("token_type") val tokenType: String, // e.g. "Bearer"
-    @SerialName("expires_in") val expiresIn: Int, // e.g. 3600
-)
 
 @Serializable
 private data class ErrorInfo(

@@ -5,15 +5,11 @@ import com.bkahlert.aws.cdk.toEnvironment
 import software.amazon.awscdk.Duration
 import software.amazon.awscdk.Stack
 import software.amazon.awscdk.StackProps
-import software.amazon.awscdk.services.apigateway.AuthorizationType
-import software.amazon.awscdk.services.apigateway.CognitoUserPoolsAuthorizer
 import software.amazon.awscdk.services.apigateway.Cors
 import software.amazon.awscdk.services.apigateway.CorsOptions
 import software.amazon.awscdk.services.apigateway.LambdaIntegration
-import software.amazon.awscdk.services.apigateway.MethodOptions
 import software.amazon.awscdk.services.apigateway.RestApi
 import software.amazon.awscdk.services.apigateway.StageOptions
-import software.amazon.awscdk.services.cognito.UserPool
 import software.amazon.awscdk.services.lambda.Architecture
 import software.amazon.awscdk.services.lambda.Code
 import software.amazon.awscdk.services.lambda.Function
@@ -33,8 +29,6 @@ class ClickUpStack(
     props: StackProps? = null,
     /** Code that implements the API. */
     code: Code,
-    /** Used for authorization. */
-    userPool: UserPool,
     /** The credentials of the [ClickUp API](https://clickup.com/api/). */
     secretArn: String,
 ) : Stack(parent, id, props) {
@@ -42,7 +36,7 @@ class ClickUpStack(
     private val secret = Secret.fromSecretAttributes(this, "ClickUpSecret", SecretAttributes.builder().secretCompleteArn(secretArn).build())
 
     val corsOptions = CorsOptions.builder()
-        .allowCredentials(false)
+        .allowCredentials(true)
         .allowHeaders(Cors.DEFAULT_HEADERS)
         .allowMethods(Cors.ALL_METHODS)
         .allowOrigins(Cors.ALL_ORIGINS)
@@ -67,16 +61,6 @@ class ClickUpStack(
         .tracing(Tracing.ACTIVE)
         .build()
 
-    val authorizer = CognitoUserPoolsAuthorizer.Builder.create(this, "Authorizer")
-        .cognitoUserPools(listOf(userPool))
-        .build()
-
-    private val methodOptions = MethodOptions.builder()
-        .authorizer(authorizer)
-        .authorizationType(AuthorizationType.COGNITO)
-        .authorizationScopes(listOf("openid"))
-        .build()
-
     val api = RestApi.Builder.create(this, "RestApi")
         .restApiName("ClickUp API")
         .deployOptions(StageOptions.builder().tracingEnabled(true).build())
@@ -87,11 +71,11 @@ class ClickUpStack(
         api.root.apply {
             addCorsPreflight(corsOptions)
             addProxy().apply {
-                addMethod("GET", LambdaIntegration(proxyFunction), methodOptions)
-                addMethod("PUT", LambdaIntegration(proxyFunction), methodOptions)
-                addMethod("POST", LambdaIntegration(proxyFunction), methodOptions)
-                addMethod("PATCH", LambdaIntegration(proxyFunction), methodOptions)
-                addMethod("DELETE", LambdaIntegration(proxyFunction), methodOptions)
+                addMethod("GET", LambdaIntegration(proxyFunction))
+                addMethod("PUT", LambdaIntegration(proxyFunction))
+                addMethod("POST", LambdaIntegration(proxyFunction))
+                addMethod("PATCH", LambdaIntegration(proxyFunction))
+                addMethod("DELETE", LambdaIntegration(proxyFunction))
             }
         }
     }

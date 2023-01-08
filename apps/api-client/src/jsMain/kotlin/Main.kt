@@ -17,14 +17,14 @@ import com.bkahlert.kommons.auth.OAuth2AuthorizationState.Unauthorized
 import com.bkahlert.kommons.auth.OAuth2Resource
 import com.bkahlert.kommons.auth.OpenIDProvider
 import com.bkahlert.kommons.auth.loadOpenIDConfiguration
-import com.bkahlert.kommons.debug.asString
+import com.bkahlert.kommons.ktor.JsonHttpClient
+import com.bkahlert.kommons.ktor.installTokenAuth
 import com.bkahlert.kommons.randomString
 import com.bkahlert.kommons.serialization.JsonSerializer
+import com.bkahlert.kommons.serialization.serialize
 import com.bkahlert.kommons.text.simpleKebabCasedName
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.js.Js
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.get
 import io.ktor.client.request.patch
@@ -33,9 +33,9 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.Url
 import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.browser.window
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -49,13 +49,12 @@ import org.jetbrains.compose.web.dom.Pre
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
+import kotlin.properties.Delegates
 import kotlin.reflect.KClass
 
 open class Environment(
     private val url: String,
-    private val httpClient: HttpClient = HttpClient(Js) {
-        install(ContentNegotiation) { json(JsonSerializer) }
-    },
+    private val httpClient: HttpClient = JsonHttpClient(),
 ) {
     private suspend fun load() = runCatching {
         httpClient.get(url) { expectSuccess = true }.body<JsonObject>()
@@ -102,10 +101,7 @@ class UserInfoClient(
     endpoint: String,
     httpClient: HttpClient,
 ) : ApiClient(endpoint, httpClient) {
-    suspend fun info(): String {
-        val response = httpClient.get(url)
-        return response.bodyAsText()
-    }
+    suspend fun info(): JsonObject = httpClient.get(url).body()
 }
 
 class UserPropsClient(
@@ -117,10 +113,8 @@ class UserPropsClient(
         return response.bodyAsText()
     }
 
-    suspend fun getProp(id: String): String {
-        val response = httpClient.get("$url/$id")
-        return response.bodyAsText()
-    }
+    suspend inline fun <reified T> getProp(id: String): T =
+        httpClient.get("$url/$id").body<JsonElement>().let { Json.decodeFromJsonElement(it) }
 
     suspend fun setProp(id: String, value: JsonObject): String {
         val response = httpClient.patch("$url/$id") {
@@ -133,13 +127,11 @@ class UserPropsClient(
 
 sealed class HelloClient(
     val apiClients: Map<KClass<out ApiClient>, String?>,
-    val httpClient: HttpClient = HttpClient(Js) {
-        install(ContentNegotiation) { json(JsonSerializer) }
-    },
+    val httpClient: HttpClient = JsonHttpClient(),
 ) {
     val userInfo: UserInfoClient? = apiClients[UserInfoClient::class]?.let { UserInfoClient(it, httpClient) }
 
-    override fun toString(): String = asString()
+    override fun toString(): String = this::class.simpleName.toString()
 
     class Anonymous(
         apiClients: Map<KClass<out ApiClient>, String?>,
@@ -155,13 +147,32 @@ sealed class HelloClient(
     class LoggedIn(
         apiClients: Map<KClass<out ApiClient>, String?>,
         private val authorizationState: Authorized,
-    ) : HelloClient(apiClients, authorizationState.buildClient(object : OAuth2Resource {
-        override val name: String get() = "api"
-        private val endpointUrls = apiClients.values.filterNotNull().map { ApiClient.endpointToUrl(it) }
-        override fun matches(url: Url): Boolean = url.toString().let { endpointUrls.any { endpointUrl -> it.startsWith(endpointUrl) } }
-    })) {
-        val clickUp: ClickUpClient? = apiClients[ClickUpClient::class]?.let { ClickUpClient(it, httpClient) }
+    ) : HelloClient(
+        apiClients = apiClients,
+        httpClient = JsonHttpClient {
+            authorizationState.installAuth(this, object : OAuth2Resource {
+                override val name: String get() = "api"
+                private val endpointUrls = apiClients.values.filterNotNull().map { ApiClient.endpointToUrl(it) }
+                override fun matches(url: Url): Boolean = url.toString().let { endpointUrls.any { endpointUrl -> it.startsWith(endpointUrl) } }
+            })
+        },
+    ) {
+
         val userProps: UserPropsClient? = apiClients[UserPropsClient::class]?.let { UserPropsClient(it, httpClient) }
+
+        var clickUpApiToken: String? by Delegates.observable(null) { _, _, token ->
+            clickUp = when (token) {
+                null -> null
+                else -> apiClients[ClickUpClient::class]?.let {
+                    logger.info("Initializing ClickUp client with $token")
+                    ClickUpClient(it, JsonHttpClient { installTokenAuth(token) })
+//                    null
+                }
+            }
+        }
+
+        var clickUp: ClickUpClient? = null
+            private set
 
         suspend fun logOut(): HelloClient =
             resolve(authorizationState.revokeTokens(httpClient), apiClients)
@@ -200,6 +211,13 @@ sealed class HelloClient(
                 is Authorizing -> LoggedIn(apiClients, authorizationState.getTokens())
                 is Authorized -> LoggedIn(apiClients, authorizationState)
             }
+            if (helloClient is LoggedIn) {
+                logger.info("Getting ClickUp API token")
+                val clickUpApiToken = helloClient.userProps?.getProp<String?>("clickup.api-token")
+                logger.info("ClickUp API token: $clickUpApiToken")
+                helloClient.clickUpApiToken = clickUpApiToken
+                logger.info("Set: $clickUpApiToken")
+            }
             logger.debug("$helloClient")
             return helloClient
         }
@@ -219,6 +237,7 @@ sealed class HelloClient(
 }
 
 
+@Suppress("UNREACHABLE_CODE")
 suspend fun main() {
 
     val logger = SimpleLogger("main")
@@ -317,9 +336,9 @@ suspend fun main() {
                                 Button(attrs = {
                                     onClick {
                                         helloClientScope.launch {
-                                            val response = userPropsClient.getProp("foo")
+                                            val response = userPropsClient.getProp<JsonElement>("foo")
                                             console.info("Response: $response")
-                                            status = response
+                                            status = response.serialize(true)
                                         }
                                     }
                                 }) {
@@ -401,7 +420,7 @@ fun UserInfo(
                 clientScope.launch {
                     val response = client.info()
                     console.info("Response: $response")
-                    onResponse(response)
+                    onResponse(response.serialize(true))
                 }
             }
         }) {

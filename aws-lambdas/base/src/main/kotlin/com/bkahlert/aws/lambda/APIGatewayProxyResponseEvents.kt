@@ -1,5 +1,6 @@
 package com.bkahlert.aws.lambda
 
+import com.amazonaws.services.lambda.runtime.Context
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -10,8 +11,39 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
+
+public fun errorResponse(
+    errorMessage: String?,
+    context: Context? = null,
+): APIGatewayProxyResponseEvent =
+    errorResponse(500, errorMessage, context)
+
+public fun errorResponse(
+    statusCode: Int,
+    errorMessage: String?,
+    context: Context? = null,
+): APIGatewayProxyResponseEvent =
+    errorResponse(RuntimeException(errorMessage), context, statusCode)
+
+public fun errorResponse(
+    exception: Throwable,
+    context: Context? = null,
+    status: Int = when (exception) {
+        is IllegalArgumentException -> 400
+        else -> 500
+    },
+): APIGatewayProxyResponseEvent =
+    jsonObjectResponse {
+        put("status", status)
+        exception.message?.also { put("errorMessage", it) }
+        exception::class.simpleName?.also { put("errorType", it) }
+        exception.stackTrace?.also { it -> put("stackTrace", buildJsonArray { it.forEach { add(it.toString()) } }) }
+        context?.awsRequestId?.also { put("requestId", it) }
+    }
 
 /**
  * Returns a [APIGatewayProxyResponseEvent]

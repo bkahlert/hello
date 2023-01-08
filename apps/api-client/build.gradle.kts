@@ -11,6 +11,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons")
+                implementation("com.bkahlert.kommons:kommons-ktor-json")
                 implementation("com.bkahlert.kommons:kommons-auth")
                 implementation("com.bkahlert.kommons:kommons-auth-ktor")
                 implementation("com.bkahlert.kommons:kommons-web")

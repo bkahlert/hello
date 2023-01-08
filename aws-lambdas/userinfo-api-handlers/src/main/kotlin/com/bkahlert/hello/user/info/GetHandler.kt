@@ -15,13 +15,12 @@ import com.auth0.jwt.interfaces.DecodedJWT
 import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
 import com.bkahlert.aws.lambda.SLF4J
 import com.bkahlert.aws.lambda.caseInsensitiveHeaders
-import com.bkahlert.aws.lambda.jsonObjectResponse
+import com.bkahlert.aws.lambda.errorResponse
 import com.bkahlert.aws.lambda.jsonResponse
 import com.bkahlert.kommons.toMomentString
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.put
 import java.security.interfaces.RSAPublicKey
 import java.util.Base64
 
@@ -45,7 +44,7 @@ class GetHandler(
 
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
         val authorization = event.caseInsensitiveHeaders["Authorization"].firstOrNull()
-            ?: return jsonObjectResponse(401) { put("message", "Authorization header missing") }
+            ?: return errorResponse(401, "Authorization header missing", context)
 
         return kotlin.runCatching {
             val token = tokenValidator.validate(authorization)
@@ -57,13 +56,13 @@ class GetHandler(
 
             jsonResponse(Json.parseToJsonElement(decodedPayload))
         }.getOrElse { exception ->
-            jsonObjectResponse(
+            errorResponse(
                 when (exception) {
                     is JWTVerificationException -> 401
                     is IllegalArgumentException -> 400
                     else -> 500
-                }
-            ) { put("message", exception.message) }
+                }, exception.message, context
+            )
         }
     }
 }

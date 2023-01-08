@@ -8,12 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":base"))
-    implementation("io.ktor:ktor-client-auth")
-    implementation("io.ktor:ktor-client-content-negotiation")
-    implementation("io.ktor:ktor-client-core")
-    implementation("io.ktor:ktor-client-okhttp")
-    implementation("io.ktor:ktor-client-logging")
-    implementation("io.ktor:ktor-client-serialization")
+    implementation("com.bkahlert.kommons:kommons-ktor-json")
     implementation("io.ktor:ktor-serialization-kotlinx-json")
     testImplementation(project(":base-test"))
 }
