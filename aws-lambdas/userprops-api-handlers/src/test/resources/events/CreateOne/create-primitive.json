@@ -1,0 +1,10 @@
+{
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "sub": "alice"
+      }
+    }
+  },
+  "body": "{ \"foo\": \"bar\", \"baz\": null }"
+}

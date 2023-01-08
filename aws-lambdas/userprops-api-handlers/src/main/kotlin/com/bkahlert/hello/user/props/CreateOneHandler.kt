@@ -1,6 +1,5 @@
 package com.bkahlert.hello.user.props
 
-import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue.S
 import aws.sdk.kotlin.services.dynamodb.model.PutItemRequest
 import com.amazonaws.services.lambda.runtime.Context
@@ -10,26 +9,25 @@ import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
 import com.bkahlert.aws.lambda.requiredUserId
 import com.bkahlert.aws.lambda.response
 import com.bkahlert.aws.lambda.userId
-import com.bkahlert.hello.user.props.DynamoTable.filterKeys
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import java.util.UUID
 
-class CreateOneHandler : APIGatewayProxyRequestEventHandler() {
+class CreateOneHandler(
+    val ddbTable: DynamoDbTable = DynamoDbTable(),
+) : APIGatewayProxyRequestEventHandler() {
 
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
-        logger.debug("user: ${event.userId}")
-        logger.debug("Inside software.amazon.awscdk.examples.lambda: getOneItem " + event.javaClass + " data:" + event)
+        logger.debug("User: ${event.userId}")
 
         val id: String = when (val providedId = event.pathParameters?.get("id")) {
-            null -> UUID.randomUUID().toString().also { logger.info("creating data for generated ID: $it") }
-            else -> providedId.also { logger.info("creating data for provided ID: $it") }
+            null -> UUID.randomUUID().toString().also { logger.info("Creating one item with generated ID: $it") }
+            else -> providedId.also { logger.info("Creating one item with provided ID: $it") }
         }
 
         val body = checkNotNull(event.body) { "body missing" }
-        logger.debug("Body is:$body")
+        logger.debug("Body is: $body")
 
         createItem(event.requiredUserId, id, body)
         return response(201, "Location" to "${event.requestContext.path}/$id")
@@ -39,30 +37,21 @@ class CreateOneHandler : APIGatewayProxyRequestEventHandler() {
         userId: String,
         id: String,
         body: String,
-    ): JsonObject? {
-        val key = mapOf<String, AttributeValue>(
-            DynamoTable.partitionKey to S(userId),
-            DynamoTable.sortKey to requireValidSortKey(id),
-        )
-
-        val putItemRequest = PutItemRequest {
-            tableName = DynamoTable.tableName
+    ): JsonObject? = ddbTable.use { ddb ->
+        ddb.putItem(PutItemRequest {
+            tableName = ddbTable.tableName
             item = buildMap {
-                putAll(key)
+                put(ddbTable.partitionKey, S(userId))
+                put(ddbTable.sortKey, requireValidSortKey(id))
                 Json.parseToJsonElement(body).jsonObject
-                    .filterKeys()
+                    .filterKeys(ddbTable)
                     .forEach {
-                        val attributeValue = S(Json.encodeToString(it.value))
-                        put(it.key, attributeValue)
+                        put(it.key, it.value.toAttribute())
                     }
             }
-        }
-
-        return DynamoTable.usingClient { ddb ->
-            ddb.putItem(putItemRequest)
-                .attributes
-                ?.filterKeys()
-                ?.toJsonObject()
-        }
+        })
+            .attributes
+            ?.filterKeys(ddbTable)
+            ?.toJsonObject()
     }
 }

@@ -11,38 +11,36 @@ import com.bkahlert.aws.lambda.jsonResponse
 import com.bkahlert.aws.lambda.requiredUserId
 import com.bkahlert.aws.lambda.response
 import com.bkahlert.aws.lambda.userId
-import com.bkahlert.hello.user.props.DynamoTable.filterKeys
-import kotlinx.serialization.json.JsonObject
+import com.bkahlert.hello.user.props.SimpleSelector.Companion.parseSelector
+import kotlinx.serialization.json.JsonElement
 
-class GetOneHandler : APIGatewayProxyRequestEventHandler() {
+class GetOneHandler(
+    val ddbTable: DynamoDbTable = DynamoDbTable(),
+) : APIGatewayProxyRequestEventHandler() {
 
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
-        logger.debug("user: ${event.userId}")
+        logger.debug("User: ${event.userId}")
 
-        val id: String = checkNotNull(event.pathParameters?.get("id")) { "ID missing" }
-        logger.info("Getting data for input parameter:$id")
+        val selector = checkNotNull(event.pathParameters?.get("id")) { "ID missing" }.parseSelector()
+        logger.info("Getting one item: $selector")
 
-        return when (val output = getData(event.requiredUserId, id)) {
-            null -> response(404)
+        return when (val output = getData(event.requiredUserId, selector)) {
+            null -> response(204)
             else -> jsonResponse(output)
         }
     }
 
-    private suspend fun getData(userId: String, id: String): JsonObject? {
-
-        val getItemRequest = GetItemRequest {
+    private suspend fun getData(userId: String, selector: SimpleSelector): JsonElement? = ddbTable.use { ddb ->
+        ddb.getItem(GetItemRequest {
             key = mapOf<String, AttributeValue>(
-                DynamoTable.partitionKey to S(userId),
-                DynamoTable.sortKey to requireValidSortKey(id),
+                ddbTable.partitionKey to S(userId),
+                ddbTable.sortKey to requireValidSortKey(selector.id),
             )
-            tableName = DynamoTable.tableName
-        }
-
-        return DynamoTable.usingClient { ddb ->
-            ddb.getItem(getItemRequest)
-                .item
-                ?.filterKeys()
-                ?.toJsonObject()
-        }
+            tableName = ddbTable.tableName
+            projectionExpression
+        }).item
+            ?.filterKeys(ddbTable)
+            ?.toJsonObject()
+            ?.let { selector.resolve(it) }
     }
 }

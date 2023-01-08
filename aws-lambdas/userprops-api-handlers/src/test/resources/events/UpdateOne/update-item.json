@@ -1,0 +1,13 @@
+{
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "sub": "alice"
+      }
+    }
+  },
+  "pathParameters": {
+    "id": "foo"
+  },
+  "body": "{ \"bar\": \"baz\" }"
+}

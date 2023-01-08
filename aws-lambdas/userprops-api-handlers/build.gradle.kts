@@ -7,6 +7,8 @@ dependencies {
     implementation("aws.sdk.kotlin:dynamodb")
 
     testImplementation(project(":base-test"))
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:junit-jupiter")
 
     // TODO remove
     implementation("com.bkahlert.kommons:kommons-debug")
@@ -19,4 +21,4 @@ kotlin {
             languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
-}0
+}

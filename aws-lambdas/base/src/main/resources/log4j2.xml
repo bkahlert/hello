@@ -8,6 +8,12 @@
         </Lambda>
     </Appenders>
     <Loggers>
+        <Logger name="aws.sdk.kotlin" level="warn" additivity="false">
+            <AppenderRef ref="Lambda"/>
+        </Logger>
+        <Logger name="aws.smithy.kotlin.runtime.auth" level="warn" additivity="false">
+            <AppenderRef ref="Lambda"/>
+        </Logger>
         <Root level="debug">
             <AppenderRef ref="Lambda"/>
         </Root>
