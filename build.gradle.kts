@@ -24,7 +24,7 @@ tasks.register("clean") {
                 "kommons-libs" -> {
                     dependsOn(includedBuild.task(":kommons-auth:clean"))
                     dependsOn(includedBuild.task(":kommons-auth-ktor:clean"))
-                    dependsOn(includedBuild.task(":kommons-web:clean"))
+                    dependsOn(includedBuild.task(":kommons-dom:clean"))
                 }
 
                 "api-client" -> dependsOn(includedBuild.task(":clean"))

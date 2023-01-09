@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup.api.rest
 
-import com.bkahlert.kommons.serialization.deserialize
-import com.bkahlert.kommons.serialization.serialize
+import com.bkahlert.kommons.json.deserialize
+import com.bkahlert.kommons.json.serialize
 
 class CacheAccessor(val key: String, val getter: (String) -> String?, val setter: (String, String?) -> Unit) {
     inline fun <reified T> load(): T? = getter(key)

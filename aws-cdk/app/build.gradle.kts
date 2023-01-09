@@ -30,6 +30,13 @@ val cdkTasks = listOf(
     }
 }
 
+val stacks = mapOf(
+    "All" to "--all",
+    "ClickUp" to "ClickUp",
+    "UserInfo" to "UserInfo",
+    "UserProps" to "UserProps",
+)
+
 val synthesize by tasks.registering(Exec::class) {
     group = "cdk"
     description = "Synthesizes and prints the CloudFormation template for one or more specified stacks"
@@ -50,18 +57,13 @@ val deployNoRollback by tasks.registering(Exec::class) {
     cdk("deploy", "--all", "--require-approval", "never", "--no-rollback")
 }
 
-/** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/cli.html#cli-deploy-hotswap">Hot swapping</a> */
-val deployHotswap by tasks.registering(Exec::class) {
-    group = "cdk"
-    description = "Attempts to update resources directly instead of generating and deploying a CloudFormation changeset"
-    cdk("deploy", "--all", "--require-approval", "never", "--hotswap", "--no-rollback")
-}
-
-/** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/cli.html#cli-deploy-hotswap">Hot swapping</a> */
-val deployHotswapClickUp by tasks.registering(Exec::class) {
-    group = "cdk"
-    description = "Attempts to update resources directly instead of generating and deploying a CloudFormation changeset"
-    cdk("deploy", "ClickUp", "--require-approval", "never", "--hotswap", "--no-rollback")
+stacks.forEach { (label, argument) ->
+    /** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/cli.html#cli-deploy-hotswap">Hot swapping</a> */
+    tasks.register("deployHotswap$label", Exec::class) {
+        group = "cdk"
+        description = "Attempts to update resources directly instead of generating and deploying a CloudFormation changeset"
+        cdk("deploy", argument, "--require-approval", "never", "--hotswap", "--no-rollback")
+    }
 }
 
 /** @see <a href="https://docs.aws.amazon.com/cdk/v2/guide/cli.html#cli-deploy-watch">Watch mode</a> */

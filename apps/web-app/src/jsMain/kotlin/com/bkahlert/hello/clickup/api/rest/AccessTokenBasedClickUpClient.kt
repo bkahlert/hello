@@ -25,9 +25,9 @@ import com.bkahlert.hello.clickup.api.rest.StartTimeEntryRequest
 import com.bkahlert.hello.clickup.api.rest.UpdateTaskRequest
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.div
-import com.bkahlert.kommons.serialization.JsonSerializer
+import com.bkahlert.kommons.json.LenientJson
+import com.bkahlert.kommons.json.serialize
 import com.bkahlert.kommons.serialization.Named
-import com.bkahlert.kommons.serialization.serialize
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
@@ -67,7 +67,7 @@ data class AccessTokenBasedClickUpClient(
     private val restClient by lazy {
         HttpClient(Js) {
             install(ContentNegotiation) {
-                json(JsonSerializer)
+                json(LenientJson)
             }
             HttpResponseValidator {
                 handleResponseExceptionWithRequest { ex, _ ->

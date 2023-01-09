@@ -17,5 +17,6 @@ dependencies {
         api("com.bkahlert.kommons:kommons:${libs.versions.kommons.get()}")
         api("com.bkahlert.kommons:kommons-core:${libs.versions.kommons.get()}")
         api("com.bkahlert.kommons:kommons-debug:${libs.versions.kommons.get()}")
+        api("com.bkahlert.kommons:kommons-text:${libs.versions.kommons.get()}")
     }
 }

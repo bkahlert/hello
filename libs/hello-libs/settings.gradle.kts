@@ -17,6 +17,7 @@ dependencyResolutionManagement {
     }
 }
 includeBuild("../../platforms")
+includeBuild("../../libs/kommons-libs")
 
 // == Define the inner structure of this component ==
 rootProject.name = "hello-libs"

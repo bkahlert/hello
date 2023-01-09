@@ -2,9 +2,9 @@ package com.bkahlert.kommons.color
 
 import com.bkahlert.kommons.color.Color.HSL
 import com.bkahlert.kommons.color.Color.RGB
+import com.bkahlert.kommons.json.deserialize
+import com.bkahlert.kommons.json.serialize
 import com.bkahlert.kommons.quoted
-import com.bkahlert.kommons.serialization.deserialize
-import com.bkahlert.kommons.serialization.serialize
 import com.bkahlert.kommons.tests
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.comparables.shouldBeLessThanOrEqualTo

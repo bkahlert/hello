@@ -1,10 +1,7 @@
 package com.bkahlert.kommons.auth
 
-import com.bkahlert.kommons.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.kommons.debug.asString
-import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
-import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.ktor.JsonHttpClient
+import com.bkahlert.kommons.logging.InlineLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.body
@@ -37,6 +34,8 @@ import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Uint32Array
 import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get
+import org.w3c.dom.get
+import org.w3c.dom.set
 import org.w3c.dom.url.URL
 import kotlin.js.Promise
 import kotlin.js.json
@@ -105,7 +104,7 @@ public sealed class OAuth2AuthorizationState(
         override val authorizationServer: OAuth2AuthorizationServer,
         override val clientId: String,
     ) : OAuth2AuthorizationState(authorizationServer, clientId) {
-        private val logger = simpleLogger()
+        private val logger by InlineLogging
 
         public suspend fun authorize(): OAuth2AuthorizationState {
             logger.info("Preparing authorization with ${authorizationServer.authorizationEndpoint}")
@@ -138,7 +137,7 @@ public sealed class OAuth2AuthorizationState(
         val authorizationCode: String,
         val state: String?,
     ) : OAuth2AuthorizationState(authorizationServer, clientId) {
-        private val logger = simpleLogger()
+        private val logger by InlineLogging
 
         public suspend fun getTokens(): Authorized {
             logger.info("Authorization code received: $authorizationCode")
@@ -172,7 +171,7 @@ public sealed class OAuth2AuthorizationState(
         override val clientId: String,
         val tokensStorage: TokenInfoStorage,
     ) : OAuth2AuthorizationState(authorizationServer, clientId) {
-        private val logger = simpleLogger()
+        private val logger by InlineLogging
 
         public fun installAuth(
             config: HttpClientConfig<HttpClientEngineConfig>,
@@ -256,7 +255,7 @@ public sealed class OAuth2AuthorizationState(
             authorizationServer: OAuth2AuthorizationServer,
             clientId: String,
         ): OAuth2AuthorizationState {
-            val tokenInfoStorage = TokenInfoStorageImpl(localStorage.scoped(authorizationServer.issuer))
+            val tokenInfoStorage = TokenInfoStorageImpl(authorizationServer.issuer)
 
             val searchParams = URL(window.location.href).searchParams
             return when (val authorizationCode = searchParams.get("code")) {
@@ -285,19 +284,17 @@ public val TokenInfo.bearerTokens: BearerTokens?
 
 
 private class TokenInfoStorageImpl(
-    private val storage: Storage,
+    private val key: String,
 ) : TokenInfoStorage {
 
     override fun get(): TokenInfo? =
-        storage["token-info"]?.let { kotlinx.serialization.json.Json.decodeFromString<TokenInfo>(it) }
+        localStorage[key]?.let { kotlinx.serialization.json.Json.decodeFromString(it) }
 
     override fun set(tokenInfo: TokenInfo?) {
-        storage["token-info"] = tokenInfo?.let { kotlinx.serialization.json.Json.encodeToString(it) }
+        localStorage[key] = kotlinx.serialization.json.Json.encodeToString(tokenInfo)
     }
 
-    override fun toString(): String = asString {
-        put("tokenInfo", get())
-    }
+    override fun toString(): String = get().toString()
 }
 
 

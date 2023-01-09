@@ -13,11 +13,12 @@ function tmux() {
   "$command" "$@"
 }
 
-tmux set -g pane-border-status top
-tmux set -g pane-border-format " select with: ⌃b q #{pane_index}, running: #{pane_current_command} "
-tmux set -g pane-base-index 1
 tmux new-session -s "cdk-watch" -d -c "$PWD" 'cdk deploy --all --watch --no-rollback; '"$SHELL"
-#tmux split-window -h -c "$PWD/../.." 'printf "You are in %s\nTo exit, press Ctrl+b, &, y\n" "$(pwd)"; '"$SHELL"
+tmux set -qo mouse on
+tmux set -qo pane-border-status top
+tmux set -qo pane-border-format " select with: ⌃b q #{pane_index}, running: #{pane_current_command} "
+tmux set -qo pane-base-index 1
+tmux split-window -h -c "$PWD/../.." 'printf "You are in %s\nTo exit, press Ctrl+b, &, y\n" "$(pwd)"; '"$SHELL"
 for ((i = 0; i < "${#continuous_builds[@]}"; i++)); do
   task=${continuous_builds[$i]}
   tmux_args=('split-window')

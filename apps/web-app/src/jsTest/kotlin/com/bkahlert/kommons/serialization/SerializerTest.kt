@@ -1,5 +1,7 @@
 package com.bkahlert.kommons.serialization
 
+import com.bkahlert.kommons.json.deserialize
+import com.bkahlert.kommons.json.serialize
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.KSerializer
