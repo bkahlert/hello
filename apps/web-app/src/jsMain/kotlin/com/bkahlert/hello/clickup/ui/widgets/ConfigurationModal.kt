@@ -62,7 +62,7 @@ fun ConfigurationModal(
                     Label { Text("Access Token") }
                     Input(Password) {
                         name("clickup-access-token")
-                        required(true)
+                        required()
                         pattern(AccessToken.REGEX.pattern)
                         value(accessTokenInput)
                         onInput { accessTokenInput = it.value }

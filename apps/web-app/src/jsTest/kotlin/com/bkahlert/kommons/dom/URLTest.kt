@@ -16,9 +16,12 @@ class URLTest {
         URL.parse("https://example.com/").path.shouldContainExactly("")
         URL.parse("https://example.com/path").path.shouldContainExactly("path")
         URL.parse("https://example.com/path/").path.shouldContainExactly("path", "")
+        URL.parse("https://example.com/path?query").path.shouldContainExactly("path")
+        URL.parse("https://example.com/path/?query").path.shouldContainExactly("path", "")
 
         URL.parse("http://example.com") shouldBe URL("http", "example.com")
         URL.parse("https://example.com/") shouldBe URL("https", "example.com", path = listOf(""))
+        URL.parse("https://example.com/foo?bar") shouldBe URL("https", "example.com", path = listOf("foo"), query = Parameters.build { append("bar") })
         URL.parse("http://localhost:8080/#debug") shouldBe URL("http", "localhost", 8080, fragment = Parameters.build { append("debug") })
         URL.parse("ftp://example.com/path") shouldBe URL("ftp", "example.com", null, listOf("path"))
     }
@@ -51,9 +54,11 @@ class URLTest {
     @Test fun serialize() = testAll {
         URL.parse("http://example.com").toString() shouldBe "http://example.com"
         URL.parse("https://example.com/").toString() shouldBe "https://example.com/"
+        URL.parse("https://example.com/path?query").toString() shouldBe "https://example.com/path?query"
+        URL.parse("https://example.com/path/?query").toString() shouldBe "https://example.com/path/?query"
         URL.parse("http://localhost:8080/#debug").toString() shouldBe "http://localhost:8080/#debug"
         URL.parse("ftp://example.com/path").toString() shouldBe "ftp://example.com/path"
-        URL.parse("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")
+        URL.parse("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7") // TODO that's no URL but an URI; re-implement with official spec
             .toString() shouldBe "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
     }
 

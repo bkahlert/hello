@@ -25,7 +25,7 @@ import com.bkahlert.hello.clickup.api.rest.StartTimeEntryRequest
 import com.bkahlert.hello.clickup.api.rest.UpdateTaskRequest
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.div
-import com.bkahlert.kommons.json.LenientJson
+import com.bkahlert.kommons.json.Lenient
 import com.bkahlert.kommons.json.serialize
 import com.bkahlert.kommons.serialization.Named
 import io.ktor.client.HttpClient
@@ -49,6 +49,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import kotlin.js.Date
 
 data class AccessTokenBasedClickUpClient(
@@ -67,7 +68,7 @@ data class AccessTokenBasedClickUpClient(
     private val restClient by lazy {
         HttpClient(Js) {
             install(ContentNegotiation) {
-                json(LenientJson)
+                json(Json.Lenient)
             }
             HttpResponseValidator {
                 handleResponseExceptionWithRequest { ex, _ ->

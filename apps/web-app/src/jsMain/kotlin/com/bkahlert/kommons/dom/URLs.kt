@@ -33,8 +33,16 @@ data class URL(
             buildString {
                 append(schema)
                 append("://")
-                listOfNotNull("$encodedHost$encodedPort", if (path.isEmpty()) null else encodedPath, "$encodedQuery$encodedFragment".takeIf { it.isNotEmpty() })
-                    .joinTo(this, "/")
+                append(encodedHost)
+                append(encodedPort)
+                if (path.isNotEmpty() || encodedQuery.isNotEmpty() || encodedFragment.isNotEmpty()) {
+                    append("/")
+                }
+                if (path.isNotEmpty()) {
+                    append(encodedPath)
+                }
+                append(encodedQuery)
+                append(encodedFragment)
             }
         }
 

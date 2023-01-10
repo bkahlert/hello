@@ -12,6 +12,7 @@ import kotlin.test.assertEquals
 class UrlSerializerTest : SerializerTest<URL>(
     UrlSerializer,
     "https://example.com".quoted to URL.parse("https://example.com"),
+    "https://example.com/path?query".quoted to URL.parse("https://example.com/path?query"),
     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7".quoted to URL.parse(
         "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
     ),

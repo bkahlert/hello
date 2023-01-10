@@ -22,6 +22,8 @@ import software.amazon.awscdk.services.cloudfront.FunctionEventType.VIEWER_REQUE
 import software.amazon.awscdk.services.cloudfront.OriginProtocolPolicy
 import software.amazon.awscdk.services.cloudfront.OriginSslPolicy
 import software.amazon.awscdk.services.cloudfront.PriceClass
+import software.amazon.awscdk.services.cloudfront.ResponseHeadersCorsBehavior
+import software.amazon.awscdk.services.cloudfront.ResponseHeadersPolicy
 import software.amazon.awscdk.services.cloudfront.S3OriginConfig
 import software.amazon.awscdk.services.cloudfront.SSLMethod
 import software.amazon.awscdk.services.cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021
@@ -104,6 +106,7 @@ class DistributionStack(
         )
     ).build()
 
+    // S3
     init {
         cloudFrontOriginConfigs.add(
             SourceConfiguration.builder()
@@ -127,8 +130,11 @@ class DistributionStack(
         )
     }
 
-    // APIs
+    // Rewrite functions
     val apiPathRewrites = buildMap<Int, Function> {
+        // TODO refactor so that the ClickUp-Proxy, which needs a nesting 1 function
+        // does not rely on it being implicitly generated because of the
+        // Environment API
         apis.values.map { pathPattern -> pathPattern.nesting }.distinct().forEach { nesting ->
             put(
                 nesting, Function.Builder.create(this@DistributionStack, "api-path-rewrite-$nesting").code(
@@ -150,6 +156,69 @@ class DistributionStack(
         }
     }
 
+    // ClickUp-Proxy
+    val clickUpProxyResponseHeaderPolicy = ResponseHeadersPolicy.Builder.create(this, "ClickUpProxyResponseHeaderPolicy")
+        .responseHeadersPolicyName("ClickUp-Proxy")
+        .corsBehavior(
+            ResponseHeadersCorsBehavior.builder()
+                .accessControlAllowOrigins(
+                    listOf(
+                        "http://localhost:8080",
+                        "http://localhost:8081",
+                        "https://hello.aws-dev.choam.de",
+                    )
+                )
+                .accessControlAllowCredentials(true)
+                .accessControlAllowHeaders(listOf("Authorization", "Content-Type"))
+                .accessControlAllowMethods(listOf("GET", "HEAD", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"))
+                .accessControlExposeHeaders(listOf("Authorization", "Content-Type"))
+                .accessControlMaxAge(Duration.seconds(600))
+                .originOverride(true)
+                .build()
+        )
+        .build()
+
+    init {
+        cloudFrontOriginConfigs.add(
+            SourceConfiguration.builder()
+                .customOriginSource(
+                    CustomOriginConfig.builder()
+                        .domainName("api.clickup.com")
+                        .allowedOriginSslVersions(listOf(OriginSslPolicy.TLS_V1_2))
+                        .originProtocolPolicy(OriginProtocolPolicy.HTTPS_ONLY)
+                        .build()
+                ).behaviors(
+                    listOf(
+                        Behavior.builder()
+                            .forwardedValues(
+                                CfnDistribution.ForwardedValuesProperty.builder()
+                                    .cookies(CfnDistribution.CookiesProperty.builder().forward("all").build())
+                                    .headers(listOf("Authorization"))
+                                    .queryString(true)
+                                    .build()
+                            )
+                            .allowedMethods(CloudFrontAllowedMethods.ALL)
+                            .cachedMethods(CloudFrontAllowedCachedMethods.GET_HEAD)
+                            .isDefaultBehavior(false)
+                            .defaultTtl(Duration.minutes(0))
+                            .maxTtl(Duration.minutes(0))
+                            .minTtl(Duration.minutes(0))
+                            .pathPattern("/api.clickup.com*")
+                            .functionAssociations(
+                                listOf(
+                                    FunctionAssociation.builder()
+                                        .eventType(VIEWER_REQUEST)
+                                        .function(apiPathRewrites[1])
+                                        .build()
+                                )
+                            )
+                            .build()
+                    )
+                ).build()
+        )
+    }
+
+    // APIs
     init {
         apis.forEach { (restApi, pathPattern) ->
             cloudFrontOriginConfigs.add(
@@ -210,6 +279,17 @@ class DistributionStack(
         .build()
         .export("DistributionId", "ID of the distribution") { it.distributionId }
         .export("DistributionUrl", "URL of the distribution") { "https://${it.distributionDomainName}" }
+
+    init {
+        // Super annoying ... as of 2023-01-10
+        // this seems to be the only way to assign a response header policy
+        // to a behaviour.
+        val cfnDistribution = distribution.node.defaultChild as CfnDistribution
+        cfnDistribution.addOverride(
+            "Properties.DistributionConfig.CacheBehaviors.0.ResponseHeadersPolicyId",
+            clickUpProxyResponseHeaderPolicy.responseHeadersPolicyId,
+        )
+    }
 
 
     /* Route53 alias record for the CloudFront distribution */
