@@ -1,14 +1,15 @@
 package com.bkahlert.hello.debug.clickup
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.clickup.api.Team
-import com.bkahlert.hello.clickup.api.TimeEntry
+import com.bkahlert.hello.clickup.model.ClickUpFixtures
+import com.bkahlert.hello.clickup.model.ClickUpFixtures.running
+import com.bkahlert.hello.clickup.model.Team
+import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.ui.ClickUpMenu
 import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
-import com.bkahlert.hello.debug.clickup.ClickUpFixtures.running
 import com.bkahlert.hello.debug.clickupException
 
 @Composable

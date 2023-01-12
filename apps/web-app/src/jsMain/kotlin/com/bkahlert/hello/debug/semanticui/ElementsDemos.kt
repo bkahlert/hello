@@ -1,10 +1,10 @@
 package com.bkahlert.hello.debug.semanticui
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.clickup.model.ImageFixtures
+import com.bkahlert.hello.clickup.model.ImageFixtures.KommonsLogo
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
-import com.bkahlert.hello.debug.ImageFixtures
-import com.bkahlert.hello.debug.ImageFixtures.KommonsLogo
 import com.bkahlert.hello.semanticui.SemanticUI
 import com.bkahlert.hello.semanticui.Variation.Negative
 import com.bkahlert.hello.semanticui.element.Button

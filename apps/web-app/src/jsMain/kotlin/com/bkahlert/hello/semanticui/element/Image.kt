@@ -1,7 +1,7 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.compose.Image
+import com.bkahlert.hello.clickup.Image
 import com.bkahlert.hello.semanticui.SemanticAttrBuilder
 import com.bkahlert.hello.semanticui.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.SemanticBuilder

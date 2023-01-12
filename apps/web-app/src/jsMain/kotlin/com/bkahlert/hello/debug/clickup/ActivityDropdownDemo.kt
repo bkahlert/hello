@@ -1,11 +1,12 @@
 package com.bkahlert.hello.debug.clickup
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.clickup.api.FolderPreview
-import com.bkahlert.hello.clickup.api.Space
-import com.bkahlert.hello.clickup.api.Task
-import com.bkahlert.hello.clickup.api.TaskList
-import com.bkahlert.hello.clickup.api.TimeEntry
+import com.bkahlert.hello.clickup.model.ClickUpFixtures
+import com.bkahlert.hello.clickup.model.FolderPreview
+import com.bkahlert.hello.clickup.model.Space
+import com.bkahlert.hello.clickup.model.Task
+import com.bkahlert.hello.clickup.model.TaskList
+import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.ui.widgets.Activity
 import com.bkahlert.hello.clickup.ui.widgets.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.ui.widgets.ActivityDropdown

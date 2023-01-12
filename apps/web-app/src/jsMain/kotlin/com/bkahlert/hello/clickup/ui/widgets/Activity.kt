@@ -2,17 +2,17 @@ package com.bkahlert.hello.clickup.ui.widgets
 
 import com.bkahlert.Brand
 import com.bkahlert.Brand.colors
-import com.bkahlert.hello.clickup.api.FolderPreview
-import com.bkahlert.hello.clickup.api.Identifier
-import com.bkahlert.hello.clickup.api.Space
-import com.bkahlert.hello.clickup.api.Tag
-import com.bkahlert.hello.clickup.api.Task
-import com.bkahlert.hello.clickup.api.TaskID
-import com.bkahlert.hello.clickup.api.TaskList
-import com.bkahlert.hello.clickup.api.TaskListID
-import com.bkahlert.hello.clickup.api.TaskListPreview
-import com.bkahlert.hello.clickup.api.TimeEntry
-import com.bkahlert.hello.clickup.api.TimeEntryID
+import com.bkahlert.hello.clickup.model.FolderPreview
+import com.bkahlert.hello.clickup.model.Identifier
+import com.bkahlert.hello.clickup.model.Space
+import com.bkahlert.hello.clickup.model.Tag
+import com.bkahlert.hello.clickup.model.Task
+import com.bkahlert.hello.clickup.model.TaskID
+import com.bkahlert.hello.clickup.model.TaskList
+import com.bkahlert.hello.clickup.model.TaskListID
+import com.bkahlert.hello.clickup.model.TaskListPreview
+import com.bkahlert.hello.clickup.model.TimeEntry
+import com.bkahlert.hello.clickup.model.TimeEntryID
 import com.bkahlert.hello.clickup.ui.widgets.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.ui.widgets.Activity.TaskActivity
 import com.bkahlert.hello.color.Color
@@ -164,30 +164,38 @@ sealed interface Activity<ID : Identifier<*>> {
         override val url: URL? get() = task.url
         override val meta: List<Meta>
             get() = buildList {
-                if (task.dateCreated != null) {
-                    add(Meta("created", "calendar", "alternate", "outline", text = task.dateCreated.toMomentString(true)))
+                when (val dateCreated = task.dateCreated) {
+                    null -> {}
+                    else -> {
+                        add(Meta("created", "calendar", "alternate", "outline", text = dateCreated.toMomentString(true)))
+                    }
                 }
-                when (task.dueDate?.compareTo(Date())) {
-                    -1 -> add(Meta("due", "red", "calendar", "times", "outline", text = task.dueDate.toMomentString(false)))
-                    +1 -> add(Meta("due", "calendar", "outline", text = task.dueDate.toMomentString(false)))
-                    0 -> add(Meta("due", "yellow", "calendar", "outline", text = task.dueDate.toMomentString(false)))
-                    else -> {}
+                when (val dueDate = task.dueDate) {
+                    null -> {}
+                    else -> when (dueDate.compareTo(Date())) {
+                        -1 -> add(Meta("due", "red", "calendar", "times", "outline", text = dueDate.toMomentString(false)))
+                        +1 -> add(Meta("due", "calendar", "outline", text = dueDate.toMomentString(false)))
+                        0 -> add(Meta("due", "yellow", "calendar", "outline", text = dueDate.toMomentString(false)))
+                        else -> {}
+                    }
                 }
-                if (task.timeEstimate != null) {
-                    add(Meta("estimated time", "hourglass", "outline", text = task.timeEstimate.toMomentString(false)))
+                when (val timeEstimate = task.timeEstimate) {
+                    null -> {}
+                    else -> add(Meta("estimated time", "hourglass", "outline", text = timeEstimate.toMomentString(false)))
                 }
-                if (task.timeSpent != null) {
-                    when (task.timeEstimate?.compareTo(task.timeSpent)) {
+                when (val timeSpent = task.timeSpent) {
+                    null -> {}
+                    else -> when (task.timeEstimate?.compareTo(timeSpent)) {
                         -1 -> add(
                             Meta(
                                 "spent time (critical)",
                                 "red",
                                 "stopwatch",
-                                text = task.timeSpent.toMomentString(false)
+                                text = timeSpent.toMomentString(false)
                             )
                         )
 
-                        else -> add(Meta("spent time", "stopwatch", text = task.timeSpent.toMomentString(false)))
+                        else -> add(Meta("spent time", "stopwatch", text = timeSpent.toMomentString(false)))
                     }
                 }
             }

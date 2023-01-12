@@ -1,6 +1,6 @@
 package com.bkahlert.hello.clickup.ui
 
-import com.bkahlert.hello.compose.SVGImage
+import com.bkahlert.hello.clickup.SVGImage
 import org.jetbrains.compose.web.css.CSSStyleRuleBuilder
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.backgroundColor

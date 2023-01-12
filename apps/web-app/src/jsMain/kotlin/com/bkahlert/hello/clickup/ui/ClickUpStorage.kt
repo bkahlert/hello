@@ -1,9 +1,9 @@
 package com.bkahlert.hello.clickup.ui
 
-import com.bkahlert.hello.clickup.api.Identifier
-import com.bkahlert.hello.clickup.api.Team
-import com.bkahlert.hello.clickup.api.TeamID
 import com.bkahlert.hello.clickup.api.rest.AccessToken
+import com.bkahlert.hello.clickup.model.Identifier
+import com.bkahlert.hello.clickup.model.Team
+import com.bkahlert.hello.clickup.model.TeamID
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear

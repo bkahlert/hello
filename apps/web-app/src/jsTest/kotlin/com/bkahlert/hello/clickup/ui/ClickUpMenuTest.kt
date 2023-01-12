@@ -1,23 +1,24 @@
 package com.bkahlert.hello.clickup.ui
 
-import com.bkahlert.hello.clickup.api.FolderID
-import com.bkahlert.hello.clickup.api.FolderPreview
-import com.bkahlert.hello.clickup.api.Space
-import com.bkahlert.hello.clickup.api.Task
-import com.bkahlert.hello.clickup.api.TaskID
-import com.bkahlert.hello.clickup.api.TaskList
-import com.bkahlert.hello.clickup.api.TaskListStatus
-import com.bkahlert.hello.clickup.api.TaskPreview
-import com.bkahlert.hello.clickup.api.TimeEntry
-import com.bkahlert.hello.clickup.api.TimeEntryID
+import com.bkahlert.hello.clickup.Pomodoro
+import com.bkahlert.hello.clickup.model.ClickUpFixtures
+import com.bkahlert.hello.clickup.model.ClickUpFixtures.Spaces
+import com.bkahlert.hello.clickup.model.ClickUpFixtures.TaskListBuilder
+import com.bkahlert.hello.clickup.model.ClickUpFixtures.Teams
+import com.bkahlert.hello.clickup.model.ClickUpFixtures.timeEntry
+import com.bkahlert.hello.clickup.model.FolderID
+import com.bkahlert.hello.clickup.model.FolderPreview
+import com.bkahlert.hello.clickup.model.Space
+import com.bkahlert.hello.clickup.model.Task
+import com.bkahlert.hello.clickup.model.TaskID
+import com.bkahlert.hello.clickup.model.TaskList
+import com.bkahlert.hello.clickup.model.TaskListStatus
+import com.bkahlert.hello.clickup.model.TaskPreview
+import com.bkahlert.hello.clickup.model.TimeEntry
+import com.bkahlert.hello.clickup.model.TimeEntryID
 import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disconnected
-import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.debug.clickup.ClickUpFixtures
-import com.bkahlert.hello.debug.clickup.ClickUpFixtures.Spaces
-import com.bkahlert.hello.debug.clickup.ClickUpFixtures.TaskListBuilder
-import com.bkahlert.hello.debug.clickup.ClickUpFixtures.Teams
-import com.bkahlert.hello.debug.clickup.ClickUpFixtures.timeEntry
+import com.bkahlert.hello.color.Color.RGB
 import com.bkahlert.hello.debug.clickup.ClickUpTestClient
 import com.bkahlert.hello.debug.clickup.rememberClickUpMenuTestViewModel
 import com.bkahlert.kommons.appendJQuery
@@ -309,7 +310,7 @@ private fun testClient(
         this.space = space
         name = "Task List"
         taskCount = 2
-        status = TaskListStatus("private", Color.RGB(0xff0000))
+        status = TaskListStatus("private", RGB(0xff0000))
     },
     folder: FolderPreview = FolderPreview(FolderID("folder-id"), name = "Hidden", hidden = true, access = true),
     vararg tasks: Task = arrayOf(

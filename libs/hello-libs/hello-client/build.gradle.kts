@@ -16,7 +16,7 @@ kotlin {
                 implementation("com.bkahlert.kommons:kommons-json-ktor")
                 implementation("com.bkahlert.kommons:kommons-logging-inline")
 
-                api(project(":clickup"))
+                api(project(":clickup-model"))
             }
         }
     }

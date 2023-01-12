@@ -1,9 +1,12 @@
 package com.bkahlert.hello.url
 
+import kotlinx.serialization.Serializable
+
 /**
  * Simple custom implementation due to non-working [org.w3c.dom.url.URL.equals]
  * and missing ktor `data` [Url] support.
  */
+@Serializable(with = UrlSerializer::class)
 public data class URL(
     val schema: String,
     val host: String? = null,

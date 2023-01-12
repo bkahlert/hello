@@ -6,10 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.clickup.api.Tag
-import com.bkahlert.hello.clickup.api.TaskID
-import com.bkahlert.hello.clickup.ui.Pomodoro.Companion.format
-import com.bkahlert.hello.clickup.ui.Pomodoro.Type
+import com.bkahlert.hello.clickup.Pomodoro.Companion.format
+import com.bkahlert.hello.clickup.Pomodoro.Type
+import com.bkahlert.hello.clickup.model.Tag
+import com.bkahlert.hello.clickup.model.TaskID
 import com.bkahlert.hello.compose.data
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Icon

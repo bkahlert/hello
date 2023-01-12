@@ -1,7 +1,7 @@
 package com.bkahlert.hello.ui
 
+import com.bkahlert.hello.clickup.SVGImage
 import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.compose.SVGImage
 import com.bkahlert.kommons.quoted
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems

@@ -1,9 +1,9 @@
 package com.bkahlert.hello.clickup.api.rest
 
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.clickup.api.FolderID
-import com.bkahlert.hello.clickup.api.SpaceID
-import com.bkahlert.hello.clickup.api.TeamID
+import com.bkahlert.hello.clickup.model.FolderID
+import com.bkahlert.hello.clickup.model.SpaceID
+import com.bkahlert.hello.clickup.model.TeamID
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
 

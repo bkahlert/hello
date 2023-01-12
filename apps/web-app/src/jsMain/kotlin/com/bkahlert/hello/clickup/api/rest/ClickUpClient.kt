@@ -1,27 +1,21 @@
-@file:UseSerializers(DateAsMillisecondsSerializer::class, DurationAsMillisecondsSerializer::class, UrlSerializer::class)
-
 package com.bkahlert.hello.clickup.api.rest
 
-import com.bkahlert.hello.clickup.api.Folder
-import com.bkahlert.hello.clickup.api.FolderID
-import com.bkahlert.hello.clickup.api.Space
-import com.bkahlert.hello.clickup.api.SpaceID
-import com.bkahlert.hello.clickup.api.Status
-import com.bkahlert.hello.clickup.api.Tag
-import com.bkahlert.hello.clickup.api.Task
-import com.bkahlert.hello.clickup.api.TaskID
-import com.bkahlert.hello.clickup.api.TaskList
-import com.bkahlert.hello.clickup.api.TaskListID
-import com.bkahlert.hello.clickup.api.Team
-import com.bkahlert.hello.clickup.api.TimeEntry
-import com.bkahlert.hello.clickup.api.TimeEntryID
-import com.bkahlert.hello.clickup.api.User
-import com.bkahlert.hello.url.UrlSerializer
-import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
-import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
+import com.bkahlert.hello.clickup.model.Folder
+import com.bkahlert.hello.clickup.model.FolderID
+import com.bkahlert.hello.clickup.model.Space
+import com.bkahlert.hello.clickup.model.SpaceID
+import com.bkahlert.hello.clickup.model.Status
+import com.bkahlert.hello.clickup.model.Tag
+import com.bkahlert.hello.clickup.model.Task
+import com.bkahlert.hello.clickup.model.TaskID
+import com.bkahlert.hello.clickup.model.TaskList
+import com.bkahlert.hello.clickup.model.TaskListID
+import com.bkahlert.hello.clickup.model.Team
+import com.bkahlert.hello.clickup.model.TimeEntry
+import com.bkahlert.hello.clickup.model.TimeEntryID
+import com.bkahlert.hello.clickup.model.User
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UseSerializers
 import kotlin.js.Date
 
 interface ClickUpClient {

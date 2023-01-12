@@ -1,6 +1,5 @@
 package com.bkahlert.hello.url
 
-import com.bkahlert.hello.url.URL
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind.STRING
