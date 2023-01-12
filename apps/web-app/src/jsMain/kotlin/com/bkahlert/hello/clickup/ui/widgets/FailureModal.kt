@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup.ui.widgets
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.clickup.api.rest.ClickUpException
+import com.bkahlert.hello.clickup.client.ClickUpException
 import com.bkahlert.hello.compose.data
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.IconHeader

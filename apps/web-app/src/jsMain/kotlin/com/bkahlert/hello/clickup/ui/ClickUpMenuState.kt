@@ -2,8 +2,8 @@ package com.bkahlert.hello.clickup.ui
 
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.clickup.Pomodoro
-import com.bkahlert.hello.clickup.api.rest.ClickUpClient
-import com.bkahlert.hello.clickup.api.rest.CreateTaskRequest
+import com.bkahlert.hello.clickup.client.ClickUpClient
+import com.bkahlert.hello.clickup.client.CreateTaskRequest
 import com.bkahlert.hello.clickup.model.Folder
 import com.bkahlert.hello.clickup.model.FolderID
 import com.bkahlert.hello.clickup.model.Space

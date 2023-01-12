@@ -1,14 +1,12 @@
-import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.clickup.api.rest.AccessToken
-import com.bkahlert.hello.clickup.api.rest.AddTagsToTimeEntriesRequest
-import com.bkahlert.hello.clickup.api.rest.Cache
-import com.bkahlert.hello.clickup.api.rest.CacheAccessor
-import com.bkahlert.hello.clickup.api.rest.ClickUpClient
-import com.bkahlert.hello.clickup.api.rest.ClickUpException.Companion.wrapOrNull
-import com.bkahlert.hello.clickup.api.rest.CreateTaskRequest
-import com.bkahlert.hello.clickup.api.rest.CustomFieldFilter
-import com.bkahlert.hello.clickup.api.rest.StartTimeEntryRequest
-import com.bkahlert.hello.clickup.api.rest.UpdateTaskRequest
+package com.bkahlert.hello.clickup.client.http
+
+import com.bkahlert.hello.clickup.client.AddTagsToTimeEntriesRequest
+import com.bkahlert.hello.clickup.client.ClickUpClient
+import com.bkahlert.hello.clickup.client.ClickUpException.Companion.wrapOrNull
+import com.bkahlert.hello.clickup.client.CreateTaskRequest
+import com.bkahlert.hello.clickup.client.StartTimeEntryRequest
+import com.bkahlert.hello.clickup.client.UpdateTaskRequest
+import com.bkahlert.hello.clickup.model.CustomFieldFilter
 import com.bkahlert.hello.clickup.model.Folder
 import com.bkahlert.hello.clickup.model.FolderID
 import com.bkahlert.hello.clickup.model.Space
@@ -25,9 +23,9 @@ import com.bkahlert.hello.clickup.model.User
 import com.bkahlert.hello.clickup.model.div
 import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.kommons.dom.Storage
-import com.bkahlert.kommons.dom.div
 import com.bkahlert.kommons.json.Lenient
 import com.bkahlert.kommons.json.serialize
+import com.bkahlert.kommons.logging.InlineLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
@@ -52,14 +50,14 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlin.js.Date
 
-data class AccessTokenBasedClickUpClient(
+public data class ClickUpHttpClient(
     val accessToken: AccessToken,
     private val cacheStorage: Storage,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ClickUpClient {
     val clickUpUrl = Url("/api.clickup.com/api/v2")
 
-    private val logger = simpleLogger()
+    private val logger by InlineLogging
 
     init {
         logger.debug("initializing ClickUp client with access token")
@@ -79,7 +77,7 @@ data class AccessTokenBasedClickUpClient(
             install("ClickUp-PersonalToken-Authorization") {
                 plugin(HttpSend).intercept { context ->
                     logger.debug("setting ${HttpHeaders.Authorization}=$accessToken")
-                    accessToken.configure(context)
+                    context.headers[HttpHeaders.Authorization] = accessToken.token
                     execute(context)
                 }
             }

@@ -2,13 +2,13 @@ package com.bkahlert.hello.debug.clickup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import com.bkahlert.hello.clickup.api.rest.ClickUpClient
-import com.bkahlert.hello.clickup.api.rest.ClickUpException
-import com.bkahlert.hello.clickup.api.rest.CreateTaskRequest
-import com.bkahlert.hello.clickup.api.rest.CustomFieldFilter
-import com.bkahlert.hello.clickup.api.rest.ErrorInfo
+import com.bkahlert.hello.clickup.client.ClickUpClient
+import com.bkahlert.hello.clickup.client.ClickUpException
+import com.bkahlert.hello.clickup.client.CreateTaskRequest
+import com.bkahlert.hello.clickup.client.ErrorInfo
 import com.bkahlert.hello.clickup.model.ClickUpFixtures
 import com.bkahlert.hello.clickup.model.ClickUpFixtures.running
+import com.bkahlert.hello.clickup.model.CustomFieldFilter
 import com.bkahlert.hello.clickup.model.Folder
 import com.bkahlert.hello.clickup.model.FolderID
 import com.bkahlert.hello.clickup.model.Identifier

@@ -1,6 +1,6 @@
 package com.bkahlert.hello.clickup.ui
 
-import com.bkahlert.hello.clickup.api.rest.AccessToken
+import com.bkahlert.hello.clickup.client.http.AccessToken
 import com.bkahlert.hello.clickup.model.Identifier
 import com.bkahlert.hello.clickup.model.Team
 import com.bkahlert.hello.clickup.model.TeamID

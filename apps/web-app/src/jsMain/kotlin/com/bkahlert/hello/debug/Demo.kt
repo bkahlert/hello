@@ -5,8 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.clickup.api.rest.ClickUpException
-import com.bkahlert.hello.clickup.api.rest.ErrorInfo
+import com.bkahlert.hello.clickup.client.ClickUpException
+import com.bkahlert.hello.clickup.client.ErrorInfo
 import com.bkahlert.hello.semanticui.SemanticUI
 import com.bkahlert.hello.semanticui.collection.Header
 import com.bkahlert.hello.semanticui.collection.LinkItem

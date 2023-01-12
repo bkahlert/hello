@@ -55,7 +55,7 @@ public sealed interface Identifier<T> {
 }
 
 
-private infix operator fun Url.div(path: String): Url = URLBuilder(toString())
+public infix operator fun Url.div(path: String): Url = URLBuilder(toString())
     .apply { pathSegments = pathSegments + path }
     .build()
 

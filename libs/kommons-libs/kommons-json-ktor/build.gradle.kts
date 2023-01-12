@@ -12,25 +12,25 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-content-negotiation")
-                implementation("io.ktor:ktor-client-core")
-                implementation("io.ktor:ktor-client-logging")
-                implementation("io.ktor:ktor-client-serialization")
-                implementation("io.ktor:ktor-serialization-kotlinx-json")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+                api("io.ktor:ktor-client-content-negotiation")
+                api("io.ktor:ktor-client-core")
+                api("io.ktor:ktor-client-logging")
+                api("io.ktor:ktor-client-serialization")
+                api("io.ktor:ktor-serialization-kotlinx-json")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }
         }
 
         val jsMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-js")
+                api("io.ktor:ktor-client-js")
             }
         }
 
         val jvmMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-okhttp")
+                api("io.ktor:ktor-client-okhttp")
             }
         }
 

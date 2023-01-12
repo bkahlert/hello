@@ -50,7 +50,11 @@ tasks.register("clean") {
 tasks.register("check") {
     group = "verification"
     description = "Run all checks"
-    val excluded = listOf("platforms", "build-logic", "hello-libs")
+    val excluded = listOf(
+        "platforms",
+        "build-logic",
+        "aws-cdk",
+    )
     gradle.includedBuilds
         .filterNot { it.name in excluded }
         .forEach { includedBuild ->

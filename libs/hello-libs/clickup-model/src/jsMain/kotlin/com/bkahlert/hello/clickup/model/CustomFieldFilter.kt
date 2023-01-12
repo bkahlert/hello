@@ -1,16 +1,16 @@
-package com.bkahlert.hello.clickup.api.rest
+package com.bkahlert.hello.clickup.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CustomFieldFilter(
+public data class CustomFieldFilter(
     @SerialName("field_id") val id: String,
     val operator: Operator,
     val values: List<String>,
 ) {
     @Serializable
-    enum class Operator {
+    public enum class Operator {
         @SerialName("=") Equals,
         @SerialName("<") LessThan,
         @SerialName("<=") LessThanOrEqualTo,

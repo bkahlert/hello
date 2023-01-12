@@ -14,9 +14,11 @@ import kotlin.reflect.KClass
 
 public class NamedSerializer<T>(private val dataSerializer: KSerializer<T>) : KSerializer<Named<T>> {
 
+    private val stringSerializer = String.serializer()
+
     override val descriptor: SerialDescriptor = mapSerialDescriptor(
-        String.serializer().descriptor,
-        dataSerializer.descriptor,
+        keyDescriptor = stringSerializer.descriptor,
+        valueDescriptor = dataSerializer.descriptor,
     )
 
     override fun serialize(encoder: Encoder, value: Named<T>) {

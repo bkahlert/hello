@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.clickup.api.rest.AccessToken
+import com.bkahlert.hello.clickup.client.http.AccessToken
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.IconHeader
 import com.bkahlert.hello.semanticui.module.Actions

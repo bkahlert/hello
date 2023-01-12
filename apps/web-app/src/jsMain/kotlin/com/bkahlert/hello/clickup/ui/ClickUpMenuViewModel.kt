@@ -1,12 +1,12 @@
 package com.bkahlert.hello.clickup.ui
 
-import AccessTokenBasedClickUpClient
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.clickup.api.rest.AccessToken
-import com.bkahlert.hello.clickup.api.rest.ClickUpClient
+import com.bkahlert.hello.clickup.client.ClickUpClient
+import com.bkahlert.hello.clickup.client.http.AccessToken
+import com.bkahlert.hello.clickup.client.http.ClickUpHttpClient
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
 import com.bkahlert.hello.clickup.model.TaskListID
@@ -61,7 +61,7 @@ fun rememberClickUpMenuViewModel(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
     refreshCoroutineScope: CoroutineScope = rememberCoroutineScope(),
     storage: Storage = InMemoryStorage(),
-    createClient: (AccessToken, Storage, CoroutineDispatcher) -> ClickUpClient = ::AccessTokenBasedClickUpClient,
+    createClient: (AccessToken, Storage, CoroutineDispatcher) -> ClickUpClient = ::ClickUpHttpClient,
 ): ClickUpMenuViewModel =
     remember(createClient, dispatcher, initialState, storage) {
         ClickUpMenuViewModelImpl(

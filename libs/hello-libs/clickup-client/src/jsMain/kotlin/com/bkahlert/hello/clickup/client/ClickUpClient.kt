@@ -1,5 +1,6 @@
-package com.bkahlert.hello.clickup.api.rest
+package com.bkahlert.hello.clickup.client
 
+import com.bkahlert.hello.clickup.model.CustomFieldFilter
 import com.bkahlert.hello.clickup.model.Folder
 import com.bkahlert.hello.clickup.model.FolderID
 import com.bkahlert.hello.clickup.model.Space
@@ -14,21 +15,20 @@ import com.bkahlert.hello.clickup.model.Team
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.model.TimeEntryID
 import com.bkahlert.hello.clickup.model.User
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlin.js.Date
 
-interface ClickUpClient {
-    suspend fun getUser(): User
+public interface ClickUpClient {
 
-    suspend fun getTeams(): List<Team>
+    public suspend fun getUser(): User
 
-    suspend fun createTask(
+    public suspend fun getTeams(): List<Team>
+
+    public suspend fun createTask(
         listId: TaskListID,
         task: CreateTaskRequest,
     ): Task
 
-    suspend fun getTasks(
+    public suspend fun getTasks(
         team: Team,
         page: Int? = null,
         order_by: String? = null,
@@ -50,53 +50,53 @@ interface ClickUpClient {
         custom_fields: List<CustomFieldFilter>? = null,
     ): List<Task>
 
-    suspend fun getTask(
+    public suspend fun getTask(
         taskId: TaskID,
     ): Task?
 
-    suspend fun getPossibleStatuses(
+    public suspend fun getPossibleStatuses(
         task: Task,
     ): List<Status> = getFolder(task.folder.id).statuses
 
-    suspend fun updateTask(
+    public suspend fun updateTask(
         task: Task,
     ): Task
 
-    suspend fun getSpaces(
+    public suspend fun getSpaces(
         team: Team,
         archived: Boolean = false,
     ): List<Space>
 
-    suspend fun getLists(
+    public suspend fun getLists(
         space: Space,
         archived: Boolean = false,
     ): List<TaskList>
 
-    suspend fun getFolders(
+    public suspend fun getFolders(
         space: Space,
         archived: Boolean = false,
     ): List<Folder>
 
-    suspend fun getFolder(
+    public suspend fun getFolder(
         folderId: FolderID,
     ): Folder
 
-    suspend fun getLists(
+    public suspend fun getLists(
         folder: Folder,
         archived: Boolean = false,
     ): List<TaskList>
 
-    suspend fun getTimeEntry(
+    public suspend fun getTimeEntry(
         team: Team,
         timeEntryID: TimeEntryID,
     ): TimeEntry?
 
-    suspend fun getRunningTimeEntry(
+    public suspend fun getRunningTimeEntry(
         team: Team,
         assignee: User?,
     ): TimeEntry?
 
-    suspend fun startTimeEntry(
+    public suspend fun startTimeEntry(
         team: Team,
         taskId: TaskID? = null,
         description: String? = null,
@@ -104,31 +104,13 @@ interface ClickUpClient {
         vararg tags: Tag,
     ): TimeEntry
 
-    suspend fun stopTimeEntry(
+    public suspend fun stopTimeEntry(
         team: Team,
     ): TimeEntry?
 
-    suspend fun addTagsToTimeEntries(
+    public suspend fun addTagsToTimeEntries(
         team: Team,
         timeEntryIDs: List<TimeEntryID>,
         tags: List<Tag>,
     )
 }
-
-@Serializable
-data class CreateTaskRequest(
-    @SerialName("name") val name: String,
-)
-
-@Serializable
-data class UpdateTaskRequest(
-    @SerialName("status") val status: String?,
-)
-
-@Serializable
-data class StartTimeEntryRequest(
-    val tid: TaskID?,
-    val description: String?,
-    val billable: Boolean,
-    val tags: List<Tag>,
-)
