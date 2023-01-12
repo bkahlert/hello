@@ -1,10 +1,10 @@
 package com.bkahlert.hello.ui.search
 
+import com.bkahlert.hello.color.Color
+import com.bkahlert.hello.color.Color.RGB
 import com.bkahlert.hello.ui.fmod
 import com.bkahlert.hello.ui.search.SearchEngine.Google
-import com.bkahlert.kommons.color.Color
-import com.bkahlert.kommons.color.Color.RGB
-import com.bkahlert.kommons.dom.URL
+import com.bkahlert.hello.url.URL
 
 /**
  * Search engines, such as [Google].

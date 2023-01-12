@@ -12,6 +12,7 @@ import com.bkahlert.hello.clickup.api.TimeEntry
 import com.bkahlert.hello.clickup.api.TimeEntryID
 import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disconnected
+import com.bkahlert.hello.color.Color
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.Spaces
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.TaskListBuilder
@@ -21,7 +22,6 @@ import com.bkahlert.hello.debug.clickup.ClickUpTestClient
 import com.bkahlert.hello.debug.clickup.rememberClickUpMenuTestViewModel
 import com.bkahlert.kommons.appendJQuery
 import com.bkahlert.kommons.appendSemanticUI
-import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.minus
 import io.kotest.matchers.collections.contain
 import io.kotest.matchers.collections.shouldContain

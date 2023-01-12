@@ -14,10 +14,10 @@ import com.bkahlert.hello.semanticui.element.Input
 import com.bkahlert.hello.semanticui.element.InputElement
 import com.bkahlert.hello.semanticui.element.fluid
 import com.bkahlert.hello.semanticui.element.icon
-import com.bkahlert.kommons.dom.URL
+import com.bkahlert.hello.url.URL
+import com.bkahlert.hello.url.toURLOrNull
 import com.bkahlert.kommons.dom.openInNewTab
 import com.bkahlert.kommons.dom.openInSameTab
-import com.bkahlert.kommons.dom.toURLOrNull
 import io.ktor.http.Url
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.InputType.Search
@@ -132,6 +132,7 @@ fun MultiSearchInput(
                     "ArrowUp" -> {
                         if (!event.defaultPrevented) state.prev()
                     }
+
                     "ArrowDown" -> if (!event.defaultPrevented) state.next()
                     "OSLeft", "OSRight" -> if (!event.defaultPrevented) state.allValues = true
                 }

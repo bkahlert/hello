@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.api.rest.ClickUpException
 import com.bkahlert.hello.clickup.api.rest.ErrorInfo
+import com.bkahlert.hello.compose.SVGImage
 import com.bkahlert.hello.semanticui.SemanticUI
 import com.bkahlert.hello.semanticui.collection.Header
 import com.bkahlert.hello.semanticui.collection.LinkItem
@@ -14,7 +15,6 @@ import com.bkahlert.hello.semanticui.collection.Menu
 import com.bkahlert.hello.semanticui.collection.TextMenu
 import com.bkahlert.hello.semanticui.element.Header
 import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.kommons.SVGImage
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.marginBottom
 import org.jetbrains.compose.web.css.marginTop

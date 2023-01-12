@@ -1,6 +1,6 @@
 [versions]
 compose = "1.3.0-rc01"
-kommons = "2.5.0"
+kommons = "2.6.0-SNAPSHOT"
 kotlin = "1.7.21"
 kotlinx-coroutines = "1.6.4"
 kotlinx-serialization = "1.4.1"

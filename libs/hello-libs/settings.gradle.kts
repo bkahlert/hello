@@ -13,6 +13,7 @@ pluginManagement {
 // == Define locations for components ==
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
 }

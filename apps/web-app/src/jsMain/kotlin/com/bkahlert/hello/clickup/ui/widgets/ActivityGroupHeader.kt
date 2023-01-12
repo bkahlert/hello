@@ -1,12 +1,12 @@
 package com.bkahlert.hello.clickup.ui.widgets
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.compose.color
 import com.bkahlert.hello.semanticui.SemanticElementScope
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.module.DropdownMenuElement
 import com.bkahlert.hello.semanticui.module.Header
 import org.jetbrains.compose.web.css.Position.Companion.Relative
-import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.marginTop
 import org.jetbrains.compose.web.css.position

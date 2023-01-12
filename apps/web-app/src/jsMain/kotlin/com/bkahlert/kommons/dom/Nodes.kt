@@ -29,7 +29,7 @@ fun <T> T.removeChildren(selectors: String): List<Node>
  * to each element in the original collection.
  */
 inline fun <reified R> ParentNode.map(selectors: String, transform: (Node) -> R): List<R> =
-    querySelectorAll(selectors).map(transform)
+    querySelectorAll(selectors).asList().map(transform)
 
 /**
  * Queries all children matching the given [selectors] and
@@ -37,14 +37,14 @@ inline fun <reified R> ParentNode.map(selectors: String, transform: (Node) -> R)
  * to each element of type [T] in the original collection.
  */
 inline fun <reified T, reified R> ParentNode.mapInstance(selectors: String, transform: (T) -> R): List<R> =
-    querySelectorAll(selectors).filterIsInstance<T>().map(transform)
+    querySelectorAll(selectors).asList().filterIsInstance<T>().map(transform)
 
 /**
  * Queries all children matching the given [selectors] and
  * performs the given [action] on each element.
  */
 inline fun ParentNode.forEach(selectors: String, action: (Node) -> Unit) {
-    querySelectorAll(selectors).forEach(action)
+    querySelectorAll(selectors).asList().forEach(action)
 }
 
 /**
@@ -52,7 +52,7 @@ inline fun ParentNode.forEach(selectors: String, action: (Node) -> Unit) {
  * performs the given [action] on each element of type [T].
  */
 inline fun <reified T> ParentNode.forEachInstance(selectors: String, action: (T) -> Unit) {
-    querySelectorAll(selectors).forEachInstance(action)
+    querySelectorAll(selectors).asList().filterIsInstance<T>().forEach(action)
 }
 
 /**
@@ -60,4 +60,4 @@ inline fun <reified T> ParentNode.forEachInstance(selectors: String, action: (T)
  * returns the first element of type [R], or `null` if the list contains no such element.
  */
 inline fun <reified R> ParentNode.firstInstanceOrNull(selectors: String): R? =
-    querySelectorAll(selectors).firstInstanceOrNull<R>()
+    querySelectorAll(selectors).asList().firstNotNullOfOrNull { it as? R }

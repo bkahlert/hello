@@ -39,7 +39,10 @@ kotlin {
                 implementation("com.bkahlert.kommons:kommons-auth-ktor")
                 implementation("com.bkahlert.kommons:kommons-dom")
                 implementation("com.bkahlert.kommons:kommons-json")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+
+                implementation("com.bkahlert.hello:color")
+                implementation("com.bkahlert.hello:url")
+                implementation("com.bkahlert.hello:hello-client")
             }
         }
 

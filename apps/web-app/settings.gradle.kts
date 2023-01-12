@@ -11,6 +11,7 @@ pluginManagement {
 // == Define locations for components ==
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")

@@ -14,11 +14,11 @@ import com.bkahlert.hello.clickup.ui.Pomodoro.Status.Aborted
 import com.bkahlert.hello.clickup.ui.Pomodoro.Status.Completed
 import com.bkahlert.hello.clickup.ui.Pomodoro.Status.Prepared
 import com.bkahlert.hello.clickup.ui.Pomodoro.Status.Running
+import com.bkahlert.hello.compose.color
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.jQuery
 import com.bkahlert.hello.ui.AcousticFeedback
 import kotlinx.browser.window
-import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.fontWeight
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Span

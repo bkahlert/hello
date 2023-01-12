@@ -2,11 +2,11 @@
 
 package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.kommons.dom.URL
+import com.bkahlert.hello.url.URL
+import com.bkahlert.hello.url.UrlSerializer
 import com.bkahlert.kommons.minus
 import com.bkahlert.kommons.serialization.DateAsMillisecondsSerializer
 import com.bkahlert.kommons.serialization.DurationAsMillisecondsSerializer
-import com.bkahlert.kommons.serialization.UrlSerializer
 import io.ktor.http.Url
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -19,6 +19,9 @@ tasks.register("clean") {
                 }
 
                 "hello-libs" -> {
+                    dependsOn(includedBuild.task(":clickup:clean"))
+                    dependsOn(includedBuild.task(":color:clean"))
+                    dependsOn(includedBuild.task(":hello-client:clean"))
                 }
 
                 "kommons-libs" -> {

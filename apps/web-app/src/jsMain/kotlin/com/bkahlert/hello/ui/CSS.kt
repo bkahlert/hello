@@ -1,11 +1,10 @@
 package com.bkahlert.hello.ui
 
-import com.bkahlert.kommons.SVGImage
-import com.bkahlert.kommons.color.Color
+import com.bkahlert.hello.color.Color
+import com.bkahlert.hello.compose.SVGImage
 import com.bkahlert.kommons.quoted
 import org.jetbrains.compose.web.css.AlignContent
 import org.jetbrains.compose.web.css.AlignItems
-import org.jetbrains.compose.web.css.CSSColorValue
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.FlexWrap
@@ -150,13 +149,13 @@ infix fun Double.fmod(other: Double): Double = ((this % other) + other) % other
 fun gradient(type: String, vararg args: String): String =
     args.joinToString(",", "$type-gradient(", ")")
 
-fun linearGradient(vararg colors: CSSColorValue): String =
+fun linearGradient(vararg colors: Color): String =
     gradient("linear", "180deg", *colors.map { it.toString() }.toTypedArray())
 
-fun radialGradient(vararg colors: CSSColorValue): String =
+fun radialGradient(vararg colors: Color): String =
     gradient("radial", "circle at 50% 50%", *colors.map { it.toString() }.toTypedArray())
 
-fun radialGradient(colors: List<CSSColorValue>): String =
+fun radialGradient(colors: List<Color>): String =
     radialGradient(*colors.toTypedArray())
 
 fun metalicGradient(color: Color): String =

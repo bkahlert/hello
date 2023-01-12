@@ -3,6 +3,8 @@ package com.bkahlert.hello.ui.search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import com.bkahlert.hello.compose.color
+import com.bkahlert.hello.compose.data
 import com.bkahlert.hello.semanticui.SemanticAttrBuilder
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Icon
@@ -20,7 +22,6 @@ import com.bkahlert.hello.semanticui.module.MultipleDropdownState
 import com.bkahlert.hello.semanticui.module.MultipleDropdownStateImpl
 import com.bkahlert.hello.semanticui.module.Text
 import com.bkahlert.hello.semanticui.module.scrolling
-import com.bkahlert.kommons.compose.data
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.name
@@ -30,7 +31,6 @@ import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.backgroundImage
 import org.jetbrains.compose.web.css.backgroundRepeat
 import org.jetbrains.compose.web.css.backgroundSize
-import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex

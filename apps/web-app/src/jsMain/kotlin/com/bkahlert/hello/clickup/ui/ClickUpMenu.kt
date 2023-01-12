@@ -30,6 +30,8 @@ import com.bkahlert.hello.clickup.ui.widgets.ConfigurationModal
 import com.bkahlert.hello.clickup.ui.widgets.FailureModal
 import com.bkahlert.hello.clickup.ui.widgets.MetaItems
 import com.bkahlert.hello.clickup.ui.widgets.rememberActivityDropdownState
+import com.bkahlert.hello.compose.backgroundColor
+import com.bkahlert.hello.compose.color
 import com.bkahlert.hello.semanticui.SemanticAttrBuilder
 import com.bkahlert.hello.semanticui.SemanticElementScope
 import com.bkahlert.hello.semanticui.collection.AnkerItem
@@ -54,10 +56,8 @@ import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.alignItems
-import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
-import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flex
@@ -191,6 +191,7 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
                 Span({ classes("text") }) { Text("Switch Team") }
             }
         }
+
         1 -> {
             val team = teams.first()
             TeamItem(
@@ -200,6 +201,7 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
                 if (team.id == selectedTeam?.id) +Disabled + Active
             }
         }
+
         else -> DropdownItem {
             Icon("dropdown")
             Span({ classes("text") }) { Text("Switch Team") }
@@ -273,6 +275,7 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
                     stop = { clicked },
                 )
             }
+
             else -> {
                 PomodoroStarter(
                     rememberPomodoroStarterState(
@@ -343,6 +346,7 @@ fun ClickUpMenu(
                 console.info("ClickUp menu is ${state::class.simpleName}")
                 ClickUpMenu(viewModel, state.previousState, loading = true)
             }
+
             is Failed -> {
                 console.warn("ClickUp menu failed state ${state.previousState::class.simpleName}")
                 FailureModal(
@@ -354,6 +358,7 @@ fun ClickUpMenu(
                 )
                 ClickUpMenu(viewModel, state.previousState)
             }
+
             is Succeeded -> {
                 console.info("ClickUp menu in state ${state::class.simpleName}")
                 ClickUpMenu(viewModel, state)
@@ -386,11 +391,13 @@ fun ClickUpMenu(
                     onConnect = {},
                 )
             }
+
             Disconnected -> {
                 DisconnectedItems(
                     onConnect = viewModel::connect,
                 )
             }
+
             is TeamSelecting -> {
                 MainItems(
                     user = state.user,
@@ -405,6 +412,7 @@ fun ClickUpMenu(
                     onActivate = viewModel::selectTeam,
                 )
             }
+
             is TeamSelected -> {
                 MainItems(
                     user = state.user,

@@ -14,7 +14,6 @@ kotlin {
                 implementation("com.bkahlert.kommons:kommons-text")
                 implementation(project(":kommons-json"))
                 implementation(project(":kommons-logging-inline"))
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }
         }
     }

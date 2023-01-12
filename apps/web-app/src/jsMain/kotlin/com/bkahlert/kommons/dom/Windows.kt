@@ -1,5 +1,7 @@
 package com.bkahlert.kommons.dom
 
+import com.bkahlert.hello.url.URL
+import com.bkahlert.hello.url.formUrlEncode
 import io.ktor.http.Parameters
 import org.w3c.dom.Location
 import org.w3c.dom.Window

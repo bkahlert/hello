@@ -17,7 +17,6 @@ kotlin {
                 implementation("com.bkahlert.kommons:kommons-json-ktor")
                 implementation("com.bkahlert.kommons:kommons-logging-inline")
                 implementation("com.bkahlert.hello:hello-client")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }
         }
 

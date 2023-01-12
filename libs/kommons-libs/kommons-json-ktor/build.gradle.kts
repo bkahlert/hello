@@ -17,6 +17,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-logging")
                 implementation("io.ktor:ktor-client-serialization")
                 implementation("io.ktor:ktor-serialization-kotlinx-json")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }
         }

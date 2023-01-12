@@ -31,10 +31,10 @@ import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Con
 import com.bkahlert.hello.clickup.ui.ClickUpMenuViewModel
 import com.bkahlert.hello.clickup.ui.rememberClickUpMenuViewModel
 import com.bkahlert.hello.debug.clickup.ClickUpFixtures.running
+import com.bkahlert.hello.url.URL
 import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
-import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.randomString
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope

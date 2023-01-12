@@ -5,6 +5,7 @@ import java.io.FileFilter
 // == Define locations for components ==
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
     versionCatalogs {

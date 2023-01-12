@@ -31,14 +31,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 interface ClickUpMenuViewModel {
     val state: StateFlow<ClickUpMenuState>
@@ -130,17 +127,17 @@ class ClickUpMenuViewModelImpl(
             }
         }
     }
-
-    init {
-        coroutineScope.launch {
-            delay(5.seconds)
-            while (isActive) {
-                while (updateJob?.isActive == true) delay(1.seconds)
-                refresh(background = true)
-                delay(15.seconds)
-            }
-        }
-    }
+//
+//    init {
+//        coroutineScope.launch {
+//            delay(5.seconds)
+//            while (isActive) {
+//                while (updateJob?.isActive == true) delay(1.seconds)
+//                refresh(background = true)
+//                delay(15.seconds)
+//            }
+//        }
+//    }
 
     override fun enable() {
         val token = storage.accessToken

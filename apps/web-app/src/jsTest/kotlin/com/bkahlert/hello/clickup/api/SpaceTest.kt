@@ -1,6 +1,6 @@
 package com.bkahlert.hello.clickup.api
 
-import com.bkahlert.kommons.color.Color
+import com.bkahlert.hello.color.Color
 import com.bkahlert.kommons.serialization.SerializerTest
 
 @Suppress("unused")

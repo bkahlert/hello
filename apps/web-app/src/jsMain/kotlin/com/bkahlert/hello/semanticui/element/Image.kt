@@ -1,6 +1,7 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.compose.Image
 import com.bkahlert.hello.semanticui.SemanticAttrBuilder
 import com.bkahlert.hello.semanticui.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.SemanticBuilder
@@ -9,7 +10,6 @@ import com.bkahlert.hello.semanticui.SemanticElement
 import com.bkahlert.hello.semanticui.State
 import com.bkahlert.hello.semanticui.Variation
 import com.bkahlert.hello.semanticui.Variation.Size
-import com.bkahlert.kommons.Image
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Img
 import org.w3c.dom.HTMLAnchorElement

@@ -1,6 +1,6 @@
 package com.bkahlert.kommons.dom
 
-import com.bkahlert.kommons.compose.data
+import com.bkahlert.hello.compose.data
 import io.ktor.http.Url
 import kotlinx.dom.addClass
 import kotlinx.dom.hasClass

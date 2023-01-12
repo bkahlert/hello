@@ -15,9 +15,9 @@ import com.bkahlert.hello.clickup.api.TimeEntry
 import com.bkahlert.hello.clickup.api.TimeEntryID
 import com.bkahlert.hello.clickup.ui.widgets.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.ui.widgets.Activity.TaskActivity
-import com.bkahlert.kommons.color.Color
+import com.bkahlert.hello.color.Color
+import com.bkahlert.hello.url.URL
 import com.bkahlert.kommons.compareTo
-import com.bkahlert.kommons.dom.URL
 import com.bkahlert.kommons.toMomentString
 import kotlin.js.Date
 
