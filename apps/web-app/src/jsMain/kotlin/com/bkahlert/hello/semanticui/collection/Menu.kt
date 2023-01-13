@@ -1,11 +1,11 @@
 package com.bkahlert.hello.semanticui.collection
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
-import com.bkahlert.hello.semanticui.SemanticElementScope
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.module.Dropdown
 import com.bkahlert.hello.semanticui.module.DropdownElement
 import org.jetbrains.compose.web.dom.A
@@ -19,8 +19,8 @@ interface MenuElement : SemanticElement
  */
 @Composable
 fun Menu(
-    attrs: SemanticAttrBuilder<MenuElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<MenuElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MenuElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<MenuElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -34,8 +34,8 @@ fun Menu(
  */
 @Composable
 fun TextMenu(
-    attrs: SemanticAttrBuilder<MenuElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<MenuElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MenuElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<MenuElement, HTMLDivElement>? = null,
 ) {
     Menu({
         attrs?.invoke(this)
@@ -50,8 +50,8 @@ fun TextMenu(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<MenuElement, *>.Menu(
-    attrs: SemanticAttrBuilder<MenuElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<MenuElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MenuElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<MenuElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -67,8 +67,8 @@ interface MenuItemElement : SemanticElement
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<MenuElement, *>.Item(
-    attrs: SemanticAttrBuilder<MenuItemElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<MenuItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MenuItemElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<MenuItemElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -82,8 +82,8 @@ fun SemanticElementScope<MenuElement, *>.Item(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<MenuElement, *>.Header(
-    attrs: SemanticAttrBuilder<MenuItemElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<MenuItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MenuItemElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<MenuItemElement, HTMLDivElement>? = null,
 ) {
     Item({
         attrs?.invoke(this)
@@ -99,8 +99,8 @@ fun SemanticElementScope<MenuElement, *>.Header(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<MenuElement, *>.LinkItem(
-    attrs: SemanticAttrBuilder<MenuItemElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<MenuItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MenuItemElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<MenuItemElement, HTMLDivElement>? = null,
 ) {
     Item({
         attrs?.invoke(this)
@@ -116,8 +116,8 @@ fun SemanticElementScope<MenuElement, *>.LinkItem(
 @Composable
 fun SemanticElementScope<MenuElement, *>.AnkerItem(
     href: String? = null,
-    attrs: SemanticAttrBuilder<MenuItemElement, HTMLAnchorElement>? = null,
-    content: SemanticBuilder<MenuItemElement, HTMLAnchorElement>? = null,
+    attrs: SemanticAttrBuilderContext<MenuItemElement, HTMLAnchorElement>? = null,
+    content: SemanticContentBuilder<MenuItemElement, HTMLAnchorElement>? = null,
 ) {
     SemanticElement({
         attrs?.invoke(this)
@@ -132,8 +132,8 @@ fun SemanticElementScope<MenuElement, *>.AnkerItem(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<MenuElement, *>.DropdownItem(
-    attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<DropdownElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DropdownElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<DropdownElement, HTMLDivElement>? = null,
 ) {
     Dropdown({
         attrs?.invoke(this)

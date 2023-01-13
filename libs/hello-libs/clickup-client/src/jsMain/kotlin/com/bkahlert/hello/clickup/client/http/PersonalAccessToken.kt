@@ -1,19 +1,16 @@
 package com.bkahlert.hello.clickup.client.http
 
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.http.HttpHeaders
+import com.bkahlert.kommons.ktor.AuthorizationToken
+import com.bkahlert.kommons.ktor.Token
 import kotlinx.serialization.Serializable
 
 @Serializable
-public value class AccessToken(
+public class PersonalAccessToken(
     public val token: String,
-) {
+) : Token by AuthorizationToken(token) {
+
     init {
         require(REGEX.matches(token)) { "token must match $REGEX" }
-    }
-
-    public fun configure(context: HttpRequestBuilder) {
-        context.headers[HttpHeaders.Authorization] = token
     }
 
     public companion object {

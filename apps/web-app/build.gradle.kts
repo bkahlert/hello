@@ -1,10 +1,10 @@
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
 import org.jetbrains.kotlin.gradle.targets.js.webpack.WebpackDevtool
 
 plugins {
-    id("com.bkahlert.compose-web-application")
+    id("com.bkahlert.kotlin-js-browser-application")
+    id("com.bkahlert.compose-for-web-project")
 }
 
 group = "$group.hello"
@@ -43,6 +43,7 @@ kotlin {
                 implementation("com.bkahlert.hello:color")
                 implementation("com.bkahlert.hello:url")
                 implementation("com.bkahlert.hello:hello-client")
+                implementation("com.bkahlert.hello:semantic-ui")
             }
         }
 
@@ -64,5 +65,3 @@ kotlin {
         }
     }
 }
-
-val jsBrowserProductionWebpack = tasks.named<KotlinWebpack>("jsBrowserProductionWebpack")

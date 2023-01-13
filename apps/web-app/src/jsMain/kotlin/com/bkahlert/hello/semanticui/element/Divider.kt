@@ -1,10 +1,10 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.w3c.dom.HTMLDivElement
 
 interface DividerElement : SemanticElement
@@ -14,8 +14,8 @@ interface DividerElement : SemanticElement
  */
 @Composable
 fun Divider(
-    attrs: SemanticAttrBuilder<DividerElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<DividerElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DividerElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<DividerElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")

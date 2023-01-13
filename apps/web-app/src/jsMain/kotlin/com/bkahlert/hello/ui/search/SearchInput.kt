@@ -6,9 +6,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticBuilder
 import com.bkahlert.hello.semanticui.SemanticUI
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.Input
 import com.bkahlert.hello.semanticui.element.InputElement
@@ -57,10 +57,10 @@ fun rememberSearchInputState(
 @Composable
 fun SearchInput(
     state: SearchInputState = rememberSearchInputState(),
-    attrs: SemanticAttrBuilder<InputElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<InputElement, HTMLDivElement>? = null,
     onSearch: ((String) -> Unit)? = { console.info("onSearch($it)") },
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
-    content: SemanticBuilder<InputElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<InputElement, HTMLDivElement>? = null,
 ) {
     SemanticUI("search") {
         Input({
@@ -117,10 +117,10 @@ fun rememberMultiSearchInputState(
 @Composable
 fun MultiSearchInput(
     state: MultiSearchInputState = rememberMultiSearchInputState(),
-    attrs: SemanticAttrBuilder<InputElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<InputElement, HTMLDivElement>? = null,
     onSearch: ((String, List<SearchEngine>) -> Unit)? = { query, engines -> console.log("onSearch($query; $engines)") },
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
-    content: SemanticBuilder<InputElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<InputElement, HTMLDivElement>? = null,
 ) {
     SearchInput(
         state, {

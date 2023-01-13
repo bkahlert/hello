@@ -2,14 +2,14 @@ package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.Image
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticAttrsScope
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
-import com.bkahlert.hello.semanticui.State
-import com.bkahlert.hello.semanticui.Variation
-import com.bkahlert.hello.semanticui.Variation.Size
+import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.attributes.State
+import com.bkahlert.hello.semanticui.attributes.Variation
+import com.bkahlert.hello.semanticui.attributes.Variation.Size
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Img
 import org.w3c.dom.HTMLAnchorElement
@@ -58,8 +58,8 @@ interface ImageElement : SemanticElement
 /** Creates a [SemanticUI image](https://semantic-ui.com/elements/image.html). */
 @Composable
 fun Image(
-    attrs: SemanticAttrBuilder<ImageElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ImageElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ImageElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ImageElement, HTMLDivElement>? = null,
 ) = SemanticDivElement({ classes("ui"); attrs?.invoke(this); classes("image"); }, content)
 
 /** Creates a [SemanticUI image](https://semantic-ui.com/elements/image.html). */
@@ -67,13 +67,13 @@ fun Image(
 fun Image(
     image: Image,
     alt: String = "",
-    attrs: SemanticAttrBuilder<ImageElement, HTMLImageElement>? = null,
+    attrs: SemanticAttrBuilderContext<ImageElement, HTMLImageElement>? = null,
 ) = SemanticElement<ImageElement, HTMLImageElement>({ classes("ui"); attrs?.invoke(this); classes("image"); }) { a, _ -> Img(image.dataURI, alt, a) }
 
 /** Creates a [bulleted](https://semantic-ui.com/elements/image.html#bulleted) [SemanticUI image](https://semantic-ui.com/elements/image.html). */
 @Composable
 fun ImageLink(
     href: String? = null,
-    attrs: SemanticAttrBuilder<ImageElement, HTMLAnchorElement>? = null,
-    content: SemanticBuilder<ImageElement, HTMLAnchorElement>? = null,
+    attrs: SemanticAttrBuilderContext<ImageElement, HTMLAnchorElement>? = null,
+    content: SemanticContentBuilder<ImageElement, HTMLAnchorElement>? = null,
 ) = SemanticElement({ classes("ui"); attrs?.invoke(this); classes("image") }, content) { a, c -> A(href, a, c) }

@@ -1,14 +1,14 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticAttrsScope
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
-import com.bkahlert.hello.semanticui.State
-import com.bkahlert.hello.semanticui.Variation
-import com.bkahlert.hello.semanticui.Variation.Size
+import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.attributes.State
+import com.bkahlert.hello.semanticui.attributes.Variation
+import com.bkahlert.hello.semanticui.attributes.Variation.Size
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.w3c.dom.HTMLDivElement
 
 interface InputElement : SemanticElement
@@ -49,8 +49,8 @@ interface InputElement : SemanticElement
 /** Creates a [SemanticUI input](https://semantic-ui.com/elements/input.html). */
 @Composable
 fun Input(
-    attrs: SemanticAttrBuilder<InputElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<InputElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<InputElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<InputElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")

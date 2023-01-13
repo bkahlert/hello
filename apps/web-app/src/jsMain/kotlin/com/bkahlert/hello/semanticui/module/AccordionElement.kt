@@ -2,11 +2,11 @@ package com.bkahlert.hello.semanticui.module
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
-import com.bkahlert.hello.semanticui.SemanticElementScope
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.jQuery
 import org.jetbrains.compose.web.dom.AttrBuilderContext
@@ -23,8 +23,8 @@ interface AccordionElement : SemanticElement
 @Composable
 fun Accordion(
     key: Any?,
-    attrs: SemanticAttrBuilder<AccordionElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<AccordionElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<AccordionElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<AccordionElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement<AccordionElement>({
         classes("ui")
@@ -45,8 +45,8 @@ fun Accordion(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<AccordionElement, *>.Title(
-    attrs: SemanticAttrBuilder<AccordionElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<AccordionElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<AccordionElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<AccordionElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -60,8 +60,8 @@ fun SemanticElementScope<AccordionElement, *>.Title(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<AccordionElement, *>.Content(
-    attrs: SemanticAttrBuilder<AccordionElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<AccordionElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<AccordionElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<AccordionElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)

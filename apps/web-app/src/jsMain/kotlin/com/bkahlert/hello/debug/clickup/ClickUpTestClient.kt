@@ -37,9 +37,7 @@ import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.randomString
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlin.js.Date
 import kotlin.time.Duration
@@ -367,21 +365,18 @@ open class ClickUpTestClient(
 
 /**
  * Returns a remembered [ClickUpMenuViewModel] for the purpose of testing with the
- * optionally specified [dispatcher], [refreshCoroutineScope], [storage]
+ * optionally specified [refreshCoroutineScope], [storage]
  * and the [initialState] derived from the optionally specified [testClient].
  */
 @Composable
 fun rememberClickUpMenuTestViewModel(
     testClient: ClickUpTestClient = ClickUpTestClient(),
-    dispatcher: CoroutineDispatcher = Dispatchers.Default,
     refreshCoroutineScope: CoroutineScope = rememberCoroutineScope(),
     storage: Storage = InMemoryStorage(),
     initialState: ClickUpTestClient.() -> ClickUpMenuState,
 ): ClickUpMenuViewModel =
     rememberClickUpMenuViewModel(
         initialState = testClient.initialState(),
-        dispatcher = dispatcher,
         refreshCoroutineScope = refreshCoroutineScope,
         storage = storage,
-        createClient = { _, _, _ -> testClient },
     )

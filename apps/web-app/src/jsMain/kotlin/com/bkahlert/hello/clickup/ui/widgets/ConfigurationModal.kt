@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.clickup.client.http.AccessToken
+import com.bkahlert.hello.clickup.client.http.PersonalAccessToken
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.IconHeader
 import com.bkahlert.hello.semanticui.module.Actions
@@ -32,16 +32,16 @@ import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun ConfigurationModal(
-    onConnect: (AccessToken) -> Unit,
+    onConnect: (PersonalAccessToken?) -> Unit,
     onCancel: () -> Unit,
-    defaultAccessToken: AccessToken? = null,
+    defaultAccessToken: PersonalAccessToken? = null,
 ) {
     var accessTokenInput by remember { mutableStateOf(defaultAccessToken?.token ?: "") }
-    val isValid by derivedStateOf { AccessToken.REGEX.matches(accessTokenInput) }
+    val isValid by derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) }
 
     BasicModal({
         +size.Tiny
-        onApprove = { runCatching { AccessToken(accessTokenInput) }.onSuccess(onConnect).isSuccess }
+        onApprove = { runCatching { PersonalAccessToken(accessTokenInput) }.onSuccess(onConnect).isSuccess }
         onDeny = { onCancel(); false }
     }) {
         IconHeader("sign-in") { Text("Connect to ClickUp") }
@@ -63,7 +63,7 @@ fun ConfigurationModal(
                     Input(Password) {
                         name("clickup-access-token")
                         required()
-                        pattern(AccessToken.REGEX.pattern)
+                        pattern(PersonalAccessToken.REGEX.pattern)
                         value(accessTokenInput)
                         onInput { accessTokenInput = it.value }
                     }

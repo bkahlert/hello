@@ -6,13 +6,13 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticAttrsScope
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
-import com.bkahlert.hello.semanticui.SemanticElementScope
-import com.bkahlert.hello.semanticui.Variation
+import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.attributes.Variation
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.dropdown
 import com.bkahlert.hello.semanticui.jQuery
 import com.bkahlert.hello.semanticui.toJsonArray
@@ -25,15 +25,16 @@ import org.w3c.dom.HTMLDivElement
 interface DropdownElement : SemanticElement
 
 /** [Scrolling](https://semantic-ui.com/modules/dropdown.html#scrolling) variation of [dropdown](https://semantic-ui.com/modules/dropdown.html). */
-@Suppress("unused") val <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.scrolling: Variation.Scrolling get() = Variation.Scrolling
+@Suppress("unused", "UnusedReceiverParameter")
+val <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic, *>.scrolling: Variation.Scrolling get() = Variation.Scrolling
 
 /**
  * Creates a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html#/definition).
  */
 @Composable
 fun Dropdown(
-    attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<DropdownElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DropdownElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<DropdownElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement<DropdownElement>({
         classes("ui")
@@ -89,8 +90,8 @@ class DropdownStateImpl<T>(
 @Composable
 fun <T> InlineDropdown(
     state: DropdownState<T>,
-    attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<DropdownElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DropdownElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<DropdownElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement<DropdownElement>({
         classes("ui", "inline")
@@ -177,8 +178,8 @@ class MultipleDropdownStateImpl<T>(
 @Composable
 fun <T> InlineMultipleDropdown(
     state: MultipleDropdownState<T>,
-    attrs: SemanticAttrBuilder<MultipleDropdownElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<MultipleDropdownElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MultipleDropdownElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<MultipleDropdownElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement<MultipleDropdownElement>({
         classes("ui", "inline")
@@ -215,8 +216,8 @@ fun <T> InlineMultipleDropdown(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<DropdownElement, *>.Text(
-    attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<DropdownElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DropdownElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<DropdownElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -230,8 +231,8 @@ fun SemanticElementScope<DropdownElement, *>.Text(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<DropdownElement, *>.Header(
-    attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<DropdownElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DropdownElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<DropdownElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -245,7 +246,7 @@ fun SemanticElementScope<DropdownElement, *>.Header(
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<DropdownElement, *>.Divider(
-    attrs: SemanticAttrBuilder<DropdownElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DropdownElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement<DropdownElement>({
         attrs?.invoke(this)
@@ -261,8 +262,8 @@ interface DropdownMenuElement : DropdownElement
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<DropdownElement, *>.Menu(
-    attrs: SemanticAttrBuilder<DropdownMenuElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<DropdownMenuElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DropdownMenuElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<DropdownMenuElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -279,8 +280,8 @@ interface DropdownMenuItemElement : DropdownElement
 @Suppress("unused")
 @Composable
 fun SemanticElementScope<DropdownMenuElement, *>.Item(
-    attrs: SemanticAttrBuilder<DropdownMenuItemElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<DropdownMenuItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DropdownMenuItemElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<DropdownMenuItemElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)

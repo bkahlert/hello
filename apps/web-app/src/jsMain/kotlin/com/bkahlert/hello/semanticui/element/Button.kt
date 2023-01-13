@@ -1,13 +1,13 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticAttrsScope
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
-import com.bkahlert.hello.semanticui.SemanticElementType
-import com.bkahlert.hello.semanticui.Variation
+import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.attributes.Variation
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticElementType
 import org.jetbrains.compose.web.dom.A
 import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
@@ -36,8 +36,8 @@ enum class ButtonElementType(override vararg val classNames: String) : SemanticE
 @Composable
 fun Button(
     type: ButtonElementType?,
-    attrs: SemanticAttrBuilder<ButtonElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ButtonElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ButtonElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -52,8 +52,8 @@ fun Button(
  */
 @Composable
 fun Button(
-    attrs: SemanticAttrBuilder<ButtonElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ButtonElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ButtonElement, HTMLDivElement>? = null,
 ) {
     Button(null, attrs, content)
 }
@@ -65,8 +65,8 @@ fun Button(
 @Composable
 fun AnkerButton(
     href: String? = null,
-    attrs: SemanticAttrBuilder<ButtonElement, HTMLAnchorElement>? = null,
-    content: SemanticBuilder<ButtonElement, HTMLAnchorElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLAnchorElement>? = null,
+    content: SemanticContentBuilder<ButtonElement, HTMLAnchorElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -87,8 +87,8 @@ enum class ButtonGroupElementType(override vararg val classNames: String) : Sema
 @Composable
 fun Buttons(
     type: ButtonGroupElementType?,
-    attrs: SemanticAttrBuilder<ButtonGroupElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ButtonGroupElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonGroupElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ButtonGroupElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -103,8 +103,8 @@ fun Buttons(
  */
 @Composable
 fun Buttons(
-    attrs: SemanticAttrBuilder<ButtonGroupElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ButtonGroupElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonGroupElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ButtonGroupElement, HTMLDivElement>? = null,
 ) {
     Buttons(null, attrs, content)
 }

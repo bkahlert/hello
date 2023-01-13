@@ -6,7 +6,7 @@ import com.bkahlert.hello.clickup.model.ImageFixtures.KommonsLogo
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.semanticui.SemanticUI
-import com.bkahlert.hello.semanticui.Variation.Negative
+import com.bkahlert.hello.semanticui.attributes.Variation.Negative
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Content
 import com.bkahlert.hello.semanticui.element.Description

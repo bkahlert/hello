@@ -1,13 +1,13 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticAttrsScope
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
-import com.bkahlert.hello.semanticui.SemanticElementScope
-import com.bkahlert.hello.semanticui.Variation
+import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.attributes.Variation
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import org.w3c.dom.HTMLDivElement
 
 interface ListElement : SemanticElement
@@ -39,29 +39,29 @@ interface ListElement : SemanticElement
 /** Creates a [SemanticUI list](https://semantic-ui.com/elements/list.html). */
 @Composable
 fun List(
-    attrs: SemanticAttrBuilder<ListElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ListElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ListElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ListElement, HTMLDivElement>? = null,
 ) = SemanticDivElement({ classes("ui"); attrs?.invoke(this); classes("list"); }, content)
 
 /** Creates a [bulleted](https://semantic-ui.com/elements/list.html#bulleted) [SemanticUI list](https://semantic-ui.com/elements/list.html). */
 @Composable
 fun BulletedList(
-    attrs: SemanticAttrBuilder<ListElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ListElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ListElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ListElement, HTMLDivElement>? = null,
 ) = List({ attrs?.invoke(this); classes("bulleted") }, content)
 
 /** Creates a [ordered](https://semantic-ui.com/elements/list.html#ordered) [SemanticUI list](https://semantic-ui.com/elements/list.html). */
 @Composable
 fun OrderedList(
-    attrs: SemanticAttrBuilder<ListElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ListElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ListElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ListElement, HTMLDivElement>? = null,
 ) = List({ attrs?.invoke(this); classes("ordered") }, content)
 
 /** Creates a [link](https://semantic-ui.com/elements/list.html#link) [SemanticUI list](https://semantic-ui.com/elements/list.html). */
 @Composable
 fun LinkList(
-    attrs: SemanticAttrBuilder<ListElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ListElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ListElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ListElement, HTMLDivElement>? = null,
 ) = List({ attrs?.invoke(this); classes("link") }, content)
 
 interface ListItemElement : SemanticElement
@@ -69,22 +69,22 @@ interface ListItemElement : SemanticElement
 /** Creates a [SemanticUI list item](https://semantic-ui.com/elements/list.html#item). */
 @Composable
 @Suppress("unused") fun SemanticElementScope<ListElement, *>.Item(
-    attrs: SemanticAttrBuilder<ListItemElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ListItemElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ListItemElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ListItemElement, HTMLDivElement>? = null,
 ) = SemanticDivElement({ attrs?.invoke(this); classes("item") }, content)
 
 /** Creates a [SemanticUI list item description](https://semantic-ui.com/elements/list.html#description). */
 @Composable
 @Suppress("unused") fun SemanticElementScope<ListItemElement, *>.Description(
-    attrs: SemanticAttrBuilder<SemanticElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<SemanticElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<SemanticElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<SemanticElement, HTMLDivElement>? = null,
 ) = SemanticDivElement({ attrs?.invoke(this); classes("content") }, content)
 
 /** Creates a [SemanticUI list item header](https://semantic-ui.com/elements/list.html#header). */
 @Composable
 @Suppress("unused") fun SemanticElementScope<ListItemElement, *>.Header(
-    attrs: SemanticAttrBuilder<SemanticElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<SemanticElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<SemanticElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<SemanticElement, HTMLDivElement>? = null,
 ) = SemanticDivElement({ attrs?.invoke(this); classes("content") }, content)
 
 interface ListItemContentElement : SemanticElement
@@ -99,6 +99,6 @@ interface ListItemContentElement : SemanticElement
 /** Creates a [SemanticUI list item content](https://semantic-ui.com/elements/list.html#content). */
 @Composable
 @Suppress("unused") fun SemanticElementScope<ListItemElement, *>.Content(
-    attrs: SemanticAttrBuilder<ListItemContentElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<ListItemContentElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ListItemContentElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<ListItemContentElement, HTMLDivElement>? = null,
 ) = SemanticDivElement({ attrs?.invoke(this); classes("content") }, content)

@@ -51,11 +51,12 @@ import kotlinx.serialization.json.Json
 import kotlin.js.Date
 
 public data class ClickUpHttpClient(
-    val accessToken: AccessToken,
+    val accessToken: PersonalAccessToken,
     private val cacheStorage: Storage,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : ClickUpClient {
-    val clickUpUrl = Url("/api.clickup.com/api/v2")
+    //    val clickUpUrl = Url("/api.clickup.com/api/v2")
+    val clickUpUrl: Url = Url("https://hello.aws-dev.choam.de/api.clickup.com/api/v2")
 
     private val logger by InlineLogging
 

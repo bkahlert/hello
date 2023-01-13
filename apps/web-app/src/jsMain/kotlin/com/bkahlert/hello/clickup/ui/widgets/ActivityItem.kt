@@ -2,8 +2,8 @@ package com.bkahlert.hello.clickup.ui.widgets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticElementScope
+import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.jQuery
 import com.bkahlert.hello.semanticui.module.DropdownMenuElement
 import com.bkahlert.hello.semanticui.module.DropdownMenuItemElement
@@ -19,7 +19,7 @@ import org.w3c.dom.HTMLDivElement
 @Composable
 fun SemanticElementScope<DropdownMenuElement, *>.ActivityItem(
     activity: Activity<*>,
-    attrs: SemanticAttrBuilder<DropdownMenuItemElement, HTMLDivElement>? = null,
+    attrs: (SemanticAttrsScope<DropdownMenuItemElement, HTMLDivElement>.() -> Unit)? = null,
 ) {
     Item({
         attr("data-text", activity.name)

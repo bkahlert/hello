@@ -1,9 +1,9 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.jetbrains.compose.web.dom.I
 import org.w3c.dom.HTMLElement
 
@@ -18,7 +18,7 @@ interface IconElement : SemanticElement
 @Composable
 fun Icon(
     vararg name: String,
-    attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
+    attrs: SemanticAttrBuilderContext<IconElement, HTMLElement>? = null,
 ) {
     SemanticElement<IconElement, HTMLElement>({
         attrs?.invoke(this)
@@ -35,7 +35,7 @@ fun Icon(
 @Composable
 fun Icon(
     names: List<String>,
-    attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
+    attrs: SemanticAttrBuilderContext<IconElement, HTMLElement>? = null,
 ) {
     SemanticElement<IconElement, HTMLElement>({
         attrs?.invoke(this)
@@ -51,8 +51,8 @@ fun Icon(
  */
 @Composable
 fun IconGroup(
-    attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
-    content: SemanticBuilder<IconElement, HTMLElement>? = null,
+    attrs: SemanticAttrBuilderContext<IconElement, HTMLElement>? = null,
+    content: SemanticContentBuilder<IconElement, HTMLElement>? = null,
 ) {
     SemanticElement({
         attrs?.invoke(this)

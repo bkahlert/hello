@@ -14,7 +14,7 @@ tasks.register("clean") {
                 "build-logic" -> {
                     dependsOn(includedBuild.task(":aws:clean"))
                     dependsOn(includedBuild.task(":commons:clean"))
-                    dependsOn(includedBuild.task(":compose-web-application:clean"))
+                    dependsOn(includedBuild.task(":compose-for-web-project:clean"))
                     dependsOn(includedBuild.task(":kotlin-project:clean"))
                 }
 

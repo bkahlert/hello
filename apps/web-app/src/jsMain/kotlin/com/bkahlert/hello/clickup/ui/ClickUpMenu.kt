@@ -6,7 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.clickup.client.http.AccessToken
+import com.bkahlert.hello.clickup.client.ClickUpClient
+import com.bkahlert.hello.clickup.client.http.ClickUpHttpClient
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
 import com.bkahlert.hello.clickup.model.TaskListID
@@ -32,14 +33,15 @@ import com.bkahlert.hello.clickup.ui.widgets.MetaItems
 import com.bkahlert.hello.clickup.ui.widgets.rememberActivityDropdownState
 import com.bkahlert.hello.compose.backgroundColor
 import com.bkahlert.hello.compose.color
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticElementScope
+import com.bkahlert.hello.debug.clickup.ClickUpTestClient
+import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.collection.AnkerItem
 import com.bkahlert.hello.semanticui.collection.DropdownItem
 import com.bkahlert.hello.semanticui.collection.LinkItem
 import com.bkahlert.hello.semanticui.collection.Menu
 import com.bkahlert.hello.semanticui.collection.MenuElement
 import com.bkahlert.hello.semanticui.collection.MenuItemElement
+import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.module.Dimmer
 import com.bkahlert.hello.semanticui.module.Menu
@@ -47,7 +49,11 @@ import com.bkahlert.hello.ui.AcousticFeedback
 import com.bkahlert.hello.ui.DimmingLoader
 import com.bkahlert.hello.ui.textOverflow
 import com.bkahlert.kommons.Now
+import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
+import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.dom.clear
 import com.bkahlert.kommons.dom.open
+import kotlinx.browser.localStorage
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.attributes.target
@@ -84,7 +90,7 @@ import org.w3c.dom.HTMLDivElement
 
 @Composable
 fun SemanticElementScope<MenuElement, *>.DisconnectedItems(
-    onConnect: (AccessToken) -> Unit = {},
+    onConnect: (ClickUpClient) -> Unit = {},
 ) {
     var configuring by remember { mutableStateOf(false) }
 
@@ -92,7 +98,12 @@ fun SemanticElementScope<MenuElement, *>.DisconnectedItems(
         ConfigurationModal(
             onConnect = {
                 configuring = false
-                onConnect(it)
+                onConnect(
+                    when (it) {
+                        null -> ClickUpTestClient()
+                        else -> ClickUpHttpClient(it, Storage.of(localStorage).scoped("clickup").apply { clear() })
+                    }
+                )
             },
             onCancel = { configuring = false },
         )
@@ -223,7 +234,7 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
 fun SemanticElementScope<MenuElement, *>.TeamItem(
     team: Team,
     onClick: () -> Unit,
-    attrs: SemanticAttrBuilder<MenuItemElement, HTMLDivElement>? = null,
+    attrs: (SemanticAttrsScope<MenuItemElement, HTMLDivElement>.() -> Unit)? = null,
 ) {
     LinkItem({
         attrs?.invoke(this)

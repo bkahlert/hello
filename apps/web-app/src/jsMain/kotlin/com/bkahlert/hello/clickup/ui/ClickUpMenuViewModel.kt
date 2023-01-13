@@ -5,8 +5,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.clickup.client.ClickUpClient
-import com.bkahlert.hello.clickup.client.http.AccessToken
-import com.bkahlert.hello.clickup.client.http.ClickUpHttpClient
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
 import com.bkahlert.hello.clickup.model.TaskListID
@@ -27,9 +25,7 @@ import com.bkahlert.kommons.debug.renderType
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,8 +35,8 @@ import kotlinx.coroutines.launch
 
 interface ClickUpMenuViewModel {
     val state: StateFlow<ClickUpMenuState>
-    fun enable()
-    fun connect(accessToken: AccessToken)
+    fun enable(client: ClickUpClient? = null)
+    fun connect(client: ClickUpClient)
     fun disconnect()
     fun selectTeam(teamID: TeamID)
     fun refresh(background: Boolean = false)
@@ -58,28 +54,22 @@ interface ClickUpMenuViewModel {
 @Composable
 fun rememberClickUpMenuViewModel(
     initialState: ClickUpMenuState = Disconnected,
-    dispatcher: CoroutineDispatcher = Dispatchers.Default,
     refreshCoroutineScope: CoroutineScope = rememberCoroutineScope(),
     storage: Storage = InMemoryStorage(),
-    createClient: (AccessToken, Storage, CoroutineDispatcher) -> ClickUpClient = ::ClickUpHttpClient,
 ): ClickUpMenuViewModel =
-    remember(createClient, dispatcher, initialState, storage) {
+    remember(initialState, storage) {
         ClickUpMenuViewModelImpl(
             initialState,
-            dispatcher,
             refreshCoroutineScope,
-            storage,
-            createClient
+            storage
         )
     }
 
 
 class ClickUpMenuViewModelImpl(
     initialState: ClickUpMenuState = Disabled,
-    private val dispatcher: CoroutineDispatcher,
     private val coroutineScope: CoroutineScope,
     storage: Storage = InMemoryStorage(),
-    private val createClient: (AccessToken, Storage, CoroutineDispatcher) -> ClickUpClient,
 ) : ClickUpMenuViewModel {
     private val logger = simpleLogger()
     private var updateJob: Job? = null
@@ -139,10 +129,9 @@ class ClickUpMenuViewModelImpl(
 //        }
 //    }
 
-    override fun enable() {
-        val token = storage.accessToken
-        if (_state.value is Disabled && token != null) {
-            connect(token)
+    override fun enable(client: ClickUpClient?) {
+        if (_state.value is Disabled && client != null) {
+            connect(client)
         } else {
             update("initializing") { state ->
                 when (state) {
@@ -159,11 +148,9 @@ class ClickUpMenuViewModelImpl(
         }
     }
 
-    override fun connect(accessToken: AccessToken) {
+    override fun connect(client: ClickUpClient) {
         update("connecting") { state ->
-            val client = createClient(accessToken, storage.cache, dispatcher)
             val teamSelecting = state.connect(client)
-            storage.accessToken = accessToken
             if (teamSelecting.teams.size == 1) internalSelectTeam(teamSelecting, teamSelecting.teams.first())
             else teamSelecting
         }

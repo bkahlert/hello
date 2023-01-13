@@ -7,7 +7,9 @@ import com.bkahlert.kommons.auth.OAuth2AuthorizationState.Authorizing
 import com.bkahlert.kommons.auth.OAuth2AuthorizationState.Unauthorized
 import com.bkahlert.kommons.auth.OAuth2Resource
 import com.bkahlert.kommons.auth.loadOpenIDConfiguration
+import com.bkahlert.kommons.ktor.AuthorizationToken
 import com.bkahlert.kommons.ktor.JsonHttpClient
+import com.bkahlert.kommons.ktor.Token
 import com.bkahlert.kommons.ktor.installTokenAuth
 import com.bkahlert.kommons.logging.InlineLogging
 import io.ktor.client.HttpClient
@@ -55,7 +57,7 @@ public sealed class HelloClient(
 
         public val userProps: UserPropsApiClient? = apiClients[UserPropsApiClient::class]?.let { UserPropsApiClient(it, httpClient) }
 
-        public var clickUpApiToken: String? by Delegates.observable(null) { _, _, token ->
+        public var clickUpToken: Token? by Delegates.observable(null) { _, _, token ->
             clickUp = when (token) {
                 null -> null
                 else -> apiClients[ClickUpApiClient::class]?.let {
@@ -113,7 +115,7 @@ public sealed class HelloClient(
                 logger.info("Getting ClickUp API token")
                 val clickUpApiToken = helloClient.userProps?.getProp<String?>("clickup.api-token")
                 logger.info("ClickUp API token: $clickUpApiToken")
-                helloClient.clickUpApiToken = clickUpApiToken
+                helloClient.clickUpToken = clickUpApiToken?.let { AuthorizationToken(it) }
                 logger.info("Set: $clickUpApiToken")
             }
             logger.debug("$helloClient")

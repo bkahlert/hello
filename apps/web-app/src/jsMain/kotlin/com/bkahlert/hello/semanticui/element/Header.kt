@@ -1,10 +1,10 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H1
@@ -24,8 +24,8 @@ interface HeaderElement : SemanticElement
  */
 @Composable
 fun Header1(
-    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -39,8 +39,8 @@ fun Header1(
  */
 @Composable
 fun Header2(
-    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -54,8 +54,8 @@ fun Header2(
  */
 @Composable
 fun Header3(
-    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -69,8 +69,8 @@ fun Header3(
  */
 @Composable
 fun Header4(
-    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -84,8 +84,8 @@ fun Header4(
  */
 @Composable
 fun Header5(
-    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -99,8 +99,8 @@ fun Header5(
  */
 @Composable
 fun Header6(
-    attrs: SemanticAttrBuilder<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -114,8 +114,8 @@ fun Header6(
  */
 @Composable
 fun Header(
-    attrs: SemanticAttrBuilder<HeaderElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<HeaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<HeaderElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -130,7 +130,7 @@ fun Header(
 @Composable
 fun IconHeader(
     vararg icon: String,
-    attrs: SemanticAttrBuilder<IconElement, HTMLElement>? = null,
+    attrs: SemanticAttrBuilderContext<IconElement, HTMLElement>? = null,
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     Header({ classes("icon") }) {
@@ -145,8 +145,8 @@ fun IconHeader(
  */
 @Composable
 fun SubHeader(
-    attrs: SemanticAttrBuilder<HeaderElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<HeaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<HeaderElement, HTMLDivElement>? = null,
 ) {
     Header({
         attrs?.invoke(this)

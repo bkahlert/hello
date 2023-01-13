@@ -1,10 +1,10 @@
 package com.bkahlert.hello.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.SemanticAttrBuilder
-import com.bkahlert.hello.semanticui.SemanticBuilder
-import com.bkahlert.hello.semanticui.SemanticDivElement
-import com.bkahlert.hello.semanticui.SemanticElement
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.w3c.dom.HTMLDivElement
 
 interface LoaderElement : SemanticElement
@@ -14,8 +14,8 @@ interface LoaderElement : SemanticElement
  */
 @Composable
 fun Loader(
-    attrs: SemanticAttrBuilder<LoaderElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<LoaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<LoaderElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<LoaderElement, HTMLDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -30,8 +30,8 @@ fun Loader(
  */
 @Composable
 fun TextLoader(
-    attrs: SemanticAttrBuilder<LoaderElement, HTMLDivElement>? = null,
-    content: SemanticBuilder<LoaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<LoaderElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<LoaderElement, HTMLDivElement>? = null,
 ) {
     Loader({
         attrs?.invoke(this)
