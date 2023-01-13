@@ -45,7 +45,7 @@ import org.w3c.dom.Element
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-public interface SemanticAttrsScope<out TSemantic : SemanticElement, out TElement : Element> : AttrsScope<TElement> {
+public interface SemanticAttrsScope<out TSemantic : SemanticElement<Element>> : AttrsScope<Element> {
 
     public val settings: MutableMap<String, Any?>
 
@@ -118,24 +118,21 @@ public interface SemanticAttrsScope<out TSemantic : SemanticElement, out TElemen
 
     public companion object {
 
-        public fun <TSemantic : SemanticElement, TElement : Element> of(attrsScope: AttrsScope<TElement> = AttrsScopeBuilder()): SemanticAttrsScope<TSemantic, TElement> =
-            SemanticAttrsScopeBuilder(attrsScope)
-
         /** Delegate to handle custom settings. */
-        public inline infix fun <reified V> Companion.or(default: V): ReadWriteProperty<SemanticAttrsScope<*, *>, V> =
-            object : ReadWriteProperty<SemanticAttrsScope<*, *>, V> {
-                override fun getValue(thisRef: SemanticAttrsScope<*, *>, property: KProperty<*>): V =
+        public inline infix fun <TSemantic : SemanticElement<TElement>, TElement : Element, reified V> Companion.or(default: V): ReadWriteProperty<SemanticAttrsScope<TSemantic>, V> =
+            object : ReadWriteProperty<SemanticAttrsScope<TSemantic>, V> {
+                override fun getValue(thisRef: SemanticAttrsScope<TSemantic>, property: KProperty<*>): V =
                     (thisRef.settings[property.name] as? V) ?: default
 
-                override fun setValue(thisRef: SemanticAttrsScope<*, *>, property: KProperty<*>, value: V) {
+                override fun setValue(thisRef: SemanticAttrsScope<TSemantic>, property: KProperty<*>, value: V) {
                     thisRef.settings[property.name] = value
                 }
             }
     }
 }
 
-public open class SemanticAttrsScopeBuilder<TSemantic : SemanticElement, TElement : Element>(
-    internal val attrsScope: AttrsScope<TElement> = AttrsScopeBuilder(),
-) : SemanticAttrsScope<TSemantic, TElement>, AttrsScope<TElement> by attrsScope {
+public open class SemanticAttrsScopeBuilder<out TSemantic : SemanticElement<Element>>(
+    internal val attrsScope: AttrsScope<Element> = AttrsScopeBuilder(),
+) : SemanticAttrsScope<TSemantic>, AttrsScope<Element> by attrsScope {
     override val settings: MutableMap<String, Any?> = mutableMapOf()
 }

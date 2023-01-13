@@ -8,16 +8,16 @@ import com.bkahlert.hello.semanticui.dom.SemanticElement
 import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import org.w3c.dom.HTMLDivElement
 
-interface ItemElement : SemanticElement
-interface ItemsElement : SemanticElement
+interface ItemElement : SemanticElement<HTMLDivElement>
+interface ItemsElement : SemanticElement<HTMLDivElement>
 
 /**
  * Creates a [SemanticUI items](https://semantic-ui.com/views/item.html#items).
  */
 @Composable
 fun Items(
-    attrs: SemanticAttrBuilderContext<ItemsElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ItemsElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ItemsElement>? = null,
+    content: SemanticContentBuilder<ItemsElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -31,9 +31,9 @@ fun Items(
  */
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable
-fun SemanticElementScope<ItemsElement, *>.Item(
-    attrs: SemanticAttrBuilderContext<ItemElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ItemElement, HTMLDivElement>? = null,
+fun SemanticElementScope<ItemsElement>.Item(
+    attrs: SemanticAttrBuilderContext<ItemElement>? = null,
+    content: SemanticContentBuilder<ItemElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)

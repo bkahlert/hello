@@ -7,15 +7,15 @@ import com.bkahlert.hello.semanticui.dom.SemanticDivElement
 import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.w3c.dom.HTMLDivElement
 
-interface LoaderElement : SemanticElement
+interface LoaderElement : SemanticElement<HTMLDivElement>
 
 /**
  * Creates a [SemanticUI loader](https://semantic-ui.com/elements/loader.html).
  */
 @Composable
 fun Loader(
-    attrs: SemanticAttrBuilderContext<LoaderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<LoaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<LoaderElement>? = null,
+    content: SemanticContentBuilder<LoaderElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -30,8 +30,8 @@ fun Loader(
  */
 @Composable
 fun TextLoader(
-    attrs: SemanticAttrBuilderContext<LoaderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<LoaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<LoaderElement>? = null,
+    content: SemanticContentBuilder<LoaderElement>? = null,
 ) {
     Loader({
         attrs?.invoke(this)

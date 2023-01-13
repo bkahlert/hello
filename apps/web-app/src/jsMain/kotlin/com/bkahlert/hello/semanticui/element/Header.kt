@@ -13,19 +13,21 @@ import org.jetbrains.compose.web.dom.H3
 import org.jetbrains.compose.web.dom.H4
 import org.jetbrains.compose.web.dom.H5
 import org.jetbrains.compose.web.dom.H6
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLHeadingElement
 
-interface HeaderElement : SemanticElement
+interface HeaderElement<TElement : Element> : SemanticElement<TElement>
+interface HeaderHeadingElement : SemanticElement<HTMLHeadingElement>
+interface HeaderDivElement : SemanticElement<HTMLDivElement>
 
 /**
  * Creates a [SemanticUI page header](https://semantic-ui.com/elements/header.html#page-headers).
  */
 @Composable
 fun Header1(
-    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -39,8 +41,8 @@ fun Header1(
  */
 @Composable
 fun Header2(
-    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -54,8 +56,8 @@ fun Header2(
  */
 @Composable
 fun Header3(
-    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -69,8 +71,8 @@ fun Header3(
  */
 @Composable
 fun Header4(
-    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -84,8 +86,8 @@ fun Header4(
  */
 @Composable
 fun Header5(
-    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -99,8 +101,8 @@ fun Header5(
  */
 @Composable
 fun Header6(
-    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLHeadingElement>? = null,
-    content: SemanticContentBuilder<HeaderElement, HTMLHeadingElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderHeadingElement>? = null,
+    content: SemanticContentBuilder<HeaderHeadingElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -114,8 +116,8 @@ fun Header6(
  */
 @Composable
 fun Header(
-    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<HeaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderDivElement>? = null,
+    content: SemanticContentBuilder<HeaderDivElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -130,7 +132,7 @@ fun Header(
 @Composable
 fun IconHeader(
     vararg icon: String,
-    attrs: SemanticAttrBuilderContext<IconElement, HTMLElement>? = null,
+    attrs: SemanticAttrBuilderContext<IconElement>? = null,
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     Header({ classes("icon") }) {
@@ -145,8 +147,8 @@ fun IconHeader(
  */
 @Composable
 fun SubHeader(
-    attrs: SemanticAttrBuilderContext<HeaderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<HeaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderDivElement>? = null,
+    content: SemanticContentBuilder<HeaderDivElement>? = null,
 ) {
     Header({
         attrs?.invoke(this)

@@ -36,7 +36,6 @@ import org.jetbrains.compose.web.css.position
 import org.jetbrains.compose.web.css.right
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Input
-import org.w3c.dom.HTMLDivElement
 
 @Stable
 interface SearchInputState {
@@ -57,10 +56,10 @@ fun rememberSearchInputState(
 @Composable
 fun SearchInput(
     state: SearchInputState = rememberSearchInputState(),
-    attrs: SemanticAttrBuilderContext<InputElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<InputElement>? = null,
     onSearch: ((String) -> Unit)? = { console.info("onSearch($it)") },
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
-    content: SemanticContentBuilder<InputElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<InputElement>? = null,
 ) {
     SemanticUI("search") {
         Input({
@@ -117,10 +116,10 @@ fun rememberMultiSearchInputState(
 @Composable
 fun MultiSearchInput(
     state: MultiSearchInputState = rememberMultiSearchInputState(),
-    attrs: SemanticAttrBuilderContext<InputElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<InputElement>? = null,
     onSearch: ((String, List<SearchEngine>) -> Unit)? = { query, engines -> console.log("onSearch($query; $engines)") },
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
-    content: SemanticContentBuilder<InputElement, HTMLDivElement>? = null,
+    content: SemanticContentBuilder<InputElement>? = null,
 ) {
     SearchInput(
         state, {

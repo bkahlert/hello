@@ -11,10 +11,9 @@ import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.marginTop
 import org.jetbrains.compose.web.css.position
 import org.jetbrains.compose.web.dom.A
-import org.w3c.dom.HTMLDivElement
 
 @Composable
-fun SemanticElementScope<DropdownMenuElement, HTMLDivElement>.ActivityGroupHeader(
+fun SemanticElementScope<DropdownMenuElement>.ActivityGroupHeader(
     group: ActivityGroup,
     onCreate: (() -> Unit)? = null,
 ) {

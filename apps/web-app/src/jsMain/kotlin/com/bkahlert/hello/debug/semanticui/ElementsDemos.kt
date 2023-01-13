@@ -159,7 +159,7 @@ fun ElementsDemos() {
                     Text("horizontally divided")
                 }
                 Item {
-                    Image { Icon("arrow", "up") { +Size.Huge } }
+                    Image(href = null) { Icon("arrow", "up") { +Size.Huge } }
                     Content({ +verticallyAligned.Top }) { Small { Text("+ top aligned") } }
                 }
             }

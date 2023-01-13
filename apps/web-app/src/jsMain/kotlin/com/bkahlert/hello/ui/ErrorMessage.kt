@@ -12,7 +12,6 @@ import com.bkahlert.hello.semanticui.module.Accordion
 import com.bkahlert.hello.semanticui.module.Dropdown
 import org.jetbrains.compose.web.dom.Pre
 import org.jetbrains.compose.web.dom.Text
-import org.w3c.dom.HTMLDivElement
 
 private val logger = SimpleLogger("error-message-test")
 
@@ -20,7 +19,7 @@ private val logger = SimpleLogger("error-message-test")
 @Composable
 fun ErrorMessage(
     throwable: Throwable,
-    attrs: SemanticAttrBuilderContext<MessageElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MessageElement>? = null,
 ) {
     ErrorMessage(attrs) {
         logger.error("An error occurred", throwable)
@@ -30,7 +29,7 @@ fun ErrorMessage(
         }
         Accordion(throwable) {
             Dropdown("Detailed Error") {
-                Pre(it) {
+                Pre {
                     Text(throwable.stackTraceToString())
                 }
             }
@@ -40,8 +39,8 @@ fun ErrorMessage(
 
 @Composable
 fun ErrorMessage(
-    attrs: SemanticAttrBuilderContext<MessageElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<MessageElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MessageElement>? = null,
+    content: SemanticContentBuilder<MessageElement>? = null,
 ) {
     Message(Error, attrs, content)
 }

@@ -7,15 +7,15 @@ import com.bkahlert.hello.semanticui.dom.SemanticDivElement
 import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.w3c.dom.HTMLDivElement
 
-interface ContainerElement : SemanticElement
+interface ContainerElement : SemanticElement<HTMLDivElement>
 
 /**
  * Creates a [SemanticUI container](https://semantic-ui.com/elements/container.html).
  */
 @Composable
 fun Container(
-    attrs: SemanticAttrBuilderContext<ContainerElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ContainerElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ContainerElement>? = null,
+    content: SemanticContentBuilder<ContainerElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -30,8 +30,8 @@ fun Container(
  */
 @Composable
 fun TextContainer(
-    attrs: SemanticAttrBuilderContext<ContainerElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ContainerElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ContainerElement>? = null,
+    content: SemanticContentBuilder<ContainerElement>? = null,
 ) {
     Container({
         attrs?.invoke(this)

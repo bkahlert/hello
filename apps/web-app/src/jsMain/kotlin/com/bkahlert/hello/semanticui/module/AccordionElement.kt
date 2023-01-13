@@ -10,11 +10,11 @@ import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.jQuery
 import org.jetbrains.compose.web.dom.AttrBuilderContext
-import org.jetbrains.compose.web.dom.ElementScope
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLElement
 
-interface AccordionElement : SemanticElement
+interface AccordionElement : SemanticElement<HTMLDivElement>
 
 /**
  * Creates a [SemanticUI icon](https://semantic-ui.com/modules/accordion.html#/definition)
@@ -23,8 +23,8 @@ interface AccordionElement : SemanticElement
 @Composable
 fun Accordion(
     key: Any?,
-    attrs: SemanticAttrBuilderContext<AccordionElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<AccordionElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<AccordionElement>? = null,
+    content: SemanticContentBuilder<AccordionElement>? = null,
 ) {
     SemanticDivElement<AccordionElement>({
         classes("ui")
@@ -44,9 +44,9 @@ fun Accordion(
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<AccordionElement, *>.Title(
-    attrs: SemanticAttrBuilderContext<AccordionElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<AccordionElement, HTMLDivElement>? = null,
+fun SemanticElementScope<AccordionElement>.Title(
+    attrs: SemanticAttrBuilderContext<AccordionElement>? = null,
+    content: SemanticContentBuilder<AccordionElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -59,9 +59,9 @@ fun SemanticElementScope<AccordionElement, *>.Title(
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<AccordionElement, *>.Content(
-    attrs: SemanticAttrBuilderContext<AccordionElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<AccordionElement, HTMLDivElement>? = null,
+fun SemanticElementScope<AccordionElement>.Content(
+    attrs: SemanticAttrBuilderContext<AccordionElement>? = null,
+    content: SemanticContentBuilder<AccordionElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -79,17 +79,19 @@ fun SemanticElementScope<AccordionElement, *>.Content(
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<AccordionElement, *>.Dropdown(
+fun SemanticElementScope<AccordionElement>.Dropdown(
     title: String,
-    content: (@Composable ElementScope<HTMLDivElement>.(
-        attrs: AttrBuilderContext<*>,
-    ) -> Unit)? = null,
+    attrs: SemanticAttrBuilderContext<SemanticElement<HTMLElement>>? = null,
+    content: SemanticContentBuilder<SemanticElement<HTMLElement>>? = null,
 ) {
     Title {
         Icon("dropdown")
         Text(title)
     }
-    Content {
-        content?.invoke(this) { classes("transition", "hidden") }
+    Content({
+        attrs?.invoke(this)
+        classes("transition", "hidden")
+    }) {
+        content?.invoke(this)
     }
 }

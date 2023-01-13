@@ -7,7 +7,7 @@ import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.jetbrains.compose.web.dom.I
 import org.w3c.dom.HTMLElement
 
-interface IconElement : SemanticElement
+interface IconElement : SemanticElement<HTMLElement>
 
 /**
  * Creates a [SemanticUI icon](https://semantic-ui.com/elements/icon.html#/definition)
@@ -18,9 +18,9 @@ interface IconElement : SemanticElement
 @Composable
 fun Icon(
     vararg name: String,
-    attrs: SemanticAttrBuilderContext<IconElement, HTMLElement>? = null,
+    attrs: SemanticAttrBuilderContext<IconElement>? = null,
 ) {
-    SemanticElement<IconElement, HTMLElement>({
+    SemanticElement<IconElement>({
         attrs?.invoke(this)
         classes(*name, "icon")
     }) { a, c -> I(a, c) }
@@ -35,9 +35,9 @@ fun Icon(
 @Composable
 fun Icon(
     names: List<String>,
-    attrs: SemanticAttrBuilderContext<IconElement, HTMLElement>? = null,
+    attrs: SemanticAttrBuilderContext<IconElement>? = null,
 ) {
-    SemanticElement<IconElement, HTMLElement>({
+    SemanticElement<IconElement>({
         attrs?.invoke(this)
         classes(*names.toTypedArray(), "icon")
     }) { a, c -> I(a, c) }
@@ -51,8 +51,8 @@ fun Icon(
  */
 @Composable
 fun IconGroup(
-    attrs: SemanticAttrBuilderContext<IconElement, HTMLElement>? = null,
-    content: SemanticContentBuilder<IconElement, HTMLElement>? = null,
+    attrs: SemanticAttrBuilderContext<IconElement>? = null,
+    content: SemanticContentBuilder<IconElement>? = null,
 ) {
     SemanticElement({
         attrs?.invoke(this)

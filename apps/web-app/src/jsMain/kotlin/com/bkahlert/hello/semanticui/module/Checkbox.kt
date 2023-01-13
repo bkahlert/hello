@@ -8,7 +8,7 @@ import com.bkahlert.hello.semanticui.dom.SemanticElement
 import com.bkahlert.hello.semanticui.dom.SemanticElementType
 import org.w3c.dom.HTMLDivElement
 
-interface CheckboxElement : SemanticElement
+interface CheckboxElement : SemanticElement<HTMLDivElement>
 enum class CheckboxElementType(override vararg val classNames: String) : SemanticElementType<CheckboxElement> {
     Radio("radio"),
     Slider("slider"),
@@ -22,8 +22,8 @@ enum class CheckboxElementType(override vararg val classNames: String) : Semanti
 @Composable
 fun Checkbox(
     type: CheckboxElementType?,
-    attrs: SemanticAttrBuilderContext<CheckboxElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<CheckboxElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<CheckboxElement>? = null,
+    content: SemanticContentBuilder<CheckboxElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -38,8 +38,8 @@ fun Checkbox(
  */
 @Composable
 fun Checkbox(
-    attrs: SemanticAttrBuilderContext<CheckboxElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<CheckboxElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<CheckboxElement>? = null,
+    content: SemanticContentBuilder<CheckboxElement>? = null,
 ) {
     Checkbox(null, attrs, content)
 }

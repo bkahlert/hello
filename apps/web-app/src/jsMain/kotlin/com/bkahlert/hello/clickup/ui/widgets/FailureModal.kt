@@ -57,7 +57,7 @@ fun FailureModal(
             }
             Accordion(cause, { +Inverted }) {
                 Dropdown("Stacktrace") {
-                    Pre(it) {
+                    Pre {
                         Text(cause.stackTraceToString())
                     }
                 }

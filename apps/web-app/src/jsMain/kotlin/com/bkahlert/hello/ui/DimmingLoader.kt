@@ -8,7 +8,6 @@ import com.bkahlert.hello.semanticui.element.LoaderElement
 import com.bkahlert.hello.semanticui.element.TextLoader
 import com.bkahlert.hello.semanticui.module.Dimmer
 import com.bkahlert.hello.semanticui.module.DimmerElement
-import org.w3c.dom.HTMLDivElement
 
 /**
  * A [Loader] that-if [active]-uses a [Dimmer] to dim the content
@@ -18,9 +17,9 @@ import org.w3c.dom.HTMLDivElement
 @Composable
 fun DimmingLoader(
     active: Boolean,
-    dimmerAttrs: SemanticAttrBuilderContext<DimmerElement, HTMLDivElement>? = { +Inverted },
-    loaderAttrs: SemanticAttrBuilderContext<LoaderElement, HTMLDivElement>? = { +Size.Mini },
-    loaderContent: SemanticContentBuilder<LoaderElement, HTMLDivElement>? = null,
+    dimmerAttrs: SemanticAttrBuilderContext<DimmerElement>? = { +Inverted },
+    loaderAttrs: SemanticAttrBuilderContext<LoaderElement>? = { +Size.Mini },
+    loaderContent: SemanticContentBuilder<LoaderElement>? = null,
 ) {
     Dimmer({
         dimmerAttrs?.invoke(this)
@@ -39,8 +38,8 @@ fun DimmingLoader(
 @Composable
 fun DimmingLoader(
     active: Boolean,
-    attrs: SemanticAttrBuilderContext<LoaderElement, HTMLDivElement>? = { +Size.Mini },
-    content: SemanticContentBuilder<LoaderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<LoaderElement>? = { +Size.Mini },
+    content: SemanticContentBuilder<LoaderElement>? = null,
 ) {
     DimmingLoader(
         active = active,

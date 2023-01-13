@@ -8,15 +8,15 @@ import com.bkahlert.hello.semanticui.dom.SemanticElement
 import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import org.w3c.dom.HTMLDivElement
 
-interface PlaceholderElement : SemanticElement
+interface PlaceholderElement : SemanticElement<HTMLDivElement>
 
 /**
  * Creates a [SemanticUI placeholder](https://semantic-ui.com/elements/placeholder.html).
  */
 @Composable
 fun Placeholder(
-    attrs: SemanticAttrBuilderContext<PlaceholderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<PlaceholderElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<PlaceholderElement>? = null,
+    content: SemanticContentBuilder<PlaceholderElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -30,9 +30,9 @@ fun Placeholder(
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.Line(
-    attrs: SemanticAttrBuilderContext<PlaceholderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<PlaceholderElement, HTMLDivElement>? = null,
+fun SemanticElementScope<PlaceholderElement>.Line(
+    attrs: SemanticAttrBuilderContext<PlaceholderElement>? = null,
+    content: SemanticContentBuilder<PlaceholderElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -46,9 +46,9 @@ fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.Line(
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.Header(
-    attrs: SemanticAttrBuilderContext<PlaceholderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<PlaceholderElement, HTMLDivElement>? = null,
+fun SemanticElementScope<PlaceholderElement>.Header(
+    attrs: SemanticAttrBuilderContext<PlaceholderElement>? = null,
+    content: SemanticContentBuilder<PlaceholderElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -61,9 +61,9 @@ fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.Header(
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.ImageHeader(
-    attrs: SemanticAttrBuilderContext<PlaceholderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<PlaceholderElement, HTMLDivElement>? = null,
+fun SemanticElementScope<PlaceholderElement>.ImageHeader(
+    attrs: SemanticAttrBuilderContext<PlaceholderElement>? = null,
+    content: SemanticContentBuilder<PlaceholderElement>? = null,
 ) {
     Header({
         attrs?.invoke(this)
@@ -77,9 +77,9 @@ fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.ImageHeader(
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.Paragraph(
-    attrs: SemanticAttrBuilderContext<PlaceholderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<PlaceholderElement, HTMLDivElement>? = null,
+fun SemanticElementScope<PlaceholderElement>.Paragraph(
+    attrs: SemanticAttrBuilderContext<PlaceholderElement>? = null,
+    content: SemanticContentBuilder<PlaceholderElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)
@@ -93,9 +93,9 @@ fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.Paragraph(
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<PlaceholderElement, HTMLDivElement>.Image(
-    attrs: SemanticAttrBuilderContext<PlaceholderElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<PlaceholderElement, HTMLDivElement>? = null,
+fun SemanticElementScope<PlaceholderElement>.Image(
+    attrs: SemanticAttrBuilderContext<PlaceholderElement>? = null,
+    content: SemanticContentBuilder<PlaceholderElement>? = null,
 ) {
     SemanticDivElement({
         attrs?.invoke(this)

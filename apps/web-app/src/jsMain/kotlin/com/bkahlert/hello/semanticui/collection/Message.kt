@@ -13,7 +13,7 @@ import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
 import org.w3c.dom.HTMLDivElement
 
-interface MessageElement : SemanticElement
+interface MessageElement : SemanticElement<HTMLDivElement>
 enum class MessageElementType(override vararg val classNames: String) : SemanticElementType<MessageElement> {
     Warning("warning"),
     Info("info"),
@@ -29,8 +29,8 @@ enum class MessageElementType(override vararg val classNames: String) : Semantic
 @Composable
 fun Message(
     type: MessageElementType?,
-    attrs: SemanticAttrBuilderContext<MessageElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<MessageElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MessageElement>? = null,
+    content: SemanticContentBuilder<MessageElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -45,8 +45,8 @@ fun Message(
  */
 @Composable
 fun Message(
-    attrs: SemanticAttrBuilderContext<MessageElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<MessageElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<MessageElement>? = null,
+    content: SemanticContentBuilder<MessageElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -57,7 +57,7 @@ fun Message(
 
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<MessageElement, *>.Header(
+fun SemanticElementScope<MessageElement>.Header(
     vararg modifiers: Modifier,
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {

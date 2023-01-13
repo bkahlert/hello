@@ -7,15 +7,15 @@ import com.bkahlert.hello.semanticui.dom.SemanticDivElement
 import com.bkahlert.hello.semanticui.dom.SemanticElement
 import org.w3c.dom.HTMLDivElement
 
-interface DividerElement : SemanticElement
+interface DividerElement : SemanticElement<HTMLDivElement>
 
 /**
  * Creates a [SemanticUI divider](https://semantic-ui.com/elements/divider.html#divider).
  */
 @Composable
 fun Divider(
-    attrs: SemanticAttrBuilderContext<DividerElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<DividerElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<DividerElement>? = null,
+    content: SemanticContentBuilder<DividerElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")

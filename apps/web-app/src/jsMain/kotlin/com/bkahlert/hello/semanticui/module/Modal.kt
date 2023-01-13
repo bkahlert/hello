@@ -27,67 +27,67 @@ import org.jetbrains.compose.web.attributes.AttrsScopeBuilder
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 
-interface ModalElement : SemanticElement
+interface ModalElement : SemanticElement<HTMLDivElement>
 
 /** [Full Screen](https://semantic-ui.com/modules/modal.html#full-screen) variation of a [input](https://semantic-ui.com/modules/modal.html). */
 @Suppress("unused", "UnusedReceiverParameter")
-val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.fullScreen: Variation get() = Variation.FullScreen
+val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.fullScreen: Variation get() = Variation.FullScreen
 
 /** [Size](https://semantic-ui.com/modules/modal.html#size) variation of a [input](https://semantic-ui.com/modules/modal.html). */
 @Suppress("unused", "UnusedReceiverParameter")
-val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.size: Size get() = Variation.Size
+val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.size: Size get() = Variation.Size
 
 /** [Longer](https://semantic-ui.com/modules/modal.html#longer) variation of a [input](https://semantic-ui.com/modules/modal.html). */
 @Suppress("unused", "UnusedReceiverParameter")
-val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.longer: Variation get() = Variation.Longer
+val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.longer: Variation get() = Variation.Longer
 
 // true will blur popups inside the debug mode, too
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.blurring: Boolean? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.blurring: Boolean? by SemanticAttrsScope or null
 
 /** When `true`, the first form input inside the modal will receive focus when shown. Set this to `false` to prevent this behavior. */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.autofocus: Boolean? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.autofocus: Boolean? by SemanticAttrsScope or null
 
 /** Whether to vertically center content. */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.centered: Boolean? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.centered: Boolean? by SemanticAttrsScope or null
 
 /** Setting to `false` will not allow you to close the modal by clicking on the dimmer. */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.closable: Boolean? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.closable: Boolean? by SemanticAttrsScope or null
 
 /** If set to `true` will not close other visible modals when opening a new one. */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.allowMultiple: Boolean? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.allowMultiple: Boolean? by SemanticAttrsScope or null
 
 /** Selector or [jQuery] object specifying the area to dim. */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.context: String? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.context: String? by SemanticAttrsScope or null
 
 /**
  * Is called when a modal starts to show.
  * *Scope: Modal*
  */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.onShow: (() -> Unit)? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.onShow: (() -> Unit)? by SemanticAttrsScope or null
 
 /**
  * Is called after a modal has finished showing animating.
  * *Scope: Modal*
  */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.onVisible: (() -> Unit)? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.onVisible: (() -> Unit)? by SemanticAttrsScope or null
 
 /**
  * Is called after a modal starts to hide. If the function returns `false`, the modal will not hide.
  * *Scope: Modal*
  */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.onHide: ((jQuery) -> Boolean)? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.onHide: ((jQuery) -> Boolean)? by SemanticAttrsScope or null
 
 /**
  * Is called after an [ApproveButton] is pressed. If the function returns `false`, the modal will not hide.
  * *Scope: Click*
  */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.onApprove: ((jQuery) -> Boolean)? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.onApprove: ((jQuery) -> Boolean)? by SemanticAttrsScope or null
 
 /**
  * Is called after a [DenyButton] is pressed. If the function returns `false` the modal will not hide.
  * *Scope: Modal*
  */
-var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic, *>.onDeny: ((jQuery) -> Boolean)? by SemanticAttrsScope or null
+var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.onDeny: ((jQuery) -> Boolean)? by SemanticAttrsScope or null
 
 private fun <T, R> ((T) -> R)?.overruleBy(overrulingValue: () -> R): (T) -> R = {
     this?.invoke(it)
@@ -99,11 +99,11 @@ private fun <T, R> ((T) -> R)?.overruleBy(overrulingValue: () -> R): (T) -> R = 
  */
 @Composable
 fun Modal(
-    attrs: SemanticAttrBuilderContext<ModalElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ModalElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ModalElement>? = null,
+    content: SemanticContentBuilder<ModalElement>? = null,
 ) {
     var closing by remember { mutableStateOf(false) }
-    val scope: SemanticAttrsScope<ModalElement, HTMLDivElement> = SemanticAttrsScopeBuilder<ModalElement, HTMLDivElement>(AttrsScopeBuilder()).apply {
+    val scope: SemanticAttrsScope<ModalElement> = SemanticAttrsScopeBuilder<ModalElement>(AttrsScopeBuilder()).apply {
         attrs?.invoke(this)
         closable = false // "true" not easily supported; would need to propagate the event and stop Semantic UI from closing modal itself
         allowMultiple = true // "false" not easily supported as it would also make Semantic UI close dialogs on its own
@@ -142,8 +142,8 @@ fun Modal(
  */
 @Composable
 fun BasicModal(
-    attrs: SemanticAttrBuilderContext<ModalElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ModalElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ModalElement>? = null,
+    content: SemanticContentBuilder<ModalElement>? = null,
 ) = Modal({ attrs?.invoke(this);classes("basic") }, content)
 
 /**
@@ -151,26 +151,26 @@ fun BasicModal(
  */
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable
-fun SemanticElementScope<ModalElement, *>.Header(
-    attrs: SemanticAttrBuilderContext<ModalElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ModalElement, HTMLDivElement>? = null,
+fun SemanticElementScope<ModalElement>.Header(
+    attrs: SemanticAttrBuilderContext<ModalElement>? = null,
+    content: SemanticContentBuilder<ModalElement>? = null,
 ): Unit = SemanticDivElement({ attrs?.invoke(this); classes("header") }, content)
 
 
-interface ModalContentElement : SemanticElement
+interface ModalContentElement : SemanticElement<HTMLDivElement>
 
 /** [Scrolling](https://semantic-ui.com/modules/modal.html#scrolling-content) variation of a [input](https://semantic-ui.com/modules/modal.html). */
 @Suppress("unused", "UnusedReceiverParameter")
-val <TSemantic : ModalContentElement> SemanticAttrsScope<TSemantic, *>.scrolling: Variation get() = Variation.Scrolling
+val <TSemantic : ModalContentElement> SemanticAttrsScope<TSemantic>.scrolling: Variation get() = Variation.Scrolling
 
 /**
  * Creates a [content](https://semantic-ui.com/modules/modal.html#content) element for a [SemanticUI modal](https://semantic-ui.com/modules/modal.html).
  */
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable
-fun SemanticElementScope<ModalElement, *>.Content(
-    attrs: SemanticAttrBuilderContext<ModalContentElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ModalContentElement, HTMLDivElement>? = null,
+fun SemanticElementScope<ModalElement>.Content(
+    attrs: SemanticAttrBuilderContext<ModalContentElement>? = null,
+    content: SemanticContentBuilder<ModalContentElement>? = null,
 ): Unit = SemanticDivElement({ attrs?.invoke(this); classes("content") }, content)
 
 interface ModalActionsElement : ModalElement
@@ -180,9 +180,9 @@ interface ModalActionsElement : ModalElement
  */
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable
-fun SemanticElementScope<ModalElement, *>.Actions(
-    attrs: SemanticAttrBuilderContext<ModalActionsElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ModalActionsElement, HTMLDivElement>? = null,
+fun SemanticElementScope<ModalElement>.Actions(
+    attrs: SemanticAttrBuilderContext<ModalActionsElement>? = null,
+    content: SemanticContentBuilder<ModalActionsElement>? = null,
 ): Unit = SemanticDivElement({ attrs?.invoke(this); classes("actions") }, content)
 
 /**
@@ -191,19 +191,19 @@ fun SemanticElementScope<ModalElement, *>.Actions(
  */
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable
-fun SemanticElementScope<ModalActionsElement, *>.ApproveButton(
+fun SemanticElementScope<ModalActionsElement>.ApproveButton(
     type: ButtonElementType?,
-    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ButtonElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
+    content: SemanticContentBuilder<ButtonElement>? = null,
 ): Unit = Button(type, { attrs?.invoke(this); +Actions.Approve }, content)
 
 /**
  * Creates an approval button for modal [actions](https://semantic-ui.com/modules/modal.html#actions).
  */
 @Composable
-fun SemanticElementScope<ModalActionsElement, *>.ApproveButton(
-    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ButtonElement, HTMLDivElement>? = null,
+fun SemanticElementScope<ModalActionsElement>.ApproveButton(
+    attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
+    content: SemanticContentBuilder<ButtonElement>? = null,
 ): Unit = ApproveButton(null, attrs, content)
 
 
@@ -213,17 +213,17 @@ fun SemanticElementScope<ModalActionsElement, *>.ApproveButton(
  */
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable
-fun SemanticElementScope<ModalActionsElement, *>.DenyButton(
+fun SemanticElementScope<ModalActionsElement>.DenyButton(
     type: ButtonElementType?,
-    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ButtonElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
+    content: SemanticContentBuilder<ButtonElement>? = null,
 ): Unit = Button(type, { attrs?.invoke(this); +Actions.Deny }, content)
 
 /**
  * Creates a deny button for modal [actions](https://semantic-ui.com/modules/modal.html#actions).
  */
 @Composable
-fun SemanticElementScope<ModalActionsElement, *>.DenyButton(
-    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ButtonElement, HTMLDivElement>? = null,
+fun SemanticElementScope<ModalActionsElement>.DenyButton(
+    attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
+    content: SemanticContentBuilder<ButtonElement>? = null,
 ): Unit = DenyButton(null, attrs, content)

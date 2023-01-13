@@ -21,10 +21,10 @@ public typealias ElementBuilder<T> = (attrs: AttrBuilderContext<T>?, content: Co
  * built using the specified [elementBuilder].
  */
 @Composable
-public fun <TSemantic : SemanticElement, TElement : Element> SemanticElement(
-    semanticAttrs: SemanticAttrBuilderContext<TSemantic, TElement>? = null,
-    semanticContent: SemanticContentBuilder<TSemantic, TElement>? = null,
-    elementBuilder: @Composable ElementBuilder<TElement>,
+public fun <TSemantic : SemanticElement<Element>> SemanticElement(
+    semanticAttrs: SemanticAttrBuilderContext<TSemantic>? = null,
+    semanticContent: SemanticContentBuilder<TSemantic>? = null,
+    elementBuilder: @Composable ElementBuilder<Element>,
 ): Unit = elementBuilder(
     { semanticAttrs?.invoke(SemanticAttrsScopeBuilder(this)) },
     { semanticContent?.invoke(SemanticElementScopeBase(this)) },
@@ -37,7 +37,7 @@ public fun <TSemantic : SemanticElement, TElement : Element> SemanticElement(
  * based on a [HTMLDivElement].
  */
 @Composable
-public fun <TSemantic : SemanticElement> SemanticDivElement(
-    semanticAttrs: SemanticAttrBuilderContext<TSemantic, HTMLDivElement>? = null,
-    semanticContent: SemanticContentBuilder<TSemantic, HTMLDivElement>? = null,
+public fun <TSemantic : SemanticElement<HTMLDivElement>> SemanticDivElement(
+    semanticAttrs: SemanticAttrBuilderContext<TSemantic>? = null,
+    semanticContent: SemanticContentBuilder<TSemantic>? = null,
 ): Unit = SemanticElement(semanticAttrs, semanticContent) { attrs, content -> Div(attrs, content) }

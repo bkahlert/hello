@@ -34,13 +34,14 @@ import com.bkahlert.hello.clickup.ui.widgets.rememberActivityDropdownState
 import com.bkahlert.hello.compose.backgroundColor
 import com.bkahlert.hello.compose.color
 import com.bkahlert.hello.debug.clickup.ClickUpTestClient
-import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.collection.AnkerItem
 import com.bkahlert.hello.semanticui.collection.DropdownItem
 import com.bkahlert.hello.semanticui.collection.LinkItem
 import com.bkahlert.hello.semanticui.collection.Menu
 import com.bkahlert.hello.semanticui.collection.MenuElement
-import com.bkahlert.hello.semanticui.collection.MenuItemElement
+import com.bkahlert.hello.semanticui.collection.MenuItemDivElement
+import com.bkahlert.hello.semanticui.collection.target
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.module.Dimmer
@@ -56,7 +57,6 @@ import com.bkahlert.kommons.dom.open
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.ATarget.Blank
-import org.jetbrains.compose.web.attributes.target
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
@@ -86,10 +86,9 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
-import org.w3c.dom.HTMLDivElement
 
 @Composable
-fun SemanticElementScope<MenuElement, *>.DisconnectedItems(
+fun SemanticElementScope<MenuElement>.DisconnectedItems(
     onConnect: (ClickUpClient) -> Unit = {},
 ) {
     var configuring by remember { mutableStateOf(false) }
@@ -118,7 +117,7 @@ fun SemanticElementScope<MenuElement, *>.DisconnectedItems(
 }
 
 @Composable
-fun SemanticElementScope<MenuElement, *>.TeamSelectingItems(
+fun SemanticElementScope<MenuElement>.TeamSelectingItems(
     state: TeamSelecting,
     onActivate: (TeamID) -> Unit = {},
 ) {
@@ -157,7 +156,7 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectingItems(
 }
 
 @Composable
-fun SemanticElementScope<MenuElement, *>.MainItems(
+fun SemanticElementScope<MenuElement>.MainItems(
     user: User,
     teams: List<Team>,
     selectedTeam: Team?,
@@ -190,7 +189,7 @@ fun SemanticElementScope<MenuElement, *>.MainItems(
 }
 
 @Composable
-fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
+fun SemanticElementScope<MenuElement>.TeamSelectionItems(
     teams: List<Team>,
     selectedTeam: Team?,
     onTeamSelect: (TeamID) -> Unit,
@@ -231,10 +230,10 @@ fun SemanticElementScope<MenuElement, *>.TeamSelectionItems(
 }
 
 @Composable
-fun SemanticElementScope<MenuElement, *>.TeamItem(
+fun SemanticElementScope<MenuElement>.TeamItem(
     team: Team,
     onClick: () -> Unit,
-    attrs: (SemanticAttrsScope<MenuItemElement, HTMLDivElement>.() -> Unit)? = null,
+    attrs: SemanticAttrBuilderContext<MenuItemDivElement>? = null,
 ) {
     LinkItem({
         attrs?.invoke(this)
@@ -259,7 +258,7 @@ fun SemanticElementScope<MenuElement, *>.TeamItem(
 }
 
 @Composable
-fun SemanticElementScope<MenuElement, *>.ActivityItems(
+fun SemanticElementScope<MenuElement>.ActivityItems(
     activityGroups: List<ActivityGroup>,
     selectedActivity: Activity<*>?,
     onSelect: (Selection) -> Unit,
@@ -345,6 +344,7 @@ fun SemanticElementScope<MenuElement, *>.ActivityItems(
         }
     }
 }
+
 
 @Composable
 fun ClickUpMenu(

@@ -9,10 +9,9 @@ import com.bkahlert.hello.semanticui.dom.SemanticDivElement
 import com.bkahlert.hello.semanticui.dom.SemanticElement
 import com.bkahlert.hello.semanticui.dom.SemanticElementType
 import org.jetbrains.compose.web.dom.A
-import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
 
-interface ButtonElement : SemanticElement
+interface ButtonElement : SemanticElement<HTMLDivElement>
 enum class ButtonElementType(override vararg val classNames: String) : SemanticElementType<ButtonElement> {
     Primary("primary"),
     Secondary("secondary"),
@@ -24,10 +23,12 @@ enum class ButtonElementType(override vararg val classNames: String) : SemanticE
 }
 
 /** [Positive](https://semantic-ui.com/elements/button.html#positive) variation of a [button](https://semantic-ui.com/elements/button.html). */
-@Suppress("unused") val <TSemantic : ButtonElement> SemanticAttrsScope<TSemantic, *>.positive: Variation get() = Variation.Positive
+@Suppress("unused")
+val <TSemantic : ButtonElement> SemanticAttrsScope<TSemantic>.positive: Variation get() = Variation.Positive
 
 /** [Negative](https://semantic-ui.com/elements/button.html#negative) variation of a [button](https://semantic-ui.com/elements/button.html). */
-@Suppress("unused") val <TSemantic : ButtonElement> SemanticAttrsScope<TSemantic, *>.negative: Variation get() = Variation.Negative
+@Suppress("unused")
+val <TSemantic : ButtonElement> SemanticAttrsScope<TSemantic>.negative: Variation get() = Variation.Negative
 
 /**
  * Creates a [SemanticUI button](https://semantic-ui.com/elements/button.html)
@@ -36,8 +37,8 @@ enum class ButtonElementType(override vararg val classNames: String) : SemanticE
 @Composable
 fun Button(
     type: ButtonElementType?,
-    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ButtonElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
+    content: SemanticContentBuilder<ButtonElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -52,8 +53,8 @@ fun Button(
  */
 @Composable
 fun Button(
-    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ButtonElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
+    content: SemanticContentBuilder<ButtonElement>? = null,
 ) {
     Button(null, attrs, content)
 }
@@ -65,8 +66,8 @@ fun Button(
 @Composable
 fun AnkerButton(
     href: String? = null,
-    attrs: SemanticAttrBuilderContext<ButtonElement, HTMLAnchorElement>? = null,
-    content: SemanticContentBuilder<ButtonElement, HTMLAnchorElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
+    content: SemanticContentBuilder<ButtonElement>? = null,
 ) {
     SemanticElement({
         classes("ui")
@@ -75,7 +76,7 @@ fun AnkerButton(
     }, content) { a, c -> A(href, a, c) }
 }
 
-interface ButtonGroupElement : SemanticElement
+interface ButtonGroupElement : SemanticElement<HTMLDivElement>
 enum class ButtonGroupElementType(override vararg val classNames: String) : SemanticElementType<ButtonGroupElement> {
     Icon("icon"),
 }
@@ -87,8 +88,8 @@ enum class ButtonGroupElementType(override vararg val classNames: String) : Sema
 @Composable
 fun Buttons(
     type: ButtonGroupElementType?,
-    attrs: SemanticAttrBuilderContext<ButtonGroupElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ButtonGroupElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonGroupElement>? = null,
+    content: SemanticContentBuilder<ButtonGroupElement>? = null,
 ) {
     SemanticDivElement({
         classes("ui")
@@ -103,8 +104,8 @@ fun Buttons(
  */
 @Composable
 fun Buttons(
-    attrs: SemanticAttrBuilderContext<ButtonGroupElement, HTMLDivElement>? = null,
-    content: SemanticContentBuilder<ButtonGroupElement, HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<ButtonGroupElement>? = null,
+    content: SemanticContentBuilder<ButtonGroupElement>? = null,
 ) {
     Buttons(null, attrs, content)
 }

@@ -15,7 +15,7 @@ import org.jetbrains.compose.web.css.paddingLeft
  */
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<MenuElement, *>.MetaItems(
+fun SemanticElementScope<MenuElement>.MetaItems(
     meta: List<Meta>,
 ) {
     meta.forEach {

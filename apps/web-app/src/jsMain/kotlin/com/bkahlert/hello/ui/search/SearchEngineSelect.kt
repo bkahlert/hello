@@ -5,7 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.bkahlert.hello.compose.color
 import com.bkahlert.hello.compose.data
-import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.Item
@@ -53,7 +53,6 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Text
-import org.w3c.dom.HTMLDivElement
 import kotlin.js.json
 import com.bkahlert.hello.semanticui.element.List as SemanticList
 
@@ -106,7 +105,7 @@ fun rememberSearchEngineSelectState(
 @Composable
 fun SearchEngineSelect(
     state: SearchEngineSelectState = rememberSearchEngineSelectState(),
-    attrs: (SemanticAttrsScope<ListElement, HTMLDivElement>.() -> Unit)? = null,
+    attrs: SemanticAttrBuilderContext<ListElement>? = null,
 ) {
     SemanticList({
         +horizontal

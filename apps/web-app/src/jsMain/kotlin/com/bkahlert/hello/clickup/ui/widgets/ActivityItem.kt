@@ -2,7 +2,7 @@ package com.bkahlert.hello.clickup.ui.widgets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.jQuery
 import com.bkahlert.hello.semanticui.module.DropdownMenuElement
@@ -13,13 +13,12 @@ import com.bkahlert.hello.ui.textOverflow
 import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.dom.Text
-import org.w3c.dom.HTMLDivElement
 
 @Suppress("unused")
 @Composable
-fun SemanticElementScope<DropdownMenuElement, *>.ActivityItem(
+fun SemanticElementScope<DropdownMenuElement>.ActivityItem(
     activity: Activity<*>,
-    attrs: (SemanticAttrsScope<DropdownMenuItemElement, HTMLDivElement>.() -> Unit)? = null,
+    attrs: SemanticAttrBuilderContext<DropdownMenuItemElement>? = null,
 ) {
     Item({
         attr("data-text", activity.name)
