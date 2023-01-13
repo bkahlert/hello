@@ -12,19 +12,12 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.bkahlert.kommons:kommons-dom")
-                implementation("com.bkahlert.kommons:kommons-json-ktor")
-                implementation("com.bkahlert.kommons:kommons-logging-inline")
-
-                implementation(project(":color"))
-                implementation(project(":url"))
-                implementation(project(":clickup-model"))
+                api(project(":semantic-ui-core"))
+                api(project(":semantic-ui-elements"))
+                api(project(":semantic-ui-collections"))
+                api(project(":semantic-ui-modules"))
+                api(project(":semantic-ui-views"))
             }
-        }
-
-        all {
-            languageSettings.optIn("kotlin.RequiresOptIn")
-            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
 }

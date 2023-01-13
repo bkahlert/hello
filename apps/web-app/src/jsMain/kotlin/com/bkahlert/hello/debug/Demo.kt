@@ -7,11 +7,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.client.ClickUpException
 import com.bkahlert.hello.clickup.client.ErrorInfo
-import com.bkahlert.hello.semanticui.SemanticUI
 import com.bkahlert.hello.semanticui.collection.Header
 import com.bkahlert.hello.semanticui.collection.LinkItem
 import com.bkahlert.hello.semanticui.collection.Menu
 import com.bkahlert.hello.semanticui.collection.TextMenu
+import com.bkahlert.hello.semanticui.core.SemanticUI
 import com.bkahlert.hello.semanticui.element.Header
 import com.bkahlert.hello.semanticui.element.Icon
 import org.jetbrains.compose.web.css.em

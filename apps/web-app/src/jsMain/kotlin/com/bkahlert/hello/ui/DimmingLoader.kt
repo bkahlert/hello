@@ -1,8 +1,8 @@
 package com.bkahlert.hello.ui
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.element.Loader
 import com.bkahlert.hello.semanticui.element.LoaderElement
 import com.bkahlert.hello.semanticui.element.TextLoader

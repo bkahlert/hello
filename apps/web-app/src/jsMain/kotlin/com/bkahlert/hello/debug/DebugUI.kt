@@ -26,9 +26,9 @@ import com.bkahlert.hello.debug.semanticui.CollectionsDemos
 import com.bkahlert.hello.debug.semanticui.ElementsDemos
 import com.bkahlert.hello.debug.semanticui.ModulesDemos
 import com.bkahlert.hello.debug.semanticui.ViewsDemos
-import com.bkahlert.hello.semanticui.Semantic
-import com.bkahlert.hello.semanticui.SemanticUI
-import com.bkahlert.hello.semanticui.jQuery
+import com.bkahlert.hello.semanticui.core.Semantic
+import com.bkahlert.hello.semanticui.core.SemanticUI
+import com.bkahlert.hello.semanticui.core.jQuery
 import com.bkahlert.hello.semanticui.module.Content
 import com.bkahlert.hello.semanticui.module.Modal
 import com.bkahlert.hello.semanticui.module.autofocus

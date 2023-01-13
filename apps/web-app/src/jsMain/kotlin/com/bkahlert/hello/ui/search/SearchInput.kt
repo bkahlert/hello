@@ -6,9 +6,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.semanticui.SemanticUI
-import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.core.SemanticUI
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.Input
 import com.bkahlert.hello.semanticui.element.InputElement

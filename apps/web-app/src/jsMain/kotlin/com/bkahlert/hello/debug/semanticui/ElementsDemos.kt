@@ -5,14 +5,15 @@ import com.bkahlert.hello.clickup.model.ImageFixtures
 import com.bkahlert.hello.clickup.model.ImageFixtures.KommonsLogo
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
-import com.bkahlert.hello.semanticui.SemanticUI
-import com.bkahlert.hello.semanticui.attributes.Variation.Negative
+import com.bkahlert.hello.semanticui.core.SemanticUI
+import com.bkahlert.hello.semanticui.core.attributes.Variation.Negative
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Content
 import com.bkahlert.hello.semanticui.element.Description
 import com.bkahlert.hello.semanticui.element.Header
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.Image
+import com.bkahlert.hello.semanticui.element.ImageAnchor
 import com.bkahlert.hello.semanticui.element.ImageHeader
 import com.bkahlert.hello.semanticui.element.Input
 import com.bkahlert.hello.semanticui.element.Item
@@ -159,7 +160,7 @@ fun ElementsDemos() {
                     Text("horizontally divided")
                 }
                 Item {
-                    Image(href = null) { Icon("arrow", "up") { +Size.Huge } }
+                    ImageAnchor(href = null) { Icon("arrow", "up") { +Size.Huge } }
                     Content({ +verticallyAligned.Top }) { Small { Text("+ top aligned") } }
                 }
             }

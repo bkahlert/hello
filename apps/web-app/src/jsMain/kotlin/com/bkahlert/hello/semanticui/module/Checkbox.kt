@@ -1,11 +1,11 @@
 package com.bkahlert.hello.semanticui.module
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
-import com.bkahlert.hello.semanticui.dom.SemanticDivElement
-import com.bkahlert.hello.semanticui.dom.SemanticElement
-import com.bkahlert.hello.semanticui.dom.SemanticElementType
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.core.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.core.dom.SemanticElement
+import com.bkahlert.hello.semanticui.core.dom.SemanticElementType
 import org.w3c.dom.HTMLDivElement
 
 interface CheckboxElement : SemanticElement<HTMLDivElement>

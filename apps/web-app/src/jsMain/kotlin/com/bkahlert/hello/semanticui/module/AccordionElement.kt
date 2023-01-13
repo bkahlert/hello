@@ -2,13 +2,13 @@ package com.bkahlert.hello.semanticui.module
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
-import com.bkahlert.hello.semanticui.dom.SemanticDivElement
-import com.bkahlert.hello.semanticui.dom.SemanticElement
-import com.bkahlert.hello.semanticui.dom.SemanticElementScope
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.core.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.core.dom.SemanticElement
+import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.hello.semanticui.core.jQuery
 import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.jQuery
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement

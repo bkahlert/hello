@@ -2,13 +2,13 @@ package com.bkahlert.hello.clickup.ui.widgets
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.dom.SemanticElementScope
-import com.bkahlert.hello.semanticui.jQuery
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.hello.semanticui.core.jQuery
+import com.bkahlert.hello.semanticui.core.popup
 import com.bkahlert.hello.semanticui.module.DropdownMenuElement
 import com.bkahlert.hello.semanticui.module.DropdownMenuItemElement
 import com.bkahlert.hello.semanticui.module.Item
-import com.bkahlert.hello.semanticui.popup
 import com.bkahlert.hello.ui.textOverflow
 import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.percent

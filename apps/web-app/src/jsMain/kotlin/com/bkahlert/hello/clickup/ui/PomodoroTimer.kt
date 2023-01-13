@@ -16,8 +16,8 @@ import com.bkahlert.hello.clickup.Pomodoro.Status.Running
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.compose.color
+import com.bkahlert.hello.semanticui.core.jQuery
 import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.jQuery
 import com.bkahlert.hello.ui.AcousticFeedback
 import kotlinx.browser.window
 import org.jetbrains.compose.web.css.fontWeight

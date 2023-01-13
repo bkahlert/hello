@@ -6,17 +6,18 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.semanticui.attributes.SemanticAttrsScope
-import com.bkahlert.hello.semanticui.attributes.Variation
-import com.bkahlert.hello.semanticui.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.dom.SemanticContentBuilder
-import com.bkahlert.hello.semanticui.dom.SemanticDivElement
-import com.bkahlert.hello.semanticui.dom.SemanticElement
-import com.bkahlert.hello.semanticui.dom.SemanticElementScope
-import com.bkahlert.hello.semanticui.dropdown
-import com.bkahlert.hello.semanticui.jQuery
-import com.bkahlert.hello.semanticui.toJsonArray
-import com.bkahlert.hello.semanticui.toJsonArrayOrEmpty
+import com.bkahlert.hello.semanticui.collection.MenuElement
+import com.bkahlert.hello.semanticui.core.attributes.SemanticAttrsScope
+import com.bkahlert.hello.semanticui.core.attributes.Variation
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.core.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.core.dom.SemanticElement
+import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.hello.semanticui.core.dropdown
+import com.bkahlert.hello.semanticui.core.jQuery
+import com.bkahlert.hello.semanticui.core.toJsonArray
+import com.bkahlert.hello.semanticui.core.toJsonArrayOrEmpty
 import com.bkahlert.kommons.dom.data
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.paddingRight
@@ -284,6 +285,21 @@ fun SemanticElementScope<DropdownMenuElement>.Item(
     content: SemanticContentBuilder<DropdownMenuItemElement>? = null,
 ) {
     SemanticDivElement({
+        attrs?.invoke(this)
+        classes("item")
+    }, content)
+}
+
+/**
+ * Creates a [SemanticUI dropdown item](https://semantic-ui.com/collections/menu.html#dropdown-item).
+ */
+@Suppress("unused")
+@Composable
+fun SemanticElementScope<MenuElement>.DropdownItem(
+    attrs: SemanticAttrBuilderContext<DropdownElement>? = null,
+    content: SemanticContentBuilder<DropdownElement>? = null,
+) {
+    Dropdown({
         attrs?.invoke(this)
         classes("item")
     }, content)
