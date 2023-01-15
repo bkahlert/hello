@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import java.io.FileFilter
-
 // == Define locations for build logic ==
 pluginManagement {
     repositories {
@@ -21,8 +19,8 @@ includeBuild("../../platforms")
 
 // == Define the inner structure of this component ==
 rootProject.name = "kommons-libs"
-rootDir.listFiles(FileFilter { file ->
+rootDir.listFiles { file ->
     file.resolve("build.gradle.kts").exists()
-})?.forEach { projectDir ->
+}?.forEach { projectDir ->
     include(projectDir.name)
 }

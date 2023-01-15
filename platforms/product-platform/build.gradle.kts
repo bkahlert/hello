@@ -8,15 +8,9 @@ group = "com.bkahlert.platform"
 javaPlatform.allowDependencies()
 
 dependencies {
+    api(platform(libs.kommons.bom))
     api(platform(libs.kotlin.bom))
     api(platform(libs.kotlinx.coroutines.bom))
     api(platform(libs.kotlinx.serialization.bom))
     api(platform(libs.ktor.bom))
-
-    constraints {
-        api("com.bkahlert.kommons:kommons:${libs.versions.kommons.get()}")
-        api("com.bkahlert.kommons:kommons-core:${libs.versions.kommons.get()}")
-        api("com.bkahlert.kommons:kommons-debug:${libs.versions.kommons.get()}")
-        api("com.bkahlert.kommons:kommons-text:${libs.versions.kommons.get()}")
-    }
 }

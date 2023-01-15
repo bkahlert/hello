@@ -4,12 +4,21 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonBuilder
 
 /** [Json] instance with [lenientBuilderAction] applied to it. */
-@Suppress("UnusedReceiverParameter")
-public val Json.Lenient: Json get() = LenientJson
+public val LenientJson: Json by lazy {
+    Json {
+        lenientBuilderAction()
+        prettyPrint = false
+    }
+}
 
 /** Pretty-printing [Json] instance with [lenientBuilderAction] applied to it. */
 @Suppress("UnusedReceiverParameter")
-public val Json.LenientAndPretty: Json get() = LenientAndPrettyJson
+public val LenientAndPrettyJson: Json by lazy {
+    Json {
+        lenientBuilderAction()
+        prettyPrint = true
+    }
+}
 
 /**
  * A [JsonBuilder] action that
@@ -23,16 +32,8 @@ public val JsonBuilder.lenientBuilderAction: () -> Unit
         explicitNulls = false
     }
 
-private val LenientJson: Json by lazy {
-    Json {
-        lenientBuilderAction()
-        prettyPrint = false
-    }
-}
+/** @see LenientJson */
+public val Json.Default.Lenient: Json get() = LenientJson
 
-private val LenientAndPrettyJson: Json by lazy {
-    Json {
-        lenientBuilderAction()
-        prettyPrint = true
-    }
-}
+/** @see LenientAndPrettyJson */
+public val Json.Default.LenientAndPretty: Json get() = LenientAndPrettyJson

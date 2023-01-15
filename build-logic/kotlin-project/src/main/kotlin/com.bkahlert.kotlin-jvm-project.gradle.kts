@@ -1,15 +1,19 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     id("com.bkahlert.kotlin-project") apply false
 }
 
 kotlin {
     targets {
-        jvm {
-            compilations.all {
-                kotlinOptions {
-                    jvmTarget = "1.8"
-                }
-            }
-        }
+        jvm()
+    }
+}
+
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
+        freeCompilerArgs.set(freeCompilerArgs.get() + "-Xjsr305=strict")
     }
 }

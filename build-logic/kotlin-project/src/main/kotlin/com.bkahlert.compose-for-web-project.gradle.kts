@@ -1,4 +1,4 @@
-import org.gradle.kotlin.dsl.apply
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     id("com.bkahlert.kotlin-project") apply false
@@ -27,6 +27,17 @@ kotlin {
             languageSettings.optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
             languageSettings.optIn("org.jetbrains.compose.web.ExperimentalComposeWebApi")
         }
+    }
+}
+
+tasks.withType(KotlinCompilationTask::class).configureEach {
+    compilerOptions {
+        freeCompilerArgs.set(
+            freeCompilerArgs.get() + listOf(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=1.8.0"
+            )
+        )
     }
 }
 

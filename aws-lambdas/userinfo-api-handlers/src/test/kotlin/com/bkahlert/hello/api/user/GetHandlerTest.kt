@@ -8,7 +8,7 @@ import com.auth0.jwk.UrlJwkProvider
 import com.bkahlert.aws.lambda.TestContext
 import com.bkahlert.hello.user.info.GetHandler
 import com.bkahlert.hello.user.info.JsonWebTokenValidator
-import com.bkahlert.kommons.fixed
+import com.bkahlert.kommons.test.fixed
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
 import kotlinx.datetime.Clock

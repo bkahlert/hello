@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import java.io.FileFilter
-
 dependencyResolutionManagement {
     repositories {
         gradlePluginPortal()
@@ -10,8 +8,8 @@ dependencyResolutionManagement {
 includeBuild("../platforms")
 
 rootProject.name = "build-logic"
-rootDir.listFiles(FileFilter { file ->
+rootDir.listFiles { file ->
     file.resolve("build.gradle.kts").exists()
-})?.forEach { projectDir ->
+}?.forEach { projectDir ->
     include(projectDir.name)
 }

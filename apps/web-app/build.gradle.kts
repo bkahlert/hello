@@ -20,7 +20,7 @@ kotlin {
 
                     DEVELOPMENT -> {
                         devtool = WebpackDevtool.EVAL_SOURCE_MAP
-                        cssSupport { enabled = true }
+                        cssSupport { enabled.set(true) }
                         // main config in webpack.config.d directory
                     }
                 }
