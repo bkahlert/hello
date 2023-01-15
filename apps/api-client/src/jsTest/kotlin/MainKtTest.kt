@@ -5,13 +5,23 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlin.test.Test
+import org.jetbrains.compose.web.testutils.runTest
+import io.kotest.matchers.shouldBe
 
 class MainKtTest {
 
     @Test
-    fun lenient() {
+    fun json_serialization() {
         LenientJson.encodeToString(JsonObject.serializer(), jsonObject) shouldEqualJson "{\"foo\":\"bar\",\"baz\":null}"
         LenientJson.encodeToString(jsonObject) shouldEqualJson "{\"foo\":\"bar\",\"baz\":null}"
+    }
+
+    @Test
+    fun compose() = runTest {
+        composition {
+            UserInfo(null) {}
+        }
+        root.innerHTML shouldBe "<div>userInfo unavailable</div>"
     }
 }
 

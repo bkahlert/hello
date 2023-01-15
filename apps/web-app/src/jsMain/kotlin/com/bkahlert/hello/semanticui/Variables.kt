@@ -2,7 +2,7 @@ package com.bkahlert.hello.semanticui
 
 import com.bkahlert.hello.color.Color
 import com.bkahlert.hello.color.Color.RGB
-import com.bkahlert.hello.compose.Length
+import com.bkahlert.hello.ui.compose.Length
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.px
 

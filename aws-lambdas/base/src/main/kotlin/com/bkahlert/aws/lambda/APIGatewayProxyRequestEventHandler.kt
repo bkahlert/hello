@@ -27,7 +27,7 @@ public abstract class APIGatewayProxyRequestEventHandler : RequestHandler<APIGat
         context: Context?,
     ): APIGatewayProxyResponseEvent = runBlocking {
         logger.debug("Input: $input")
-        logger.debug("context: $context")
+        logger.debug("Context: $context")
 
         val event = checkNotNull(input) { "input must not be null" }
         val response = handleEvent(event = event, context = checkNotNull(context) { "context must not be null" })

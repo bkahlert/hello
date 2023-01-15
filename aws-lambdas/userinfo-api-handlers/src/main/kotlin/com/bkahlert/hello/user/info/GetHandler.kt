@@ -56,6 +56,7 @@ class GetHandler(
 
             jsonResponse(Json.parseToJsonElement(decodedPayload))
         }.getOrElse { exception ->
+            logger.warn("Failed to validate token", exception)
             errorResponse(
                 when (exception) {
                     is JWTVerificationException -> 401

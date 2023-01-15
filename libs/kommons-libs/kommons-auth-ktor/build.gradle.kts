@@ -9,16 +9,11 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val commonMain by getting {
+        val jsMain by getting {
             dependencies {
                 implementation(project(":kommons-auth"))
                 implementation(project(":kommons-json-ktor"))
                 implementation(project(":kommons-logging-inline"))
-            }
-        }
-
-        val jsMain by getting {
-            dependencies {
                 implementation("io.ktor:ktor-client-auth")
             }
         }

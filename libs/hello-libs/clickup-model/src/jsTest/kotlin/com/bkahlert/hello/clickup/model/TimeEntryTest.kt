@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup.model
 
-import com.bkahlert.hello.clickup.model.ClickUpFixtures.Teams
-import com.bkahlert.hello.clickup.model.ClickUpFixtures.UserJson
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.Teams
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.UserJson
 import com.bkahlert.hello.clickup.serialization.BasicSerializerTest
 import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.hello.clickup.serialization.NamedSerializer

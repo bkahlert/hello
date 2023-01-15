@@ -5,8 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.clickup.client.ClickUpException
-import com.bkahlert.hello.clickup.client.ErrorInfo
+import com.bkahlert.hello.clickup.model.ClickUpException
 import com.bkahlert.hello.semanticui.collection.Header
 import com.bkahlert.hello.semanticui.collection.LinkItem
 import com.bkahlert.hello.semanticui.collection.Menu
@@ -70,7 +69,7 @@ fun Demo(
 }
 
 val clickupException = ClickUpException(
-    ErrorInfo("something went wrong", "TEST-1234"), RuntimeException("underlying problem")
+    "something went wrong", "TEST-1234", RuntimeException("underlying problem")
 )
 
 fun <T> response(value: T) = Result.success(value)

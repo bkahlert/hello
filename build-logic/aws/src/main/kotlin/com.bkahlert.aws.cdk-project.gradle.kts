@@ -1,11 +1,9 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id("com.bkahlert.commons")
     kotlin("jvm") apply false
 }
-
-java { sourceCompatibility = JavaVersion.toVersion("11") }
 
 dependencies {
     implementation(platform("com.bkahlert.platform:aws-platform"))
@@ -19,6 +17,9 @@ dependencies {
 }
 
 kotlin {
+    jvmToolchain(11)
+    with(javaToolchains.launcherFor(java.toolchain).get().metadata) { logger.lifecycle("Using JDK $languageVersion toolchain installed in $installationPath") }
+
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
         all {
@@ -31,13 +32,10 @@ kotlin {
     }
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        freeCompilerArgs += "-Xcontext-receivers" // context receivers / multiple receivers
-        jvmTarget = "11"
-        apiVersion = "1.7"
-        languageVersion = "1.7"
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        freeCompilerArgs.set(freeCompilerArgs.get() + "-Xjsr305=strict")
+        freeCompilerArgs.set(freeCompilerArgs.get() + "-Xcontext-receivers")
     }
 }
 

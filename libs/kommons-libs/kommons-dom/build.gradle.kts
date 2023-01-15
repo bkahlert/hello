@@ -9,7 +9,7 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val commonMain by getting {
+        val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-text")
                 implementation(project(":kommons-json"))

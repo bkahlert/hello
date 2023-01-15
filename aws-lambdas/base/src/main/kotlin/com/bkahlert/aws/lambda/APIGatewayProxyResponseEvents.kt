@@ -37,7 +37,7 @@ public fun errorResponse(
         else -> 500
     },
 ): APIGatewayProxyResponseEvent =
-    jsonObjectResponse {
+    jsonObjectResponse(statusCode = status) {
         put("status", status)
         exception.message?.also { put("errorMessage", it) }
         exception::class.simpleName?.also { put("errorType", it) }

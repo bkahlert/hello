@@ -9,7 +9,7 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val commonMain by getting {
+        val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-auth")
                 implementation("com.bkahlert.kommons:kommons-auth-ktor")
@@ -18,9 +18,9 @@ kotlin {
                 implementation("com.bkahlert.kommons:kommons-logging-inline")
                 implementation("com.bkahlert.kommons:kommons-text")
 
-                implementation(project(":url"))
-                api(project(":clickup-model"))
-                api(project(":clickup-client"))
+                implementation(project(":hello-url"))
+                implementation(project(":clickup-model"))
+//                api(project(":clickup-client"))
             }
         }
     }

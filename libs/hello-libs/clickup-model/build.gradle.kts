@@ -9,12 +9,19 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val commonMain by getting {
+        val jsMain by getting {
+            dependencies {
+                implementation("com.bkahlert.kommons:kommons-core")
+
+                implementation(project(":hello-dom"))
+                implementation(project(":hello-color"))
+                implementation(project(":hello-url"))
+            }
+        }
+
+        val jsTest by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-json")
-
-                implementation(project(":color"))
-                implementation(project(":url"))
             }
         }
 

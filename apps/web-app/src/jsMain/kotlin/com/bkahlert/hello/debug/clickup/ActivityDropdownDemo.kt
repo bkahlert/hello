@@ -1,18 +1,18 @@
 package com.bkahlert.hello.debug.clickup
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.clickup.model.ClickUpFixtures
 import com.bkahlert.hello.clickup.model.FolderPreview
 import com.bkahlert.hello.clickup.model.Space
 import com.bkahlert.hello.clickup.model.Task
 import com.bkahlert.hello.clickup.model.TaskList
 import com.bkahlert.hello.clickup.model.TimeEntry
-import com.bkahlert.hello.clickup.ui.widgets.Activity
-import com.bkahlert.hello.clickup.ui.widgets.Activity.RunningTaskActivity
-import com.bkahlert.hello.clickup.ui.widgets.ActivityDropdown
-import com.bkahlert.hello.clickup.ui.widgets.ActivityGroup
-import com.bkahlert.hello.clickup.ui.widgets.activities
-import com.bkahlert.hello.clickup.ui.widgets.rememberActivityDropdownState
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
+import com.bkahlert.hello.clickup.view.Activity
+import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
+import com.bkahlert.hello.clickup.view.ActivityDropdown
+import com.bkahlert.hello.clickup.view.ActivityGroup
+import com.bkahlert.hello.clickup.view.activities
+import com.bkahlert.hello.clickup.view.rememberActivityDropdownState
 import com.bkahlert.hello.color.Color
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos

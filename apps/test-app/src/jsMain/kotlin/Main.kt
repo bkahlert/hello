@@ -1,3 +1,4 @@
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -13,38 +14,42 @@ import org.jetbrains.compose.web.renderComposable
 
 fun main() {
 
+    renderComposable(rootElementId = "root") {
+        Counter()
+    }
+}
+
+@Composable
+fun Counter() {
+
     var count: Int by mutableStateOf(0)
 
-    renderComposable(rootElementId = "root") {
-        Div({ style { padding(25.px) } }) {
-
-
-            Button(attrs = {
-                onClick { count -= 1 }
-            }) {
-                Text("-")
-            }
-
-            Span({ style { padding(15.px) } }) {
-                Text("$count")
-            }
-
-            Button(attrs = {
-                onClick {
-                    count += 1
-                }
-            }) {
-                Text("+")
-            }
+    Div({ style { padding(25.px) } }) {
+        Button(attrs = {
+            onClick { count -= 1 }
+        }) {
+            Text("-")
         }
-        Pre {
-            Code {
-                Text("!")
-                Text("!")
-                Text(count.toString())
-                Text("!")
-                Text("!")
+
+        Span({ style { padding(15.px) } }) {
+            Text("$count")
+        }
+
+        Button(attrs = {
+            onClick {
+                count += 1
             }
+        }) {
+            Text("+")
+        }
+    }
+    Pre {
+        Code {
+            Text("!")
+            Text("!")
+            Text(count.toString())
+            Text("!")
+            Text("!")
         }
     }
 }

@@ -1,13 +1,18 @@
 package com.bkahlert.hello.debug.clickup
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.clickup.model.ClickUpFixtures
-import com.bkahlert.hello.clickup.model.ClickUpFixtures.running
 import com.bkahlert.hello.clickup.model.Team
 import com.bkahlert.hello.clickup.model.TimeEntry
-import com.bkahlert.hello.clickup.ui.ClickUpMenu
-import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disabled
-import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disconnected
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.running
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
+import com.bkahlert.hello.clickup.viewmodel.ClickUpMenu
+import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
+import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
+import com.bkahlert.hello.clickup.viewmodel.fixtures.rememberClickUpMenuTestViewModel
+import com.bkahlert.hello.clickup.viewmodel.fixtures.toFullyLoaded
+import com.bkahlert.hello.clickup.viewmodel.fixtures.toPartiallyLoaded
+import com.bkahlert.hello.clickup.viewmodel.fixtures.toTeamSelecting
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.debug.clickupException

@@ -14,6 +14,7 @@ class LambdaHandler : APIGatewayProxyRequestEventHandler() {
 
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
         logger.info("Lambda invoked: $event")
+        context.logger.log("Lambda invoked: $event")
 
         val body: String? = event.body?.toString()
         return when (val jsonElement = body?.runCatching { Json.decodeFromString<JsonElement>(this) }?.getOrNull()) {

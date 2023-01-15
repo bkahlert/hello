@@ -23,8 +23,10 @@ public external class jQuery(deep: Any?) {
     public fun attr(propertyName: String): String?
     public fun attr(propertyName: String, value: Any?): jQuery
     public fun children(selector: String = definedExternally): jQuery
+    public fun closest(selector: String = definedExternally): jQuery
     public fun find(selector: String = definedExternally): jQuery
     public fun css(propertyName: String, value: Any?): jQuery
+    public fun click(): jQuery
     public fun focus(): jQuery
 }
 

@@ -7,6 +7,7 @@ import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
 import com.bkahlert.aws.lambda.caseInsensitiveHeaders
 import com.bkahlert.aws.lambda.errorResponse
 import com.bkahlert.aws.lambda.response
+import com.bkahlert.kommons.ktor.AuthorizationToken
 import com.bkahlert.kommons.ktor.JsonHttpClient
 import com.bkahlert.kommons.ktor.installTokenAuth
 import io.ktor.client.request.get
@@ -29,7 +30,7 @@ class ProxyHandler : APIGatewayProxyRequestEventHandler() {
         if (clickupApiToken == null) return errorResponse(401, "Authorization header missing", context)
 
         val httpClient = JsonHttpClient {
-            installTokenAuth(clickupApiToken)
+            installTokenAuth(AuthorizationToken(clickupApiToken))
             expectSuccess = false
         }
         val host = clickupUrl

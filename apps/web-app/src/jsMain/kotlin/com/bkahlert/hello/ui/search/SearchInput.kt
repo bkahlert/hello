@@ -170,8 +170,8 @@ fun MultiSearchInput(
 @Composable
 fun PasteHandlingMultiSearchInput(
     onSearch: (String, List<URL>) -> Unit = { _, urls ->
-        if (urls.size == 1) window.openInSameTab(urls.first())
-        else urls.forEach(window::openInNewTab)
+        if (urls.size == 1) window.openInSameTab(org.w3c.dom.url.URL(urls.first().toString()))
+        else urls.forEach { window.openInNewTab(org.w3c.dom.url.URL(it.toString())) }
     },
 ) {
     MultiSearchInput(
@@ -182,7 +182,7 @@ fun PasteHandlingMultiSearchInput(
             it("text/plain")?.also {
                 val url = it.toURLOrNull()
                 if (url != null && Url(url.toString()).port != 0) {
-                    window.openInSameTab(url)
+                    window.openInSameTab(org.w3c.dom.url.URL(url.toString()))
                 }
             }
         },

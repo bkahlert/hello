@@ -16,23 +16,23 @@ import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Margin
 import com.bkahlert.hello.AppStylesheet.Grid.Plugins
 import com.bkahlert.hello.AppStylesheet.Grid.Search
-import com.bkahlert.hello.clickup.ui.ClickUpMenu
-import com.bkahlert.hello.clickup.ui.ClickUpMenuState.Transitioned.Succeeded.Disabled
-import com.bkahlert.hello.clickup.ui.ClickUpStyleSheet
-import com.bkahlert.hello.clickup.ui.rememberClickUpMenuViewModel
-import com.bkahlert.hello.compose.Length
-import com.bkahlert.hello.compose.backgroundColor
+import com.bkahlert.hello.clickup.viewmodel.ClickUpMenu
+import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
+import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
+import com.bkahlert.hello.clickup.viewmodel.rememberClickUpMenuViewModel
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.debug.renderDebugMode
-import com.bkahlert.hello.links.Header
+import com.bkahlert.hello.dom.linearGradient
 import com.bkahlert.hello.semanticui.element.AnkerButton
 import com.bkahlert.hello.semanticui.element.ButtonGroupElementType.Icon
 import com.bkahlert.hello.semanticui.element.Buttons
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.ui.ViewportDimension
-import com.bkahlert.hello.ui.center
-import com.bkahlert.hello.ui.gridArea
-import com.bkahlert.hello.ui.linearGradient
+import com.bkahlert.hello.ui.compose.Length
+import com.bkahlert.hello.ui.compose.backgroundColor
+import com.bkahlert.hello.ui.compose.center
+import com.bkahlert.hello.ui.compose.gridArea
+import com.bkahlert.hello.ui.header.Header
 import com.bkahlert.hello.ui.search.SearchFeature
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.url
@@ -129,8 +129,11 @@ object ClickUpFeature : Feature {
     override val loaded: Boolean = true
     override val content: @Composable DOMScope<HTMLElement>.() -> Unit = {
         @Suppress("SpellCheckingInspection")
-        ClickUpMenu(rememberClickUpMenuViewModel(initialState = Disabled, storage = localStorage.scoped("clickup"))
-            .also { it.enable() })
+        (ClickUpMenu(rememberClickUpMenuViewModel(
+            initialState = Disabled,
+            storage = localStorage.scoped("clickup")
+        )
+            .also { it.enable() }))
     }
 }
 

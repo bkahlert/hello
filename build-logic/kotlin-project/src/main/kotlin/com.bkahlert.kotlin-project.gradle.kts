@@ -41,8 +41,4 @@ tasks.withType(KotlinCompilationTask::class).configureEach {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
-
-    filter {
-        isFailOnNoMatchingTests = false
-    }
 }

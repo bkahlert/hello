@@ -3,9 +3,9 @@ package com.bkahlert.hello.debug.clickup
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.Pomodoro.Type.Debug
 import com.bkahlert.hello.clickup.Pomodoro.Type.Pro
-import com.bkahlert.hello.clickup.model.ClickUpFixtures
-import com.bkahlert.hello.clickup.ui.PomodoroStarter
-import com.bkahlert.hello.clickup.ui.rememberPomodoroStarterState
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
+import com.bkahlert.hello.clickup.viewmodel.PomodoroStarter
+import com.bkahlert.hello.clickup.viewmodel.rememberPomodoroStarterState
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
 

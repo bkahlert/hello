@@ -1,5 +1,5 @@
 plugins {
-    id("com.bkahlert.kotlin-js-project")
+    id("com.bkahlert.kotlin-js-browser-project")
     id("com.bkahlert.compose-for-web-project")
 }
 
@@ -10,9 +10,14 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val commonMain by getting {
+        val jsMain by getting {
             dependencies {
                 implementation(project(":semantic-ui-core"))
+            }
+        }
+        val jsTest by getting {
+            dependencies {
+                implementation(project(":semantic-ui-test"))
             }
         }
     }

@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import com.bkahlert.Brand
 import com.bkahlert.hello.color.Color
 import com.bkahlert.hello.color.deg
-import com.bkahlert.hello.compose.backgroundColor
-import com.bkahlert.hello.compose.color
+import com.bkahlert.hello.ui.compose.backgroundColor
+import com.bkahlert.hello.ui.compose.color
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.semanticui.SiteColors

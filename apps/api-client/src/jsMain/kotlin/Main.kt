@@ -35,7 +35,7 @@ suspend fun main() {
     val helloClientConfig = HelloClientConfig.fromEnvironment(environment)
     var helloClient by mutableStateOf(HelloClient.load(helloClientConfig))
 
-    var acc: String by mutableStateOf("𓐋👋xxxxxxxxxxxxxxxxxxx")
+    var acc: String by mutableStateOf("𓐋👋xx")
     var next: String by mutableStateOf(randomString(1))
     var status: String by mutableStateOf("—")
 

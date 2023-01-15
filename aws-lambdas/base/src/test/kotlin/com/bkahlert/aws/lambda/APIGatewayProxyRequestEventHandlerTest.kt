@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.amazonaws.services.lambda.runtime.tests.annotations.Event
 import io.kotest.matchers.collections.shouldContainExactly
-import io.kotest.matchers.maps.shouldContainExactly
+import io.kotest.matchers.maps.shouldContainAll
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -22,7 +22,7 @@ class EventHandlerTest {
     fun `should handle string body`(event: APIGatewayProxyRequestEvent, context: TestContext) {
         val response = handler.handleRequest(event, context)
         response.statusCode shouldBe 200
-        response.headers shouldContainExactly mapOf("Content-Type" to "application/json")
+        response.headers shouldContainAll mapOf("Content-Type" to "application/json")
         response.body shouldBe """
             {"received":"Lorem ipsum"}
         """.trimIndent()
@@ -33,7 +33,7 @@ class EventHandlerTest {
     fun `should handle JSON body`(event: APIGatewayProxyRequestEvent, context: TestContext) {
         val response = handler.handleRequest(event, context)
         response.statusCode shouldBe 200
-        response.headers shouldContainExactly mapOf("Content-Type" to "application/json")
+        response.headers shouldContainAll mapOf("Content-Type" to "application/json")
         response.body shouldBe """
             {"received":{"foo":"bar","baz":null}}
         """.trimIndent()

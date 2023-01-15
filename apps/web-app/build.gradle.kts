@@ -32,7 +32,7 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val commonMain by getting {
+        val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons")
                 implementation("com.bkahlert.kommons:kommons-auth")
@@ -40,15 +40,21 @@ kotlin {
                 implementation("com.bkahlert.kommons:kommons-dom")
                 implementation("com.bkahlert.kommons:kommons-json")
 
-                implementation("com.bkahlert.hello:color")
-                implementation("com.bkahlert.hello:url")
+                implementation("com.bkahlert.hello:hello-color")
+                implementation("com.bkahlert.hello:hello-url")
+                implementation("com.bkahlert.hello:hello-dom")
+                implementation("com.bkahlert.hello:hello-compose")
+                implementation("com.bkahlert.hello:semantic-ui-core")
+                implementation("com.bkahlert.hello:semantic-ui-elements")
+                implementation("com.bkahlert.hello:semantic-ui-collections")
+                implementation("com.bkahlert.hello:semantic-ui-modules")
+                implementation("com.bkahlert.hello:semantic-ui-views")
+                implementation("com.bkahlert.hello:semantic-ui-custom")
+                implementation("com.bkahlert.hello:clickup-model")
+                implementation("com.bkahlert.hello:clickup-viewmodel")
+                implementation("com.bkahlert.hello:clickup-view")
                 implementation("com.bkahlert.hello:hello-client")
-                implementation("com.bkahlert.hello:semantic-ui")
-            }
-        }
 
-        val jsMain by getting {
-            dependencies {
                 implementation("io.ktor:ktor-client-auth")
                 implementation("io.ktor:ktor-client-content-negotiation")
                 implementation("io.ktor:ktor-client-core")

@@ -112,11 +112,15 @@ public sealed class HelloClient(
             }
             // TODO do asynchronously
             if (helloClient is LoggedIn) {
-                logger.info("Getting ClickUp API token")
-                val clickUpApiToken = helloClient.userProps?.getProp<String?>("clickup.api-token")
-                logger.info("ClickUp API token: $clickUpApiToken")
-                helloClient.clickUpToken = clickUpApiToken?.let { AuthorizationToken(it) }
-                logger.info("Set: $clickUpApiToken")
+                kotlin.runCatching {
+                    logger.info("Getting ClickUp API token")
+                    val clickUpApiToken = helloClient.userProps?.getProp<String?>("clickup.api-token")
+                    logger.info("ClickUp API token: $clickUpApiToken")
+                    helloClient.clickUpToken = clickUpApiToken?.let { AuthorizationToken(it) }
+                    logger.info("Set: $clickUpApiToken")
+                }.onFailure {
+                    logger.warn("Failed to get ClickUp API token", it)
+                }.getOrNull()
             }
             logger.debug("$helloClient")
             return helloClient
