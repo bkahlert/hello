@@ -4,15 +4,3 @@ plugins {
 }
 
 group = "$group.test-app"
-
-kotlin {
-
-    @Suppress("UNUSED_VARIABLE")
-    sourceSets {
-
-        all {
-            languageSettings.optIn("kotlin.RequiresOptIn")
-            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
-        }
-    }
-}

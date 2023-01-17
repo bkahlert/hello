@@ -31,10 +31,10 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="jsBrowserRun" />
+          <option value="jsBrowserDevelopmentRun" />
         </list>
       </option>
-      <option name="vmOptions" value="-Dkotlinx.coroutines.debug" />
+      <option name="vmOptions" value="-Dkotlinx.coroutines.debug -Xdebug" />
     </ExternalSystemSettings>
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>

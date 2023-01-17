@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Invokes `gradle` with all passed arguments
+# inside each root project directory (detected by looking for $project_root_dir_marker)
+# found in this directory recursively.
+declare -r project_root_dir_marker='settings.gradle.kts'
+declare -ar cmdline=(gradle "$@")
+
+
+# Find all project root directories
+declare -a project_root_dirs=()
+while IFS= read -r -d '' settings_gradle; do
+  project_root_dirs=("${project_root_dirs[@]}" "${settings_gradle%/*}")
+done < <(
+  find . '(' \
+    -name "$project_root_dir_marker" \
+    -o -path '*/.git' -prune \
+    -o -path '*/build' -prune \
+    -o -path '*/cache' -prune \
+    -o -path '*/node_modules' -prune \
+    ')' \
+    -not -name .git \
+    -not -name build \
+    -not -name cache \
+    -not -name node_modules \
+    -print0
+)
+
+
+# Run command line in each project root directory
+for project_root_dir in "${project_root_dirs[@]}"; do
+  (
+    cd "$project_root_dir" || exit
+    printf 'In %s invoking: %s\n' "$project_root_dir" "${cmdline[*]}" >&2
+    "${cmdline[@]}"
+    printf 'Done\n' >&2
+  )
+done
