@@ -10,9 +10,6 @@ Therefor the tasks `assemble`, `build`, `clean`, and `check`
 work as expect—also in the umbrella project.
 
 ```shell
-# For macOS users, if ".DS_Store" files come in your way.
-find . -name .DS_Store -print0 | xargs -0 rm
-
 ./gradlew clean build
 ```
 

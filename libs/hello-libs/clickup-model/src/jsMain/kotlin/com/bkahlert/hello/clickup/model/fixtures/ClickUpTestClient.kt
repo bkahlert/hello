@@ -46,7 +46,7 @@ public open class ClickUpTestClient(
     ).flatten(),
     initialTimeEntries: List<TimeEntry> = emptyList(),
     public val initialRunningTimeEntry: TimeEntry? = ClickUpFixtures.TimeEntry.running(),
-    public val delayFactor: Double = .3,
+    public val delayFactor: Double = .2,
 ) : ClickUpClient {
 
     private var user: User = initialUser

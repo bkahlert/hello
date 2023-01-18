@@ -16,6 +16,8 @@ import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Margin
 import com.bkahlert.hello.AppStylesheet.Grid.Plugins
 import com.bkahlert.hello.AppStylesheet.Grid.Search
+import com.bkahlert.hello.clickup.client.http.ClickUpHttpClientConfigurer
+import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenu
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
@@ -128,12 +130,14 @@ object ClickUpFeature : Feature {
     override val name: String = "ClickUp"
     override val loaded: Boolean = true
     override val content: @Composable DOMScope<HTMLElement>.() -> Unit = {
-        @Suppress("SpellCheckingInspection")
         (ClickUpMenu(rememberClickUpMenuViewModel(
             initialState = Disabled,
-            storage = localStorage.scoped("clickup")
-        )
-            .also { it.enable() }))
+            storage = localStorage.scoped("clickup"),
+            configurers = arrayOf(
+                ClickUpHttpClientConfigurer(),
+                ClickUpTestClientConfigurer(),
+            )
+        ).also { it.enable() }))
     }
 }
 

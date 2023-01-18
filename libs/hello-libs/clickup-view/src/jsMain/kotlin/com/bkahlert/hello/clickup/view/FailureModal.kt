@@ -2,6 +2,7 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpException
+import com.bkahlert.hello.semanticui.core.dataAttr
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.IconHeader
 import com.bkahlert.hello.semanticui.module.Accordion
@@ -39,7 +40,7 @@ public fun FailureModal(
     BasicModal({
         +size.Small
         onApprove = {
-            if (it.attr("data-action") == "sign-out") onSignOut()
+            if (it.dataAttr("action") == "sign-out") onSignOut()
             else onRetry()
             true
         }

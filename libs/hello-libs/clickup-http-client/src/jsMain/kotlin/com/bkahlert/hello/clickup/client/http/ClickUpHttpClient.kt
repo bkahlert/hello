@@ -299,6 +299,8 @@ public data class ClickUpHttpClient(
                 setBody(AddTagsToTimeEntriesRequest(timeEntryIDs, tags))
             }
         }
+
+    public companion object
 }
 
 @Serializable

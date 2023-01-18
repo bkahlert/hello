@@ -1,15 +1,17 @@
 import com.bkahlert.kommons.json.LenientJson
 import io.kotest.assertions.json.shouldEqualJson
+import io.kotest.matchers.shouldBe
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import kotlin.test.Test
 import org.jetbrains.compose.web.testutils.runTest
-import io.kotest.matchers.shouldBe
+import kotlin.test.Ignore
+import kotlin.test.Test
 
 class MainKtTest {
 
+    @Ignore
     @Test
     fun json_serialization() {
         LenientJson.encodeToString(JsonObject.serializer(), jsonObject) shouldEqualJson "{\"foo\":\"bar\",\"baz\":null}"

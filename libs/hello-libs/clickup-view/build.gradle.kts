@@ -14,12 +14,14 @@ kotlin {
             dependencies {
                 implementation(project(":hello-dom"))
                 implementation(project(":hello-compose"))
+
                 implementation(project(":semantic-ui-core"))
                 implementation(project(":semantic-ui-elements"))
                 implementation(project(":semantic-ui-collections"))
                 implementation(project(":semantic-ui-modules"))
                 implementation(project(":semantic-ui-views"))
                 implementation(project(":semantic-ui-custom"))
+
                 implementation(project(":clickup-model"))
             }
         }

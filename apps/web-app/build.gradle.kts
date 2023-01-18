@@ -9,6 +9,8 @@ plugins {
 
 group = "$group.hello"
 
+// set environment variable ORG_GRADLE_PROJECT_isProduction to true on CI
+
 kotlin {
     js(IR) {
         browser {
@@ -53,6 +55,7 @@ kotlin {
                 implementation("com.bkahlert.hello:clickup-model")
                 implementation("com.bkahlert.hello:clickup-viewmodel")
                 implementation("com.bkahlert.hello:clickup-view")
+                implementation("com.bkahlert.hello:clickup-http-client")
                 implementation("com.bkahlert.hello:hello-client")
 
                 implementation("io.ktor:ktor-client-auth")

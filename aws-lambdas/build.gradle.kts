@@ -1,9 +1,9 @@
 plugins { base }
 
-listOf("assemble", "build", "clean", "check").forEach { baseTaskName ->
-    tasks.named(baseTaskName).configure {
+listOf(tasks.assemble, tasks.build, tasks.clean, tasks.check).forEach { baseTask ->
+    baseTask.configure {
         subprojects.forEach {
-            dependsOn(it.tasks.named(baseTaskName))
+            dependsOn(it.tasks.named(baseTask.name))
         }
     }
 }

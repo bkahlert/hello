@@ -7,6 +7,17 @@ import kotlin.js.json
  * An interface for the [jQuery library](https://jquery.com).
  */
 public external class jQuery(deep: Any?) {
+    // built-in
+    public fun attr(propertyName: String): String?
+    public fun attr(propertyName: String, value: Any?): jQuery
+    public fun children(selector: String = definedExternally): jQuery
+    public fun closest(selector: String = definedExternally): jQuery
+    public fun find(selector: String = definedExternally): jQuery
+    public fun css(propertyName: String, value: Any?): jQuery
+    public fun click(): jQuery
+    public fun focus(): jQuery
+
+    // Semantic UI
     public fun accordion(options: Json = definedExternally): jQuery
     public fun dimmer(behavior: String, vararg args: Any? = definedExternally): jQuery
     public fun dropdown(options: Json = definedExternally): jQuery
@@ -19,16 +30,15 @@ public external class jQuery(deep: Any?) {
     public fun modal(behavior: String, vararg args: Any? = definedExternally): jQuery
     public fun progress(options: Json = definedExternally): jQuery
     public fun progress(behavior: String, vararg args: Any? = definedExternally): jQuery
-
-    public fun attr(propertyName: String): String?
-    public fun attr(propertyName: String, value: Any?): jQuery
-    public fun children(selector: String = definedExternally): jQuery
-    public fun closest(selector: String = definedExternally): jQuery
-    public fun find(selector: String = definedExternally): jQuery
-    public fun css(propertyName: String, value: Any?): jQuery
-    public fun click(): jQuery
-    public fun focus(): jQuery
 }
+
+/** Convenience shortcut for [jQuery.attr] and [key] prefixed with `data-`. */
+public fun jQuery.dataAttr(key: String): String? =
+    attr("data-$key")
+
+/** Convenience shortcut for [jQuery.attr] and [key] prefixed with `data-`. */
+public fun jQuery.dataAttr(key: String, value: Any?): jQuery =
+    attr("data-$key", value)
 
 /**
  * An interface to interact with a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html)
@@ -63,6 +73,7 @@ public fun jQuery.modal(options: Map<String, Any?>): jQuery = modal(json(*option
  * using the specified [options].
  */
 public fun jQuery.progress(vararg options: Pair<String, Any?>): jQuery = progress(json(*options))
+
 
 /**
  * Helper function to convert an optional value to something that jQuery / Semantic UI

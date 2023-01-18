@@ -18,8 +18,8 @@ dependencies {
 }
 
 kotlin {
-    jvmToolchain(11)
-    with(javaToolchains.launcherFor(java.toolchain).get().metadata) { logger.lifecycle("Using JDK $languageVersion toolchain installed in $installationPath") }
+    jvmToolchain(8)
+    with(javaToolchains.launcherFor(java.toolchain).get().metadata) { logger.info("Using JDK $languageVersion toolchain installed in $installationPath") }
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {

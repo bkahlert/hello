@@ -2,9 +2,7 @@ package com.bkahlert.hello.clickup.client.http
 
 import com.bkahlert.kommons.ktor.AuthorizationToken
 import com.bkahlert.kommons.ktor.Token
-import kotlinx.serialization.Serializable
 
-@Serializable
 public class PersonalAccessToken(
     public val token: String,
 ) : Token by AuthorizationToken(token) {

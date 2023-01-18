@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.hello.semanticui.collection.MenuElement
 import com.bkahlert.hello.semanticui.core.attributes.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.core.attributes.Variation
+import com.bkahlert.hello.semanticui.core.dataAttr
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.core.dom.SemanticDivElement
@@ -115,9 +116,9 @@ public fun <T> InlineDropdown(
         }
         DisposableEffect(state.selection) {
             jQuery(scopeElement)
-                .attr("data-muted", true)
+                .dataAttr("muted", true)
                 .dropdown("set exactly", state.selection.toJsonArrayOrEmpty(state.serializer))
-                .attr("data-muted", null)
+                .dataAttr("muted", null)
             onDispose { }
         }
     }
@@ -203,9 +204,9 @@ public fun <T> InlineMultipleDropdown(
         }
         DisposableEffect(state.selection) {
             jQuery(scopeElement)
-                .attr("data-muted", true)
+                .dataAttr("muted", true)
                 .dropdown("set exactly", state.selection.toJsonArray(state.serializer))
-                .attr("data-muted", null)
+                .dataAttr("muted", null)
             onDispose { }
         }
     }

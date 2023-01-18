@@ -15,7 +15,6 @@ import com.bkahlert.hello.clickup.model.TeamID
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.model.User
 import com.bkahlert.hello.clickup.model.closed
-import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
 import com.bkahlert.hello.clickup.view.Activity
 import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.view.ActivityDropdown
@@ -40,6 +39,7 @@ import com.bkahlert.hello.semanticui.collection.MenuItemDivElement
 import com.bkahlert.hello.semanticui.collection.target
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.hello.semanticui.custom.Configurer
 import com.bkahlert.hello.semanticui.custom.DimmingLoader
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.module.Dimmer
@@ -85,6 +85,7 @@ import org.w3c.dom.url.URL
 @Composable
 public fun SemanticElementScope<MenuElement>.DisconnectedItems(
     onConnect: (ClickUpClient) -> Unit = {},
+    vararg configurers: Configurer<ClickUpClient>,
 ) {
     var configuring by remember { mutableStateOf(false) }
 
@@ -92,14 +93,12 @@ public fun SemanticElementScope<MenuElement>.DisconnectedItems(
         ConfigurationModal(
             onConnect = {
                 configuring = false
-                onConnect(
-                    when (it) {
-                        null -> ClickUpTestClient()
-                        else -> ClickUpTestClient() // ClickUpHttpClient(it, Storage.of(localStorage).scoped("clickup").apply { clear() })
-                    }
-                )
+                onConnect(it)
             },
-            onCancel = { configuring = false },
+            onCancel = {
+                configuring = false
+            },
+            configurers = configurers,
         )
     }
 
@@ -395,12 +394,14 @@ public fun ClickUpMenu(
                 })
                 DisconnectedItems(
                     onConnect = {},
+                    configurers = emptyArray(),
                 )
             }
 
             Disconnected -> {
                 DisconnectedItems(
                     onConnect = viewModel::connect,
+                    configurers = viewModel.configurers,
                 )
             }
 

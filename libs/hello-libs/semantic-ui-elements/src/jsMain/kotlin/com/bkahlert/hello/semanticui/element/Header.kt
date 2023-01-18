@@ -141,6 +141,21 @@ public fun IconHeader(
     }
 }
 
+/**
+ * Creates a [SemanticUI icon sub header](https://semantic-ui.com/elements/header.html#icon-headers).
+ */
+@Composable
+public fun IconSubHeader(
+    vararg icon: String,
+    attrs: SemanticAttrBuilderContext<IconElement>? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
+) {
+    Header({ classes("icon", "sub") }) {
+        Icon(*icon) { attrs?.invoke(this) }
+        Div({ classes("content") }, content)
+    }
+}
+
 
 /**
  * Creates a [SemanticUI content sub header](https://semantic-ui.com/elements/header.html#sub-headers).

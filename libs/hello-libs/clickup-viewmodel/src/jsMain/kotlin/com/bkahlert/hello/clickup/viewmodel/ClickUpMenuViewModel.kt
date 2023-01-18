@@ -10,6 +10,7 @@ import com.bkahlert.hello.clickup.model.TaskListID
 import com.bkahlert.hello.clickup.model.Team
 import com.bkahlert.hello.clickup.model.TeamID
 import com.bkahlert.hello.clickup.model.TimeEntry
+import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Failed
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Connected
@@ -17,6 +18,7 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
+import com.bkahlert.hello.semanticui.custom.Configurer
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 public interface ClickUpMenuViewModel {
+    public val configurers: Array<out Configurer<ClickUpClient>>
     public val state: StateFlow<ClickUpMenuState>
     public fun enable(client: ClickUpClient? = null)
     public fun connect(client: ClickUpClient)
@@ -52,12 +55,14 @@ public fun rememberClickUpMenuViewModel(
     initialState: ClickUpMenuState = Disconnected,
     refreshCoroutineScope: CoroutineScope = rememberCoroutineScope(),
     storage: Storage = InMemoryStorage(),
+    vararg configurers: Configurer<ClickUpClient> = arrayOf(ClickUpTestClientConfigurer()),
 ): ClickUpMenuViewModel =
     remember(initialState, storage) {
         ClickUpMenuViewModelImpl(
             initialState,
             refreshCoroutineScope,
-            storage
+            storage,
+            *configurers,
         )
     }
 
@@ -66,6 +71,7 @@ public class ClickUpMenuViewModelImpl(
     initialState: ClickUpMenuState = Disabled,
     private val coroutineScope: CoroutineScope,
     storage: Storage = InMemoryStorage(),
+    override vararg val configurers: Configurer<ClickUpClient>,
 ) : ClickUpMenuViewModel {
     private val logger by InlineLogging
     private var updateJob: Job? = null
