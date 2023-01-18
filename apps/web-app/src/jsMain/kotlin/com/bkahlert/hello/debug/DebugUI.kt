@@ -27,7 +27,9 @@ import com.bkahlert.hello.debug.semanticui.ElementsDemos
 import com.bkahlert.hello.debug.semanticui.ModulesDemos
 import com.bkahlert.hello.debug.semanticui.ViewsDemos
 import com.bkahlert.hello.semanticui.core.Semantic
-import com.bkahlert.hello.semanticui.core.SemanticUI
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.core.dom.SemanticElement
 import com.bkahlert.hello.semanticui.core.jQuery
 import com.bkahlert.hello.semanticui.module.Content
 import com.bkahlert.hello.semanticui.module.Modal
@@ -37,25 +39,21 @@ import com.bkahlert.hello.semanticui.module.centered
 import com.bkahlert.kommons.dom.defaults
 import kotlinx.browser.window
 import org.jetbrains.compose.web.dom.A
-import org.jetbrains.compose.web.dom.AttrBuilderContext
-import org.jetbrains.compose.web.dom.ContentBuilder
-import org.jetbrains.compose.web.dom.DOMScope
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLElement
 
-typealias TabContentBuilder = @Composable DOMScope<HTMLElement>.() -> Unit
+typealias TabContentBuilder = SemanticContentBuilder<SemanticElement<HTMLDivElement>>
 
 @Composable
 private fun TabMenu(
     vararg tabs: Pair<String, TabContentBuilder>,
     activeTab: Int = 0,
-    firstContent: ContentBuilder<HTMLDivElement>? = null,
-    lastContent: ContentBuilder<HTMLDivElement>? = null,
+    firstContent: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
+    lastContent: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
     onChange: (Int, String) -> Unit = { tabIndex, name -> console.log("onChange($tabIndex, $name)") },
 ) {
     val validActiveTab = activeTab.coerceIn(0, tabs.size - 1)
-    SemanticUI("pointing", "menu") {
+    Semantic("ui", "pointing", "menu") {
         firstContent?.invoke(this)
         tabs.forEachIndexed { index, (name, _) ->
             A(null, {
@@ -66,7 +64,7 @@ private fun TabMenu(
         }
         lastContent?.invoke(this)
     }
-    SemanticUI("inverted", "segment") {
+    Semantic("ui", "inverted", "segment") {
         tabs.getOrNull(validActiveTab)?.also { tab ->
             tab.second(this)
             DisposableEffect(validActiveTab) {
@@ -79,14 +77,14 @@ private fun TabMenu(
 
 @Composable
 private fun Grid(
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
-) = SemanticUI("two", "column", "doubling", "grid", "container", attrs = attrs, content = content)
+    attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
+    content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
+) = Semantic("ui", "two", "column", "doubling", "grid", "container", attrs = attrs, content = content)
 
 @Composable
 private fun Column(
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
+    content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
 ) = Semantic("column", attrs = attrs, content = content)
 
 @Composable

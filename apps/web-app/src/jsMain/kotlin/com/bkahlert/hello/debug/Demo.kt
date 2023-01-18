@@ -10,24 +10,25 @@ import com.bkahlert.hello.semanticui.collection.Header
 import com.bkahlert.hello.semanticui.collection.LinkItem
 import com.bkahlert.hello.semanticui.collection.Menu
 import com.bkahlert.hello.semanticui.collection.TextMenu
-import com.bkahlert.hello.semanticui.core.SemanticUI
+import com.bkahlert.hello.semanticui.core.Semantic
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.core.dom.SemanticElement
 import com.bkahlert.hello.semanticui.element.Header
 import com.bkahlert.hello.semanticui.element.Icon
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.marginBottom
 import org.jetbrains.compose.web.css.marginTop
-import org.jetbrains.compose.web.dom.AttrBuilderContext
-import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 
 @Composable
 fun Demos(
     name: String,
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
+    content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
 ) {
-    SemanticUI("segments", "raised", attrs = attrs) {
+    Semantic("ui", "segments", "raised", attrs = attrs) {
         Header({
             +Attached.Top
             +Inverted
@@ -40,11 +41,11 @@ fun Demos(
 @Composable
 fun Demo(
     name: String,
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
+    content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
 ) {
     var dirty by remember { mutableStateOf(false) }
-    SemanticUI("segment", attrs = attrs) {
+    Semantic("ui", "segment", attrs = attrs) {
         if (!dirty) {
             TextMenu({
                 +Size.Small

@@ -1,12 +1,12 @@
 package com.bkahlert.hello.ui.search
 
+import com.bkahlert.hello.semanticui.core.Semantic
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.semanticui.core.SemanticUI
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.element.Icon
@@ -61,7 +61,7 @@ fun SearchInput(
     onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
     content: SemanticContentBuilder<InputElement>? = null,
 ) {
-    SemanticUI("search") {
+    Semantic("ui", "search") {
         Input({
             attrs?.invoke(this)
             +Position.Left + icon

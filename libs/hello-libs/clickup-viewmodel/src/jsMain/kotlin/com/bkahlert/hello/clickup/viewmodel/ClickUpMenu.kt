@@ -20,6 +20,7 @@ import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.view.ActivityDropdown
 import com.bkahlert.hello.clickup.view.ActivityGroup
 import com.bkahlert.hello.clickup.view.ConfigurationModal
+import com.bkahlert.hello.clickup.view.Configurer
 import com.bkahlert.hello.clickup.view.FailureModal
 import com.bkahlert.hello.clickup.view.MetaItems
 import com.bkahlert.hello.clickup.view.rememberActivityDropdownState
@@ -39,7 +40,6 @@ import com.bkahlert.hello.semanticui.collection.MenuItemDivElement
 import com.bkahlert.hello.semanticui.collection.target
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.hello.semanticui.custom.Configurer
 import com.bkahlert.hello.semanticui.custom.DimmingLoader
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.module.Dimmer

@@ -1,22 +1,11 @@
 package com.bkahlert.hello.semanticui.core
 
 import androidx.compose.runtime.Composable
-import org.jetbrains.compose.web.dom.AttrBuilderContext
-import org.jetbrains.compose.web.dom.ContentBuilder
-import org.jetbrains.compose.web.dom.Div
+import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.hello.semanticui.core.dom.SemanticDivElement
+import com.bkahlert.hello.semanticui.core.dom.SemanticElement
 import org.w3c.dom.HTMLDivElement
-
-/**
- * A semantic UI element of the form `<div class="ui $classes">$content</div>` that
- * can be used as a fallback for not yet implemented Semantic UI features. */
-@Composable
-public fun SemanticUI(
-    vararg classes: String,
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
-) {
-    Semantic("ui", *classes, attrs = attrs, content = content)
-}
 
 /**
  * A semantic UI element of the form `<div class="$classes">$content</div>` that
@@ -24,10 +13,10 @@ public fun SemanticUI(
 @Composable
 public fun Semantic(
     vararg classes: String,
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
+    attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
+    content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
 ) {
-    Div({
+    SemanticDivElement({
         attrs?.invoke(this)
         classes(*classes.flatMap { it.split(' ') }.toTypedArray())
     }, content)

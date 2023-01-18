@@ -34,8 +34,6 @@ tasks.withType(KotlinCompilationTask::class).configureEach {
     val composePlugin = "plugin:androidx.compose.compiler.plugins.kotlin"
     compilerOptions {
         freeCompilerArgs.set(freeCompilerArgs.get() + listOf("-P", "$composePlugin:suppressKotlinVersionCompatibilityCheck=1.8.0"))
-//        freeCompilerArgs.set(freeCompilerArgs.get() + listOf("-P", "$composePlugin:liveLiterals=false"))
-//        freeCompilerArgs.set(freeCompilerArgs.get() + listOf("-P", "$composePlugin:liveLiteralsEnabled=false"))
     }
 }
 

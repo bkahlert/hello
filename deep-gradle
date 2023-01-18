@@ -4,7 +4,8 @@
 # inside each root project directory (detected by looking for $project_root_dir_marker)
 # found in this directory recursively.
 declare -r project_root_dir_marker='settings.gradle.kts'
-declare -ar cmdline=(gradle "$@")
+declare -ar gradle_properties_command_line=(cp "$PWD/gradle.properties" './')
+declare -ar gradle_command_line=(gradle "$@")
 
 
 # Find all project root directories
@@ -31,8 +32,10 @@ done < <(
 for project_root_dir in "${project_root_dirs[@]}"; do
   (
     cd "$project_root_dir" || exit
-    printf 'In %s invoking: %s\n' "$project_root_dir" "${cmdline[*]}" >&2
-    "${cmdline[@]}"
+    printf 'In %s invoking: %s\n' "$project_root_dir" "${gradle_properties_command_line[*]}" >&2
+    "${gradle_properties_command_line[@]}"
+    printf 'In %s invoking: %s\n' "$project_root_dir" "${gradle_command_line[*]}" >&2
+    "${gradle_command_line[@]}"
     printf 'Done\n' >&2
   )
 done

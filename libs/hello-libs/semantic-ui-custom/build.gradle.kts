@@ -14,6 +14,7 @@ kotlin {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-dom")
                 implementation(project(":hello-compose"))
+
                 implementation(project(":semantic-ui-core"))
                 implementation(project(":semantic-ui-elements"))
                 implementation(project(":semantic-ui-collections"))

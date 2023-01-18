@@ -28,6 +28,7 @@ kotlin {
                 implementation(project(":semantic-ui-custom")) { because("ClickUpHttpClientConfigurer") }
 
                 implementation(project(":clickup-model"))
+                implementation(project(":clickup-view")) { because("ClickUpHttpClientConfigurer") }
             }
         }
 

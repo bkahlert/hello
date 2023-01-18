@@ -6,33 +6,52 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.hello.clickup.view.Configurer
+import com.bkahlert.hello.semanticui.collection.Header
+import com.bkahlert.hello.semanticui.collection.Message
+import com.bkahlert.hello.semanticui.collection.MessageElementType.Info
 import com.bkahlert.hello.semanticui.core.Semantic
 import com.bkahlert.hello.semanticui.core.dom.SemanticElement
 import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.hello.semanticui.custom.Configurer
 import com.bkahlert.hello.semanticui.element.Button
+import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
 import kotlinx.browser.localStorage
+import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.attributes.InputType.Password
 import org.jetbrains.compose.web.attributes.name
 import org.jetbrains.compose.web.attributes.pattern
 import org.jetbrains.compose.web.attributes.required
+import org.jetbrains.compose.web.attributes.target
+import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
+import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 
 public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
     override val name: String = "Personal Access"
     override val icon: Array<String> = arrayOf("grey", "key")
+    override val content: @Composable SemanticElementScope<SemanticElement<HTMLDivElement>>.(onComplete: (ClickUpHttpClient) -> Unit) -> Unit = { onComplete ->
 
-    @Composable override fun SemanticElementScope<SemanticElement<HTMLDivElement>>.Content(
-        onComplete: (ClickUpHttpClient) -> Unit,
-    ) {
         var accessTokenInput by remember { mutableStateOf("") }
         val isValid by derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) }
+
+        Message(Info, { +Size.Tiny }) {
+            Header { Text("OAuth2 not supported yet") }
+            P {
+                Text("To access your data, your ")
+                A("https://clickup.com/api", { target(Blank) }) {
+                    Text("personal ClickUp API token")
+                    Text(" ")
+                    Icon("external", "alternate")
+                }
+                Text(" is required.")
+            }
+        }
 
         Semantic("field") {
             Label { Text("Access Token") }

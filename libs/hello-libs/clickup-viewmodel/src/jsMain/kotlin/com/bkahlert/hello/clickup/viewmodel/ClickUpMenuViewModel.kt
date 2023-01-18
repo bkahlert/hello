@@ -11,6 +11,7 @@ import com.bkahlert.hello.clickup.model.Team
 import com.bkahlert.hello.clickup.model.TeamID
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
+import com.bkahlert.hello.clickup.view.Configurer
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Failed
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Connected
@@ -18,7 +19,6 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
-import com.bkahlert.hello.semanticui.custom.Configurer
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
