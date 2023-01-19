@@ -3,67 +3,25 @@ package com.bkahlert.kommons.net
 /**
  * URI
  * as described in [RFC3986](https://www.rfc-editor.org/rfc/rfc3986).
+ *
+ * Treated as a [CharSequence], this URI yields the string representation
+ * as specified in [RFC3986 section 5.3](https://www.rfc-editor.org/rfc/rfc3986#section-5.3).
  */
-public open class Uri(
+public interface Uri : CharSequence {
     /** [Schema component](https://www.rfc-editor.org/rfc/rfc3986#section-3.1) */
-    public val scheme: String? = null,
+    public val scheme: String?
+
     /** [Authority component](https://www.rfc-editor.org/rfc/rfc3986#section-3.2) */
-    public val authority: Authority? = null,
+    public val authority: Authority?
+
     /** [Path component](https://www.rfc-editor.org/rfc/rfc3986#section-3.3) */
-    public val path: String = "",
+    public val path: String
+
     /** [Query component](https://www.rfc-editor.org/rfc/rfc3986#section-3.4) */
-    public val query: String? = null,
+    public val query: String?
+
     /** [Fragment component](https://www.rfc-editor.org/rfc/rfc3986#section-3.5) */
-    public val fragment: String? = null,
-) {
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
-
-        other as Uri
-
-        if (scheme != other.scheme) return false
-        if (authority != other.authority) return false
-        if (path != other.path) return false
-        if (query != other.query) return false
-        if (fragment != other.fragment) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = scheme?.hashCode() ?: 0
-        result = 31 * result + (authority?.hashCode() ?: 0)
-        result = 31 * result + path.hashCode()
-        result = 31 * result + (query?.hashCode() ?: 0)
-        result = 31 * result + (fragment?.hashCode() ?: 0)
-        return result
-    }
-
-    /**
-     * Returns the string representation of this URI
-     * as specified in [RFC3986 section 5.3](https://www.rfc-editor.org/rfc/rfc3986#section-5.3).
-     */
-    override fun toString(): String = buildString {
-        scheme?.also {
-            append(it)
-            append(":")
-        }
-        authority?.also {
-            append("//")
-            append(it)
-        }
-        append(path)
-        query?.also {
-            append("?")
-            append(it)
-        }
-        fragment?.also {
-            append("#")
-            append(it)
-        }
-    }
+    public val fragment: String?
 
     public companion object {
 
@@ -81,7 +39,7 @@ public open class Uri(
             val groupValues = requireNotNull(REGEX.matchEntire(text)) { "$text is no valid URI" }.groupValues
             return when (val scheme = groupValues[1].takeIf { it.isNotEmpty() }) {
                 "data" -> DataUri.parse(text)
-                else -> Uri(
+                else -> GenericUri(
                     scheme = scheme,
                     authority = groupValues[2].takeIf { it.isNotEmpty() }?.let { Authority.parse(it) },
                     path = groupValues[3],
@@ -97,4 +55,65 @@ public open class Uri(
          */
         public fun parseOrNull(text: String): Uri? = kotlin.runCatching { parse(text) }.getOrNull()
     }
+}
+
+/**
+ * Returns a generic [Uri] with the specified
+ * [scheme], [authority], [path], [query], and [fragment].
+ */
+public fun Uri(
+    scheme: String? = null,
+    authority: Authority? = null,
+    path: String = "",
+    query: String? = null,
+    fragment: String? = null,
+): Uri = GenericUri(
+    scheme = scheme,
+    authority = authority,
+    path = path,
+    query = query,
+    fragment = fragment,
+)
+
+/**
+ * Generic [Uri] implementation.
+ */
+internal data class GenericUri(
+    override val scheme: String? = null,
+    override val authority: Authority? = null,
+    override val path: String = "",
+    override val query: String? = null,
+    override val fragment: String? = null,
+) : Uri {
+    private val string by lazy {
+        buildString {
+            scheme?.also {
+                append(it)
+                append(":")
+            }
+            authority?.also {
+                append("//")
+                append(it)
+            }
+            append(path)
+            query?.also {
+                append("?")
+                append(it)
+            }
+            fragment?.also {
+                append("#")
+                append(it)
+            }
+        }
+    }
+
+    override val length: Int get() = string.length
+    override fun get(index: Int): Char = string[index]
+    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence = string.subSequence(startIndex, endIndex)
+
+    /**
+     * Returns the string representation of this URI
+     * as specified in [RFC3986 section 5.3](https://www.rfc-editor.org/rfc/rfc3986#section-5.3).
+     */
+    override fun toString(): String = string
 }

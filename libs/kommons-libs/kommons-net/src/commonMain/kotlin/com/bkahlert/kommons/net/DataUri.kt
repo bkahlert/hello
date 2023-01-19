@@ -14,13 +14,16 @@ import io.ktor.utils.io.charsets.Charsets
 /**
  * Data URI
  * as described in [RFC2397](https://www.rfc-editor.org/rfc/rfc2397).
+ *
+ * Treated as a [CharSequence], this URI yields the string representation
+ * as specified in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
  */
-public class DataUri(
+public data class DataUri(
     /** The internet media type of [data]. Implicitly defaults to [DEFAULT_MEDIA_TYPE]. */
     public val mediaType: ContentType?,
     /** The decoded data. */
     public val data: ByteArray,
-) : Uri(scheme = "data", path = buildString {
+) : Uri by GenericUri(scheme = "data", path = buildString {
     mediaType?.also {
         append(it.contentType)
         append("/")
@@ -36,11 +39,11 @@ public class DataUri(
     append(",")
     append(data.encodeBase64Url())
 }) {
+    private val string by lazy { buildString { append(this@DataUri) } }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
-        if (!super.equals(other)) return false
 
         other as DataUri
 
@@ -51,11 +54,16 @@ public class DataUri(
     }
 
     override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + (mediaType?.hashCode() ?: 0)
+        var result = mediaType?.hashCode() ?: 0
         result = 31 * result + data.contentHashCode()
         return result
     }
+
+    /**
+     * Returns the string representation of this URI
+     * as specified in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
+     */
+    override fun toString(): String = string
 
     public companion object {
 
