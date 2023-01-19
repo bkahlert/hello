@@ -1,12 +1,14 @@
 package com.bkahlert.hello.debug.semanticui
 
-import com.bkahlert.hello.semanticui.core.Semantic
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.dom.ImageFixtures
 import com.bkahlert.hello.dom.ImageFixtures.KommonsLogo
+import com.bkahlert.hello.semanticui.core.S
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Negative
+import com.bkahlert.hello.semanticui.core.attributes.Variation.Size
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Content
 import com.bkahlert.hello.semanticui.element.Description
@@ -36,8 +38,8 @@ import com.bkahlert.hello.semanticui.element.icon
 import com.bkahlert.hello.semanticui.element.labeled
 import com.bkahlert.hello.semanticui.element.loading
 import com.bkahlert.hello.semanticui.element.rounded
-import com.bkahlert.hello.semanticui.element.size
 import com.bkahlert.hello.semanticui.element.spaced
+import com.bkahlert.hello.semanticui.element.v
 import com.bkahlert.hello.semanticui.element.verticallyAligned
 import com.bkahlert.hello.semanticui.module.Dropdown
 import com.bkahlert.hello.semanticui.module.Menu
@@ -58,13 +60,13 @@ fun ElementsDemos() {
         Demo("Image") {
             SemanticList {
                 Item {
-                    Image(KommonsLogo, "Mini") { +size.Mini + spaced }
-                    Image(KommonsLogo, "Tiny") { +size.Tiny + spaced }
-                    Image(KommonsLogo, "Small") { +size.Small + spaced }
+                    Image(KommonsLogo, "Mini") { v(Size.Mini); +spaced }
+                    Image(KommonsLogo, "Tiny") { v(Size.Tiny); +spaced }
+                    Image(KommonsLogo, "Small") { v(Size.Small); +spaced }
                 }
-                Item { Image(KommonsLogo, "Bordered") { +size.Tiny + bordered } }
-                Item { Image(KommonsLogo, "Rounded") { +size.Tiny + rounded } }
-                Item { Image(KommonsLogo, "Circular") { +size.Tiny + circular } }
+                Item { Image(KommonsLogo, "Bordered") { v(Size.Tiny); +bordered } }
+                Item { Image(KommonsLogo, "Rounded") { v(Size.Tiny); +rounded } }
+                Item { Image(KommonsLogo, "Circular") { v(Size.Tiny); +circular } }
                 Item {
                     Content {
                         Image({ +avatar }) { Img(ImageFixtures.Avatar) }
@@ -102,7 +104,7 @@ fun ElementsDemos() {
 
                 Item {
                     Input({ +labeled }) {
-                        Semantic("ui", "label") { Text("https://") }
+                        S("ui", "label") { Text("https://") }
                         AnyInput("example.com")
                     }
                 }
@@ -160,7 +162,7 @@ fun ElementsDemos() {
                     Text("horizontally divided")
                 }
                 Item {
-                    ImageAnchor(href = null) { Icon("arrow", "up") { +Size.Huge } }
+                    ImageAnchor(href = null) { Icon("arrow", "up") { +Variation.Size.Huge } }
                     Content({ +verticallyAligned.Top }) { Small { Text("+ top aligned") } }
                 }
             }

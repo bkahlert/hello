@@ -7,7 +7,9 @@ import androidx.compose.runtime.remember
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.semanticui.collection.Message
-import com.bkahlert.hello.semanticui.collection.MessageElementType.Info
+import com.bkahlert.hello.semanticui.collection.v
+import com.bkahlert.hello.semanticui.core.attributes.Variation.Info
+import com.bkahlert.hello.semanticui.core.attributes.Variation.Size.Small
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.ButtonElementType.Primary
 import com.bkahlert.hello.semanticui.element.ButtonElementType.Secondary
@@ -77,7 +79,7 @@ fun MutableFlowStateDemo() {
     Demo("Function based Hot Flow") {
         val model = remember { FunctionBasedHotFlowModel("foo bar baz") }
 
-        Message(Info, { +Size.Small }) {
+        Message({ v(Info); v(Small) }) {
             val state by model.testState.collectAsState(TextTestState("initial"))
             Text(state.text.also { console.log("rendering $it") })
         }

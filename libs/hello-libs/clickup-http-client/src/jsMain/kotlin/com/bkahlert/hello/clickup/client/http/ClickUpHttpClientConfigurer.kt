@@ -9,8 +9,10 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.view.Configurer
 import com.bkahlert.hello.semanticui.collection.Header
 import com.bkahlert.hello.semanticui.collection.Message
-import com.bkahlert.hello.semanticui.collection.MessageElementType.Info
-import com.bkahlert.hello.semanticui.core.Semantic
+import com.bkahlert.hello.semanticui.collection.v
+import com.bkahlert.hello.semanticui.core.S
+import com.bkahlert.hello.semanticui.core.attributes.Variation
+import com.bkahlert.hello.semanticui.core.attributes.Variation.Info
 import com.bkahlert.hello.semanticui.core.dom.SemanticElement
 import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.element.Button
@@ -40,7 +42,7 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
         var accessTokenInput by remember { mutableStateOf("") }
         val isValid by derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) }
 
-        Message(Info, { +Size.Tiny }) {
+        Message({ v(Info); v(Variation.Size.Tiny) }) {
             Header { Text("OAuth2 not supported yet") }
             P {
                 Text("To access your data, your ")
@@ -53,7 +55,7 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
             }
         }
 
-        Semantic("field") {
+        S("field") {
             Label { Text("Access Token") }
             Input(Password) {
                 name("clickup-access-token")

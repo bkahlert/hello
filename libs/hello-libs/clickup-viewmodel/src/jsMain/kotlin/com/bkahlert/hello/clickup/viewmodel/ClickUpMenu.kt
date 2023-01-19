@@ -38,6 +38,7 @@ import com.bkahlert.hello.semanticui.collection.Menu
 import com.bkahlert.hello.semanticui.collection.MenuElement
 import com.bkahlert.hello.semanticui.collection.MenuItemDivElement
 import com.bkahlert.hello.semanticui.collection.target
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
 import com.bkahlert.hello.semanticui.custom.DimmingLoader
@@ -379,7 +380,7 @@ public fun ClickUpMenu(
     loading: Boolean = false,
 ) {
     Menu({
-        +Size.Mini + Dimmable
+        +Variation.Size.Mini + Dimmable
         if (state is Disabled || state is Disconnected) {
             +Fluid
             classes("one", "item")

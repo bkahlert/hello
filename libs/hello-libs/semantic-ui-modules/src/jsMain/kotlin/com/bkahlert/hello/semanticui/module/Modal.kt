@@ -11,7 +11,6 @@ import com.bkahlert.hello.semanticui.core.attributes.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.core.attributes.SemanticAttrsScope.Companion.or
 import com.bkahlert.hello.semanticui.core.attributes.SemanticAttrsScopeBuilder
 import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Size
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.core.dom.SemanticDivElement
@@ -29,17 +28,15 @@ import org.w3c.dom.HTMLElement
 
 public interface ModalElement : SemanticElement<HTMLDivElement>
 
-/** [Full Screen](https://semantic-ui.com/modules/modal.html#full-screen) variation of a [input](https://semantic-ui.com/modules/modal.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.fullScreen: Variation get() = Variation.FullScreen
+/** [Variation.FullScreen](https://semantic-ui.com/modules/modal.html#full-screen) */
+public fun SemanticAttrsScope<ModalElement>.v(value: Variation.FullScreen): Unit = variation(value)
 
-/** [Size](https://semantic-ui.com/modules/modal.html#size) variation of a [input](https://semantic-ui.com/modules/modal.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.size: Size get() = Variation.Size
+/** [Variation.Size](https://semantic-ui.com/modules/modal.html#size) */
+public fun SemanticAttrsScope<ModalElement>.v(value: Variation.Size): Unit = variation(value)
 
-/** [Longer](https://semantic-ui.com/modules/modal.html#longer) variation of a [input](https://semantic-ui.com/modules/modal.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.longer: Variation get() = Variation.Longer
+/** [Variation.Longer](https://semantic-ui.com/modules/modal.html#longer) */
+public fun SemanticAttrsScope<ModalElement>.v(value: Variation.Longer): Unit = variation(value)
+
 
 // true will blur popups inside the debug mode, too
 public var <TSemantic : ModalElement> SemanticAttrsScope<TSemantic>.blurring: Boolean? by SemanticAttrsScope or null
@@ -195,7 +192,7 @@ public fun SemanticElementScope<ModalActionsElement>.ApproveButton(
     type: ButtonElementType?,
     attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
     content: SemanticContentBuilder<ButtonElement>? = null,
-): Unit = Button(type, { attrs?.invoke(this); +Actions.Approve }, content)
+): Unit = Button(type, { attrs?.invoke(this); +Variation.Actions.Approve }, content)
 
 /**
  * Creates an approval button for modal [actions](https://semantic-ui.com/modules/modal.html#actions).
@@ -217,7 +214,7 @@ public fun SemanticElementScope<ModalActionsElement>.DenyButton(
     type: ButtonElementType?,
     attrs: SemanticAttrBuilderContext<ButtonElement>? = null,
     content: SemanticContentBuilder<ButtonElement>? = null,
-): Unit = Button(type, { attrs?.invoke(this); +Actions.Deny }, content)
+): Unit = Button(type, { attrs?.invoke(this); +Variation.Actions.Deny }, content)
 
 /**
  * Creates a deny button for modal [actions](https://semantic-ui.com/modules/modal.html#actions).

@@ -1,10 +1,11 @@
-package com.bkahlert.hello.ui
+package com.bkahlert.hello.semanticui.custom
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.semanticui.collection.Header
 import com.bkahlert.hello.semanticui.collection.Message
 import com.bkahlert.hello.semanticui.collection.MessageElement
-import com.bkahlert.hello.semanticui.collection.MessageElementType.Error
+import com.bkahlert.hello.semanticui.collection.v
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.module.Accordion
@@ -42,7 +43,10 @@ public fun ErrorMessage(
     attrs: SemanticAttrBuilderContext<MessageElement>? = null,
     content: SemanticContentBuilder<MessageElement>? = null,
 ) {
-    Message(Error, attrs, content)
+    Message({
+        v(Variation.Error)
+        attrs?.invoke(this)
+    }, content)
 }
 
 public val Throwable.errorMessage: String get() = message ?: toString()

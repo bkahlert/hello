@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import com.bkahlert.hello.semanticui.core.attributes.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.core.attributes.State
 import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Size
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.core.dom.SemanticDivElement
@@ -64,9 +63,8 @@ public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.spa
 @Suppress("unused")
 public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.floated: Variation get() = Variation.Floated
 
-/** [Size](https://semantic-ui.com/elements/image.html#size) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.size: Size get() = Variation.Size
+/** [Variation.Size](https://semantic-ui.com/elements/image.html#size) */
+public fun SemanticAttrsScope<ImageElement<Element>>.v(value: Variation.Size): Unit = variation(value)
 
 
 /** Creates a [SemanticUI image](https://semantic-ui.com/elements/image.html). */

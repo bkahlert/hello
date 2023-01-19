@@ -3,6 +3,7 @@ package com.bkahlert.hello.clickup.view
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.Pomodoro
 import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.IconHeader
 import com.bkahlert.hello.semanticui.module.Actions
@@ -13,7 +14,6 @@ import com.bkahlert.hello.semanticui.module.DenyButton
 import com.bkahlert.hello.semanticui.module.closable
 import com.bkahlert.hello.semanticui.module.onApprove
 import com.bkahlert.hello.semanticui.module.onDeny
-import com.bkahlert.hello.semanticui.module.size
 import com.bkahlert.kommons.toMomentString
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.P
@@ -31,7 +31,7 @@ public fun AlreadyRunningActivityModal(
     val pomodoro = Pomodoro.of(runningTaskActivity.timeEntry)
 
     BasicModal({
-        +size.Small
+        +Variation.Size.Small
         onApprove = { onContinue(); true }
         onDeny = { onAbort();true }
         closable = false
@@ -47,7 +47,7 @@ public fun AlreadyRunningActivityModal(
         }
         Actions {
             ApproveButton({
-                +Colored.Blue
+                +Variation.Colored.Blue
                 +Inverted
             }) {
                 Icon("stop", "circle")

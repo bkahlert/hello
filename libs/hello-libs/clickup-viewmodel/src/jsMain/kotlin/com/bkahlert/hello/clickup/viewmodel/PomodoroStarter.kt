@@ -11,6 +11,7 @@ import com.bkahlert.hello.clickup.Pomodoro.Type
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
 import com.bkahlert.hello.dom.AcousticFeedback
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.IconGroup
@@ -128,7 +129,7 @@ public fun PomodoroStarter(
         Icon("dropdown")
         Menu {
             Button({
-                +Size.Mini
+                +Variation.Size.Mini
                 +Icon
                 classes("input", "positive")
                 when (val onCloseTask = state.onCloseTask) {

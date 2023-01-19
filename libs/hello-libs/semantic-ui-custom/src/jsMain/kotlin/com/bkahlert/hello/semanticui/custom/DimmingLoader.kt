@@ -1,6 +1,7 @@
 package com.bkahlert.hello.semanticui.custom
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.element.Loader
@@ -38,7 +39,7 @@ public fun DimmingLoader(
 @Composable
 public fun DimmingLoader(
     active: Boolean,
-    loaderAttrs: SemanticAttrBuilderContext<LoaderElement>? = { +Size.Mini },
+    loaderAttrs: SemanticAttrBuilderContext<LoaderElement>? = { +Variation.Size.Mini },
     loaderContent: SemanticContentBuilder<LoaderElement>? = null,
 ) {
     DimmingLoader(

@@ -1,38 +1,41 @@
 package com.bkahlert.hello.semanticui.core.attributes
 
-public open class Variation(override vararg val classNames: String) : Modifier {
+
+public open class Variation(
+    override vararg val classNames: String,
+) : Modifier {
     public object Avatar : Variation("avatar")
     public object Inline : Variation("inline")
     public object Fitted : Variation("fitted")
     public object Compact : Variation("compact")
-    public object Positive : Variation("positive")
-    public object Negative : Variation("negative")
+
     public object FullScreen : Variation("fullscreen")
     public object Longer : Variation("longer")
-    public object Size {
-        public val Mini: Variation = Variation("mini")
-        public val Tiny: Variation = Variation("tiny")
-        public val Small: Variation = Variation("small")
-        public val Large: Variation = Variation("large")
-        public val Big: Variation = Variation("big")
-        public val Huge: Variation = Variation("huge")
-        public val Massive: Variation = Variation("massive")
+
+    public open class Size(vararg classNames: String) : Variation(*classNames) {
+        public object Mini : Size("mini")
+        public object Tiny : Size("tiny")
+        public object Small : Size("small")
+        public object Large : Size("large")
+        public object Big : Size("big")
+        public object Huge : Size("huge")
+        public object Massive : Size("massive")
     }
 
-    public object Colored {
-        public val Red: Variation = Variation("red")
-        public val Orange: Variation = Variation("orange")
-        public val Yellow: Variation = Variation("yellow")
-        public val Olive: Variation = Variation("olive")
-        public val Green: Variation = Variation("green")
-        public val Teal: Variation = Variation("teal")
-        public val Blue: Variation = Variation("blue")
-        public val Violet: Variation = Variation("violet")
-        public val Purple: Variation = Variation("purple")
-        public val Pink: Variation = Variation("pink")
-        public val Brown: Variation = Variation("brown")
-        public val Grey: Variation = Variation("grey")
-        public val Black: Variation = Variation("black")
+    public open class Colored(vararg classNames: String) : Variation(*classNames) {
+        public object Red : Colored("red")
+        public object Orange : Colored("orange")
+        public object Yellow : Colored("yellow")
+        public object Olive : Colored("olive")
+        public object Green : Colored("green")
+        public object Teal : Colored("teal")
+        public object Blue : Colored("blue")
+        public object Violet : Colored("violet")
+        public object Purple : Colored("purple")
+        public object Pink : Colored("pink")
+        public object Brown : Colored("brown")
+        public object Grey : Colored("grey")
+        public object Black : Colored("black")
     }
 
     public object Flipped {
@@ -112,11 +115,14 @@ public open class Variation(override vararg val classNames: String) : Modifier {
     public object Transparent : Variation("transparent")
 
     public object Scrolling : Variation("scrolling")
+
     public object Attached : Variation("attached") {
-        public val Top: Variation = Variation("top", *classNames)
-        public val Right: Variation = Variation("right", *classNames)
-        public val Bottom: Variation = Variation("bottom", *classNames)
-        public val Left: Variation = Variation("left", *classNames)
+        public class AttachedAndPosition(vararg classNames: String) : Variation(*classNames, *Attached.classNames)
+
+        public val Top: AttachedAndPosition = AttachedAndPosition("top")
+        public val Right: AttachedAndPosition = AttachedAndPosition("right")
+        public val Bottom: AttachedAndPosition = AttachedAndPosition("bottom")
+        public val Left: AttachedAndPosition = AttachedAndPosition("left")
     }
 
     public object Padded : Variation("padded")
@@ -142,14 +148,21 @@ public open class Variation(override vararg val classNames: String) : Modifier {
     }
 
     public object Long : Variation("long")
-    public object Actions : Variation() {
-        public val Approve: Variation = Variation("approve")
-        public val Positive: Variation = Variation("positive")
-        public val Ok: Variation = Variation("ok")
-        public val Deny: Variation = Variation("deny")
-        public val Negative: Variation = Variation("Negative")
-        public val Cancel: Variation = Variation("Cancel")
+    public open class Actions(vararg classNames: String) : Variation(*classNames) {
+        public object Approve : Actions("approve")
+        public object Positive : Actions("positive")
+        public object Ok : Actions("ok")
+        public object Deny : Actions("deny")
+        public object Negative : Actions("Negative")
+        public object Cancel : Actions("Cancel")
     }
+
+    public object Warning : Variation("warning")
+    public object Info : Variation("info")
+    public object Positive : Variation("positive")
+    public object Success : Variation("success")
+    public object Negative : Variation("negative")
+    public object Error : Variation("error")
 
     public object Dimmable : Variation("dimmable")
 }

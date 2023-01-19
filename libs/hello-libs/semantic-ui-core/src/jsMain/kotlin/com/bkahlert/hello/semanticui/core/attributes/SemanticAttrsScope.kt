@@ -6,15 +6,12 @@ import com.bkahlert.hello.semanticui.core.attributes.State.Error
 import com.bkahlert.hello.semanticui.core.attributes.State.Focus
 import com.bkahlert.hello.semanticui.core.attributes.State.Indeterminate
 import com.bkahlert.hello.semanticui.core.attributes.State.Loading
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Actions
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Aligned
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Attached
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Basic
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Bordered
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Borderless
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Circular
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Clearing
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Colored
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Columns
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Compact
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Corner
@@ -36,7 +33,6 @@ import com.bkahlert.hello.semanticui.core.attributes.Variation.Padded
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Position
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Rotated
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Scrolling
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Size
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Transparent
 import com.bkahlert.hello.semanticui.core.dom.SemanticElement
 import org.jetbrains.compose.web.attributes.AttrsScope
@@ -75,8 +71,6 @@ public interface SemanticAttrsScope<out TSemantic : SemanticElement<Element>> : 
     public val Inline: Inline get() = Variation.Inline
     public val Fitted: Fitted get() = Variation.Fitted
     public val Compact: Compact get() = Variation.Compact
-    public val Size: Size get() = Variation.Size
-    public val Colored: Colored get() = Variation.Colored
     public val Flipped: Flipped get() = Variation.Flipped
     public val Rotated: Rotated get() = Variation.Rotated
     public val Link: Link get() = Variation.Link
@@ -97,7 +91,6 @@ public interface SemanticAttrsScope<out TSemantic : SemanticElement<Element>> : 
 
     public val Transparent: Transparent get() = Variation.Transparent
     public val Scrolling: Scrolling get() = Variation.Scrolling
-    public val Attached: Attached get() = Variation.Attached
     public val Padded: Padded get() = Variation.Padded
     public val Emphasis: Emphasis get() = Variation.Emphasis
     public val Basic: Basic get() = Variation.Basic
@@ -106,7 +99,6 @@ public interface SemanticAttrsScope<out TSemantic : SemanticElement<Element>> : 
     public val Length: Length get() = Variation.Length
     public val Long: Long get() = Variation.Long
 
-    public val Actions: Actions get() = Variation.Actions
     public val Dimmable: Dimmable get() = Variation.Dimmable
 
     public val Active: Active get() = State.Active

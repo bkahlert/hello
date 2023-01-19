@@ -26,7 +26,7 @@ import com.bkahlert.hello.debug.semanticui.CollectionsDemos
 import com.bkahlert.hello.debug.semanticui.ElementsDemos
 import com.bkahlert.hello.debug.semanticui.ModulesDemos
 import com.bkahlert.hello.debug.semanticui.ViewsDemos
-import com.bkahlert.hello.semanticui.core.Semantic
+import com.bkahlert.hello.semanticui.core.S
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.core.dom.SemanticElement
@@ -53,7 +53,7 @@ private fun TabMenu(
     onChange: (Int, String) -> Unit = { tabIndex, name -> console.log("onChange($tabIndex, $name)") },
 ) {
     val validActiveTab = activeTab.coerceIn(0, tabs.size - 1)
-    Semantic("ui", "pointing", "menu") {
+    S("ui", "pointing", "menu") {
         firstContent?.invoke(this)
         tabs.forEachIndexed { index, (name, _) ->
             A(null, {
@@ -64,7 +64,7 @@ private fun TabMenu(
         }
         lastContent?.invoke(this)
     }
-    Semantic("ui", "inverted", "segment") {
+    S("ui", "inverted", "segment") {
         tabs.getOrNull(validActiveTab)?.also { tab ->
             tab.second(this)
             DisposableEffect(validActiveTab) {
@@ -79,13 +79,13 @@ private fun TabMenu(
 private fun Grid(
     attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
     content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
-) = Semantic("ui", "two", "column", "doubling", "grid", "container", attrs = attrs, content = content)
+) = S("ui", "two", "column", "doubling", "grid", "container", attrs = attrs, content = content)
 
 @Composable
 private fun Column(
     attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
     content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
-) = Semantic("column", attrs = attrs, content = content)
+) = S("column", attrs = attrs, content = content)
 
 @Composable
 private fun DebugUI(
@@ -159,7 +159,7 @@ private fun DebugUI(
         ).toTypedArray(),
         activeTab = activeTab,
         firstContent = {
-            Semantic("header", "item") { Text("UI Demos") }
+            S("header", "item") { Text("UI Demos") }
         },
         onChange = onChange,
     )

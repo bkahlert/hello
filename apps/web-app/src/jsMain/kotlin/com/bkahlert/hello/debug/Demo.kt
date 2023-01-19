@@ -10,7 +10,8 @@ import com.bkahlert.hello.semanticui.collection.Header
 import com.bkahlert.hello.semanticui.collection.LinkItem
 import com.bkahlert.hello.semanticui.collection.Menu
 import com.bkahlert.hello.semanticui.collection.TextMenu
-import com.bkahlert.hello.semanticui.core.Semantic
+import com.bkahlert.hello.semanticui.core.S
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.core.dom.SemanticElement
@@ -28,9 +29,9 @@ fun Demos(
     attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
     content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
 ) {
-    Semantic("ui", "segments", "raised", attrs = attrs) {
+    S("ui", "segments", "raised", attrs = attrs) {
         Header({
-            +Attached.Top
+            +Variation.Attached.Top
             +Inverted
             style { property("border-bottom-width", "0") }
         }) { Text(name) }
@@ -45,14 +46,14 @@ fun Demo(
     content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
 ) {
     var dirty by remember { mutableStateOf(false) }
-    Semantic("ui", "segment", attrs = attrs) {
+    S("ui", "segment", attrs = attrs) {
         if (!dirty) {
             TextMenu({
-                +Size.Small
+                +Variation.Size.Small
                 style { marginTop((-1).em); marginBottom(0.em) }
             }) {
                 Header { Text(name) }
-                Menu({ +Direction.Right + Size.Small }) {
+                Menu({ +Direction.Right + Variation.Size.Small }) {
                     LinkItem({
                         onClick { dirty = true }
                     }) {

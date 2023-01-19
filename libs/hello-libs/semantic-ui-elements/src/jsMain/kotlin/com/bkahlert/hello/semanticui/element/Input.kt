@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import com.bkahlert.hello.semanticui.core.attributes.SemanticAttrsScope
 import com.bkahlert.hello.semanticui.core.attributes.State
 import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Size
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.hello.semanticui.core.dom.SemanticDivElement
@@ -53,9 +52,8 @@ public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.inverted: Va
 @Suppress("unused")
 public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.fluid: Variation get() = Variation.Fluid
 
-/** [Size](https://semantic-ui.com/elements/input.html#size) variation of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.size: Size get() = Variation.Size
+/** [Variation.Size](https://semantic-ui.com/elements/input.html#size) */
+public fun SemanticAttrsScope<InputElement>.v(value: Variation.Size): Unit = variation(value)
 
 /** Creates a [SemanticUI input](https://semantic-ui.com/elements/input.html). */
 @Composable

@@ -40,9 +40,8 @@ public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.divided: Vari
 @Suppress("unused", "UnusedReceiverParameter")
 public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.celled: Variation get() = Variation.Celled
 
-/** [Size](https://semantic-ui.com/elements/list.html#size) variation of a [list](https://semantic-ui.com/elements/list.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.size: Variation.Size get() = Variation.Size
+/** [Variation.Size](https://semantic-ui.com/elements/list.html#size) */
+public fun SemanticAttrsScope<ListElement>.v(value: Variation.Size): Unit = variation(value)
 
 /** Creates a [SemanticUI list](https://semantic-ui.com/elements/list.html). */
 @Composable

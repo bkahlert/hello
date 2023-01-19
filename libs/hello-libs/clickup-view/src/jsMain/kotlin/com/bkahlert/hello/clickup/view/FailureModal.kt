@@ -2,7 +2,9 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpException
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.core.dataAttr
+import com.bkahlert.hello.semanticui.custom.errorMessage
 import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.semanticui.element.IconHeader
 import com.bkahlert.hello.semanticui.module.Accordion
@@ -16,9 +18,7 @@ import com.bkahlert.hello.semanticui.module.closable
 import com.bkahlert.hello.semanticui.module.onApprove
 import com.bkahlert.hello.semanticui.module.onDeny
 import com.bkahlert.hello.semanticui.module.scrolling
-import com.bkahlert.hello.semanticui.module.size
 import com.bkahlert.hello.ui.compose.data
-import com.bkahlert.hello.ui.errorMessage
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Pre
@@ -38,7 +38,7 @@ public fun FailureModal(
     val icon = if (warning) arrayOf("yellow", "warning", "circle") else arrayOf("red", "exclamation", "circle")
 
     BasicModal({
-        +size.Small
+        +Variation.Size.Small
         onApprove = {
             if (it.dataAttr("action") == "sign-out") onSignOut()
             else onRetry()
@@ -66,14 +66,14 @@ public fun FailureModal(
         }
         Actions {
             ApproveButton({
-                +Colored.Yellow
+                +Variation.Colored.Yellow
                 +Inverted
             }) {
                 Icon("redo", "alternate")
                 Text("Retry")
             }
             DenyButton({
-                +Colored.Yellow
+                +Variation.Colored.Yellow
                 +Basic
                 +Inverted
                 onClick { onIgnore() }
@@ -82,7 +82,7 @@ public fun FailureModal(
                 Text("Ignore")
             }
             ApproveButton({
-                +Colored.Red
+                +Variation.Colored.Red
                 +Basic
                 +Inverted
                 data("action", "sign-out")

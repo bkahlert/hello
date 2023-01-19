@@ -3,6 +3,7 @@ package com.bkahlert.hello.ui.search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import com.bkahlert.hello.semanticui.core.attributes.Variation
 import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.hello.semanticui.element.Button
 import com.bkahlert.hello.semanticui.element.Icon
@@ -237,7 +238,7 @@ fun ClosableSearchEngineButton(
 ) {
     Button({
         classes("animated", "fade")
-        +Size.Tiny + Compact + Basic + Icon
+        +Variation.Size.Tiny + Compact + Basic + Icon
         style {
             property("box-shadow", "none")
             marginLeft((-.5).em)

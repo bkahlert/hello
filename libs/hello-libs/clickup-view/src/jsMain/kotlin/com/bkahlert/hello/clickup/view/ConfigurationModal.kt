@@ -2,8 +2,9 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpClient
-import com.bkahlert.hello.semanticui.core.Semantic
+import com.bkahlert.hello.semanticui.core.S
 import com.bkahlert.hello.semanticui.core.attributes.Variation.Floated
+import com.bkahlert.hello.semanticui.core.attributes.Variation.Size
 import com.bkahlert.hello.semanticui.element.IconHeader
 import com.bkahlert.hello.semanticui.element.IconSubHeader
 import com.bkahlert.hello.semanticui.module.Actions
@@ -12,7 +13,7 @@ import com.bkahlert.hello.semanticui.module.Content
 import com.bkahlert.hello.semanticui.module.DenyButton
 import com.bkahlert.hello.semanticui.module.onApprove
 import com.bkahlert.hello.semanticui.module.onDeny
-import com.bkahlert.hello.semanticui.module.size
+import com.bkahlert.hello.semanticui.module.v
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 
@@ -23,7 +24,7 @@ public fun ConfigurationModal(
     vararg configurers: Configurer<ClickUpClient>,
 ) {
     BasicModal({
-        +size.Tiny
+        v(Size.Tiny)
         onApprove = {
             console.log("approved", it)
             true
@@ -36,12 +37,12 @@ public fun ConfigurationModal(
         IconHeader("sign-in") { Text("Connect to ClickUp") }
         Content {
             Div({ classes("ui", "form") }) {
-                Semantic("ui", "placeholder", "segment") {
-                    Semantic("ui", "stackable", "two", "column", "center", "aligned", "grid") {
-                        Semantic("ui", "vertical", "divider") { Text("Or") }
-                        Semantic("middle", "aligned", "row") {
+                S("ui", "placeholder", "segment") {
+                    S("ui", "stackable", "two", "column", "center", "aligned", "grid") {
+                        S("ui", "vertical", "divider") { Text("Or") }
+                        S("middle", "aligned", "row") {
                             configurers.forEach { configurer ->
-                                Semantic("column") {
+                                S("column") {
                                     IconSubHeader(*configurer.icon) { Text(configurer.name) }
                                     configurer.content.invoke(this) { onConnect(it) }
                                 }

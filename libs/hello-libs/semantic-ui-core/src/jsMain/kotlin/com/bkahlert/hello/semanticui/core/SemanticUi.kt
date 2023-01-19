@@ -11,7 +11,7 @@ import org.w3c.dom.HTMLDivElement
  * A semantic UI element of the form `<div class="$classes">$content</div>` that
  * can be used as a fallback for not yet implemented Semantic UI features. */
 @Composable
-public fun Semantic(
+public fun S(
     vararg classes: String,
     attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
     content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
