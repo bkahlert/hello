@@ -15,10 +15,9 @@ import com.bkahlert.hello.clickup.Pomodoro.Status.Prepared
 import com.bkahlert.hello.clickup.Pomodoro.Status.Running
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TimeEntry
-import com.bkahlert.hello.dom.AcousticFeedback
-import com.bkahlert.hello.semanticui.core.jQuery
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.ui.compose.color
+import com.bkahlert.semanticui.core.jQuery
+import com.bkahlert.semanticui.custom.color
+import com.bkahlert.semanticui.element.Icon
 import kotlinx.browser.window
 import org.jetbrains.compose.web.css.fontWeight
 import org.jetbrains.compose.web.dom.Div

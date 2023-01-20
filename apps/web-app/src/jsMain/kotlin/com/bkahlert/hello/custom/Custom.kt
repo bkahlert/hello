@@ -8,13 +8,15 @@ import com.bkahlert.hello.custom.Sandbox.ALLOW_SCRIPTS
 import com.bkahlert.hello.custom.Sandbox.ALLOW_TOP_NAVIGATION
 import com.bkahlert.hello.custom.Sandbox.ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION
 import com.bkahlert.hello.custom.Sandbox.Companion.sandbox
-import com.bkahlert.hello.dom.Spinner
-import com.bkahlert.hello.ui.compose.backgroundImage
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.net.DataUri
+import com.bkahlert.kommons.net.Svg
 import io.ktor.http.Url
 import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.CSSBuilder
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleSheet
+import org.jetbrains.compose.web.css.backgroundImage
 import org.jetbrains.compose.web.css.backgroundPosition
 import org.jetbrains.compose.web.css.backgroundRepeat
 import org.jetbrains.compose.web.css.height
@@ -93,10 +95,40 @@ object CustomStyleSheet : StyleSheet() {
 }
 
 fun CSSBuilder.spinner() {
-    backgroundImage(Spinner(colors.black.fade(.67)))
+    backgroundImage("""url("${Spinner(colors.black.fade(.67))}")""")
     backgroundRepeat("no-repeat")
     backgroundPosition("center center")
 }
+
+@Deprecated("use semantic UI loader")
+private fun Spinner(
+    color: Color,
+    d: Int = 38,
+    s: Int = 2,
+    r: Double = (d - s) / 2.0,
+): DataUri = DataUri.Svg(
+    // language=SVG
+    """
+    <svg width="${d}px" height="${d}px" viewBox="0 0 $d $d" xmlns="http://www.w3.org/2000/svg" stroke="$color" stroke-opacity=".5">
+      <g fill="none" fill-rule="evenodd">
+        <g transform="translate(${s / 2} ${s / 2})" stroke-width="$s">
+          <circle cx="$r" cy="$r" r="$r"/>
+          <path d="M${d - s} ${r}c0-9.94-8.06-$r-$r-$r">
+            <animateTransform attributeName="transform" type="rotate" from="0 $r $r" to="360 $r $r" dur="1s" repeatCount="indefinite"/>
+          </path>
+        </g>
+      </g>
+    </svg>
+    """.trimIndent()
+)
+
+
+public fun gradient(type: String, vararg args: String): String =
+    args.joinToString(",", "$type-gradient(", ")")
+
+public fun linearGradient(vararg colors: Color): String =
+    gradient("linear", "180deg", *colors.map { it.toString() }.toTypedArray())
+
 
 fun AttrsScope<HTMLIFrameElement>.src(url: Url) {
     attr("src", url.toString())

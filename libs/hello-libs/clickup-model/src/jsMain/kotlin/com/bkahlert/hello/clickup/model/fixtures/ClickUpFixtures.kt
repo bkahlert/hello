@@ -37,9 +37,8 @@ import com.bkahlert.hello.clickup.model.User
 import com.bkahlert.hello.clickup.model.Watcher
 import com.bkahlert.hello.clickup.model.asAssignee
 import com.bkahlert.hello.clickup.model.asCreator
-import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.color.Color.RGB
-import com.bkahlert.hello.dom.ImageFixtures
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.json.deserialize
 import com.bkahlert.kommons.minus
 import com.bkahlert.kommons.net.Uri
@@ -75,7 +74,7 @@ public object ClickUpFixtures {
                 "id": "1111111",
                 "name": "Pear",
                 "color": "#00ff00",
-                "avatar": "${ImageFixtures.PearLogo.dataURI}",
+                "avatar": "${ImageFixtures.PearLogo}",
                 "members": [
                     {
                         "user": $UserJson
@@ -86,7 +85,7 @@ public object ClickUpFixtures {
                 "id": "2222222",
                 "name": "Kommons",
                 "color": "#0000ff",
-                "avatar": "${ImageFixtures.KommonsLogo.dataURI}",
+                "avatar": "${ImageFixtures.KommonsLogo}",
                 "members": [
                     {
                         "user": $UserJson

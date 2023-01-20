@@ -6,17 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.model.ClickUpException
-import com.bkahlert.hello.semanticui.collection.Header
-import com.bkahlert.hello.semanticui.collection.LinkItem
-import com.bkahlert.hello.semanticui.collection.Menu
-import com.bkahlert.hello.semanticui.collection.TextMenu
-import com.bkahlert.hello.semanticui.core.S
-import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
-import com.bkahlert.hello.semanticui.core.dom.SemanticElement
-import com.bkahlert.hello.semanticui.element.Header
-import com.bkahlert.hello.semanticui.element.Icon
+import com.bkahlert.semanticui.collection.Header
+import com.bkahlert.semanticui.collection.LinkItem
+import com.bkahlert.semanticui.collection.Menu
+import com.bkahlert.semanticui.collection.TextMenu
+import com.bkahlert.semanticui.core.S
+import com.bkahlert.semanticui.core.attributes.Variation.Attached
+import com.bkahlert.semanticui.core.attributes.Variation.Size.Small
+import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.semanticui.core.dom.SemanticElement
+import com.bkahlert.semanticui.element.Header
+import com.bkahlert.semanticui.element.Icon
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.marginBottom
 import org.jetbrains.compose.web.css.marginTop
@@ -31,7 +32,7 @@ fun Demos(
 ) {
     S("ui", "segments", "raised", attrs = attrs) {
         Header({
-            +Variation.Attached.Top
+            +Attached.Top
             +Inverted
             style { property("border-bottom-width", "0") }
         }) { Text(name) }
@@ -49,11 +50,11 @@ fun Demo(
     S("ui", "segment", attrs = attrs) {
         if (!dirty) {
             TextMenu({
-                +Variation.Size.Small
+                +Small
                 style { marginTop((-1).em); marginBottom(0.em) }
             }) {
                 Header { Text(name) }
-                Menu({ +Direction.Right + Variation.Size.Small }) {
+                Menu({ +Direction.Right + Small }) {
                     LinkItem({
                         onClick { dirty = true }
                     }) {

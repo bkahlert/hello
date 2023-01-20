@@ -18,8 +18,9 @@ dependencyResolutionManagement {
     }
 }
 includeBuild("../../platforms")
-includeBuild("../../libs/hello-libs")
 includeBuild("../../libs/kommons-libs")
+includeBuild("../../libs/semantic-ui-libs")
+includeBuild("../../libs/hello-libs")
 
 // == Define the inner structure of this component ==
 rootProject.name = "api-client"

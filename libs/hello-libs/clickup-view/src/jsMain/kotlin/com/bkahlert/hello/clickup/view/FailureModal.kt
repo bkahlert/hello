@@ -2,23 +2,25 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpException
-import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.dataAttr
-import com.bkahlert.hello.semanticui.custom.errorMessage
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.element.IconHeader
-import com.bkahlert.hello.semanticui.module.Accordion
-import com.bkahlert.hello.semanticui.module.Actions
-import com.bkahlert.hello.semanticui.module.ApproveButton
-import com.bkahlert.hello.semanticui.module.BasicModal
-import com.bkahlert.hello.semanticui.module.Content
-import com.bkahlert.hello.semanticui.module.DenyButton
-import com.bkahlert.hello.semanticui.module.Dropdown
-import com.bkahlert.hello.semanticui.module.closable
-import com.bkahlert.hello.semanticui.module.onApprove
-import com.bkahlert.hello.semanticui.module.onDeny
-import com.bkahlert.hello.semanticui.module.scrolling
-import com.bkahlert.hello.ui.compose.data
+import com.bkahlert.semanticui.core.attributes.Variation.Colored.Red
+import com.bkahlert.semanticui.core.attributes.Variation.Colored.Yellow
+import com.bkahlert.semanticui.core.attributes.Variation.Size
+import com.bkahlert.semanticui.core.dataAttr
+import com.bkahlert.semanticui.custom.data
+import com.bkahlert.semanticui.custom.errorMessage
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.IconHeader
+import com.bkahlert.semanticui.module.Accordion
+import com.bkahlert.semanticui.module.Actions
+import com.bkahlert.semanticui.module.ApproveButton
+import com.bkahlert.semanticui.module.BasicModal
+import com.bkahlert.semanticui.module.Content
+import com.bkahlert.semanticui.module.DenyButton
+import com.bkahlert.semanticui.module.Dropdown
+import com.bkahlert.semanticui.module.closable
+import com.bkahlert.semanticui.module.onApprove
+import com.bkahlert.semanticui.module.onDeny
+import com.bkahlert.semanticui.module.scrolling
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Pre
@@ -38,7 +40,7 @@ public fun FailureModal(
     val icon = if (warning) arrayOf("yellow", "warning", "circle") else arrayOf("red", "exclamation", "circle")
 
     BasicModal({
-        +Variation.Size.Small
+        +Size.Small
         onApprove = {
             if (it.dataAttr("action") == "sign-out") onSignOut()
             else onRetry()
@@ -66,14 +68,14 @@ public fun FailureModal(
         }
         Actions {
             ApproveButton({
-                +Variation.Colored.Yellow
+                +Yellow
                 +Inverted
             }) {
                 Icon("redo", "alternate")
                 Text("Retry")
             }
             DenyButton({
-                +Variation.Colored.Yellow
+                +Yellow
                 +Basic
                 +Inverted
                 onClick { onIgnore() }
@@ -82,7 +84,7 @@ public fun FailureModal(
                 Text("Ignore")
             }
             ApproveButton({
-                +Variation.Colored.Red
+                +Red
                 +Basic
                 +Inverted
                 data("action", "sign-out")

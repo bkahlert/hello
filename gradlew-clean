@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+./gradlew --stop || exit
+./gradlew -Dorg.gradle.daemon=false clean || exit

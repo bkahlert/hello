@@ -23,22 +23,21 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
 import com.bkahlert.hello.clickup.viewmodel.rememberClickUpMenuViewModel
 import com.bkahlert.hello.custom.Custom
+import com.bkahlert.hello.custom.linearGradient
 import com.bkahlert.hello.debug.renderDebugMode
-import com.bkahlert.hello.dom.linearGradient
-import com.bkahlert.hello.semanticui.element.AnkerButton
-import com.bkahlert.hello.semanticui.element.ButtonGroupElementType.Icon
-import com.bkahlert.hello.semanticui.element.Buttons
-import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.hello.ui.ViewportDimension
-import com.bkahlert.hello.ui.compose.Length
-import com.bkahlert.hello.ui.compose.backgroundColor
-import com.bkahlert.hello.ui.compose.center
-import com.bkahlert.hello.ui.compose.gridArea
 import com.bkahlert.hello.ui.header.Header
+import com.bkahlert.hello.ui.header.center
 import com.bkahlert.hello.ui.search.SearchFeature
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.uri
 import com.bkahlert.kommons.net.host
+import com.bkahlert.semanticui.custom.Length
+import com.bkahlert.semanticui.custom.backgroundColor
+import com.bkahlert.semanticui.element.AnkerButton
+import com.bkahlert.semanticui.element.ButtonGroupElementType.Icon
+import com.bkahlert.semanticui.element.Buttons
+import com.bkahlert.semanticui.element.Icon
 import io.ktor.http.Url
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
@@ -51,6 +50,7 @@ import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.Style
+import org.jetbrains.compose.web.css.StyleScope
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.alignContent
 import org.jetbrains.compose.web.css.alignItems
@@ -252,6 +252,12 @@ fun Grid(
     }) {
         content()
     }
+}
+
+
+// https://developer.mozilla.org/en-US/docs/Web/CSS/grid-area
+private fun <T : Enum<T>> StyleScope.gridArea(rowStart: T) {
+    property("grid-area", rowStart.name)
 }
 
 object AppStylesheet : StyleSheet() {

@@ -1,9 +1,9 @@
 package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.element.IconElement
+import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.IconElement
 import org.jetbrains.compose.web.dom.Text
 
 @Composable

@@ -1,49 +1,49 @@
 package com.bkahlert.hello.debug.semanticui
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures.JohnDoe
+import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures.KommonsLogo
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
-import com.bkahlert.hello.dom.ImageFixtures
-import com.bkahlert.hello.dom.ImageFixtures.KommonsLogo
-import com.bkahlert.hello.semanticui.core.S
-import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Negative
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Size
-import com.bkahlert.hello.semanticui.element.Button
-import com.bkahlert.hello.semanticui.element.Content
-import com.bkahlert.hello.semanticui.element.Description
-import com.bkahlert.hello.semanticui.element.Header
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.element.Image
-import com.bkahlert.hello.semanticui.element.ImageAnchor
-import com.bkahlert.hello.semanticui.element.ImageHeader
-import com.bkahlert.hello.semanticui.element.Input
-import com.bkahlert.hello.semanticui.element.Item
-import com.bkahlert.hello.semanticui.element.Line
-import com.bkahlert.hello.semanticui.element.Loader
-import com.bkahlert.hello.semanticui.element.Paragraph
-import com.bkahlert.hello.semanticui.element.Placeholder
-import com.bkahlert.hello.semanticui.element.TextLoader
-import com.bkahlert.hello.semanticui.element.action
-import com.bkahlert.hello.semanticui.element.avatar
-import com.bkahlert.hello.semanticui.element.bordered
-import com.bkahlert.hello.semanticui.element.circular
-import com.bkahlert.hello.semanticui.element.disabled
-import com.bkahlert.hello.semanticui.element.divided
-import com.bkahlert.hello.semanticui.element.error
-import com.bkahlert.hello.semanticui.element.floated
-import com.bkahlert.hello.semanticui.element.focus
-import com.bkahlert.hello.semanticui.element.horizontal
-import com.bkahlert.hello.semanticui.element.icon
-import com.bkahlert.hello.semanticui.element.labeled
-import com.bkahlert.hello.semanticui.element.loading
-import com.bkahlert.hello.semanticui.element.rounded
-import com.bkahlert.hello.semanticui.element.spaced
-import com.bkahlert.hello.semanticui.element.v
-import com.bkahlert.hello.semanticui.element.verticallyAligned
-import com.bkahlert.hello.semanticui.module.Dropdown
-import com.bkahlert.hello.semanticui.module.Menu
-import com.bkahlert.hello.semanticui.module.Text
+import com.bkahlert.semanticui.core.S
+import com.bkahlert.semanticui.core.attributes.Variation.Negative
+import com.bkahlert.semanticui.core.attributes.Variation.Size
+import com.bkahlert.semanticui.core.attributes.Variation.Size.Huge
+import com.bkahlert.semanticui.element.Button
+import com.bkahlert.semanticui.element.Content
+import com.bkahlert.semanticui.element.Description
+import com.bkahlert.semanticui.element.Header
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.Image
+import com.bkahlert.semanticui.element.ImageAnchor
+import com.bkahlert.semanticui.element.ImageHeader
+import com.bkahlert.semanticui.element.Input
+import com.bkahlert.semanticui.element.Item
+import com.bkahlert.semanticui.element.Line
+import com.bkahlert.semanticui.element.Loader
+import com.bkahlert.semanticui.element.Paragraph
+import com.bkahlert.semanticui.element.Placeholder
+import com.bkahlert.semanticui.element.TextLoader
+import com.bkahlert.semanticui.element.action
+import com.bkahlert.semanticui.element.avatar
+import com.bkahlert.semanticui.element.bordered
+import com.bkahlert.semanticui.element.circular
+import com.bkahlert.semanticui.element.disabled
+import com.bkahlert.semanticui.element.divided
+import com.bkahlert.semanticui.element.error
+import com.bkahlert.semanticui.element.floated
+import com.bkahlert.semanticui.element.focus
+import com.bkahlert.semanticui.element.horizontal
+import com.bkahlert.semanticui.element.icon
+import com.bkahlert.semanticui.element.labeled
+import com.bkahlert.semanticui.element.loading
+import com.bkahlert.semanticui.element.rounded
+import com.bkahlert.semanticui.element.spaced
+import com.bkahlert.semanticui.element.v
+import com.bkahlert.semanticui.element.verticallyAligned
+import com.bkahlert.semanticui.module.Dropdown
+import com.bkahlert.semanticui.module.Menu
+import com.bkahlert.semanticui.module.Text
 import org.jetbrains.compose.web.attributes.InputType.Text
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.Img
@@ -51,7 +51,7 @@ import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Small
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
-import com.bkahlert.hello.semanticui.element.List as SemanticList
+import com.bkahlert.semanticui.element.List as SemanticList
 
 @Composable
 fun ElementsDemos() {
@@ -69,7 +69,7 @@ fun ElementsDemos() {
                 Item { Image(KommonsLogo, "Circular") { v(Size.Tiny); +circular } }
                 Item {
                     Content {
-                        Image({ +avatar }) { Img(ImageFixtures.Avatar) }
+                        Image({ +avatar }) { Img(JohnDoe.toString()) }
                         Span { Text("Avatar") }
                     }
                 }
@@ -162,7 +162,7 @@ fun ElementsDemos() {
                     Text("horizontally divided")
                 }
                 Item {
-                    ImageAnchor(href = null) { Icon("arrow", "up") { +Variation.Size.Huge } }
+                    ImageAnchor(href = null) { Icon("arrow", "up") { +Huge } }
                     Content({ +verticallyAligned.Top }) { Small { Text("+ top aligned") } }
                 }
             }

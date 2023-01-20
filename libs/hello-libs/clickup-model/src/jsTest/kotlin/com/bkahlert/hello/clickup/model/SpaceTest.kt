@@ -1,6 +1,6 @@
 package com.bkahlert.hello.clickup.model
 
-import com.bkahlert.hello.color.Color
+import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.json.Lenient
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe

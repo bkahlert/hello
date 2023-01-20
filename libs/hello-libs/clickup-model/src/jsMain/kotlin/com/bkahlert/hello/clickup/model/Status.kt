@@ -1,6 +1,6 @@
 package com.bkahlert.hello.clickup.model
 
-import com.bkahlert.hello.color.Color
+import com.bkahlert.kommons.color.Color
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

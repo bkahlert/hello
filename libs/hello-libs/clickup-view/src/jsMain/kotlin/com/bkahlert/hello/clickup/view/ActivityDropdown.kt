@@ -7,19 +7,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.model.TaskListID
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.element.Input
-import com.bkahlert.hello.semanticui.module.Divider
-import com.bkahlert.hello.semanticui.module.DropdownState
-import com.bkahlert.hello.semanticui.module.DropdownStateImpl
-import com.bkahlert.hello.semanticui.module.Header
-import com.bkahlert.hello.semanticui.module.InlineDropdown
-import com.bkahlert.hello.semanticui.module.Menu
-import com.bkahlert.hello.semanticui.module.Text
-import com.bkahlert.hello.semanticui.module.scrolling
-import com.bkahlert.hello.ui.compose.textOverflow
 import com.bkahlert.kommons.quoted
-import com.bkahlert.kommons.text.takeUnlessBlank
+import com.bkahlert.semanticui.custom.textOverflow
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.Input
+import com.bkahlert.semanticui.module.Divider
+import com.bkahlert.semanticui.module.DropdownState
+import com.bkahlert.semanticui.module.DropdownStateImpl
+import com.bkahlert.semanticui.module.Header
+import com.bkahlert.semanticui.module.InlineDropdown
+import com.bkahlert.semanticui.module.Menu
+import com.bkahlert.semanticui.module.Text
+import com.bkahlert.semanticui.module.scrolling
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.InputType.Text
 import org.jetbrains.compose.web.attributes.name
@@ -141,7 +140,7 @@ public fun ActivityDropdown(
             Menu({ +scrolling }) {
                 state.groups.onEachIndexed { index, group ->
                     if (index > 0) Divider()
-                    ActivityGroupHeader(group, onCreate = group.listId?.let { ({ state.onCreate(it, query.takeUnlessBlank()) }) })
+                    ActivityGroupHeader(group, onCreate = group.listId?.let { ({ state.onCreate(it, query.takeUnless { it.isEmpty() }) }) })
                     ActivityItems(group.tasks)
                 }
             }

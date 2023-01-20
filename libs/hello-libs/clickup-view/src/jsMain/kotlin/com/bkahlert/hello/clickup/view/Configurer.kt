@@ -1,8 +1,8 @@
 package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.core.dom.SemanticElement
-import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.core.dom.SemanticElement
+import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import org.w3c.dom.HTMLDivElement
 
 public interface Configurer<out T> {

@@ -2,18 +2,18 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpClient
-import com.bkahlert.hello.semanticui.core.S
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Floated
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Size
-import com.bkahlert.hello.semanticui.element.IconHeader
-import com.bkahlert.hello.semanticui.element.IconSubHeader
-import com.bkahlert.hello.semanticui.module.Actions
-import com.bkahlert.hello.semanticui.module.BasicModal
-import com.bkahlert.hello.semanticui.module.Content
-import com.bkahlert.hello.semanticui.module.DenyButton
-import com.bkahlert.hello.semanticui.module.onApprove
-import com.bkahlert.hello.semanticui.module.onDeny
-import com.bkahlert.hello.semanticui.module.v
+import com.bkahlert.semanticui.core.S
+import com.bkahlert.semanticui.core.attributes.Variation.Floated
+import com.bkahlert.semanticui.core.attributes.Variation.Size.Small
+import com.bkahlert.semanticui.element.IconHeader
+import com.bkahlert.semanticui.element.IconSubHeader
+import com.bkahlert.semanticui.module.Actions
+import com.bkahlert.semanticui.module.BasicModal
+import com.bkahlert.semanticui.module.Content
+import com.bkahlert.semanticui.module.DenyButton
+import com.bkahlert.semanticui.module.onApprove
+import com.bkahlert.semanticui.module.onDeny
+import com.bkahlert.semanticui.module.v
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 
@@ -24,7 +24,7 @@ public fun ConfigurationModal(
     vararg configurers: Configurer<ClickUpClient>,
 ) {
     BasicModal({
-        v(Size.Small)
+        v(Small)
         onApprove = {
             console.log("approved", it)
             true

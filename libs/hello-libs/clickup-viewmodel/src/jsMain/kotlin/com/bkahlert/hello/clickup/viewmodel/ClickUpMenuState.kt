@@ -25,10 +25,10 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelected.Data.FullData
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelecting
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
-import com.bkahlert.hello.dom.next
 import com.bkahlert.kommons.logging.InlineLogger
 import com.bkahlert.kommons.logging.InlineLogging
 import com.bkahlert.kommons.text.simpleKebabCasedName
+import com.bkahlert.kommons.util.successor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -119,7 +119,7 @@ public sealed class ClickUpMenuState {
                     public suspend fun closeTask(taskID: TaskID): TeamSelected {
                         val task = data.tasks.first { it.id == taskID }
                         client.updateTask(task.copy(status = client.getPossibleStatuses(task).closed.asPreview()))
-                        return refresh().select(selected + data.tasks.next { it.id == taskID }.map { it.id })
+                        return refresh().select(selected + data.tasks.successor { it.id == taskID }.map { it.id })
                     }
 
                     public suspend fun startTimeEntry(taskID: TaskID?, description: String?, billable: Boolean, tags: List<Tag>): TeamSelected {

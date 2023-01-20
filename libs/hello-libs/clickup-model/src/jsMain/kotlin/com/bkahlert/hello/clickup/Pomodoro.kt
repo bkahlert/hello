@@ -5,11 +5,11 @@ import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.model.TimeEntryID
 import com.bkahlert.hello.clickup.serialization.DurationAsMilliseconds
-import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.color.Color.RGB
-import com.bkahlert.hello.color.Colors
 import com.bkahlert.kommons.Creator.Companion.creator
 import com.bkahlert.kommons.Creator.Creator1
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.RGB
+import com.bkahlert.kommons.color.Colors
 import com.bkahlert.kommons.minus
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration

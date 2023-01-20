@@ -3,7 +3,7 @@ package com.bkahlert.hello.ui.search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import com.bkahlert.hello.Feature
-import com.bkahlert.hello.semanticui.core.jQuery
+import com.bkahlert.semanticui.core.jQuery
 import org.jetbrains.compose.web.dom.DOMScope
 import org.w3c.dom.HTMLElement
 

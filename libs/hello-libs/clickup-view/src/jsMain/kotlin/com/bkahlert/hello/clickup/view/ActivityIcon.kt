@@ -1,8 +1,8 @@
 package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.ui.compose.color
+import com.bkahlert.semanticui.custom.color
+import com.bkahlert.semanticui.element.Icon
 
 @Composable
 public fun ActivityIcon(activity: Activity<*>) {

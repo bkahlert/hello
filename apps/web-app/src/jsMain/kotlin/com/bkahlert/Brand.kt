@@ -1,8 +1,8 @@
 package com.bkahlert
 
-import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.color.Color.RGB
-import com.bkahlert.hello.color.Colors
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.RGB
+import com.bkahlert.kommons.color.Colors
 
 object Brand {
 

@@ -1,12 +1,11 @@
 package com.bkahlert.hello.ui.search
 
-import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.color.Color.RGB
-import com.bkahlert.hello.dom.fmod
-import com.bkahlert.hello.dom.next
-import com.bkahlert.hello.dom.prev
 import com.bkahlert.hello.ui.search.SearchEngine.Google
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.net.Uri
+import com.bkahlert.kommons.util.predecessor
+import com.bkahlert.kommons.util.successor
 
 /**
  * Search engines, such as [Google].
@@ -203,22 +202,22 @@ enum class SearchEngine(
     /**
      * The [SearchEngine] preceeding this one.
      */
-    val prev: SearchEngine get() = values()[(ordinal - 1) fmod values().size]
+    val prev: SearchEngine get() = predecessor
 
     /**
      * Returns the [SearchEngine] preceeding this one among the specified [engines].
      */
-    fun prev(engines: List<SearchEngine>): SearchEngine = engines.prev { it == this }.first()
+    fun prev(engines: List<SearchEngine>): SearchEngine = engines.predecessor { it == this }.first()
 
     /**
      * The [SearchEngine] following this one.
      */
-    val next: SearchEngine get() = values()[(ordinal + 1) fmod values().size]
+    val next: SearchEngine get() = successor
 
     /**
      * The [SearchEngine] following this one among the specified [engines].
      */
-    fun next(engines: List<SearchEngine>): SearchEngine = engines.next { it == this }.first()
+    fun next(engines: List<SearchEngine>): SearchEngine = engines.successor { it == this }.first()
 
     companion object {
         val Default: SearchEngine = Google

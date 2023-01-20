@@ -14,19 +14,10 @@ kotlin {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-core")
                 implementation("com.bkahlert.kommons:kommons-dom")
-                implementation("com.bkahlert.kommons:kommons-net")
+                api("com.bkahlert.kommons:kommons-net")
+                api(project(":clickup-model"))
 
-                implementation(project(":hello-dom")) { because("ClickUpHttpClientConfigurer") }
-                implementation(project(":hello-compose")) { because("ClickUpHttpClientConfigurer") }
-
-                implementation(project(":semantic-ui-core")) { because("ClickUpHttpClientConfigurer") }
-                implementation(project(":semantic-ui-elements")) { because("ClickUpHttpClientConfigurer") }
-                implementation(project(":semantic-ui-collections")) { because("ClickUpHttpClientConfigurer") }
-                implementation(project(":semantic-ui-modules")) { because("ClickUpHttpClientConfigurer") }
-                implementation(project(":semantic-ui-views")) { because("ClickUpHttpClientConfigurer") }
-                implementation(project(":semantic-ui-custom")) { because("ClickUpHttpClientConfigurer") }
-
-                implementation(project(":clickup-model"))
+                implementation("com.bkahlert.semantic-ui:semantic-ui") { because("ClickUpHttpClientConfigurer") }
                 implementation(project(":clickup-view")) { because("ClickUpHttpClientConfigurer") }
             }
         }

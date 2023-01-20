@@ -3,26 +3,26 @@ package com.bkahlert.hello.ui.search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.element.Button
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.element.Item
-import com.bkahlert.hello.semanticui.element.ListElement
-import com.bkahlert.hello.semanticui.element.horizontal
-import com.bkahlert.hello.semanticui.module.Checkbox
-import com.bkahlert.hello.semanticui.module.CheckboxElementType.Toggle
-import com.bkahlert.hello.semanticui.module.Divider
-import com.bkahlert.hello.semanticui.module.Header
-import com.bkahlert.hello.semanticui.module.InlineMultipleDropdown
-import com.bkahlert.hello.semanticui.module.Item
-import com.bkahlert.hello.semanticui.module.Menu
-import com.bkahlert.hello.semanticui.module.MultipleDropdownState
-import com.bkahlert.hello.semanticui.module.MultipleDropdownStateImpl
-import com.bkahlert.hello.semanticui.module.Text
-import com.bkahlert.hello.semanticui.module.scrolling
-import com.bkahlert.hello.ui.compose.color
-import com.bkahlert.hello.ui.compose.data
+import com.bkahlert.semanticui.core.attributes.Variation.Size.Tiny
+import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.semanticui.custom.color
+import com.bkahlert.semanticui.custom.data
+import com.bkahlert.semanticui.element.Button
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.Item
+import com.bkahlert.semanticui.element.ListElement
+import com.bkahlert.semanticui.element.horizontal
+import com.bkahlert.semanticui.module.Checkbox
+import com.bkahlert.semanticui.module.CheckboxElementType.Toggle
+import com.bkahlert.semanticui.module.Divider
+import com.bkahlert.semanticui.module.Header
+import com.bkahlert.semanticui.module.InlineMultipleDropdown
+import com.bkahlert.semanticui.module.Item
+import com.bkahlert.semanticui.module.Menu
+import com.bkahlert.semanticui.module.MultipleDropdownState
+import com.bkahlert.semanticui.module.MultipleDropdownStateImpl
+import com.bkahlert.semanticui.module.Text
+import com.bkahlert.semanticui.module.scrolling
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.name
@@ -55,7 +55,7 @@ import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Text
 import kotlin.js.json
-import com.bkahlert.hello.semanticui.element.List as SemanticList
+import com.bkahlert.semanticui.element.List as SemanticList
 
 @Stable
 interface SearchEngineSelectState : MultipleDropdownState<SearchEngine>
@@ -238,7 +238,7 @@ fun ClosableSearchEngineButton(
 ) {
     Button({
         classes("animated", "fade")
-        +Variation.Size.Tiny + Compact + Basic + Icon
+        +Tiny + Compact + Basic + Icon
         style {
             property("box-shadow", "none")
             marginLeft((-.5).em)

@@ -3,8 +3,8 @@ package com.bkahlert.hello.clickup.model
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.hello.clickup.serialization.SerializerTest
-import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.color.Color.RGB
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.net.Uri
 
 @Suppress("unused")

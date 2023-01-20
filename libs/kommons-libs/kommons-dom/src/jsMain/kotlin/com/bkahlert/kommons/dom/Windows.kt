@@ -1,10 +1,9 @@
 package com.bkahlert.kommons.dom
 
 import org.w3c.dom.Window
-import org.w3c.dom.url.URL
 
 public inline fun Window.open(
-    url: URL,
+    url: CharSequence,
     target: String? = null,
     features: String? = null,
 ): Window? {
@@ -21,7 +20,7 @@ public inline fun Window.open(
 }
 
 public inline fun Window.openInSameTab(
-    url: URL,
+    url: CharSequence,
     features: String? = null,
     newTabFallback: Boolean = true,
 ): Window? =
@@ -33,6 +32,6 @@ public inline fun Window.openInSameTab(
     }.getOrThrow()
 
 public inline fun Window.openInNewTab(
-    url: URL,
+    url: CharSequence,
     features: String? = null,
 ): Window? = open(url, "_blank", features)

@@ -1,11 +1,11 @@
 package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.module.DropdownMenuElement
-import com.bkahlert.hello.semanticui.module.Header
-import com.bkahlert.hello.ui.compose.color
+import com.bkahlert.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.custom.color
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.module.DropdownMenuElement
+import com.bkahlert.semanticui.module.Header
 import org.jetbrains.compose.web.css.Position.Companion.Relative
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.marginTop

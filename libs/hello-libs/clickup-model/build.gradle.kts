@@ -11,11 +11,9 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("com.bkahlert.kommons:kommons-core")
+                api("com.bkahlert.kommons:kommons-core")
+                api("com.bkahlert.kommons:kommons-color")
                 implementation("com.bkahlert.kommons:kommons-net")
-
-                implementation(project(":hello-dom"))
-                implementation(project(":hello-color"))
             }
         }
 

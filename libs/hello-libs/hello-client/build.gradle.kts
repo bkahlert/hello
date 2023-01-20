@@ -12,7 +12,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-core")
-                implementation("com.bkahlert.kommons:kommons-net")
+                api("com.bkahlert.kommons:kommons-net")
                 implementation("com.bkahlert.kommons:kommons-text")
 
                 implementation(project(":clickup-model"))

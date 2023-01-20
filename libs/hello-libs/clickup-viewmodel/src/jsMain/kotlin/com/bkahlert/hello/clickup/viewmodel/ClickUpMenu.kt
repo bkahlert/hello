@@ -31,25 +31,24 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
-import com.bkahlert.hello.dom.AcousticFeedback
-import com.bkahlert.hello.semanticui.collection.AnkerItem
-import com.bkahlert.hello.semanticui.collection.LinkItem
-import com.bkahlert.hello.semanticui.collection.Menu
-import com.bkahlert.hello.semanticui.collection.MenuElement
-import com.bkahlert.hello.semanticui.collection.MenuItemDivElement
-import com.bkahlert.hello.semanticui.collection.target
-import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.hello.semanticui.custom.DimmingLoader
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.module.Dimmer
-import com.bkahlert.hello.semanticui.module.DropdownItem
-import com.bkahlert.hello.ui.compose.backgroundColor
-import com.bkahlert.hello.ui.compose.color
-import com.bkahlert.hello.ui.compose.textOverflow
 import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.dom.open
+import com.bkahlert.semanticui.collection.AnkerItem
+import com.bkahlert.semanticui.collection.LinkItem
+import com.bkahlert.semanticui.collection.Menu
+import com.bkahlert.semanticui.collection.MenuElement
+import com.bkahlert.semanticui.collection.MenuItemDivElement
+import com.bkahlert.semanticui.collection.target
+import com.bkahlert.semanticui.core.attributes.Variation.Size.Mini
+import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.custom.DimmingLoader
+import com.bkahlert.semanticui.custom.backgroundColor
+import com.bkahlert.semanticui.custom.color
+import com.bkahlert.semanticui.custom.textOverflow
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.module.Dimmer
+import com.bkahlert.semanticui.module.DropdownItem
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.css.AlignItems
@@ -81,7 +80,6 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
-import org.w3c.dom.url.URL
 
 @Composable
 public fun SemanticElementScope<MenuElement>.DisconnectedItems(
@@ -322,7 +320,7 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
                     onClick {
                         @Suppress("SpellCheckingInspection")
                         val features = "popup=1,innerWidth=900,innerHeight=1200,top=400"
-                        window.open(URL(url.toString()), "ClickUp-task", features)
+                        window.open(url, "ClickUp-task", features)
 
                         // can't put this in an else case as it's not even safe to assume
                         // that one gets a window reference in case of success
@@ -380,7 +378,7 @@ public fun ClickUpMenu(
     loading: Boolean = false,
 ) {
     Menu({
-        +Variation.Size.Mini + Dimmable
+        +Mini + Dimmable
         if (state is Disabled || state is Disconnected) {
             +Fluid
             classes("one", "item")

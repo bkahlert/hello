@@ -13,20 +13,6 @@ import org.w3c.dom.Storage as W3cStorage
 public inline fun W3cStorage.remove(key: String): Unit = removeItem(key)
 
 /**
- * Variant of [W3cStorage.get] that deserializes the [Serializable] value after getting it.
- */
-@Deprecated("serialize manually")
-public inline fun <reified T> W3cStorage.getSerializable(key: String): T? = getItem(key)?.let { Json.decodeFromString<T>(it) }
-
-/**
- * Variant of [W3cStorage.set] that serializes the [Serializable] value before setting it
- * if it's not `null` and that invokes [W3cStorage.removeItem] if it is.
- */
-@Deprecated("serialize manually")
-public inline fun <reified T> W3cStorage.setSerializable(key: String, value: T?): Unit =
-    value?.let { setItem(key, it.let { Json.encodeToString<T>(it) }) } ?: removeItem(key)
-
-/**
  * Variant of [W3cStorage.get] that returns the enum [E] with matching [Enum.name].
  */
 public inline fun <reified E : Enum<E>> W3cStorage.getEnum(key: String): E? = get(key)?.let { enumValueOf<E>(it) }
@@ -117,14 +103,6 @@ public class ScopedStorage(
     }
 }
 
-/** Variant of [Storage.get] that deserializes the [Serializable] value after getting it. */
-@Deprecated("serialize manually")
-public inline fun <reified T> Storage.getSerializable(key: String): T? = get(key)?.let { Json.decodeFromString<T>(it) }
-
-/** Variant of [Storage.set] that serializes the [Serializable] value before setting it. */
-@Deprecated("serialize manually")
-public inline fun <reified T> Storage.setSerializable(key: String, value: T?): Unit = set(key, value?.let { Json.encodeToString<T>(it) })
-
 /** Variant of [Storage.get] that deserializes the enum [E] instance using its [Enum.name]. */
 public inline fun <reified E : Enum<E>> Storage.getEnum(key: String): E? = get(key)?.let { enumValueOf<E>(it) }
 
@@ -189,7 +167,7 @@ public value class StorageDelegate(
         val name = property.name.toKebabCasedString()
         return when (T::class) {
             String::class -> storage[name]?.let { it as T? }
-            else -> storage.getSerializable<T>(name)
+            else -> storage[name]?.let { Json.decodeFromString(it) }
         }
     }
 
@@ -201,7 +179,7 @@ public value class StorageDelegate(
         val name = property.name.toKebabCasedString()
         when (T::class) {
             String::class -> storage[name] = value as String?
-            else -> storage.setSerializable(name, value)
+            else -> storage[name] = value?.let { Json.encodeToString(it) }
         }
     }
 }

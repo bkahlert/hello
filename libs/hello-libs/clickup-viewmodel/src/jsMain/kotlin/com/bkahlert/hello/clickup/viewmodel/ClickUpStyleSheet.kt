@@ -1,6 +1,7 @@
 package com.bkahlert.hello.clickup.viewmodel
 
-import com.bkahlert.hello.dom.SvgImage
+import com.bkahlert.kommons.net.DataUri
+import com.bkahlert.kommons.net.Svg
 import org.jetbrains.compose.web.css.CSSStyleRuleBuilder
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.backgroundColor
@@ -16,7 +17,7 @@ import org.jetbrains.compose.web.css.width
 
 @Suppress("PublicApiImplicitType")
 public object ClickUpStyleSheet : StyleSheet() {
-    private fun roundedMask(size: Int = 512) = SvgImage(
+    private fun roundedMask(size: Int = 512) = DataUri.Svg(
         //language=SVG
         """
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="$size" height="$size">
@@ -32,7 +33,7 @@ public object ClickUpStyleSheet : StyleSheet() {
 
     init {
         "img.rounded" style {
-            val maskImage = "url('${roundedMask().dataURI}')"
+            val maskImage = "url('${roundedMask()}')"
             val maskPosition = "0 0"
             val maskSize = "100%"
             val maskRepeat = "no-repeat"

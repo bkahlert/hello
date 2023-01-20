@@ -37,31 +37,16 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons")
-                implementation("com.bkahlert.kommons:kommons-net")
                 implementation("com.bkahlert.kommons:kommons-dom")
+                implementation("com.bkahlert.kommons:kommons-net")
+                implementation("com.bkahlert.kommons:kommons-util")
+                implementation("com.bkahlert.semantic-ui:semantic-ui")
 
-                implementation("com.bkahlert.hello:hello-color")
-                implementation("com.bkahlert.hello:hello-dom")
-                implementation("com.bkahlert.hello:hello-compose")
-                implementation("com.bkahlert.hello:semantic-ui-core")
-                implementation("com.bkahlert.hello:semantic-ui-elements")
-                implementation("com.bkahlert.hello:semantic-ui-collections")
-                implementation("com.bkahlert.hello:semantic-ui-modules")
-                implementation("com.bkahlert.hello:semantic-ui-views")
-                implementation("com.bkahlert.hello:semantic-ui-custom")
                 implementation("com.bkahlert.hello:clickup-model")
                 implementation("com.bkahlert.hello:clickup-viewmodel")
                 implementation("com.bkahlert.hello:clickup-view")
                 implementation("com.bkahlert.hello:clickup-http-client")
                 implementation("com.bkahlert.hello:hello-client")
-
-                implementation("io.ktor:ktor-client-auth")
-                implementation("io.ktor:ktor-client-content-negotiation")
-                implementation("io.ktor:ktor-client-core")
-                implementation("io.ktor:ktor-client-js")
-                implementation("io.ktor:ktor-client-logging")
-                implementation("io.ktor:ktor-client-serialization")
-                implementation("io.ktor:ktor-serialization-kotlinx-json")
             }
         }
 

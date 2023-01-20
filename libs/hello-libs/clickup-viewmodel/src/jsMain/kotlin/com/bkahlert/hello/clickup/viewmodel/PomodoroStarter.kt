@@ -10,23 +10,22 @@ import com.bkahlert.hello.clickup.Pomodoro.Companion.format
 import com.bkahlert.hello.clickup.Pomodoro.Type
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
-import com.bkahlert.hello.dom.AcousticFeedback
-import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.element.Button
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.element.IconGroup
-import com.bkahlert.hello.semanticui.module.Checkbox
-import com.bkahlert.hello.semanticui.module.CheckboxElementType.Toggle
-import com.bkahlert.hello.semanticui.module.Divider
-import com.bkahlert.hello.semanticui.module.DropdownState
-import com.bkahlert.hello.semanticui.module.DropdownStateImpl
-import com.bkahlert.hello.semanticui.module.Header
-import com.bkahlert.hello.semanticui.module.InlineDropdown
-import com.bkahlert.hello.semanticui.module.Item
-import com.bkahlert.hello.semanticui.module.Menu
-import com.bkahlert.hello.semanticui.module.Text
-import com.bkahlert.hello.ui.compose.data
 import com.bkahlert.kommons.toMomentString
+import com.bkahlert.semanticui.core.attributes.Variation.Size.Mini
+import com.bkahlert.semanticui.custom.data
+import com.bkahlert.semanticui.element.Button
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.IconGroup
+import com.bkahlert.semanticui.module.Checkbox
+import com.bkahlert.semanticui.module.CheckboxElementType.Toggle
+import com.bkahlert.semanticui.module.Divider
+import com.bkahlert.semanticui.module.DropdownState
+import com.bkahlert.semanticui.module.DropdownStateImpl
+import com.bkahlert.semanticui.module.Header
+import com.bkahlert.semanticui.module.InlineDropdown
+import com.bkahlert.semanticui.module.Item
+import com.bkahlert.semanticui.module.Menu
+import com.bkahlert.semanticui.module.Text
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
 import org.jetbrains.compose.web.attributes.name
@@ -129,7 +128,7 @@ public fun PomodoroStarter(
         Icon("dropdown")
         Menu {
             Button({
-                +Variation.Size.Mini
+                +Mini
                 +Icon
                 classes("input", "positive")
                 when (val onCloseTask = state.onCloseTask) {

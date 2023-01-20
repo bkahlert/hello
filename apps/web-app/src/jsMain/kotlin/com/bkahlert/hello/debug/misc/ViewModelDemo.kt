@@ -22,12 +22,12 @@ import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.debug.failedResponse
 import com.bkahlert.hello.debug.misc.ViewModelDemoStuff.TestViewModel
 import com.bkahlert.hello.debug.response
-import com.bkahlert.hello.semanticui.element.Header
-import com.bkahlert.hello.semanticui.view.Item
-import com.bkahlert.hello.semanticui.view.Items
 import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.isOdd
 import com.bkahlert.kommons.randomString
+import com.bkahlert.semanticui.element.Header
+import com.bkahlert.semanticui.view.Item
+import com.bkahlert.semanticui.view.Items
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow

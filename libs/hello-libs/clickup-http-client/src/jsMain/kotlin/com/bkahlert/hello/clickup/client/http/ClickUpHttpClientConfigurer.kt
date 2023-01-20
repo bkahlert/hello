@@ -7,19 +7,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.view.Configurer
-import com.bkahlert.hello.semanticui.collection.Header
-import com.bkahlert.hello.semanticui.collection.Message
-import com.bkahlert.hello.semanticui.collection.v
-import com.bkahlert.hello.semanticui.core.S
-import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.attributes.Variation.Info
-import com.bkahlert.hello.semanticui.core.dom.SemanticElement
-import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.hello.semanticui.element.Button
-import com.bkahlert.hello.semanticui.element.Icon
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
+import com.bkahlert.semanticui.collection.Header
+import com.bkahlert.semanticui.collection.Message
+import com.bkahlert.semanticui.collection.v
+import com.bkahlert.semanticui.core.S
+import com.bkahlert.semanticui.core.attributes.Variation.Info
+import com.bkahlert.semanticui.core.attributes.Variation.Size.Tiny
+import com.bkahlert.semanticui.core.dom.SemanticElement
+import com.bkahlert.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.element.Button
+import com.bkahlert.semanticui.element.Icon
 import kotlinx.browser.localStorage
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.attributes.InputType.Password
@@ -43,7 +43,7 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
         val isValid by derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) }
 
         S("field") {
-            Message({ v(Info); v(Variation.Size.Tiny) }) {
+            Message({ v(Info); v(Tiny) }) {
                 Header { Text("OAuth2 not supported yet") }
                 P {
                     Text("To access your data, your ")

@@ -1,9 +1,9 @@
 package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.semanticui.collection.LinkItem
-import com.bkahlert.hello.semanticui.collection.MenuElement
-import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.collection.LinkItem
+import com.bkahlert.semanticui.collection.MenuElement
+import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.cursor

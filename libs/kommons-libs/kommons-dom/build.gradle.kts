@@ -11,10 +11,8 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                api("com.bkahlert.kommons:kommons-text")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-core")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json")
-                implementation(project(":kommons-logging-inline"))
+                implementation("com.bkahlert.kommons:kommons-text") { because("kebab-case") }
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json") { because("storage delegate") }
             }
         }
     }

@@ -2,10 +2,10 @@ package com.bkahlert.hello.clickup.view
 
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.view.Activity.TaskActivity
-import com.bkahlert.hello.semanticui.test.JQueryLibrary
-import com.bkahlert.hello.semanticui.test.SemanticUiLibrary
-import com.bkahlert.hello.semanticui.test.compositionWith
-import com.bkahlert.hello.semanticui.test.root
+import com.bkahlert.semanticui.test.JQueryLibrary
+import com.bkahlert.semanticui.test.SemanticUiLibrary
+import com.bkahlert.semanticui.test.compositionWith
+import com.bkahlert.semanticui.test.root
 import io.kotest.matchers.shouldBe
 import org.jetbrains.compose.web.testutils.runTest
 import kotlin.test.Test

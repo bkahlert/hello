@@ -13,8 +13,8 @@ import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.model.TimeEntryID
 import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.view.Activity.TaskActivity
-import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.color.Colors
+import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Colors
 import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.net.Uri
 import com.bkahlert.kommons.toMomentString

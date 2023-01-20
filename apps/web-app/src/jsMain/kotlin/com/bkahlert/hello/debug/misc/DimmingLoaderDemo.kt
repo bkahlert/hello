@@ -8,8 +8,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
-import com.bkahlert.hello.semanticui.element.Button
-import com.bkahlert.hello.semanticui.custom.DimmingLoader
+import com.bkahlert.semanticui.custom.DimmingLoader
+import com.bkahlert.semanticui.element.Button
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.dom.Text

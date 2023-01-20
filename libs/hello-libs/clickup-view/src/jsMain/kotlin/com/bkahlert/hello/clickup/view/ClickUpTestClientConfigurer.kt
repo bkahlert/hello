@@ -2,9 +2,9 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
-import com.bkahlert.hello.semanticui.core.dom.SemanticElement
-import com.bkahlert.hello.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.hello.semanticui.element.Button
+import com.bkahlert.semanticui.core.dom.SemanticElement
+import com.bkahlert.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.element.Button
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 

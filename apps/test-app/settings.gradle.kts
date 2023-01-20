@@ -18,7 +18,6 @@ dependencyResolutionManagement {
     }
 }
 includeBuild("../../platforms")
-includeBuild("../../libs/hello-libs")
 includeBuild("../../libs/kommons-libs")
 
 // == Define the inner structure of this component ==

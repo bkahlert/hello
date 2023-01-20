@@ -23,10 +23,10 @@ This can lead to problems if the two Gradle version make use of a different
 Kotlin DSL.
 
 ```shell
-./deep-gradle wrapper --gradle-version 8.0-rc-1 
+./gradle-deep wrapper --gradle-version 8.0-rc-1 
 ```
 
-> 💡`deep-gradle` can be found at the root of this repo. It invokes `gradle`
+> 💡`gradle-deep` can be found at the root of this repo. It invokes `gradle`
 > with the same passed arguments in each root project directory.
 
 ## References

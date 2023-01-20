@@ -12,21 +12,16 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(project(":hello-dom"))
-                implementation(project(":hello-compose"))
-                implementation(project(":semantic-ui-core"))
-                implementation(project(":semantic-ui-elements"))
-                implementation(project(":semantic-ui-collections"))
-                implementation(project(":semantic-ui-modules"))
-                implementation(project(":semantic-ui-views"))
-                implementation(project(":semantic-ui-custom"))
-                implementation(project(":clickup-model"))
-                implementation(project(":clickup-view"))
+                api("com.bkahlert.kommons:kommons-dom")
+                implementation("com.bkahlert.kommons:kommons-util")
+                api("com.bkahlert.semantic-ui:semantic-ui")
+                api(project(":clickup-model"))
+                api(project(":clickup-view"))
             }
         }
         val jsTest by getting {
             dependencies {
-                implementation(project(":semantic-ui-test"))
+                implementation("com.bkahlert.semantic-ui:semantic-ui-test")
             }
         }
     }

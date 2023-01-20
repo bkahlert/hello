@@ -6,20 +6,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.semanticui.core.S
-import com.bkahlert.hello.semanticui.core.attributes.Variation
-import com.bkahlert.hello.semanticui.core.dom.SemanticAttrBuilderContext
-import com.bkahlert.hello.semanticui.core.dom.SemanticContentBuilder
-import com.bkahlert.hello.semanticui.element.Icon
-import com.bkahlert.hello.semanticui.element.Input
-import com.bkahlert.hello.semanticui.element.InputElement
-import com.bkahlert.hello.semanticui.element.fluid
-import com.bkahlert.hello.semanticui.element.icon
 import com.bkahlert.kommons.dom.openInNewTab
 import com.bkahlert.kommons.dom.openInSameTab
 import com.bkahlert.kommons.net.Uri
+import com.bkahlert.kommons.net.port
 import com.bkahlert.kommons.net.toUriOrNull
-import io.ktor.http.Url
+import com.bkahlert.semanticui.core.S
+import com.bkahlert.semanticui.core.attributes.Variation
+import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.Input
+import com.bkahlert.semanticui.element.InputElement
+import com.bkahlert.semanticui.element.fluid
+import com.bkahlert.semanticui.element.icon
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.InputType.Search
 import org.jetbrains.compose.web.attributes.placeholder
@@ -171,8 +171,8 @@ fun MultiSearchInput(
 @Composable
 fun PasteHandlingMultiSearchInput(
     onSearch: (String, List<Uri>) -> Unit = { _, urls ->
-        if (urls.size == 1) window.openInSameTab(org.w3c.dom.url.URL(urls.first().toString()))
-        else urls.forEach { window.openInNewTab(org.w3c.dom.url.URL(it.toString())) }
+        if (urls.size == 1) window.openInSameTab(urls.first())
+        else urls.forEach { window.openInNewTab(it) }
     },
 ) {
     MultiSearchInput(
@@ -181,9 +181,9 @@ fun PasteHandlingMultiSearchInput(
         },
         onPaste = {
             it("text/plain")?.also {
-                val url = it.toUriOrNull()
-                if (url != null && Url(url.toString()).port != 0) {
-                    window.openInSameTab(org.w3c.dom.url.URL(url.toString()))
+                val uri = it.toUriOrNull()
+                if (uri != null && uri.port != 0) {
+                    window.openInSameTab(uri)
                 }
             }
         },

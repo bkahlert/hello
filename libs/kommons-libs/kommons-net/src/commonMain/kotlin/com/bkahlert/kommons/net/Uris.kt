@@ -36,7 +36,3 @@ public val Uri.queryParameters: Parameters get() = query?.let { io.ktor.http.par
  * [Parameters.Empty], if no [Uri.fragment] is present.
  */
 public val Uri.fragmentParameters: Parameters get() = fragment?.let { io.ktor.http.parseQueryString(it) } ?: Parameters.Empty
-
-
-//val encodedQuery: String get() = query.takeUnless { it.isEmpty() }?.let { "?${it.formUrlEncode()}" } ?: ""
-//val encodedFragment: String get() = fragment.takeUnless { it.isEmpty() }?.let { "#${it.formUrlEncode()}" } ?: ""

@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuViewModel
-import com.bkahlert.hello.semanticui.test.JQueryLibrary
-import com.bkahlert.hello.semanticui.test.SemanticUiLibrary
-import com.bkahlert.hello.semanticui.test.compositionWith
-import com.bkahlert.hello.semanticui.test.root
+import com.bkahlert.semanticui.test.JQueryLibrary
+import com.bkahlert.semanticui.test.SemanticUiLibrary
+import com.bkahlert.semanticui.test.compositionWith
+import com.bkahlert.semanticui.test.root
 import io.kotest.matchers.shouldBe
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text

@@ -2,7 +2,7 @@ package com.bkahlert.hello.clickup.model
 
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.serialization.SerializerTest
-import com.bkahlert.hello.color.Color
+import com.bkahlert.kommons.color.Color
 import kotlin.js.Date
 
 @Suppress("unused")
