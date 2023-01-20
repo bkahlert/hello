@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup.model
 
 import com.bkahlert.hello.color.Color
-import com.bkahlert.hello.url.URL
+import com.bkahlert.kommons.net.Uri
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,7 +11,7 @@ public data class User(
     @SerialName("username") val username: String,
     @SerialName("email") val email: String,
     @SerialName("color") val color: Color,
-    @SerialName("profilePicture") val profilePicture: URL,
+    @SerialName("profilePicture") val profilePicture: Uri,
     @SerialName("initials") val initials: String,
     @SerialName("week_start_day") val weekStartDay: Int?,
     @SerialName("global_font_support") val globalFontSupport: Boolean?,
@@ -26,7 +26,7 @@ public data class UserPreview(
     @SerialName("color") val color: Color,
     @SerialName("username") val username: String,
     @SerialName("initials") val initials: String?,
-    @SerialName("profilePicture") val profilePicture: URL,
+    @SerialName("profilePicture") val profilePicture: Uri,
 )
 
 public fun User.asPreview(): UserPreview = UserPreview(id, color, username, initials, profilePicture)

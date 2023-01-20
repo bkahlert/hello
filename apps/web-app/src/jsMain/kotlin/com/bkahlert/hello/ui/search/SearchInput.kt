@@ -15,10 +15,10 @@ import com.bkahlert.hello.semanticui.element.Input
 import com.bkahlert.hello.semanticui.element.InputElement
 import com.bkahlert.hello.semanticui.element.fluid
 import com.bkahlert.hello.semanticui.element.icon
-import com.bkahlert.hello.url.URL
-import com.bkahlert.hello.url.toURLOrNull
 import com.bkahlert.kommons.dom.openInNewTab
 import com.bkahlert.kommons.dom.openInSameTab
+import com.bkahlert.kommons.net.Uri
+import com.bkahlert.kommons.net.toUriOrNull
 import io.ktor.http.Url
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.InputType.Search
@@ -170,7 +170,7 @@ fun MultiSearchInput(
 
 @Composable
 fun PasteHandlingMultiSearchInput(
-    onSearch: (String, List<URL>) -> Unit = { _, urls ->
+    onSearch: (String, List<Uri>) -> Unit = { _, urls ->
         if (urls.size == 1) window.openInSameTab(org.w3c.dom.url.URL(urls.first().toString()))
         else urls.forEach { window.openInNewTab(org.w3c.dom.url.URL(it.toString())) }
     },
@@ -181,7 +181,7 @@ fun PasteHandlingMultiSearchInput(
         },
         onPaste = {
             it("text/plain")?.also {
-                val url = it.toURLOrNull()
+                val url = it.toUriOrNull()
                 if (url != null && Url(url.toString()).port != 0) {
                     window.openInSameTab(org.w3c.dom.url.URL(url.toString()))
                 }

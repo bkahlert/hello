@@ -13,7 +13,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-core")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core")
             }
         }
         val commonTest by getting {

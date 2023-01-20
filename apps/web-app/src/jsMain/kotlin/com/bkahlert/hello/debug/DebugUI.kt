@@ -36,8 +36,10 @@ import com.bkahlert.hello.semanticui.module.Modal
 import com.bkahlert.hello.semanticui.module.autofocus
 import com.bkahlert.hello.semanticui.module.blurring
 import com.bkahlert.hello.semanticui.module.centered
-import com.bkahlert.kommons.dom.defaults
+import com.bkahlert.kommons.dom.div
+import com.bkahlert.kommons.dom.fragment
 import kotlinx.browser.window
+import kotlinx.serialization.json.Json
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
@@ -171,6 +173,7 @@ private fun DebugUI(
  */
 val renderDebugMode: Unit get() = renderDebugMode()
 
+
 /**
  * Renders a `F4` key trigger-able [DebugMode] demonstrating various UI elements
  * and the optional [focusContent].
@@ -180,13 +183,13 @@ fun renderDebugMode(
 ) {
 
     val defaultTab = -1
-    var debug by window.location defaults (defaultTab to null)
+    var debug: List<Int>? by window.location::fragment / Json
 
     DebugMode(
         active = debug != null,
         onStateChange = { state ->
             debug = when (state) {
-                is Active -> debug ?: defaultTab
+                is Active -> debug
                 is Inactive -> null
             }
         }
@@ -199,10 +202,10 @@ fun renderDebugMode(
             centered = false
         }) {
             Content {
-                var activeTab by remember { mutableStateOf(debug ?: defaultTab) }
+                var activeTab by remember { mutableStateOf(debug?.firstOrNull() ?: defaultTab) }
                 DebugUI(
                     activeTab = activeTab,
-                    onChange = { index, _ -> activeTab = index.also { debug = it } },
+                    onChange = { index, _ -> activeTab = index.also { debug = listOf(it) } },
                     focusContent = focusContent,
                 )
             }

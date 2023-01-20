@@ -38,7 +38,7 @@ public sealed interface Uri : CharSequence {
          * Parses the specified [text] as a [Uri]
          * as specified in [RFC3986 Appendix B](https://www.rfc-editor.org/rfc/rfc3986#appendix-B).
          */
-        public fun parse(text: String): Uri {
+        public fun parse(text: CharSequence): Uri {
             val groupValues = requireNotNull(REGEX.matchEntire(text)) { "$text is no valid URI" }.groupValues
             return when (val scheme = groupValues[1].takeIf { it.isNotEmpty() }) {
                 "data" -> DataUri.parse(text)
@@ -56,7 +56,7 @@ public sealed interface Uri : CharSequence {
          * Parses the specified [text] as a [Uri]
          * as specified in [RFC3986 Appendix B](https://www.rfc-editor.org/rfc/rfc3986#appendix-B).
          */
-        public fun parseOrNull(text: String): Uri? = kotlin.runCatching { parse(text) }.getOrNull()
+        public fun parseOrNull(text: CharSequence): Uri? = kotlin.runCatching { parse(text) }.getOrNull()
     }
 }
 

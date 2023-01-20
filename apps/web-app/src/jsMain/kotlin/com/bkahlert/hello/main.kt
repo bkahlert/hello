@@ -37,7 +37,8 @@ import com.bkahlert.hello.ui.compose.gridArea
 import com.bkahlert.hello.ui.header.Header
 import com.bkahlert.hello.ui.search.SearchFeature
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
-import com.bkahlert.kommons.dom.url
+import com.bkahlert.kommons.dom.uri
+import com.bkahlert.kommons.net.host
 import io.ktor.http.Url
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
@@ -145,7 +146,7 @@ object CustomFeature : Feature {
     override val name: String = "Custom"
     override val loaded: Boolean = true
     override val content: @Composable DOMScope<HTMLElement>.() -> Unit = {
-        val url = if (window.location.url.host == "localhost") null else Url("https://start.me/p/0PBMOo/dkb")
+        val url = if (window.location.uri.host == "localhost") null else Url("https://start.me/p/0PBMOo/dkb")
         Custom(url)
     }
 }

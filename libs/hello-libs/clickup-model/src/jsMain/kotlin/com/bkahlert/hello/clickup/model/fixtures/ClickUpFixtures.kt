@@ -40,9 +40,9 @@ import com.bkahlert.hello.clickup.model.asCreator
 import com.bkahlert.hello.color.Color
 import com.bkahlert.hello.color.Color.RGB
 import com.bkahlert.hello.dom.ImageFixtures
-import com.bkahlert.hello.url.URL
 import com.bkahlert.kommons.json.deserialize
 import com.bkahlert.kommons.minus
+import com.bkahlert.kommons.net.Uri
 import com.bkahlert.kommons.plus
 import com.bkahlert.kommons.randomString
 import kotlin.js.Date
@@ -297,7 +297,7 @@ public object ClickUpFixtures {
         dependencies: List<String> = emptyList(),
         linkedTasks: List<TaskLink> = emptyList(),
         teamId: TeamID? = Teams.first().id,
-        url: URL? = URL.parse("https://app.clickup.com/t/$id"),
+        url: Uri? = Uri.parse("https://app.clickup.com/t/$id"),
         permissionLevel: String? = "create",
         list: TaskListPreview? = TaskListPreview(
             id = TaskListID("27814619"),
@@ -430,7 +430,7 @@ public object ClickUpFixtures {
         description: String = "A time entry",
         tags: List<Tag> = listOf(Pomodoro.Type.Default.tag),
         source: String? = null,
-        taskUrl: URL? = URL.parse("https://app.clickup.com/t/${task?.id?.stringValue}"),
+        taskUrl: Uri? = Uri.parse("https://app.clickup.com/t/${task?.id?.stringValue}"),
     ): TimeEntry = TimeEntry(
         id = TimeEntryID(id),
         task = task,

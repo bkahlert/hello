@@ -38,7 +38,3 @@ tasks.withType(KotlinCompilationTask::class).configureEach {
         languageVersion.set(KotlinVersion.KOTLIN_1_8)
     }
 }
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}

@@ -19,8 +19,8 @@ import com.bkahlert.hello.clickup.model.TimeEntryID
 import com.bkahlert.hello.clickup.model.User
 import com.bkahlert.hello.clickup.model.asCreator
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.running
-import com.bkahlert.hello.url.URL
 import com.bkahlert.kommons.compareTo
+import com.bkahlert.kommons.net.Uri
 import com.bkahlert.kommons.randomString
 import kotlinx.coroutines.delay
 import kotlin.js.Date
@@ -108,7 +108,7 @@ public open class ClickUpTestClient(
             dependencies = emptyList(),
             linkedTasks = emptyList(),
             teamId = teams.first().id,
-            url = URL.parse("https://app.clickup.com/t/$taskId"),
+            url = Uri.parse("https://app.clickup.com/t/$taskId"),
             permissionLevel = "create",
             list = list.asPreview(),
             folder = folder.asPreview(),

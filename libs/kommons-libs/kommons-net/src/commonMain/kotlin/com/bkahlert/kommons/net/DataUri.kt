@@ -60,7 +60,7 @@ public data class DataUri(
             }
             append(";base64")
             append(",")
-            append(data.encodeBase64Url())
+            append(data.encodeBase64().dropLastWhile { it == '=' })
         })
     }
 
@@ -105,7 +105,7 @@ public data class DataUri(
          * Parses the specified [text] as a [DataUri]
          * as specified in [RFC3986 Appendix B](https://www.rfc-editor.org/rfc/rfc3986#appendix-B).
          */
-        public fun parse(text: String): DataUri {
+        public fun parse(text: CharSequence): DataUri {
             val groupValues = requireNotNull(REGEX.matchEntire(text)) { "$text is no valid data URI" }.groupValues
             val mediaType = groupValues[1].takeIf { it.isNotEmpty() }?.let { ContentType.parse(it) }
             val charset = mediaType?.charset() ?: DEFAULT_CHARSET
@@ -122,12 +122,7 @@ public data class DataUri(
          * Parses the specified [text] as a [Uri]
          * as specified in [RFC3986 Appendix B](https://www.rfc-editor.org/rfc/rfc3986#appendix-B).
          */
-        public fun parseOrNull(text: String): DataUri? = kotlin.runCatching { parse(text) }.getOrNull()
-
-        private fun ByteArray.encodeBase64Url(): String = encodeBase64()
-            .dropLastWhile { it == '=' }
-            .replace("+", "%2B")
-            .replace("/", "%2F")
+        public fun parseOrNull(text: CharSequence): DataUri? = kotlin.runCatching { parse(text) }.getOrNull()
 
         private fun String.decodeBase64Url(): ByteArray = replace("%2B", "+")
             .replace("%2F", "/")

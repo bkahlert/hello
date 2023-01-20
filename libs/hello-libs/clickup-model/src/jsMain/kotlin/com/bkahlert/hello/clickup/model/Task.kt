@@ -2,8 +2,8 @@ package com.bkahlert.hello.clickup.model
 
 import com.bkahlert.hello.clickup.serialization.DateAsMilliseconds
 import com.bkahlert.hello.clickup.serialization.DurationAsMilliseconds
-import com.bkahlert.hello.url.URL
 import com.bkahlert.kommons.compareTo
+import com.bkahlert.kommons.net.Uri
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.Date
@@ -36,7 +36,7 @@ public data class Task(
     @SerialName("dependencies") val dependencies: List<String>,
     @SerialName("linked_tasks") val linkedTasks: List<TaskLink>,
     @SerialName("team_id") val teamId: TeamID?,
-    @SerialName("url") val url: URL?,
+    @SerialName("url") val url: Uri?,
     @SerialName("permission_level") val permissionLevel: String?,
     @SerialName("list") val list: TaskListPreview?,
     @SerialName("folder") val folder: FolderPreview,

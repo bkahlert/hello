@@ -8,8 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":base"))
-    implementation("com.bkahlert.kommons:kommons-json-ktor")
-    implementation("io.ktor:ktor-serialization-kotlinx-json")
+    implementation("com.bkahlert.kommons:kommons-net")
     testImplementation(project(":base-test"))
 }
 

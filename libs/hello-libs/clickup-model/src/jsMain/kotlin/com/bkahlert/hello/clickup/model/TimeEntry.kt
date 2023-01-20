@@ -1,9 +1,9 @@
 package com.bkahlert.hello.clickup.model
 
 import com.bkahlert.hello.clickup.serialization.DateAsMilliseconds
-import com.bkahlert.hello.url.URL
 import com.bkahlert.kommons.minus
-import io.ktor.http.Url
+import com.bkahlert.kommons.net.Uri
+import com.bkahlert.kommons.net.toUrl
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.Date
@@ -21,12 +21,12 @@ public data class TimeEntry(
     @SerialName("description") val description: String,
     @SerialName("tags") val tags: List<Tag>,
     @SerialName("source") val source: String?,
-    @SerialName("task_url") val taskUrl: URL?,
+    @SerialName("task_url") val taskUrl: Uri?,
 ) {
     val duration: Duration? get() = end?.let { it - start }
     val passed: Duration get() = Date() - start
     val ended: Boolean get() = end != null
-    val url: URL? get() = taskUrl?.takeUnless { Url(it.toString()).pathSegments.lastOrNull() == "null" }
+    val url: Uri? get() = taskUrl?.takeUnless { it.toUrl().pathSegments.lastOrNull() == "null" }
 }
 
 @Serializable

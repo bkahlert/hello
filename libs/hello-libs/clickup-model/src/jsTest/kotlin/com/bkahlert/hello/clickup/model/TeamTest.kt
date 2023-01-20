@@ -5,7 +5,7 @@ import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.hello.clickup.serialization.SerializerTest
 import com.bkahlert.hello.color.Color
 import com.bkahlert.hello.color.Color.RGB
-import com.bkahlert.hello.url.URL
+import com.bkahlert.kommons.net.Uri
 
 @Suppress("unused")
 class TeamTest : SerializerTest<Team>(
@@ -53,7 +53,7 @@ fun team(
     id: TeamID = TeamID("180"),
     name: String = "work group",
     color: Color = RGB("#0000ff"),
-    avatar: URL = URL.parse("https://example.com/work.png"),
+    avatar: Uri = Uri.parse("https://example.com/work.png"),
     vararg members: User = arrayOf(user(), otherUser()),
 ) = Team(
     id = id,

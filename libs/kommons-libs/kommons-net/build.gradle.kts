@@ -13,13 +13,29 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json")
                 api("io.ktor:ktor-http")
+                api("io.ktor:ktor-client-content-negotiation")
+                api("io.ktor:ktor-client-core")
+                api("io.ktor:ktor-client-logging")
+                api("io.ktor:ktor-client-serialization")
+                api("io.ktor:ktor-serialization-kotlinx-json")
             }
         }
 
-        val commonTest by getting {
+        val commonTest by getting
+
+        val jsMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
+                api("io.ktor:ktor-client-js")
+                api("io.ktor:ktor-client-auth")
+                api(project(":kommons-logging-inline"))
+            }
+        }
+
+        val jvmMain by getting {
+            dependencies {
+                api("io.ktor:ktor-client-okhttp")
             }
         }
 

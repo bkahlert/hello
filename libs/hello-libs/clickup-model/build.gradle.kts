@@ -12,16 +12,10 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-core")
+                implementation("com.bkahlert.kommons:kommons-net")
 
                 implementation(project(":hello-dom"))
                 implementation(project(":hello-color"))
-                implementation(project(":hello-url"))
-            }
-        }
-
-        val jsTest by getting {
-            dependencies {
-                implementation("com.bkahlert.kommons:kommons-json")
             }
         }
 

@@ -37,13 +37,10 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons")
-                implementation("com.bkahlert.kommons:kommons-auth")
-                implementation("com.bkahlert.kommons:kommons-auth-ktor")
+                implementation("com.bkahlert.kommons:kommons-net")
                 implementation("com.bkahlert.kommons:kommons-dom")
-                implementation("com.bkahlert.kommons:kommons-json")
 
                 implementation("com.bkahlert.hello:hello-color")
-                implementation("com.bkahlert.hello:hello-url")
                 implementation("com.bkahlert.hello:hello-dom")
                 implementation("com.bkahlert.hello:hello-compose")
                 implementation("com.bkahlert.hello:semantic-ui-core")

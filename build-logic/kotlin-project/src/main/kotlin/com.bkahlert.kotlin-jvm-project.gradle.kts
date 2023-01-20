@@ -13,7 +13,11 @@ kotlin {
 
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_1_8)
+        jvmTarget.set(JvmTarget.JVM_11)
         freeCompilerArgs.set(freeCompilerArgs.get() + "-Xjsr305=strict")
     }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }

@@ -1,8 +1,9 @@
 package com.bkahlert.kommons.dom
 
-import com.bkahlert.kommons.json.deserialize
-import com.bkahlert.kommons.json.serialize
 import com.bkahlert.kommons.text.toKebabCasedString
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.w3c.dom.get
 import org.w3c.dom.set
 import kotlin.reflect.KProperty
@@ -14,14 +15,16 @@ public inline fun W3cStorage.remove(key: String): Unit = removeItem(key)
 /**
  * Variant of [W3cStorage.get] that deserializes the [Serializable] value after getting it.
  */
-public inline fun <reified T> W3cStorage.getSerializable(key: String): T? = getItem(key)?.deserialize()
+@Deprecated("serialize manually")
+public inline fun <reified T> W3cStorage.getSerializable(key: String): T? = getItem(key)?.let { Json.decodeFromString<T>(it) }
 
 /**
  * Variant of [W3cStorage.set] that serializes the [Serializable] value before setting it
  * if it's not `null` and that invokes [W3cStorage.removeItem] if it is.
  */
+@Deprecated("serialize manually")
 public inline fun <reified T> W3cStorage.setSerializable(key: String, value: T?): Unit =
-    value?.let { setItem(key, it.serialize(pretty = false)) } ?: removeItem(key)
+    value?.let { setItem(key, it.let { Json.encodeToString<T>(it) }) } ?: removeItem(key)
 
 /**
  * Variant of [W3cStorage.get] that returns the enum [E] with matching [Enum.name].
@@ -115,10 +118,12 @@ public class ScopedStorage(
 }
 
 /** Variant of [Storage.get] that deserializes the [Serializable] value after getting it. */
-public inline fun <reified T> Storage.getSerializable(key: String): T? = get(key)?.deserialize()
+@Deprecated("serialize manually")
+public inline fun <reified T> Storage.getSerializable(key: String): T? = get(key)?.let { Json.decodeFromString<T>(it) }
 
 /** Variant of [Storage.set] that serializes the [Serializable] value before setting it. */
-public inline fun <reified T> Storage.setSerializable(key: String, value: T?): Unit = set(key, value?.serialize(pretty = false))
+@Deprecated("serialize manually")
+public inline fun <reified T> Storage.setSerializable(key: String, value: T?): Unit = set(key, value?.let { Json.encodeToString<T>(it) })
 
 /** Variant of [Storage.get] that deserializes the enum [E] instance using its [Enum.name]. */
 public inline fun <reified E : Enum<E>> Storage.getEnum(key: String): E? = get(key)?.let { enumValueOf<E>(it) }

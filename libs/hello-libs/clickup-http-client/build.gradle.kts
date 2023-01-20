@@ -14,8 +14,7 @@ kotlin {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-core")
                 implementation("com.bkahlert.kommons:kommons-dom")
-                implementation("com.bkahlert.kommons:kommons-json-ktor")
-                implementation("com.bkahlert.kommons:kommons-logging-inline")
+                implementation("com.bkahlert.kommons:kommons-net")
 
                 implementation(project(":hello-dom")) { because("ClickUpHttpClientConfigurer") }
                 implementation(project(":hello-compose")) { because("ClickUpHttpClientConfigurer") }

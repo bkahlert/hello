@@ -13,9 +13,9 @@ private fun exec(@Suppress("SameParameterValue") command: String, vararg args: S
     val commandLine = listOf(command, *args)
     val process = ProcessBuilder(commandLine).start()
     val exitCode = process.waitFor()
-    val outBytes = process.inputStream.readAllBytes()
+    val outBytes = process.inputStream.readBytes()
     val out = String(outBytes).trim()
-    val errBytes = process.errorStream.readAllBytes()
+    val errBytes = process.errorStream.readBytes()
     return if (exitCode == 0) {
         out
     } else {

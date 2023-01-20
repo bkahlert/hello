@@ -4,7 +4,7 @@ import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.serialization.SerializerTest
 import com.bkahlert.hello.color.Color
 import com.bkahlert.hello.dom.ImageFixtures
-import com.bkahlert.hello.url.URL
+import com.bkahlert.kommons.net.Uri
 
 @Suppress("unused")
 class UserTest : SerializerTest<User>(
@@ -17,7 +17,7 @@ fun user(
     username: String = "john.doe",
     email: String = "john.doe@example.com",
     color: Color = Color("#ff0000"),
-    profilePicture: URL = URL.parse(ImageFixtures.JohnDoe),
+    profilePicture: Uri = Uri.parse(ImageFixtures.JohnDoe),
     initials: String = "JD",
     weekStartDay: Int? = 1,
     globalFontSupport: Boolean? = false,
@@ -39,7 +39,7 @@ fun otherUser(
     username: String = "jane.doe",
     email: String = "jane.doe@example.com",
     color: Color = Color("#00ff00"),
-    profilePicture: URL = URL.parse("https://example.com/jane-doe.jpg"),
+    profilePicture: Uri = Uri.parse("https://example.com/jane-doe.jpg"),
     initials: String = "JD",
     weekStartDay: Int? = 0,
     globalFontSupport: Boolean? = true,

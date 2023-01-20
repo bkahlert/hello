@@ -42,20 +42,20 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
         var accessTokenInput by remember { mutableStateOf("") }
         val isValid by derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) }
 
-        Message({ v(Info); v(Variation.Size.Tiny) }) {
-            Header { Text("OAuth2 not supported yet") }
-            P {
-                Text("To access your data, your ")
-                A("https://clickup.com/api", { target(Blank) }) {
-                    Text("personal ClickUp API token")
-                    Text(" ")
-                    Icon("external", "alternate")
-                }
-                Text(" is required.")
-            }
-        }
-
         S("field") {
+            Message({ v(Info); v(Variation.Size.Tiny) }) {
+                Header { Text("OAuth2 not supported yet") }
+                P {
+                    Text("To access your data, your ")
+                    A("https://clickup.com/api", { target(Blank) }) {
+                        Text("personal ClickUp API token")
+                        Text(" ")
+                        Icon("external", "alternate")
+                    }
+                    Text(" is required.")
+                }
+            }
+
             Label { Text("Access Token") }
             Input(Password) {
                 name("clickup-access-token")

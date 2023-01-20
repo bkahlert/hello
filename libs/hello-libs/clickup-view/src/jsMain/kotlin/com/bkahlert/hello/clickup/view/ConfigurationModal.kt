@@ -24,7 +24,7 @@ public fun ConfigurationModal(
     vararg configurers: Configurer<ClickUpClient>,
 ) {
     BasicModal({
-        v(Size.Tiny)
+        v(Size.Small)
         onApprove = {
             console.log("approved", it)
             true

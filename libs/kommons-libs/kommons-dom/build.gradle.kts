@@ -11,8 +11,9 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("com.bkahlert.kommons:kommons-text")
-                implementation(project(":kommons-json"))
+                api("com.bkahlert.kommons:kommons-text")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json")
                 implementation(project(":kommons-logging-inline"))
             }
         }

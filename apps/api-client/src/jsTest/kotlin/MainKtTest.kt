@@ -6,12 +6,10 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.jetbrains.compose.web.testutils.runTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 
 class MainKtTest {
 
-    @Ignore
     @Test
     fun json_serialization() {
         LenientJson.encodeToString(JsonObject.serializer(), jsonObject) shouldEqualJson "{\"foo\":\"bar\",\"baz\":null}"

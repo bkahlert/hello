@@ -15,8 +15,8 @@ import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.view.Activity.TaskActivity
 import com.bkahlert.hello.color.Color
 import com.bkahlert.hello.color.Colors
-import com.bkahlert.hello.url.URL
 import com.bkahlert.kommons.compareTo
+import com.bkahlert.kommons.net.Uri
 import com.bkahlert.kommons.toMomentString
 import kotlin.js.Date
 
@@ -121,7 +121,7 @@ public sealed interface Activity<ID : Identifier<*>> {
     public val task: Task?
     public val name: String
     public val color: Color?
-    public val url: URL?
+    public val url: Uri?
     public val meta: List<Meta>
     public val descriptions: Map<String, String?>
     public val tags: Set<Tag>
@@ -136,7 +136,7 @@ public sealed interface Activity<ID : Identifier<*>> {
             get() = timeEntry.task?.name ?: taskActivity?.name ?: "— Timer with no associated task —"
         override val color: Color?
             get() = timeEntry.task?.status?.color ?: taskActivity?.color ?: Colors.white.fade(1.0)
-        override val url: URL? get() = timeEntry.url ?: timeEntry.url ?: taskActivity?.url
+        override val url: Uri? get() = timeEntry.url ?: timeEntry.url ?: taskActivity?.url
         override val meta: List<Meta>
             get() = buildList {
                 if (timeEntry.billable) add(Meta("billable", "dollar"))
@@ -160,7 +160,7 @@ public sealed interface Activity<ID : Identifier<*>> {
         override val id: TaskID get() = task.id
         override val name: String get() = task.name
         override val color: Color get() = task.status.color
-        override val url: URL? get() = task.url
+        override val url: Uri? get() = task.url
         override val meta: List<Meta>
             get() = buildList {
                 when (val dateCreated = task.dateCreated) {
