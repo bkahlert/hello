@@ -12,8 +12,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core")
-                implementation("io.ktor:ktor-http")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-core")
+                api("io.ktor:ktor-http")
             }
         }
 

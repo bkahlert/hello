@@ -10,6 +10,7 @@ import io.ktor.util.decodeBase64Bytes
 import io.ktor.util.encodeBase64
 import io.ktor.utils.io.charsets.Charset
 import io.ktor.utils.io.charsets.Charsets
+import kotlinx.serialization.Serializable
 
 /**
  * Data URI
@@ -18,28 +19,13 @@ import io.ktor.utils.io.charsets.Charsets
  * Treated as a [CharSequence], this URI yields the string representation
  * as specified in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
  */
+@Serializable(with = DataUriSerializer::class)
 public data class DataUri(
     /** The internet media type of [data]. Implicitly defaults to [DEFAULT_MEDIA_TYPE]. */
     public val mediaType: ContentType?,
     /** The decoded data. */
     public val data: ByteArray,
-) : Uri by GenericUri(scheme = "data", path = buildString {
-    mediaType?.also {
-        append(it.contentType)
-        append("/")
-        append(it.contentSubtype)
-        it.parameters.forEach { (name, value, escapeValue) ->
-            append(";")
-            append(name)
-            append("=")
-            append(if (escapeValue) value.quote() else value)
-        }
-    }
-    append(";base64")
-    append(",")
-    append(data.encodeBase64Url())
-}) {
-    private val string by lazy { buildString { append(this@DataUri) } }
+) : Uri {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -59,11 +45,39 @@ public data class DataUri(
         return result
     }
 
+    private val uri by lazy {
+        GenericUri(scheme = "data", path = buildString {
+            mediaType?.also {
+                append(it.contentType)
+                append("/")
+                append(it.contentSubtype)
+                it.parameters.forEach { (name, value, escapeValue) ->
+                    append(";")
+                    append(name)
+                    append("=")
+                    append(if (escapeValue) value.quote() else value)
+                }
+            }
+            append(";base64")
+            append(",")
+            append(data.encodeBase64Url())
+        })
+    }
+
+    override val scheme: String? get() = uri.scheme
+    override val authority: Authority? get() = uri.authority
+    override val path: String get() = uri.path
+    override val query: String? get() = uri.query
+    override val fragment: String? get() = uri.fragment
+    override val length: Int get() = uri.length
+    override fun get(index: Int): Char = uri[index]
+    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence = uri.subSequence(startIndex, endIndex)
+
     /**
      * Returns the string representation of this URI
      * as specified in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
      */
-    override fun toString(): String = string
+    override fun toString(): String = uri.toString()
 
     public companion object {
 

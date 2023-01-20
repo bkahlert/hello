@@ -1,5 +1,7 @@
 package com.bkahlert.kommons.net
 
+import kotlinx.serialization.Serializable
+
 /**
  * URI
  * as described in [RFC3986](https://www.rfc-editor.org/rfc/rfc3986).
@@ -7,7 +9,8 @@ package com.bkahlert.kommons.net
  * Treated as a [CharSequence], this URI yields the string representation
  * as specified in [RFC3986 section 5.3](https://www.rfc-editor.org/rfc/rfc3986#section-5.3).
  */
-public interface Uri : CharSequence {
+@Serializable(with = UriSerializer::class)
+public sealed interface Uri : CharSequence {
     /** [Schema component](https://www.rfc-editor.org/rfc/rfc3986#section-3.1) */
     public val scheme: String?
 
@@ -78,6 +81,7 @@ public fun Uri(
 /**
  * Generic [Uri] implementation.
  */
+@Serializable(with = GenericUriSerializer::class)
 internal data class GenericUri(
     override val scheme: String? = null,
     override val authority: Authority? = null,
