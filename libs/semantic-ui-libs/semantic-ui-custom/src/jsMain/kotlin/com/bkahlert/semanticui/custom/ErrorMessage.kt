@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import com.bkahlert.semanticui.collection.Header
 import com.bkahlert.semanticui.collection.Message
 import com.bkahlert.semanticui.collection.MessageElement
-import com.bkahlert.semanticui.collection.v
-import com.bkahlert.semanticui.core.attributes.Variation
+import com.bkahlert.semanticui.collection.error
+import com.bkahlert.semanticui.collection.floating
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.module.Accordion
@@ -41,7 +41,8 @@ public fun ErrorMessage(
     content: SemanticContentBuilder<MessageElement>? = null,
 ) {
     Message({
-        v(Variation.Error)
+        v.floating()
+        v.error()
         attrs?.invoke(this)
     }, content)
 }

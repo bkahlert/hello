@@ -11,6 +11,7 @@ import com.bkahlert.kommons.quoted
 import com.bkahlert.semanticui.custom.textOverflow
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.Input
+import com.bkahlert.semanticui.element.icon
 import com.bkahlert.semanticui.module.Divider
 import com.bkahlert.semanticui.module.DropdownState
 import com.bkahlert.semanticui.module.DropdownStateImpl
@@ -93,7 +94,7 @@ public fun ActivityDropdown(
     var query by mutableStateOf("")
 
     when (val selectedActivity = state.selection) {
-        null -> Icon { +Inverted }
+        null -> Icon("inverted")
         else -> ActivityIcon(selectedActivity)
     }
 
@@ -126,7 +127,7 @@ public fun ActivityDropdown(
                 Icon("search")
                 Text("Search tasks")
             }
-            Input({ +Icon("search") }) {
+            Input({ v.icon() }) {
                 Input(Text) {
                     placeholder("Search tasks...")
                     value(query)
@@ -137,7 +138,7 @@ public fun ActivityDropdown(
                 }
                 Icon("search")
             }
-            Menu({ +scrolling }) {
+            Menu({ v.scrolling() }) {
                 state.groups.onEachIndexed { index, group ->
                     if (index > 0) Divider()
                     ActivityGroupHeader(group, onCreate = group.listId?.let { ({ state.onCreate(it, query.takeUnless { it.isEmpty() }) }) })

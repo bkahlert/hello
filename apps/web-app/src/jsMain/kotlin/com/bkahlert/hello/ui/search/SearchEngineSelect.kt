@@ -3,15 +3,17 @@ package com.bkahlert.hello.ui.search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import com.bkahlert.semanticui.core.attributes.Variation.Size.Tiny
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Tiny
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.custom.color
 import com.bkahlert.semanticui.custom.data
-import com.bkahlert.semanticui.element.Button
+import com.bkahlert.semanticui.element.BasicButton
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.Item
 import com.bkahlert.semanticui.element.ListElement
+import com.bkahlert.semanticui.element.compact
 import com.bkahlert.semanticui.element.horizontal
+import com.bkahlert.semanticui.element.size
 import com.bkahlert.semanticui.module.Checkbox
 import com.bkahlert.semanticui.module.CheckboxElementType.Toggle
 import com.bkahlert.semanticui.module.Divider
@@ -109,7 +111,7 @@ fun SearchEngineSelect(
     attrs: SemanticAttrBuilderContext<ListElement>? = null,
 ) {
     SemanticList({
-        +horizontal
+        v.horizontal()
         style {
             display(DisplayStyle.Flex)
             alignItems(AlignItems.Center)
@@ -191,7 +193,7 @@ fun SearchEngineDropdown(
                 Icon("search")
                 Text("Select Search Engines")
             }
-            Menu({ +scrolling }) {
+            Menu({ v.scrolling() }) {
                 state.values.forEach { engine ->
                     Item({
                         data("value", engine.name)
@@ -236,9 +238,10 @@ fun ClosableSearchEngineButton(
     searchEngine: SearchEngine,
     onClose: () -> Unit = { console.log("onClose($searchEngine)") },
 ) {
-    Button({
+    BasicButton({
         classes("animated", "fade")
-        +Tiny + Compact + Basic + Icon
+        v.size(Tiny).compact()
+        classes("icon")
         style {
             property("box-shadow", "none")
             marginLeft((-.5).em)

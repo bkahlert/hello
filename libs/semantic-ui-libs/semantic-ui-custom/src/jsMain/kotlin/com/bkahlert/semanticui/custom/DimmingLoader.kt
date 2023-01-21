@@ -1,7 +1,8 @@
 package com.bkahlert.semanticui.custom
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.semanticui.core.attributes.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.element.Loader
@@ -24,7 +25,7 @@ public fun DimmingLoader(
 ) {
     Dimmer({
         dimmerAttrs?.invoke(this)
-        if (active) +Active
+        if (active) classes("active")
     }) {
         if (loaderContent != null) TextLoader(loaderAttrs, loaderContent)
         else Loader(loaderAttrs)
@@ -39,12 +40,12 @@ public fun DimmingLoader(
 @Composable
 public fun DimmingLoader(
     active: Boolean,
-    loaderAttrs: SemanticAttrBuilderContext<LoaderElement>? = { +Variation.Size.Mini },
+    loaderAttrs: SemanticAttrBuilderContext<LoaderElement>? = { raw(Mini) },
     loaderContent: SemanticContentBuilder<LoaderElement>? = null,
 ) {
     DimmingLoader(
         active = active,
-        dimmerAttrs = { +Inverted },
+        dimmerAttrs = { raw(Modifier.Variation.Inverted) },
         loaderAttrs = loaderAttrs,
         loaderContent = loaderContent,
     )

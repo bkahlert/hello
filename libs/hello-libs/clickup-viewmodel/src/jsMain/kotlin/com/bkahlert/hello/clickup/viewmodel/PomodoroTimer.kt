@@ -120,7 +120,7 @@ public fun PomodoroTimer(
             }
         } else {
             Icon("red", "stop", "circle") {
-                +Link
+                classes("link")
                 if (stop()) {
                     state.onStop(listOf(Aborted.tag))
                 }

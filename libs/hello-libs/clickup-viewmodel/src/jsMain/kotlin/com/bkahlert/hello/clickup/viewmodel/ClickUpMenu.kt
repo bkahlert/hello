@@ -38,8 +38,9 @@ import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
 import com.bkahlert.semanticui.collection.MenuElement
 import com.bkahlert.semanticui.collection.MenuItemDivElement
+import com.bkahlert.semanticui.collection.borderless
 import com.bkahlert.semanticui.collection.target
-import com.bkahlert.semanticui.core.attributes.Variation.Size.Mini
+import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import com.bkahlert.semanticui.custom.DimmingLoader
@@ -116,8 +117,8 @@ public fun SemanticElementScope<MenuElement>.TeamSelectingItems(
 ) {
     if (state.teams.isEmpty()) {
         LinkItem({
-            +Borderless
-            +Disabled
+            v.borderless()
+            raw(Modifier.State.Disabled)
         }) {
             Span {
                 Text("No teams found")
@@ -125,8 +126,8 @@ public fun SemanticElementScope<MenuElement>.TeamSelectingItems(
         }
     } else {
         LinkItem({
-            +Borderless
-            +Disabled
+            v.borderless()
+            raw(Modifier.State.Disabled)
         }) {
             Span {
                 Text("Select team:")
@@ -134,7 +135,7 @@ public fun SemanticElementScope<MenuElement>.TeamSelectingItems(
         }
         state.teams.forEach { (id, name, _, avatar, _) ->
             LinkItem({
-                +Borderless
+                v.borderless()
                 onClick { onActivate(id) }
             }) {
                 Img(src = avatar.toString(), alt = "Team $name") {
@@ -158,7 +159,7 @@ public fun SemanticElementScope<MenuElement>.MainItems(
     onSignOut: () -> Unit = {},
 ) {
 
-    DropdownItem({ +Borderless }) {
+    DropdownItem({ raw(Modifier.Variation.Borderless) }) {
         Img(src = user.profilePicture.toString(), alt = "User ${user.username}") {
             classes("rounded", "avatar")
         }
@@ -189,7 +190,7 @@ public fun SemanticElementScope<MenuElement>.TeamSelectionItems(
 ) {
     when (teams.size) {
         0 -> {
-            LinkItem({ +Disabled }) {
+            LinkItem({ raw(Modifier.State.Disabled) }) {
                 Icon("dropdown")
                 Span({ classes("text") }) { Text("Switch Team") }
             }
@@ -201,7 +202,7 @@ public fun SemanticElementScope<MenuElement>.TeamSelectionItems(
                 team = team,
                 onClick = { onTeamSelect(team.id) }
             ) {
-                if (team.id == selectedTeam?.id) +Disabled + Active
+                if (team.id == selectedTeam?.id) raw(Modifier.State.Disabled, Modifier.State.Active)
             }
         }
 
@@ -214,7 +215,7 @@ public fun SemanticElementScope<MenuElement>.TeamSelectionItems(
                         team = team,
                         onClick = { onTeamSelect(team.id) }
                     ) {
-                        if (team.id == selectedTeam?.id) +Disabled + Active
+                        if (team.id == selectedTeam?.id) raw(Modifier.State.Disabled, Modifier.State.Active)
                     }
                 }
             }
@@ -262,8 +263,8 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
 ) {
     var clicked by remember(selectedActivity) { mutableStateOf(false) }
     LinkItem({
-        +Borderless
-        if (selectedActivity == null) +Disabled
+        v.borderless()
+        if (selectedActivity == null) raw(Modifier.State.Disabled)
         onClick { clicked = it.target == it.currentTarget }
     }) {
         when (selectedActivity) {
@@ -293,8 +294,8 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
         }
     }
     LinkItem({
-        +Borderless
-        if (selectedActivity == null) classes("disabled")
+        v.borderless()
+        if (selectedActivity == null) raw(Modifier.State.Disabled)
         style {
             flex(1, 1)
             minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
@@ -310,7 +311,7 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
         )
     }
 
-    Menu({ +Direction.Right }) {
+    Menu({ classes("right") }) {
         if (selectedActivity != null) {
             MetaItems(selectedActivity.meta.reversed())
 
@@ -378,19 +379,16 @@ public fun ClickUpMenu(
     loading: Boolean = false,
 ) {
     Menu({
-        +Mini + Dimmable
+        raw(Modifier.Variation.Size.Mini, Modifier.Variation.Dimmable)
         if (state is Disabled || state is Disconnected) {
-            +Fluid
+            raw(Modifier.Variation.Fluid)
             classes("one", "item")
         }
     }) {
         DimmingLoader(loading)
         when (state) {
             Disabled -> {
-                Dimmer({
-                    +Active
-                    +Inverted
-                })
+                Dimmer({ raw(Modifier.State.Active, Modifier.Variation.Inverted) })
                 DisconnectedItems(
                     onConnect = {},
                     configurers = emptyArray(),

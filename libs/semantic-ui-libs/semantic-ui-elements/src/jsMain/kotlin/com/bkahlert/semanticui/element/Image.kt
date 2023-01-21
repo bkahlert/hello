@@ -1,9 +1,17 @@
 package com.bkahlert.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
-import com.bkahlert.semanticui.core.attributes.State
-import com.bkahlert.semanticui.core.attributes.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier.State
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Avatar
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Bordered
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Centered
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Circular
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Fluid
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Rounded
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Spaced
+import com.bkahlert.semanticui.core.attributes.StatesScope
+import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
@@ -20,52 +28,41 @@ public interface ImageDivElement : ImageElement<HTMLDivElement>
 public interface ImageImageElement : ImageElement<HTMLImageElement>
 public interface ImageAnchorElement : SemanticElement<HTMLAnchorElement>
 
-/** [Hidden](https://semantic-ui.com/elements/image.html#hidden) state of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.hidden: State get() = State.Hidden
+/** [State.Hidden](https://semantic-ui.com/elements/image.html#hidden) */
+public fun StatesScope<ImageElement<Element>>.hidden(): StatesScope<ImageElement<Element>> = +State.Hidden
 
-/** [Disabled](https://semantic-ui.com/elements/image.html#disabled) state of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.disabled: State get() = State.Disabled
+/** [State.Disabled](https://semantic-ui.com/elements/image.html#disabled) */
+public fun StatesScope<ImageElement<Element>>.disabled(): StatesScope<ImageElement<Element>> = +State.Disabled
 
-/** [Avatar](https://semantic-ui.com/elements/image.html#avatar) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.avatar: Variation get() = Variation.Avatar
+/** [Variation.Avatar](https://semantic-ui.com/elements/image.html#avatar) */
+public fun VariationsScope<ImageElement<Element>>.avatar(): VariationsScope<ImageElement<Element>> = +Avatar
 
-/** [Bordered](https://semantic-ui.com/elements/image.html#bordered) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.bordered: Variation get() = Variation.Bordered
+/** [Variation.Bordered](https://semantic-ui.com/elements/image.html#bordered) */
+public fun VariationsScope<ImageElement<Element>>.bordered(): VariationsScope<ImageElement<Element>> = +Bordered
 
-/** [Fluid](https://semantic-ui.com/elements/image.html#fluid) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.fluid: Variation get() = Variation.Fluid
+/** [Variation.Fluid](https://semantic-ui.com/elements/image.html#fluid) */
+public fun VariationsScope<ImageElement<Element>>.fluid(): VariationsScope<ImageElement<Element>> = +Fluid
 
-/** [Rounded](https://semantic-ui.com/elements/image.html#rounded) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.rounded: Variation get() = Variation.Rounded
+/** [Variation.Rounded](https://semantic-ui.com/elements/image.html#rounded) */
+public fun VariationsScope<ImageElement<Element>>.rounded(): VariationsScope<ImageElement<Element>> = +Rounded
 
-/** [Circular](https://semantic-ui.com/elements/image.html#circular) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.circular: Variation get() = Variation.Circular
+/** [Variation.Circular](https://semantic-ui.com/elements/image.html#circular) */
+public fun VariationsScope<ImageElement<Element>>.circular(): VariationsScope<ImageElement<Element>> = +Circular
 
-/** [Vertically aligned](https://semantic-ui.com/elements/image.html#vertically-aligned) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.verticallyAligned: Variation get() = Variation.VerticallyAligned
+/** [Variation.VerticallyAligned aligned](https://semantic-ui.com/elements/image.html#vertically-aligned) */
+public fun VariationsScope<ImageElement<Element>>.verticallyAligned(value: Variation.VerticallyAligned): VariationsScope<ImageElement<Element>> = +value
 
-/** [Centered](https://semantic-ui.com/elements/image.html#centered) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.centered: Variation get() = Variation.Centered
+/** [Variation.Centered](https://semantic-ui.com/elements/image.html#centered) */
+public fun VariationsScope<ImageElement<Element>>.centered(): VariationsScope<ImageElement<Element>> = +Centered
 
-/** [Spaced](https://semantic-ui.com/elements/image.html#spaced) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.spaced: Variation get() = Variation.Spaced
+/** [Variation.Spaced](https://semantic-ui.com/elements/image.html#spaced) */
+public fun VariationsScope<ImageElement<Element>>.spaced(): VariationsScope<ImageElement<Element>> = +Spaced
 
-/** [Floated](https://semantic-ui.com/elements/image.html#floated) variation of a [image](https://semantic-ui.com/elements/image.html). */
-@Suppress("unused")
-public val <TSemantic : ImageElement<Element>> SemanticAttrsScope<TSemantic>.floated: Variation get() = Variation.Floated
+/** [Variation.Floated](https://semantic-ui.com/elements/image.html#floated) */
+public fun VariationsScope<ImageElement<Element>>.floated(value: Variation.Floated): VariationsScope<ImageElement<Element>> = +value
 
 /** [Variation.Size](https://semantic-ui.com/elements/image.html#size) */
-public fun SemanticAttrsScope<ImageElement<Element>>.v(value: Variation.Size): Unit = variation(value)
+public fun VariationsScope<ImageElement<Element>>.size(value: Variation.Size): VariationsScope<ImageElement<Element>> = +value
 
 
 /** Creates a [SemanticUI image](https://semantic-ui.com/elements/image.html). */
@@ -84,10 +81,14 @@ public fun Image(
 ): Unit = SemanticElement({ classes("ui"); attrs?.invoke(this); classes("image"); }) { a, _ -> Img(src.toString(), alt, a) }
 
 
-/** Creates a [bulleted](https://semantic-ui.com/elements/image.html#bulleted) [SemanticUI image](https://semantic-ui.com/elements/image.html). */
+/** Creates a [SemanticUI image link](https://semantic-ui.com/elements/image.html#image-link). */
 @Composable
 public fun ImageAnchor(
     href: String? = null,
     attrs: SemanticAttrBuilderContext<ImageAnchorElement>? = null,
     content: SemanticContentBuilder<ImageAnchorElement>? = null,
-): Unit = SemanticElement({ classes("ui"); attrs?.invoke(this); classes("image") }, content) { a, c -> A(href, a, c) }
+): Unit = SemanticElement({
+    classes("ui")
+    attrs?.invoke(this)
+    classes("image")
+}, content) { a, c -> A(href, a, c) }

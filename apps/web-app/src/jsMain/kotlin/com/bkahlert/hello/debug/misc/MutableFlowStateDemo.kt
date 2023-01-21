@@ -7,12 +7,12 @@ import androidx.compose.runtime.remember
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.semanticui.collection.Message
-import com.bkahlert.semanticui.collection.v
-import com.bkahlert.semanticui.core.attributes.Variation.Info
-import com.bkahlert.semanticui.core.attributes.Variation.Size.Small
-import com.bkahlert.semanticui.element.Button
-import com.bkahlert.semanticui.element.ButtonElementType.Primary
-import com.bkahlert.semanticui.element.ButtonElementType.Secondary
+import com.bkahlert.semanticui.collection.info
+import com.bkahlert.semanticui.collection.size
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
+import com.bkahlert.semanticui.element.PrimaryButton
+import com.bkahlert.semanticui.element.SecondaryButton
+import com.bkahlert.semanticui.element.compact
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -79,18 +79,21 @@ fun MutableFlowStateDemo() {
     Demo("Function based Hot Flow") {
         val model = remember { FunctionBasedHotFlowModel("foo bar baz") }
 
-        Message({ v(Info); v(Small) }) {
+        Message({
+            v.info()
+            v.size(Small)
+        }) {
             val state by model.testState.collectAsState(TextTestState("initial"))
             Text(state.text.also { console.log("rendering $it") })
         }
-        Button(Primary, {
-            +Compact
+        PrimaryButton({
+            v.compact()
             onClick { model.rotate() }
         }) {
             Text("Rotate")
         }
-        Button(Secondary, {
-            +Compact
+        SecondaryButton({
+            v.compact()
             onClick { model.reset() }
         }) {
             Text("Reset")

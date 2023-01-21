@@ -12,14 +12,16 @@ import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
 import com.bkahlert.semanticui.collection.Header
 import com.bkahlert.semanticui.collection.Message
-import com.bkahlert.semanticui.collection.v
+import com.bkahlert.semanticui.collection.info
+import com.bkahlert.semanticui.collection.size
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.attributes.Variation.Info
-import com.bkahlert.semanticui.core.attributes.Variation.Size.Tiny
+import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Tiny
 import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.PrimaryButton
+import com.bkahlert.semanticui.element.disabled
 import kotlinx.browser.localStorage
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.attributes.InputType.Password
@@ -43,7 +45,10 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
         val isValid by derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) }
 
         S("field") {
-            Message({ v(Info); v(Tiny) }) {
+            Message({
+                v.info()
+                v.size(Tiny)
+            }) {
                 Header { Text("OAuth2 not supported yet") }
                 P {
                     Text("To access your data, your ")
@@ -66,9 +71,9 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
             }
         }
 
-        Button({
-            +Emphasis.Primary + Inverted
-            if (!isValid) +Disabled
+        PrimaryButton({
+            raw(Modifier.Variation.Inverted)
+            if (!isValid) s.disabled()
             onClick {
                 onComplete(
                     ClickUpHttpClient(

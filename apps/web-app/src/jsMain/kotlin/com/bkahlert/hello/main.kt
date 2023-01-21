@@ -35,9 +35,10 @@ import com.bkahlert.kommons.net.host
 import com.bkahlert.semanticui.custom.Length
 import com.bkahlert.semanticui.custom.backgroundColor
 import com.bkahlert.semanticui.element.AnkerButton
-import com.bkahlert.semanticui.element.ButtonGroupElementType.Icon
 import com.bkahlert.semanticui.element.Buttons
 import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.basic
+import com.bkahlert.semanticui.element.icon
 import io.ktor.http.Url
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
@@ -173,7 +174,7 @@ fun App(state: AppState = rememberAppState()) {
                 center()
             }
         }) {
-            Buttons(Icon, { +Basic }) {
+            Buttons({ v.icon().basic() }) {
                 AnkerButton("https://start.me/p/4K6MOy/dashboard") { Icon("globe") }
                 AnkerButton("https://home.bkahlert.com") { Icon("home") }
                 AnkerButton("https://github.com/bkahlert") { Icon("github") }

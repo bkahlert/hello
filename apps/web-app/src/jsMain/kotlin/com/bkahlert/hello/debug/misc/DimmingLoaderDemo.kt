@@ -9,7 +9,7 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
 import com.bkahlert.semanticui.custom.DimmingLoader
-import com.bkahlert.semanticui.element.Button
+import com.bkahlert.semanticui.element.PrimaryButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.dom.Text
@@ -23,8 +23,7 @@ fun DimmingLoaderDemo() {
             val coroutineScope = rememberCoroutineScope()
             console.warn("loading $loading")
             DimmingLoader(loading)
-            Button({
-                +Emphasis.Primary
+            PrimaryButton({
                 onClick {
                     loading = true
                     coroutineScope.launch {

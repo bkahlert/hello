@@ -11,8 +11,9 @@ import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
 import com.bkahlert.semanticui.collection.TextMenu
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.attributes.Variation.Attached
-import com.bkahlert.semanticui.core.attributes.Variation.Size.Small
+import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Attached
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticElement
@@ -32,8 +33,7 @@ fun Demos(
 ) {
     S("ui", "segments", "raised", attrs = attrs) {
         Header({
-            +Attached.Top
-            +Inverted
+            raw(Attached.Top, Modifier.Variation.Inverted)
             style { property("border-bottom-width", "0") }
         }) { Text(name) }
         content?.invoke(this)
@@ -50,11 +50,11 @@ fun Demo(
     S("ui", "segment", attrs = attrs) {
         if (!dirty) {
             TextMenu({
-                +Small
+                raw(Small)
                 style { marginTop((-1).em); marginBottom(0.em) }
             }) {
                 Header { Text(name) }
-                Menu({ +Direction.Right + Small }) {
+                Menu({ classes("right", "small") }) {
                     LinkItem({
                         onClick { dirty = true }
                     }) {

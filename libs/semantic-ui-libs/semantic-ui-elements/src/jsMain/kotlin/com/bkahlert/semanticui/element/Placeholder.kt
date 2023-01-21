@@ -1,6 +1,8 @@
 package com.bkahlert.semanticui.element
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation
+import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
@@ -24,6 +26,10 @@ public fun Placeholder(
         classes("placeholder")
     }, content)
 }
+
+
+/** [Variation.LineLength](https://semantic-ui.com/elements/placeholder.html#line-length) */
+public fun VariationsScope<PlaceholderElement>.lineLength(value: Variation.LineLength): VariationsScope<PlaceholderElement> = +value
 
 /**
  * Creates a [SemanticUI placeholder line](https://semantic-ui.com/elements/placeholder.html#line).

@@ -11,11 +11,13 @@ import com.bkahlert.hello.clickup.Pomodoro.Type
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
 import com.bkahlert.kommons.toMomentString
-import com.bkahlert.semanticui.core.attributes.Variation.Size.Mini
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.custom.data
-import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.IconButton
 import com.bkahlert.semanticui.element.IconGroup
+import com.bkahlert.semanticui.element.disabled
+import com.bkahlert.semanticui.element.size
 import com.bkahlert.semanticui.module.Checkbox
 import com.bkahlert.semanticui.module.CheckboxElementType.Toggle
 import com.bkahlert.semanticui.module.Divider
@@ -110,7 +112,7 @@ public fun PomodoroStarter(
     start: () -> Boolean = { false },
 ) {
     IconGroup({
-        +Link
+        classes("link")
         if (start()) {
             state.onStart()
         }
@@ -120,19 +122,18 @@ public fun PomodoroStarter(
         }
     }) {
         Icon("green", "play")
-        if (state.billable) Icon("green", "dollar") { +Position.Bottom + Position.Right + Corner }
+        if (state.billable) Icon("green", "dollar") { classes("bottom", "right", "corner") }
     }
     InlineDropdown(state) {
         Input(Hidden) { name("type");value(state.selectionString) }
         Text { Text(state.selection?.duration?.format() ?: "") }
         Icon("dropdown")
         Menu {
-            Button({
-                +Mini
-                +Icon
+            IconButton({
+                v.size(Mini)
                 classes("input", "positive")
                 when (val onCloseTask = state.onCloseTask) {
-                    null -> +Disabled
+                    null -> s.disabled()
                     else -> onClick { onCloseTask() }
                 }
             }) {

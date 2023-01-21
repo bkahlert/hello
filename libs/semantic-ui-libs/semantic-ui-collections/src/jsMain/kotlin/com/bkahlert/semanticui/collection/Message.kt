@@ -2,9 +2,17 @@ package com.bkahlert.semanticui.collection
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.semanticui.core.attributes.Modifier
-import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
-import com.bkahlert.semanticui.core.attributes.Variation
-import com.bkahlert.semanticui.core.attributes.classNames
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Attached
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Compact
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Error
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Floating
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Info
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Negative
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Positive
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Success
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Warning
+import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
@@ -17,37 +25,37 @@ import org.w3c.dom.HTMLDivElement
 public interface MessageElement : SemanticElement<HTMLDivElement>
 
 /** [Variation.Floating](https://semantic-ui.com/collections/message.html#floating) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Floating): Unit = variation(value)
+public fun VariationsScope<MessageElement>.floating(): VariationsScope<MessageElement> = +Floating
 
 /** [Variation.Compact](https://semantic-ui.com/collections/message.html#compact) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Compact): Unit = variation(value)
+public fun VariationsScope<MessageElement>.compact(): VariationsScope<MessageElement> = +Compact
 
 /** [Variation.Attached](https://semantic-ui.com/collections/message.html#attached) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Attached): Unit = variation(value)
+public fun VariationsScope<MessageElement>.attached(): VariationsScope<MessageElement> = +Attached
 
 /** [Variation.Warning](https://semantic-ui.com/collections/message.html#warning) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Warning): Unit = variation(value)
+public fun VariationsScope<MessageElement>.warning(): VariationsScope<MessageElement> = +Warning
 
 /** [Variation.Info](https://semantic-ui.com/collections/message.html#info) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Info): Unit = variation(value)
+public fun VariationsScope<MessageElement>.info(): VariationsScope<MessageElement> = +Info
 
 /** [Variation.Positive](https://semantic-ui.com/collections/message.html#positive--success) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Positive): Unit = variation(value)
+public fun VariationsScope<MessageElement>.positive(): VariationsScope<MessageElement> = +Positive
 
 /** [Variation.Success](https://semantic-ui.com/collections/message.html#positive--success) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Success): Unit = variation(value)
+public fun VariationsScope<MessageElement>.success(): VariationsScope<MessageElement> = +Success
 
 /** [Variation.Negative](https://semantic-ui.com/collections/message.html#negative--error) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Negative): Unit = variation(value)
+public fun VariationsScope<MessageElement>.negative(): VariationsScope<MessageElement> = +Negative
 
 /** [Variation.Error](https://semantic-ui.com/collections/message.html#negative--error) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Error): Unit = variation(value)
+public fun VariationsScope<MessageElement>.error(): VariationsScope<MessageElement> = +Error
 
 /** [Variation.Colored](https://semantic-ui.com/collections/message.html#colored) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Colored): Unit = variation(value)
+public fun VariationsScope<MessageElement>.colored(value: Variation.Colored): VariationsScope<MessageElement> = +value
 
 /** [Variation.Size](https://semantic-ui.com/collections/message.html#size) */
-public fun SemanticAttrsScope<MessageElement>.v(value: Variation.Size): Unit = variation(value)
+public fun VariationsScope<MessageElement>.size(value: Variation.Size): VariationsScope<MessageElement> = +value
 
 /**
  * Creates a [SemanticUI message](https://semantic-ui.com/collections/message.html).
@@ -71,6 +79,7 @@ public fun SemanticElementScope<MessageElement>.Header(
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     Div({
-        classes(*modifiers.classNames, "header")
+        modifiers.forEach { classes(*it.classNames) }
+        classes("header")
     }, content)
 }

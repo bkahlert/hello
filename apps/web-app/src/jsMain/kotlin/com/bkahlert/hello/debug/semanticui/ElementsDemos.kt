@@ -6,9 +6,12 @@ import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures.KommonsLogo
 import com.bkahlert.hello.debug.Demo
 import com.bkahlert.hello.debug.Demos
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.attributes.Variation.Negative
-import com.bkahlert.semanticui.core.attributes.Variation.Size
-import com.bkahlert.semanticui.core.attributes.Variation.Size.Huge
+import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Floated
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.LineLength
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.VerticallyAligned
+import com.bkahlert.semanticui.element.BasicButton
 import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Content
 import com.bkahlert.semanticui.element.Description
@@ -36,10 +39,12 @@ import com.bkahlert.semanticui.element.focus
 import com.bkahlert.semanticui.element.horizontal
 import com.bkahlert.semanticui.element.icon
 import com.bkahlert.semanticui.element.labeled
+import com.bkahlert.semanticui.element.lineLength
 import com.bkahlert.semanticui.element.loading
+import com.bkahlert.semanticui.element.negative
 import com.bkahlert.semanticui.element.rounded
+import com.bkahlert.semanticui.element.size
 import com.bkahlert.semanticui.element.spaced
-import com.bkahlert.semanticui.element.v
 import com.bkahlert.semanticui.element.verticallyAligned
 import com.bkahlert.semanticui.module.Dropdown
 import com.bkahlert.semanticui.module.Menu
@@ -60,16 +65,16 @@ fun ElementsDemos() {
         Demo("Image") {
             SemanticList {
                 Item {
-                    Image(KommonsLogo, "Mini") { v(Size.Mini); +spaced }
-                    Image(KommonsLogo, "Tiny") { v(Size.Tiny); +spaced }
-                    Image(KommonsLogo, "Small") { v(Size.Small); +spaced }
+                    Image(KommonsLogo, "Mini") { v.size(Size.Mini).spaced() }
+                    Image(KommonsLogo, "Tiny") { v.size(Size.Tiny).spaced() }
+                    Image(KommonsLogo, "Small") { v.size(Size.Small).spaced() }
                 }
-                Item { Image(KommonsLogo, "Bordered") { v(Size.Tiny); +bordered } }
-                Item { Image(KommonsLogo, "Rounded") { v(Size.Tiny); +rounded } }
-                Item { Image(KommonsLogo, "Circular") { v(Size.Tiny); +circular } }
+                Item { Image(KommonsLogo, "Bordered") { v.size(Size.Tiny).bordered() } }
+                Item { Image(KommonsLogo, "Rounded") { v.size(Size.Tiny).rounded() } }
+                Item { Image(KommonsLogo, "Circular") { v.size(Size.Tiny).circular() } }
                 Item {
                     Content {
-                        Image({ +avatar }) { Img(JohnDoe.toString()) }
+                        Image({ v.avatar() }) { Img(JohnDoe.toString()) }
                         Span { Text("Avatar") }
                     }
                 }
@@ -83,19 +88,19 @@ fun ElementsDemos() {
             }
             SemanticList {
                 Item { Input { AnyInput("Input") } }
-                Item { Input({ +focus }) { AnyInput("Input in focus state") } }
-                Item { Input({ +disabled }) { AnyInput("Input in disabled state") } }
-                Item { Input({ +error }) { AnyInput("Input in error state") } }
+                Item { Input({ s.focus() }) { AnyInput("Input in focus state") } }
+                Item { Input({ s.disabled() }) { AnyInput("Input in disabled state") } }
+                Item { Input({ s.error() }) { AnyInput("Input in error state") } }
                 Item {
-                    Input({ +icon }) {
+                    Input({ v.icon() }) {
                         AnyInput("Input with icon")
                         Icon("circular", "search", "link")
                     }
                 }
                 Item {
                     Input({
-                        +icon
-                        +loading
+                        s.loading()
+                        v.icon()
                     }) {
                         AnyInput("Input with loading icon")
                         Icon("search", "link")
@@ -103,16 +108,16 @@ fun ElementsDemos() {
                 }
 
                 Item {
-                    Input({ +labeled }) {
+                    Input({ v.labeled() }) {
                         S("ui", "label") { Text("https://") }
                         AnyInput("example.com")
                     }
                 }
                 Item {
-                    Input({ +Position.Right + action + Position.Left + icon }) {
+                    Input({ v.action(Modifier.Variation.Action.Right).icon(Modifier.Variation.Icon.Left) }) {
                         Icon("search")
                         AnyInput("Search...")
-                        Dropdown({ +Basic + Floating; classes("button") }) {
+                        Dropdown({ classes("basic"); raw(Modifier.Variation.Floating); classes("button") }) {
                             Text { Text("This Page") }
                             Icon("dropdown")
                             Menu {
@@ -149,7 +154,7 @@ fun ElementsDemos() {
                     }
                 }
                 Item {
-                    Content({ +floated.Right }) { Text("+ right floated") }
+                    Content({ v.floated(Floated.Right) }) { Text("+ right floated") }
                     Icon("help")
                     Content {
                         Header { Text("Header") }
@@ -157,13 +162,13 @@ fun ElementsDemos() {
                     }
                 }
             }
-            SemanticList({ +horizontal + divided }) {
+            SemanticList({ v.horizontal().divided() }) {
                 Item {
                     Text("horizontally divided")
                 }
                 Item {
-                    ImageAnchor(href = null) { Icon("arrow", "up") { +Huge } }
-                    Content({ +verticallyAligned.Top }) { Small { Text("+ top aligned") } }
+                    ImageAnchor(href = null) { Icon("arrow", "up") { raw(Size.Huge) } }
+                    Content({ v.verticallyAligned(VerticallyAligned.Top) }) { Small { Text("+ top aligned") } }
                 }
             }
         }
@@ -175,12 +180,12 @@ fun ElementsDemos() {
                     Line()
                 }
                 Paragraph {
-                    Line({ +Length.Full })
-                    Line({ +Length.VeryLong })
-                    Line({ +Length.Long })
-                    Line({ +Length.Medium })
-                    Line({ +Length.Short })
-                    Line({ +Length.VeryShort })
+                    Line({ v.lineLength(LineLength.Full) })
+                    Line({ v.lineLength(LineLength.VeryLong) })
+                    Line({ v.lineLength(LineLength.Long) })
+                    Line({ v.lineLength(LineLength.Medium) })
+                    Line({ v.lineLength(LineLength.Short) })
+                    Line({ v.lineLength(LineLength.VeryShort) })
                 }
             }
         }
@@ -188,14 +193,14 @@ fun ElementsDemos() {
         Demo("Buttons") {
             SemanticList {
                 Item { Button({ }) { Text("Button") } }
-                Item { Button({ +Basic }) { Text("Basic Button") } }
-                Item { Button({ +Negative }) { Text("Negative Button") } }
-                Item { Button({ +Negative + Basic }) { Text("Negative Basic Button") } }
+                Item { BasicButton({ }) { Text("Basic Button") } }
+                Item { Button({ v.negative() }) { Text("Negative Button") } }
+                Item { BasicButton({ v.negative() }) { Text("Negative Basic Button") } }
             }
         }
 
-        Demo("Loader", { classes("inverted") }) {
-            Placeholder({ +Inverted + Fluid }) {
+        Demo("Loader", { classes(*Modifier.Variation.Inverted.classNames) }) {
+            Placeholder({ raw(Modifier.Variation.Inverted, Modifier.Variation.Fluid) }) {
                 ImageHeader {
                     Line()
                     Line()
@@ -207,11 +212,11 @@ fun ElementsDemos() {
                     Line()
                 }
             }
-            Loader({ +Active })
+            Loader({ raw(Modifier.State.Active) })
         }
 
-        Demo("Text Loader", { classes("inverted") }) {
-            Placeholder({ +Inverted + Fluid }) {
+        Demo("Text Loader", { classes(*Modifier.Variation.Inverted.classNames) }) {
+            Placeholder({ raw(Modifier.Variation.Inverted, Modifier.Variation.Fluid) }) {
                 ImageHeader {
                     Line()
                     Line()
@@ -224,7 +229,7 @@ fun ElementsDemos() {
                     Line()
                 }
             }
-            TextLoader({ +Active }) { Text("Loading...") }
+            TextLoader({ raw(Modifier.State.Active) }) { Text("Loading...") }
         }
 
     }

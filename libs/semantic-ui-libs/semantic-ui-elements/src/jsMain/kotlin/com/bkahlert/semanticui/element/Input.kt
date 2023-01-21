@@ -1,9 +1,14 @@
 package com.bkahlert.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
-import com.bkahlert.semanticui.core.attributes.State
-import com.bkahlert.semanticui.core.attributes.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Fluid
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Inverted
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Labeled
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Transparent
+import com.bkahlert.semanticui.core.attributes.StatesScope
+import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
@@ -12,48 +17,39 @@ import org.w3c.dom.HTMLDivElement
 
 public interface InputElement : SemanticElement<HTMLDivElement>
 
-/** [Focus](https://semantic-ui.com/elements/input.html#focus) state of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.focus: State get() = State.Focus
+/** [State.Focus](https://semantic-ui.com/elements/input.html#focus) */
+public fun StatesScope<InputElement>.focus(): StatesScope<InputElement> = +Modifier.State.Focus
 
-/** [Loading](https://semantic-ui.com/elements/input.html#loading) state of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.loading: State get() = State.Loading
+/** [State.Loading](https://semantic-ui.com/elements/input.html#loading) */
+public fun StatesScope<InputElement>.loading(): StatesScope<InputElement> = +Modifier.State.Loading
 
-/** [Disabled](https://semantic-ui.com/elements/input.html#disabled) state of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.disabled: State get() = State.Disabled
+/** [State.Disabled](https://semantic-ui.com/elements/input.html#disabled) */
+public fun StatesScope<InputElement>.disabled(): StatesScope<InputElement> = +Modifier.State.Disabled
 
-/** [Error](https://semantic-ui.com/elements/input.html#error) state of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.error: State get() = State.Error
+/** [State.Error](https://semantic-ui.com/elements/input.html#error) */
+public fun StatesScope<InputElement>.error(): StatesScope<InputElement> = +Modifier.State.Error
 
-/** [Icon](https://semantic-ui.com/elements/input.html#icon) variation of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.icon: Variation get() = Variation.Icon
+/** [Variation.Icon](https://semantic-ui.com/elements/input.html#icon) */
+public fun VariationsScope<InputElement>.icon(value: Variation.Icon = Variation.Icon): VariationsScope<InputElement> = +value
 
-/** [Labeled](https://semantic-ui.com/elements/input.html#labeled) variation of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.labeled: Variation get() = Variation.Labeled
+/** [Variation.Labeled](https://semantic-ui.com/elements/input.html#labeled) */
+public fun VariationsScope<InputElement>.labeled(): VariationsScope<InputElement> = +Labeled
 
-/** [Action](https://semantic-ui.com/elements/input.html#action) variation of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.action: Variation get() = Variation.Action
+/** [Variation.Action](https://semantic-ui.com/elements/input.html#action) */
+public fun VariationsScope<InputElement>.action(value: Variation.Action = Variation.Action): VariationsScope<InputElement> = +value
 
-/** [Transparent](https://semantic-ui.com/elements/input.html#transparent) variation of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.transparent: Variation get() = Variation.Transparent
+/** [Variation.Transparent](https://semantic-ui.com/elements/input.html#transparent) */
+public fun VariationsScope<InputElement>.transparent(): VariationsScope<InputElement> = +Transparent
 
-/** [Inverted](https://semantic-ui.com/elements/input.html#inverted) variation of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.inverted: Variation get() = Variation.Inverted
+/** [Variation.Inverted](https://semantic-ui.com/elements/input.html#inverted) */
+public fun VariationsScope<InputElement>.inverted(): VariationsScope<InputElement> = +Inverted
 
-/** [Fluid](https://semantic-ui.com/elements/input.html#fluid) variation of a [input](https://semantic-ui.com/elements/input.html). */
-@Suppress("unused")
-public val <TSemantic : InputElement> SemanticAttrsScope<TSemantic>.fluid: Variation get() = Variation.Fluid
+/** [Variation.Fluid](https://semantic-ui.com/elements/input.html#fluid) */
+public fun VariationsScope<InputElement>.fluid(): VariationsScope<InputElement> = +Fluid
 
 /** [Variation.Size](https://semantic-ui.com/elements/input.html#size) */
-public fun SemanticAttrsScope<InputElement>.v(value: Variation.Size): Unit = variation(value)
+public fun VariationsScope<InputElement>.size(value: Variation.Size): VariationsScope<InputElement> = +value
+
 
 /** Creates a [SemanticUI input](https://semantic-ui.com/elements/input.html). */
 @Composable

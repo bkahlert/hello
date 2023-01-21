@@ -3,17 +3,19 @@ package com.bkahlert.hello.clickup.view
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpClient
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.attributes.Variation.Floated
-import com.bkahlert.semanticui.core.attributes.Variation.Size.Small
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Floated
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
 import com.bkahlert.semanticui.element.IconHeader
 import com.bkahlert.semanticui.element.IconSubHeader
+import com.bkahlert.semanticui.element.SecondaryButton
+import com.bkahlert.semanticui.element.floated
 import com.bkahlert.semanticui.module.Actions
 import com.bkahlert.semanticui.module.BasicModal
 import com.bkahlert.semanticui.module.Content
-import com.bkahlert.semanticui.module.DenyButton
+import com.bkahlert.semanticui.module.deny
 import com.bkahlert.semanticui.module.onApprove
 import com.bkahlert.semanticui.module.onDeny
-import com.bkahlert.semanticui.module.v
+import com.bkahlert.semanticui.module.size
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 
@@ -24,12 +26,12 @@ public fun ConfigurationModal(
     vararg configurers: Configurer<ClickUpClient>,
 ) {
     BasicModal({
-        v(Small)
-        onApprove = {
+        v.size(Small)
+        b.onApprove = {
             console.log("approved", it)
             true
         }
-        onDeny = {
+        b.onDeny = {
             onCancel()
             false
         }
@@ -52,9 +54,8 @@ public fun ConfigurationModal(
                 }
 
                 Actions {
-                    DenyButton({
-                        +Floated.Right
-                        +Emphasis.Secondary + Inverted
+                    SecondaryButton({
+                        v.deny().floated(Floated.Right)
                     }) { Text("Abort") }
                 }
             }

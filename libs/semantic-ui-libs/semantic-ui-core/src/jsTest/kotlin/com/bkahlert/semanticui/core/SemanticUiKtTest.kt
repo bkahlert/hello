@@ -1,5 +1,3 @@
-@file:Suppress("LongLine")
-
 package com.bkahlert.semanticui.core
 
 import com.bkahlert.semanticui.test.JQueryLibrary

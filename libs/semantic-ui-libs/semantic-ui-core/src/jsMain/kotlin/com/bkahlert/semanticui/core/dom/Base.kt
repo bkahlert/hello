@@ -15,9 +15,28 @@ public typealias ElementBuilder<T> = (attrs: AttrBuilderContext<T>?, content: Co
 
 /**
  * Creates a [TSemantic] representing element with
- * the specified [semanticAttrs] and
+ * the specified [behaviorSettings],
+ * the specified [semanticAttrs], and
  * the specified [semanticContent]
- * based on the [TElement]
+ * based on the [Element]
+ * built using the specified [elementBuilder].
+ */
+@Composable
+public fun <TSemantic : SemanticElement<Element>> SemanticElement(
+    behaviorSettings: MutableMap<String, Any?>?,
+    semanticAttrs: SemanticAttrBuilderContext<TSemantic>? = null,
+    semanticContent: SemanticContentBuilder<TSemantic>? = null,
+    elementBuilder: @Composable ElementBuilder<Element>,
+): Unit = elementBuilder(
+    { semanticAttrs?.invoke(SemanticAttrsScopeBuilder(this, behaviorSettings)) },
+    { semanticContent?.invoke(SemanticElementScopeBase(this)) },
+)
+
+/**
+ * Creates a [TSemantic] representing element with
+ * the specified [semanticAttrs], and
+ * the specified [semanticContent]
+ * based on the [Element]
  * built using the specified [elementBuilder].
  */
 @Composable
@@ -25,14 +44,25 @@ public fun <TSemantic : SemanticElement<Element>> SemanticElement(
     semanticAttrs: SemanticAttrBuilderContext<TSemantic>? = null,
     semanticContent: SemanticContentBuilder<TSemantic>? = null,
     elementBuilder: @Composable ElementBuilder<Element>,
-): Unit = elementBuilder(
-    { semanticAttrs?.invoke(SemanticAttrsScopeBuilder(this)) },
-    { semanticContent?.invoke(SemanticElementScopeBase(this)) },
-)
+): Unit = SemanticElement(null, semanticAttrs, semanticContent, elementBuilder)
 
 /**
  * Creates a [TSemantic] representing element with
- * the specified [semanticAttrs] and
+ * the specified [behaviorSettings],
+ * the specified [semanticAttrs], and
+ * the specified [semanticContent]
+ * based on a [HTMLDivElement].
+ */
+@Composable
+public fun <TSemantic : SemanticElement<HTMLDivElement>> SemanticDivElement(
+    behaviorSettings: MutableMap<String, Any?>?,
+    semanticAttrs: SemanticAttrBuilderContext<TSemantic>? = null,
+    semanticContent: SemanticContentBuilder<TSemantic>? = null,
+): Unit = SemanticElement(behaviorSettings, semanticAttrs, semanticContent) { attrs, content -> Div(attrs, content) }
+
+/**
+ * Creates a [TSemantic] representing element with
+ * the specified [semanticAttrs], and
  * the specified [semanticContent]
  * based on a [HTMLDivElement].
  */

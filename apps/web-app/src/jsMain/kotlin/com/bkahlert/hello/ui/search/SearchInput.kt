@@ -12,7 +12,7 @@ import com.bkahlert.kommons.net.Uri
 import com.bkahlert.kommons.net.port
 import com.bkahlert.kommons.net.toUriOrNull
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.attributes.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.element.Icon
@@ -65,7 +65,7 @@ fun SearchInput(
     S("ui", "search") {
         Input({
             attrs?.invoke(this)
-            +Position.Left + icon
+            v.icon(Modifier.Variation.Icon.Left)
         }) {
             Icon("search")
             Input(Search) {
@@ -125,7 +125,7 @@ fun MultiSearchInput(
     SearchInput(
         state, {
             attrs?.invoke(this)
-            +fluid
+            v.fluid()
             title("Press ↑ or ↓ to switch the search engine")
             onKeyDown { event ->
                 when (event.code) {
@@ -163,7 +163,7 @@ fun MultiSearchInput(
                 alignItems(AlignItems.Center)
             }
         }) {
-            SearchEngineSelect(state) { +Variation.Size.Mini }
+            SearchEngineSelect(state) { raw(Modifier.Variation.Size.Mini) }
         }
     }
 }

@@ -38,6 +38,7 @@ import com.bkahlert.semanticui.module.Modal
 import com.bkahlert.semanticui.module.autofocus
 import com.bkahlert.semanticui.module.blurring
 import com.bkahlert.semanticui.module.centered
+import com.bkahlert.semanticui.module.fullScreen
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.web.dom.A
@@ -195,11 +196,10 @@ fun renderDebugMode(
         }
     ) {
         Modal({
-            +Fullscreen
-            +Long
-            blurring = false // true will blur popups inside the debug mode, too
-            autofocus = false
-            centered = false
+            v.fullScreen()
+            b.blurring = false // true will blur popups inside the debug mode, too
+            b.autofocus = false
+            b.centered = false
         }) {
             Content {
                 var activeTab by remember { mutableStateOf(debug?.firstOrNull() ?: defaultTab) }

@@ -1,7 +1,9 @@
 package com.bkahlert.semanticui.collection
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
+import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
@@ -65,6 +67,12 @@ public fun SemanticElementScope<MenuElement>.Menu(
 public interface MenuItemElement<out TElement : Element> : SemanticElement<Element>
 public interface MenuItemDivElement : MenuItemElement<HTMLDivElement>
 public interface MenuItemAnchorElement : MenuItemElement<HTMLAnchorElement>
+
+/** [Variation.Borderless](https://semantic-ui.com/collections/menu.html#borderless) */
+public fun VariationsScope<MenuElement>.borderless(): VariationsScope<MenuElement> = +Modifier.Variation.Borderless
+
+/** [Variation.Borderless](https://semantic-ui.com/collections/menu.html#borderless) */
+public fun VariationsScope<MenuItemElement<Element>>.borderless(): VariationsScope<MenuItemElement<Element>> = +Modifier.Variation.Borderless
 
 /**
  * Creates a [SemanticUI item](https://semantic-ui.com/collections/menu.html#content).

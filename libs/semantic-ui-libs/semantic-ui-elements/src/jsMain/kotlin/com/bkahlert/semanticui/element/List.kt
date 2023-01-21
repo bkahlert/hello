@@ -1,8 +1,15 @@
 package com.bkahlert.semanticui.element
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
-import com.bkahlert.semanticui.core.attributes.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Animated
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Celled
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Divided
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Horizontal
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Inverted
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Relaxed
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Selection
+import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
@@ -12,36 +19,29 @@ import org.w3c.dom.HTMLDivElement
 
 public interface ListElement : SemanticElement<HTMLDivElement>
 
-/** [Horizontal](https://semantic-ui.com/elements/list.html#horizontal) variation of a [list](https://semantic-ui.com/elements/list.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.horizontal: Variation get() = Variation.Horizontal
+/** [Variation.Horizontal](https://semantic-ui.com/elements/list.html#horizontal) */
+public fun VariationsScope<ListElement>.horizontal(): VariationsScope<ListElement> = +Horizontal
 
-/** [Inverted](https://semantic-ui.com/elements/list.html#inverted) variation of a [list](https://semantic-ui.com/elements/list.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.inverted: Variation get() = Variation.Inverted
+/** [Variation.Inverted](https://semantic-ui.com/elements/list.html#inverted) */
+public fun VariationsScope<ListElement>.inverted(): VariationsScope<ListElement> = +Inverted
 
-/** [Selection](https://semantic-ui.com/elements/list.html#selection) variation of a [list](https://semantic-ui.com/elements/list.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.selection: Variation get() = Variation.Selection
+/** [Variation.Selection](https://semantic-ui.com/elements/list.html#selection) */
+public fun VariationsScope<ListElement>.selection(): VariationsScope<ListElement> = +Selection
 
-/** [Animated](https://semantic-ui.com/elements/list.html#animated) variation of a [list](https://semantic-ui.com/elements/list.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.animated: Variation get() = Variation.Animated
+/** [Variation.Animated](https://semantic-ui.com/elements/list.html#animated) */
+public fun VariationsScope<ListElement>.animated(): VariationsScope<ListElement> = +Animated
 
-/** [Relaxed](https://semantic-ui.com/elements/list.html#relaxed) variation of a [list](https://semantic-ui.com/elements/list.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.relaxed: Variation get() = Variation.Relaxed
+/** [Variation.Relaxed](https://semantic-ui.com/elements/list.html#relaxed) */
+public fun VariationsScope<ListElement>.relaxed(): VariationsScope<ListElement> = +Relaxed
 
-/** [Divided](https://semantic-ui.com/elements/list.html#divided) variation of a [list](https://semantic-ui.com/elements/list.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.divided: Variation get() = Variation.Divided
+/** [Variation.Divided](https://semantic-ui.com/elements/list.html#divided) */
+public fun VariationsScope<ListElement>.divided(): VariationsScope<ListElement> = +Divided
 
-/** [Celled](https://semantic-ui.com/elements/list.html#celled) variation of a [list](https://semantic-ui.com/elements/list.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListElement> SemanticAttrsScope<TSemantic>.celled: Variation get() = Variation.Celled
+/** [Variation.Celled](https://semantic-ui.com/elements/list.html#celled) */
+public fun VariationsScope<ListElement>.celled(): VariationsScope<ListElement> = +Celled
 
 /** [Variation.Size](https://semantic-ui.com/elements/list.html#size) */
-public fun SemanticAttrsScope<ListElement>.v(value: Variation.Size): Unit = variation(value)
+public fun VariationsScope<ListElement>.size(value: Variation.Size): VariationsScope<ListElement> = +value
 
 /** Creates a [SemanticUI list](https://semantic-ui.com/elements/list.html). */
 @Composable
@@ -101,15 +101,11 @@ public fun SemanticElementScope<ListItemElement>.Header(
 
 public interface ListItemContentElement : SemanticElement<HTMLDivElement>
 
-/** [Vertically aligned](https://semantic-ui.com/elements/list.html#vertically-aligned) variation of [list](https://semantic-ui.com/elements/list.html#content). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : ListItemContentElement> SemanticAttrsScope<TSemantic>.verticallyAligned: Variation.VerticallyAligned
-    get() = Variation.VerticallyAligned
+/** [Variation.VerticallyAligned](https://semantic-ui.com/elements/list.html#vertically-aligned) variation of [list](https://semantic-ui.com/elements/list.html#content). */
+public fun VariationsScope<ListItemContentElement>.verticallyAligned(value: Variation.VerticallyAligned): VariationsScope<ListItemContentElement> = +value
 
-/** [Floated](https://semantic-ui.com/elements/list.html#floated) variation of [list](https://semantic-ui.com/elements/list.html#content). */
-@Suppress("unused", "UnusedReceiverParameter")
-
-public val <TSemantic : ListItemContentElement> SemanticAttrsScope<TSemantic>.floated: Variation.Floated get() = Variation.Floated
+/** [Variation.Floated](https://semantic-ui.com/elements/list.html#floated) variation of [list](https://semantic-ui.com/elements/list.html#content). */
+public fun VariationsScope<ListItemContentElement>.floated(value: Variation.Floated): VariationsScope<ListItemContentElement> = +value
 
 /** Creates a [SemanticUI list item content](https://semantic-ui.com/elements/list.html#content). */
 @Composable

@@ -3,6 +3,7 @@ package com.bkahlert.hello.clickup.view
 import androidx.compose.runtime.Composable
 import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.MenuElement
+import com.bkahlert.semanticui.collection.borderless
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.backgroundColor
@@ -20,7 +21,7 @@ public fun SemanticElementScope<MenuElement>.MetaItems(
 ) {
     meta.forEach {
         LinkItem({
-            +Borderless
+            v.borderless()
             style {
                 paddingLeft(0.5.em)
                 cursor("default")

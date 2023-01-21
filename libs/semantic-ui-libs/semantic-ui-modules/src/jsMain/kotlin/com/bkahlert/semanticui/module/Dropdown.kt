@@ -7,8 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.bkahlert.semanticui.collection.MenuElement
-import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
-import com.bkahlert.semanticui.core.attributes.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dataAttr
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
@@ -25,9 +25,8 @@ import org.w3c.dom.HTMLDivElement
 
 public interface DropdownElement : SemanticElement<HTMLDivElement>
 
-/** [Scrolling](https://semantic-ui.com/modules/dropdown.html#scrolling) variation of [dropdown](https://semantic-ui.com/modules/dropdown.html). */
-@Suppress("unused", "UnusedReceiverParameter")
-public val <TSemantic : DropdownElement> SemanticAttrsScope<TSemantic>.scrolling: Variation.Scrolling get() = Variation.Scrolling
+/** [Variation.Scrolling](https://semantic-ui.com/modules/dropdown.html#scrolling) */
+public fun VariationsScope<DropdownElement>.scrolling(): VariationsScope<DropdownElement> = +Modifier.Variation.Scrolling
 
 /**
  * Creates a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html#/definition).
