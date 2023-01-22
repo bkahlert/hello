@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.color.Color.HSL
 import com.bkahlert.kommons.color.Colors
 import com.bkahlert.semanticui.custom.Demo
 import com.bkahlert.semanticui.custom.Demos
@@ -14,26 +15,30 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.height
+import org.jetbrains.compose.web.css.pc
+import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Div
 import playground.ColoredTile
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun AnimationDemos() {
+fun AnimationDemos(
+    colorCount: Int = 25,
+    baseColor: HSL = Colors.blue.toHSL(),
+    alpha: Double = .75,
+) {
     Demos("Animation") {
         Demo("Color animation") {
             val colorScope = rememberCoroutineScope()
-            val baseColor = Colors.blue.toHSL()
-            val colorsCount = 25
             var hue by mutableStateOf(0.0)
             val colors: MutableList<Color> = mutableStateListOf()
             colorScope.launch {
                 while (true) {
-                    while (colors.size >= colorsCount) {
+                    while (colors.size >= colorCount) {
                         colors.removeFirst()
                     }
-                    while (colors.size < colorsCount) {
-                        colors.add(Color.HSL(hue, baseColor.saturation, baseColor.lightness, .75))
+                    while (colors.size < colorCount) {
+                        colors.add(Color.HSL(hue, baseColor.saturation, baseColor.lightness, alpha))
                         hue = (hue + 0.005).mod(1.0)
                     }
                     delay(40.milliseconds)
@@ -41,7 +46,12 @@ fun AnimationDemos() {
             }
             Div {
                 colors.forEachIndexed { index, color ->
-                    ColoredTile(color, "") { style { height((index * 0.1).em) } }
+                    ColoredTile(color, "") {
+                        style {
+                            width(25.pc)
+                            height((index * 0.1).em)
+                        }
+                    }
                 }
             }
         }

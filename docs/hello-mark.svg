@@ -1,0 +1,28 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Hello!" role="img" viewBox="0 0 128 128"
+     style="cursor: default;">
+    <defs>
+        <style>
+            .magenta-fill { fill: #c21f73; }
+            .blue-fill { fill: #29aae2; }
+            .blend-multiply { mix-blend-mode: multiply; }
+        </style>
+        <path id="letter-h"
+              d="m11,115V13c0-2.21,1.79-4,4-4h18c2.21,0,4,1.79,4,4v34c0,2.21,1.79,4,4,4h34c2.21,0,4-1.79,4-4V13c0-2.21,1.79-4,4-4h18c2.21,0,4,1.79,4,4v102c0,2.21-1.79,4-4,4h-18c-2.21,0-4-1.79-4-4v-39c0-2.21-1.79-4-4-4h-34c-2.2,0-4,1.8-4,4v39c0,2.21-1.79,4-4,4H15c-2.21,0-4-1.79-4-4Z"/>
+        <g id="question-mark">
+            <rect x="92" y="93" width="26" height="26" rx="4" ry="4"/>
+            <path d="m91.5,13c-.2-2.35,2.16-4,4.52-4h-.02s17.49,0,17.49,0c2.34,0,4.18,1.99,3.99,4.32-1.34,16.4-4.66,64.06-4.66,64.06-.19,2.05-1.91,3.62-3.97,3.62h-8.52c-2.05,0-3.76-1.55-3.96-3.59,0,0-3.47-48.32-4.87-64.41"/>
+        </g>
+    </defs>
+    <use xlink:href="#letter-h" class="magenta-fill blend-multiply"/>
+    <use xlink:href="#question-mark" class="blue-fill blend-multiply"/>
+    <use xlink:href="#question-mark" class="blue-fill">
+        <animate attributeName="opacity"
+                 calcMode="spline"
+                 dur="15s"
+                 values="0;1;0"
+                 keyTimes="0;0.5;1"
+                 keySplines="0.42 0 0.58 1;0.42 0 0.58 1"
+                 repeatCount="indefinite"
+        />
+    </use>
+</svg>

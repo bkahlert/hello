@@ -10,6 +10,12 @@ public object ImageFixtures {
     /** A [PNG](https://en.wikipedia.org/wiki/Portable_Network_Graphics) depicting John Doe. */
     public val JohnDoe: DataUri by lazy { DataUri.parse(JOHN) }
 
+    /** The [BKAHLERT](https://bkahlert.com) favicon as a [SVG](https://en.wikipedia.org/wiki/SVG). */
+    public val BKAHLERTFavicon: DataUri by lazy { DataUri.parse(BKAHLERT_FAVICON) }
+
+    /** The [Hello!](https://github.com/bkahlert/hello) favicon as an animated [SVG](https://en.wikipedia.org/wiki/SVG). */
+    public val HelloFavicon: DataUri by lazy { DataUri.parse(HELLO_FAVICON) }
+
     /** The [Kommons](https://github.com/bkahlert/kommons) logo as an animated [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val KommonsLogo: DataUri by lazy { DataUri.Svg(KOMMONS_LOGO) }
 
@@ -94,6 +100,14 @@ private const val PEAR_LOGO = """<?xml version="1.0" encoding="utf-8"?>
 </g>
 </svg>
 """
+
+@Suppress("LongLine")
+private const val BKAHLERT_FAVICON =
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjcgMTAgMTE1IDEwOSI+PGcgc3R5bGU9Imlzb2xhdGlvbjppc29sYXRlIj48ZyBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6bXVsdGlwbHkiPjxwYXRoIGQ9Ik03LDE0YTMuOTMsMy45MywwLDAsMSw0LjIxLTRINDguNEM3OCwxMCw5MC45LDIxLDkwLjIzLDM5LjU0LDkwLDQ2LDg2LDUyLDc4LDU3Yy0xLjgyLDEuMjEtNSw0LC42Myw3LjkxLDEyLDguMzYsMTUuMTYsMTYuMjcsMTUuMTYsMjQuNCwwLDIwLjI1LTEyLjYzLDI5LjY5LTQzLjI4LDI5LjY5SDExLjJBNC4yLDQuMiwwLDAsMSw3LDExNC44Wk01Mi4zNSw1NEM2MC4yLDU0LDY3LDQ5LjYsNjcsNDJjMC03LjgzLTcuMDktMTItMTUuODQtMTJoLTE0QTQuMiw0LjIsMCwwLDAsMzMsMzQuMlY0OS44QTQuMiw0LjIsMCwwLDAsMzcuMiw1NFptLS40MSw0NkM2OC4yMiwxMDAsNzAsOTQuNDIsNzAsODdhNy40LDcuNCwwLDAsMC0uMi0yLjMyQzY4LjY0LDgyLjg0LDY1LjE3LDc3LjgyLDY0LDc2YTMuNzcsMy43NywwLDAsMC0zLjE1LTJIMzcuMkE0LjIsNC4yLDAsMCwwLDMzLDc4LjJWOTUuOGE0LjIsNC4yLDAsMCwwLDQuMiw0LjJaIiBzdHlsZT0iZmlsbDojYzIxZjczIi8+PC9nPjxwYXRoIGQ9Ik00NiwxMTlsLTIxLjExLDBjLTMuMjEuMDcuMTEtLjA2LTQuODksMFYxMEg0NlY0NC42N2MuNDMsMy45MSw1LjMxLDUuNTgsNy42MSwyLjQ4TDgzLjY3LDExLjYzQzg1LDkuOTIsODYuNjMsMTAsODcuODksMTBoMjIuODljMy4yOSwwLDUuMTgsMi44MSwzLjIxLDUuNUw4NCw1Mi42OEM4My4wOCw1NCw4Miw1Niw4NCw1OWwzNy4xMiw1NS4wOGMxLjQyLDIuNzIuODgsNC45NC0zLjU0LDQuOTJIOTVjLTIsMC0yLDAtMy41Mi0yLjA2TDY0LjA4LDc2LjE5QzYzLDc0LDYwLDczLDU3LjQ1LDc1LjU3TDQ3LDg4LjMxQTQuMTQsNC4xNCwwLDAsMCw0Niw5MC45NEM0Niw5Nyw0NiwxMTgsNDYsMTE5IiBzdHlsZT0iZmlsbDojMmNhY2UzO21peC1ibGVuZC1tb2RlOm11bHRpcGx5Ii8+PC9nPjwvc3ZnPg=="
+
+@Suppress("LongLine")
+private const val HELLO_FAVICON =
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIxMSA5IDEwNyAxMTAiIGN1cnNvcj0iZGVmYXVsdCI+PHN0eWxlPjwhW0NEQVRBWy5Ce21peC1ibGVuZC1tb2RlOm11bHRpcGx5fV1dPjwvc3R5bGU+PGRlZnM+PHBhdGggaWQ9IkEiIGQ9Ik0xMSAxMTVWMTNhNCA0IDAgMCAxIDQtNGgxOGE0IDQgMCAwIDEgNCA0djM0YTQgNCAwIDAgMCA0IDRoMzRhNCA0IDAgMCAwIDQtNFYxM2E0IDQgMCAwIDEgNC00aDE4YTQgNCAwIDAgMSA0IDR2MTAyYTQgNCAwIDAgMS00IDRIODNhNCA0IDAgMCAxLTQtNFY3NmE0IDQgMCAwIDAtNC00SDQxYy0yLjIgMC00IDEuOC00IDR2MzlhNCA0IDAgMCAxLTQgNEgxNWE0IDQgMCAwIDEtNC00eiIvPjxnIGlkPSJCIj48cmVjdCB4PSI5MiIgeT0iOTMiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgcng9IjQiLz48cGF0aCBkPSJNOTEuNSAxM2MtLjItMi4zNSAyLjE2LTQgNC41Mi00SDk2aDE3LjQ5YzIuMzQgMCA0LjE4IDEuOTkgMy45OSA0LjMybC00LjY2IDY0LjA2YTMuOTkgMy45OSAwIDAgMS0zLjk3IDMuNjJoLTguNTJjLTIuMDUgMC0zLjc2LTEuNTUtMy45Ni0zLjU5TDkxLjUgMTMiLz48L2c+PC9kZWZzPjx1c2UgeGxpbms6aHJlZj0iI0EiIGNsYXNzPSJCIiBmaWxsPSIjYzIxZjczIi8+PGcgZmlsbD0iIzI5YWFlMiI+PHVzZSB4bGluazpocmVmPSIjQiIgY2xhc3M9IkIiLz48dXNlIHhsaW5rOmhyZWY9IiNCIj48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiBjYWxjTW9kZT0ic3BsaW5lIiBkdXI9IjE1cyIgdmFsdWVzPSIwOzE7MCIga2V5VGltZXM9IjA7MC41OzEiIGtleVNwbGluZXM9IjAuNDIgMCAwLjU4IDE7MC40MiAwIDAuNTggMSIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48L3VzZT48L2c+PC9zdmc+"
 
 // language=svg
 private const val KOMMONS_LOGO: String = """<?xml version="1.0" encoding="utf-8"?>
