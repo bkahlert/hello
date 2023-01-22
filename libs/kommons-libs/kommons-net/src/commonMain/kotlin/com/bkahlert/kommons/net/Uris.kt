@@ -23,7 +23,7 @@ public val Uri.port: Int? get() = authority?.port
  *
  * ***Note:** In case of an absolute path, the first segment is an empty string.*
  */
-public val Uri.pathSegments: List<String> get() = path.split('/')
+public val Uri.pathSegments: List<String> get() = path.split(Uri.PATH_SEGMENTS_SEPARATOR)
 
 /**
  * Returns the [Parameters] encoded in the [Query component](https://www.rfc-editor.org/rfc/rfc3986#section-3.4), or
@@ -36,3 +36,11 @@ public val Uri.queryParameters: Parameters get() = query?.let { io.ktor.http.par
  * [Parameters.Empty], if no [Uri.fragment] is present.
  */
 public val Uri.fragmentParameters: Parameters get() = fragment?.let { io.ktor.http.parseQueryString(it) } ?: Parameters.Empty
+
+
+/**
+ * Returns a copy of this [Uri] with the specified [pathSegment]
+ * added to the [pathSegments].
+ */
+public infix operator fun Uri.div(pathSegment: String): Uri =
+    Uri(scheme, authority, (pathSegments + pathSegment).joinToString(Uri.PATH_SEGMENTS_SEPARATOR), query, fragment)

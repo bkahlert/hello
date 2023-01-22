@@ -10,9 +10,9 @@ import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.module.Accordion
 import com.bkahlert.semanticui.module.Dropdown
+import org.jetbrains.compose.web.css.textAlign
 import org.jetbrains.compose.web.dom.Pre
 import org.jetbrains.compose.web.dom.Text
-
 
 @Composable
 public fun ErrorMessage(
@@ -24,8 +24,13 @@ public fun ErrorMessage(
             Text(throwable.errorMessage)
         }
         Accordion(throwable) {
-            Dropdown("Detailed Error") {
-                Pre {
+            Dropdown("Stacktrace") {
+                Pre({
+                    style {
+                        textAlign("left")
+                        textOverflow(whiteSpace = null)
+                    }
+                }) {
                     Text(throwable.stackTraceToString())
                 }
             }

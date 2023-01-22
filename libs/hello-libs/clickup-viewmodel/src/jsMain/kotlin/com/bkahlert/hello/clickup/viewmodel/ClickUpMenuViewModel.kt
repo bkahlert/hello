@@ -52,26 +52,26 @@ public interface ClickUpMenuViewModel {
  */
 @Composable
 public fun rememberClickUpMenuViewModel(
+    vararg configurers: Configurer<ClickUpClient> = arrayOf(ClickUpTestClientConfigurer()),
     initialState: ClickUpMenuState = Disconnected,
     refreshCoroutineScope: CoroutineScope = rememberCoroutineScope(),
     storage: Storage = InMemoryStorage(),
-    vararg configurers: Configurer<ClickUpClient> = arrayOf(ClickUpTestClientConfigurer()),
 ): ClickUpMenuViewModel =
     remember(initialState, storage) {
         ClickUpMenuViewModelImpl(
-            initialState,
-            refreshCoroutineScope,
-            storage,
-            *configurers,
+            configurers = configurers,
+            initialState = initialState,
+            refreshCoroutineScope = refreshCoroutineScope,
+            storage = storage,
         )
     }
 
 
 public class ClickUpMenuViewModelImpl(
-    initialState: ClickUpMenuState = Disabled,
-    private val coroutineScope: CoroutineScope,
-    storage: Storage = InMemoryStorage(),
     override vararg val configurers: Configurer<ClickUpClient>,
+    initialState: ClickUpMenuState = Disabled,
+    private val refreshCoroutineScope: CoroutineScope,
+    storage: Storage = InMemoryStorage(),
 ) : ClickUpMenuViewModel {
     private val logger by InlineLogging
     private var updateJob: Job? = null
@@ -92,7 +92,7 @@ public class ClickUpMenuViewModelImpl(
             }
         }
         if (!background || _state.value !is Failed) {
-            updateJob = coroutineScope.launch {
+            updateJob = refreshCoroutineScope.launch {
                 _state.update { currentState ->
                     logger.groupCatching(
                         label = "$name in state ${currentState::class.simpleName}",

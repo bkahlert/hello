@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# Prints error and exits with 1
+die() {
+  {
+    tput setaf 1
+    printf '%s' "$*"
+    tput sgr0
+    printf '\n'
+  } >&2
+  exit 1
+}
+
+# Retries the given command until it exits with 0
+# but no more than 5 times.
+retry() {
+  local attempts_left=5
+  until [ $attempts_left -le 0 ] || "$@"
+  do
+      attempts_left=$((attempts_left-1))
+      echo "Command '$*' failed. Retrying ..."
+      sleep 1
+  done
+  if [ $attempts_left -gt 0 ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Tries to fix IDE issues by
+# - stopping all Gradle daemons
+# - running clean task
+# - running assemble task
+main() {
+  local -r GRADLE_NO_DAEMON_OPTION='-Dorg.gradle.daemon=false'
+  retry ./gradlew --stop || die "Failed to stop Gradle daemons"
+  retry ./gradlew "$GRADLE_NO_DAEMON_OPTION" clean || die "Failed to clean"
+  retry ./gradlew "$GRADLE_NO_DAEMON_OPTION" assemble || die "Failed to assemble"
+}
+
+main "$@"

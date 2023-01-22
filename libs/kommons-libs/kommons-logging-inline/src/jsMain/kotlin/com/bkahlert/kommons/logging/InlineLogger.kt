@@ -1,5 +1,7 @@
 package com.bkahlert.kommons.logging
 
+import kotlin.js.Console
+
 /**
  * Browser optimized logger that that is completely implemented with inline functions.
  * This lets browsers correctly display the use-site.
@@ -42,12 +44,12 @@ public class InlineLogger(
 
     /** Logs the specified debug [message]. */
     public inline fun debug(message: String) {
-        console.log(name, message)
+        console.debug(name, message)
     }
 
     /** Logs the specified debug [message] and [cause]. */
     public inline fun debug(message: String, cause: Throwable) {
-        console.log(name, "$message, cause: $cause")
+        console.debug(name, "$message, cause: $cause")
     }
 
     /** Logs the specified trace [message]. */
@@ -61,16 +63,20 @@ public class InlineLogger(
     }
 }
 
-/** Exposes parts of the [console API](https://developer.mozilla.org/en/DOM/console) to Kotlin. */
-public external interface Console : kotlin.js.Console {
-
-    /**
-     * Outputs a stack trace to this [Console].
-     *
-     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/console/trace">console.trace()</a>
-     */
-    public fun trace(vararg objects: Any?)
+/**
+ * Outputs a message to this [Console] at the "debug" log level.
+ *
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/console/debug">console.debug()</a>
+ */
+public inline fun Console.debug(vararg objects: Any?) {
+    asDynamic().debug.apply(null, objects)
 }
 
-/** Exposes the [console API](https://developer.mozilla.org/en/DOM/console) to Kotlin. */
-public external val console: Console
+/**
+ * Outputs a stack trace to this [Console].
+ *
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/console/trace">console.trace()</a>
+ */
+public inline fun Console.trace(vararg objects: Any?) {
+    asDynamic().trace.apply(null, objects)
+}

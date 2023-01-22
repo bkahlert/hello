@@ -9,8 +9,8 @@ import com.bkahlert.hello.ui.search.SearchEngine.Google
 import com.bkahlert.hello.ui.search.SearchInput
 import com.bkahlert.hello.ui.search.rememberMultiSearchInputState
 import com.bkahlert.hello.ui.search.rememberSearchEngineSelectState
-import com.bkahlert.semanticui.custom.Demo
-import com.bkahlert.semanticui.custom.Demos
+import com.bkahlert.semanticui.demo.Demo
+import com.bkahlert.semanticui.demo.Demos
 
 @Composable
 fun SearchInputDemos() {

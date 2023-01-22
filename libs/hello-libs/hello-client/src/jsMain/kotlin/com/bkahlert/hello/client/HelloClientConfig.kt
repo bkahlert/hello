@@ -3,8 +3,13 @@ package com.bkahlert.hello.client
 import com.bkahlert.kommons.auth.OpenIDProvider
 import kotlin.reflect.KClass
 
+/**
+ * Configuration for a [HelloClient].
+ */
 public data class HelloClientConfig(
+    /** OpenID provider to be used for authorization. */
     val openIDProvider: OpenIDProvider?,
+    /** Client ID to be used for authorization. */
     val clientId: String?,
     val apiClients: Map<KClass<out ApiClient>, String?>,
 ) {

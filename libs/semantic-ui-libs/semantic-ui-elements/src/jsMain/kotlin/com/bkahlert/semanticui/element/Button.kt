@@ -42,7 +42,7 @@ public fun StatesScope<ButtonElement<Element>>.loading(): StatesScope<ButtonElem
 /** [Variation.Size](https://semantic-ui.com/elements/button.html#size) */
 public fun VariationsScope<ButtonElement<Element>>.size(value: Variation.Size): VariationsScope<ButtonElement<Element>> = +value
 
-/** [Variation.Floated](https://semantic-ui.com/elements/button.html#size) */
+/** [Variation.Floated](https://semantic-ui.com/elements/button.html#floated) */
 public fun VariationsScope<ButtonElement<Element>>.floated(value: Variation.Floated): VariationsScope<ButtonElement<Element>> = +value
 
 /** [Variation.Colored](https://semantic-ui.com/elements/button.html#colored) */
@@ -197,8 +197,7 @@ public fun VariationsScope<ButtonGroupElement>.basic(): VariationsScope<ButtonGr
 public fun VariationsScope<ButtonGroupElement>.size(value: Variation.Size): VariationsScope<ButtonGroupElement> = +value
 
 /**
- * Creates a [SemanticUI button group](https://semantic-ui.com/elements/button.html#buttons)
- * with the specified [type].
+ * Creates a [SemanticUI button group](https://semantic-ui.com/elements/button.html#buttons).
  */
 @Composable
 public fun Buttons(

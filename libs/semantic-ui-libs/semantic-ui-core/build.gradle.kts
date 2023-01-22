@@ -10,7 +10,11 @@ kotlin {
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting
+        val jsMain by getting {
+            dependencies {
+                api("com.bkahlert.kommons:kommons-dom")
+            }
+        }
         val jsTest by getting {
             dependencies {
                 implementation(project(":semantic-ui-test"))

@@ -15,6 +15,7 @@ import com.bkahlert.hello.clickup.model.TeamID
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.model.User
 import com.bkahlert.hello.clickup.model.closed
+import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
 import com.bkahlert.hello.clickup.view.Activity
 import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.view.ActivityDropdown
@@ -41,15 +42,19 @@ import com.bkahlert.semanticui.collection.MenuItemDivElement
 import com.bkahlert.semanticui.collection.borderless
 import com.bkahlert.semanticui.collection.target
 import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import com.bkahlert.semanticui.custom.DimmingLoader
+import com.bkahlert.semanticui.custom.MixBlendMode.Companion.Luminosity
 import com.bkahlert.semanticui.custom.backgroundColor
 import com.bkahlert.semanticui.custom.color
+import com.bkahlert.semanticui.custom.mixBlendMode
 import com.bkahlert.semanticui.custom.textOverflow
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.module.Dimmer
 import com.bkahlert.semanticui.module.DropdownItem
+import com.bkahlert.semanticui.module.dimmable
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.css.AlignItems
@@ -105,7 +110,12 @@ public fun SemanticElementScope<MenuElement>.DisconnectedItems(
     LinkItem({
         onClick { configuring = true }
     }) {
-        Img(src = "clickup-icon.svg", alt = "ClickUp") { classes("mini") }
+        Img(src = ImageFixtures.ClickUpMark.toString(), alt = "ClickUp") {
+            classes("mini")
+            style {
+                mixBlendMode(Luminosity)
+            }
+        }
         Text("Connect to ClickUp")
     }
 }
@@ -379,13 +389,14 @@ public fun ClickUpMenu(
     loading: Boolean = false,
 ) {
     Menu({
-        raw(Modifier.Variation.Size.Mini, Modifier.Variation.Dimmable)
+        v.dimmable()
+        raw(Mini)
         if (state is Disabled || state is Disconnected) {
             raw(Modifier.Variation.Fluid)
             classes("one", "item")
         }
     }) {
-        DimmingLoader(loading)
+        DimmingLoader(loading, { raw(Mini) })
         when (state) {
             Disabled -> {
                 Dimmer({ raw(Modifier.State.Active, Modifier.Variation.Inverted) })

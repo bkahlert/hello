@@ -11,14 +11,16 @@ public external class jQuery(deep: Any?) {
     public fun attr(propertyName: String): String?
     public fun attr(propertyName: String, value: Any?): jQuery
     public fun children(selector: String = definedExternally): jQuery
-    public fun closest(selector: String = definedExternally): jQuery
-    public fun find(selector: String = definedExternally): jQuery
-    public fun css(propertyName: String, value: Any?): jQuery
     public fun click(): jQuery
+    public fun closest(selector: String = definedExternally): jQuery
+    public fun css(propertyName: String, value: Any?): jQuery
+    public fun find(selector: String = definedExternally): jQuery
     public fun focus(): jQuery
+    public fun siblings(selector: String = definedExternally): jQuery
 
     // Semantic UI
     public fun accordion(options: Json = definedExternally): jQuery
+    public fun dimmer(options: Json = definedExternally): jQuery
     public fun dimmer(behavior: String, vararg args: Any? = definedExternally): jQuery
     public fun dropdown(options: Json = definedExternally): jQuery
     public fun dropdown(behavior: String, vararg args: Any? = definedExternally): jQuery
@@ -39,6 +41,12 @@ public fun jQuery.dataAttr(key: String): String? =
 /** Convenience shortcut for [jQuery.attr] and [key] prefixed with `data-`. */
 public fun jQuery.dataAttr(key: String, value: Any?): jQuery =
     attr("data-$key", value)
+
+/**
+ * An interface to interact with a [SemanticUI dimmer](https://semantic-ui.com/modules/dimmer.html)
+ * using the specified [options].
+ */
+public fun jQuery.dimmer(vararg options: Pair<String, Any?>): jQuery = dimmer(json(*options))
 
 /**
  * An interface to interact with a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html)

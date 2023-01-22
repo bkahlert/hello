@@ -13,6 +13,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 api(project(":semantic-ui-core"))
+                api(project(":semantic-ui-elements"))
             }
         }
         val jsTest by getting {

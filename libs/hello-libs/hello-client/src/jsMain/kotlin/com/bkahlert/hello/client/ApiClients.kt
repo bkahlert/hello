@@ -26,18 +26,6 @@ public abstract class ApiClient(
     }
 }
 
-
-public class ClickUpApiClient(
-    endpoint: String,
-    httpClient: HttpClient,
-) : ApiClient(endpoint, httpClient) {
-    public suspend fun clickUp(): String {
-        val response = httpClient.get(url)
-        return response.bodyAsText()
-    }
-}
-
-
 public class UserInfoApiClient(
     endpoint: String,
     httpClient: HttpClient,

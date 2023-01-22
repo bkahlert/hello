@@ -1,12 +1,7 @@
 package com.bkahlert.kommons.dom
 
-import com.bkahlert.kommons.text.toKebabCasedString
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.w3c.dom.get
 import org.w3c.dom.set
-import kotlin.reflect.KProperty
 import org.w3c.dom.Storage as W3cStorage
 
 /** Alias for [W3cStorage.removeItem] */
@@ -111,100 +106,3 @@ public inline fun <reified E : Enum<E>> Storage.setEnum(key: String, value: E?):
 
 /** Removes all items from this storage. */
 public fun Storage.clear(): Unit = keys.forEach { set(it, null) }
-
-/**
- * Delegates the property to `this` [Storage] by using the property name
- * as the key and the serialization of the [Serializable] value
- * as the value.
- *
- * ### Usage
- * ```kotlin
- * class Foo(val storage: Storage) {
- *     val bar: String? by storage
- *     val baz: Baz? by storage
- * }
- * ```
- *
- * @see [Storage.default]
- * @see [StorageDelegate]
- */
-public operator fun Storage.provideDelegate(thisRef: Any?, property: KProperty<*>): StorageDelegate =
-    StorageDelegate(this)
-
-/**
- * Delegates the property to `this` [Storage] by using the property name
- * as the key and the serialization of the [Serializable] value
- * as the value respectively the specified [defaultValue].
- *
- * ### Usage
- * ```kotlin
- * class Foo(val storage: Storage) {
- *     val bar: String by storage default "default value"
- *     val baz: Baz by storage default Baz.Default
- * }
- * ```
- *
- * @see [Storage.provideDelegate]
- * @see [StorageDelegateWithDefault]
- */
-public infix fun <T : Any> Storage.default(defaultValue: T): StorageDelegateWithDefault<T> =
-    StorageDelegateWithDefault(StorageDelegate(this), defaultValue)
-
-/**
- * Delegate that reads and writes values using the specified [storage],
- * the [KProperty.name] as the key and the serialization of the [Serializable] value
- * as the value.
- */
-public value class StorageDelegate(
-    /** Storage to delegate to. */
-    public val storage: Storage,
-) {
-    /**
-     * Reads the value for the key with the name of the [property] from [storage]
-     * and if set returns it deserialized to [T]. Strings are returned unchanged.
-     */
-    public inline operator fun <reified T> getValue(thisRef: Any?, property: KProperty<*>): T? {
-        val name = property.name.toKebabCasedString()
-        return when (T::class) {
-            String::class -> storage[name]?.let { it as T? }
-            else -> storage[name]?.let { Json.decodeFromString(it) }
-        }
-    }
-
-    /**
-     * Writes the serialized [value] for the key with the name of the [property] to [storage]
-     * if not `null`. Otherwise, removes it. Strings are stored unchanged.
-     */
-    public inline operator fun <reified T> setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
-        val name = property.name.toKebabCasedString()
-        when (T::class) {
-            String::class -> storage[name] = value as String?
-            else -> storage[name] = value?.let { Json.encodeToString(it) }
-        }
-    }
-}
-
-/**
- * Delegate that reads and writes values using the specified [delegate],
- * the [KProperty.name] as the key and the serialization of the [Serializable] value
- * as the value respectively the specified [defaultValue].
- */
-public class StorageDelegateWithDefault<R>(
-    /** The delegate this implementation delegates to. */
-    public val delegate: StorageDelegate,
-    /** Value to return if [delegate] returns `null`. */
-    public val defaultValue: R,
-) {
-    /**
-     * Returns the non-`null` value read using [delegate] or [defaultValue] otherwise.
-     */
-    public inline operator fun <reified T : R> getValue(thisRef: Any?, property: KProperty<*>): R =
-        delegate.getValue<T>(thisRef, property) ?: defaultValue
-
-    /**
-     * Writes the [value] using [delegate].
-     */
-    public inline operator fun <reified T> setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
-        delegate.setValue(thisRef, property, value)
-    }
-}

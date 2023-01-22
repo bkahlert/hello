@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * Data URI
- * as described in [RFC2397](https://www.rfc-editor.org/rfc/rfc2397).
+ * as specified in [RFC2397](https://www.rfc-editor.org/rfc/rfc2397).
  *
  * Treated as a [CharSequence], this URI yields the string representation
  * as specified in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
@@ -83,7 +83,7 @@ public data class DataUri(
 
         /**
          * Default charset for [DataUri] instances
-         * as described in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
+         * as specified in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
          */
         public val DEFAULT_CHARSET: Charset = kotlin.runCatching {
             Charset.forName("US-ASCII") // Surprisingly, not supported in Ktor/JS ...
@@ -91,7 +91,7 @@ public data class DataUri(
 
         /**
          * Default media type for [DataUri] instances
-         * as described in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
+         * as specified in [RFC2397 section 2](https://www.rfc-editor.org/rfc/rfc2397#section-2).
          */
         public val DEFAULT_MEDIA_TYPE: ContentType = ContentType.Text.Plain.withCharset(DEFAULT_CHARSET)
 

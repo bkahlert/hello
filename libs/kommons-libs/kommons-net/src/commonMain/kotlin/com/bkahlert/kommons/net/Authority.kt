@@ -2,7 +2,7 @@ package com.bkahlert.kommons.net
 
 /**
  * Authority component of a [Uri]
- * as described in [RFC3986 section 3.2](https://www.rfc-editor.org/rfc/rfc3986#section-3.2).
+ * as specified in [RFC3986 section 3.2](https://www.rfc-editor.org/rfc/rfc3986#section-3.2).
  */
 public data class Authority(
     /** [User information subcomponent](https://www.rfc-editor.org/rfc/rfc3986#section-3.2.1) */

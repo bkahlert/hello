@@ -14,9 +14,10 @@ import com.bkahlert.hello.AppStylesheet.Grid.CustomGradient
 import com.bkahlert.hello.AppStylesheet.Grid.Header
 import com.bkahlert.hello.AppStylesheet.Grid.Links
 import com.bkahlert.hello.AppStylesheet.Grid.Margin
-import com.bkahlert.hello.AppStylesheet.Grid.Plugins
 import com.bkahlert.hello.AppStylesheet.Grid.Search
+import com.bkahlert.hello.AppStylesheet.Grid.Tasks
 import com.bkahlert.hello.clickup.client.http.ClickUpHttpClientConfigurer
+import com.bkahlert.hello.clickup.demo.ClickUpDemos
 import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenu
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
@@ -24,17 +25,26 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
 import com.bkahlert.hello.clickup.viewmodel.rememberClickUpMenuViewModel
 import com.bkahlert.hello.custom.Custom
 import com.bkahlert.hello.custom.linearGradient
-import com.bkahlert.hello.debug.renderDebugMode
+import com.bkahlert.hello.debug.search.SearchDemos
 import com.bkahlert.hello.ui.ViewportDimension
 import com.bkahlert.hello.ui.header.Header
 import com.bkahlert.hello.ui.header.center
 import com.bkahlert.hello.ui.search.SearchFeature
+import com.bkahlert.kommons.binding.Binding
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
-import com.bkahlert.kommons.dom.uri
 import com.bkahlert.kommons.net.host
+import com.bkahlert.kommons.net.toUriOrNull
+import com.bkahlert.semanticui.collection.Item
+import com.bkahlert.semanticui.collection.Menu
+import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.custom.Length
 import com.bkahlert.semanticui.custom.backgroundColor
+import com.bkahlert.semanticui.custom.zIndex
+import com.bkahlert.semanticui.demo.SemanticUiDemoProviders
+import com.bkahlert.semanticui.devmode.asMutableState
+import com.bkahlert.semanticui.devmode.setupDemoDevMode
 import com.bkahlert.semanticui.element.AnkerButton
+import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Buttons
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.basic
@@ -50,15 +60,16 @@ import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.FlexWrap
 import org.jetbrains.compose.web.css.JustifyContent
+import org.jetbrains.compose.web.css.Position
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.StyleScope
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.alignContent
 import org.jetbrains.compose.web.css.alignItems
-import org.jetbrains.compose.web.css.and
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.backgroundImage
 import org.jetbrains.compose.web.css.backgroundSize
+import org.jetbrains.compose.web.css.bottom
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.div
@@ -71,12 +82,14 @@ import org.jetbrains.compose.web.css.gridTemplateColumns
 import org.jetbrains.compose.web.css.gridTemplateRows
 import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.justifyContent
+import org.jetbrains.compose.web.css.left
 import org.jetbrains.compose.web.css.media
-import org.jetbrains.compose.web.css.mediaMinHeight
 import org.jetbrains.compose.web.css.mediaMinWidth
 import org.jetbrains.compose.web.css.overflow
 import org.jetbrains.compose.web.css.padding
+import org.jetbrains.compose.web.css.position
 import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.css.times
 import org.jetbrains.compose.web.css.transform
 import org.jetbrains.compose.web.css.unaryMinus
 import org.jetbrains.compose.web.css.vh
@@ -85,6 +98,7 @@ import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.DOMScope
 import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
@@ -133,12 +147,12 @@ object ClickUpFeature : Feature {
     override val loaded: Boolean = true
     override val content: @Composable DOMScope<HTMLElement>.() -> Unit = {
         (ClickUpMenu(rememberClickUpMenuViewModel(
-            initialState = Disabled,
-            storage = localStorage.scoped("clickup"),
             configurers = arrayOf(
                 ClickUpHttpClientConfigurer(),
                 ClickUpTestClientConfigurer(),
-            )
+            ),
+            initialState = Disabled,
+            storage = localStorage.scoped("clickup")
         ).also { it.enable() }))
     }
 }
@@ -147,7 +161,10 @@ object CustomFeature : Feature {
     override val name: String = "Custom"
     override val loaded: Boolean = true
     override val content: @Composable DOMScope<HTMLElement>.() -> Unit = {
-        val url = if (window.location.uri.host == "localhost") null else Url("https://start.me/p/0PBMOo/dkb")
+        val url = when (window.location.href.toUriOrNull()?.host) {
+            "localhost" -> null
+            else -> Url("https://start.me/p/0PBMOo/dkb")
+        }
         Custom(url)
     }
 }
@@ -157,8 +174,8 @@ fun App(state: AppState = rememberAppState()) {
 
     Grid({
         style {
-            backgroundSize("cover")
-            backgroundImage("url(grayscale-gradient.svg)")
+//            backgroundSize("cover")
+//            backgroundImage("url(grayscale-gradient.svg)")
         }
     }) {
         Div({
@@ -195,7 +212,7 @@ fun App(state: AppState = rememberAppState()) {
         }
         Div({
             style {
-                gridArea(Plugins)
+                gridArea(Tasks)
                 display(DisplayStyle.Flex)
                 flexDirection(FlexDirection.Column)
                 alignContent(AlignContent.Center)
@@ -234,11 +251,44 @@ fun App(state: AppState = rememberAppState()) {
 
 
 fun main() {
-    renderDebugMode()
+    val devModeBinding = setupDemoDevMode(*SemanticUiDemoProviders, ClickUpDemos, SearchDemos)
     renderComposable("root") {
+        DevModeToggle(devModeBinding)
         Style(AppStylesheet)
         Style(ClickUpStyleSheet)
         App()
+    }
+}
+
+@Composable
+fun DevModeToggle(
+    binding: Binding<Boolean>,
+) {
+    var active by binding.asMutableState()
+    Menu({
+        classes("compact", "tiny", "secondary")
+        style {
+            position(Position.Fixed)
+            bottom(1.em)
+            left(0.5.em)
+            zIndex(2000)
+        }
+    }) {
+        Item {
+            Button({
+                classes("animated", "fade", "teal", "basic")
+                tabIndex(0)
+                onClick { active = !active }
+            }) {
+                if (active) {
+                    S("visible", "content") { Icon("close") }
+                    S("hidden", "content") { Text("Close") }
+                } else {
+                    S("visible", "content") { Icon("wrench"); Text("F4") }
+                    S("hidden", "content") { Text("Debug") }
+                }
+            }
+        }
     }
 }
 
@@ -265,10 +315,11 @@ object AppStylesheet : StyleSheet() {
 
     val HEADER_HEIGHT: Length = 4.px
     val GRADIENT_HEIGHT: Length = 0.3.cssRem
+    val MIN_HEIGHT: Length = 2.5.cssRem
     val CUSTOM_BACKGROUND_COLOR = Brand.colors.white
 
     enum class Grid {
-        Links, Header, Search, Plugins, Margin, CustomGradient, Custom
+        Links, Header, Search, Tasks, Margin, CustomGradient, Custom
     }
 
     init {
@@ -286,40 +337,50 @@ object AppStylesheet : StyleSheet() {
         height(100.vh)
         gap(0.px, 0.px)
 
+        // Links, Tasks and Search in separate rows
         gridTemplateColumns("1fr 2fr")
-        gridTemplateRows("0 10fr 7fr 1fr 0 0")
+        gridTemplateRows("$HEADER_HEIGHT ${MIN_HEIGHT * 2} ${MIN_HEIGHT * 1.5} ${MIN_HEIGHT * 2} ${MIN_HEIGHT * 0.5} 0 1fr")
         gridTemplateAreas(
             "$Header $Header",
+            "$Links $Links",
+            "$Tasks $Tasks",
             "$Search $Search",
-            "$Links $Plugins",
             "$Margin $Margin",
             "$CustomGradient $CustomGradient",
             "$Custom $Custom",
         )
 
-        // TODO check auf Handy
-        media(mediaMinWidth(ViewportDimension.medium) and mediaMinHeight(250.px)) {
+        // Links, Tasks and Search in two rows at top
+        media(mediaMinWidth(ViewportDimension.medium)) {
             self style {
-                gridTemplateRows("$HEADER_HEIGHT 80px 45px 15px 0 1fr")
+                gridTemplateRows("$HEADER_HEIGHT ${MIN_HEIGHT * 1.5} ${MIN_HEIGHT * 1.5} ${MIN_HEIGHT * 0.5} 0 1fr")
+                gridTemplateAreas(
+                    "$Header $Header",
+                    "$Links $Tasks",
+                    "$Search $Search",
+                    "$Margin $Margin",
+                    "$CustomGradient $CustomGradient",
+                    "$Custom $Custom",
+                )
             }
         }
 
-        media(mediaMinWidth(ViewportDimension.large) and mediaMinHeight(250.px)) {
+        // Links, Tasks and Search in one row at top
+        media(mediaMinWidth(ViewportDimension.xLarge)) {
             self style {
                 // minmax enforces cell content to not consume more space
                 // https://css-tricks.com/preventing-a-grid-blowout/
-                gridTemplateColumns("1fr 1fr 1fr minmax(0, 2fr)")
-                gridTemplateRows("$HEADER_HEIGHT 80px 0 0 1fr")
+                gridTemplateColumns("1fr 1fr 1fr minmax(0, 3fr)")
+                gridTemplateRows("$HEADER_HEIGHT ${MIN_HEIGHT * 2} $GRADIENT_HEIGHT 0 1fr")
                 gridTemplateAreas(
                     "$Header $Header $Header $Header",
-                    "$Links $Search $Search $Plugins",
+                    "$Links $Search $Search $Tasks",
                     "$Margin $Margin $Margin $Margin",
                     "$CustomGradient $CustomGradient $CustomGradient $CustomGradient",
                     "$Custom $Custom $Custom $Custom",
                 )
             }
         }
-
     }
 }
 

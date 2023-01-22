@@ -24,8 +24,8 @@
 
 ### Web applications
 
+- [Playground app](apps/playground-app) … prototyping-optimized web application
 - [Test app](apps/test-app) … minimal [compose][compose-for-web] web application
-- [API client](apps/api-client) … playground
 - [Web app](apps/web-app) … Hello! web application
 
 The Gradle project at the root of this repository is an umbrella project
@@ -44,13 +44,20 @@ work as expect—also in the umbrella project.
 ./gradlew clean build
 ```
 
+If things seem strange, especially the behavior of your IDE,
+try:
+
+```shell
+./fix-issues
+```
+
 ### Update Gradle wrapper
 
-As this is a composite build all Gradle wrappers should be updated.
+As this is a composite build, all Gradle wrappers should be updated.
 
-Otherwise tasks started from inside an included build might find plugins
+Otherwise, tasks started from inside an included build might find plugins
 previously built by another Gradle wrapper with a different version.
-This can lead to problems if the two Gradle version make use of a different
+This can lead to problems if the two Gradle versions make use of a different
 Kotlin DSL.
 
 ```shell

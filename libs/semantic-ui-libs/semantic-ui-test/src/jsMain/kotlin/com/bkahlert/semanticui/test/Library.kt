@@ -21,7 +21,7 @@ public class Library(
      * Appends the library to the specified [element].
      */
     public fun appendTo(element: Element): Element {
-        val document: Document = requireNotNull(element.ownerDocument) { "missing owner document of $element" }
+        val document: Document = requireNotNull(element.ownerDocument) { "Missing owner document of $element" }
         val scriptElement: Element = document.createElement("script")
         scriptElement.id = id
         scriptElement.textContent = base64Content.decodeBase64String()
@@ -37,7 +37,7 @@ public class Library(
         public const val NAME_PREFIX: String = "semantic-ui-test"
 
         private fun Node.remove() {
-            val parentNode = checkNotNull(parentNode) { "missing parent node of $this" }
+            val parentNode = checkNotNull(parentNode) { "Missing parent node of $this" }
             parentNode.removeChild(this)
         }
 

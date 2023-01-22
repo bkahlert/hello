@@ -1,6 +1,6 @@
 package com.bkahlert.hello.ui
 
-import com.bkahlert.hello.semanticui.BreakPoints
+import com.bkahlert.semanticui.custom.BreakPoints
 import com.bkahlert.semanticui.custom.Length
 import org.jetbrains.compose.web.css.px
 

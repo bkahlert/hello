@@ -17,6 +17,7 @@ import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.TaskListBuilder
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.Teams
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.timeEntry
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
+import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.clickup.viewmodel.fixtures.rememberClickUpMenuTestViewModel
@@ -58,7 +59,7 @@ class ClickUpMenuTest {
                         <div class="ui mini loader"></div>
                     </div>
                     <div class="ui active inverted dimmer"></div>
-                    <div class="link item"><img class="mini" src="clickup-icon.svg" alt="ClickUp">Connect to ClickUp</div>
+                    <div class="link item"><img class="mini" src="${ImageFixtures.ClickUpMark}" alt="ClickUp">Connect to ClickUp</div>
                 </div>
             </div>
         """.trimIndent()
@@ -79,7 +80,7 @@ class ClickUpMenuTest {
                     <div class="ui inverted dimmer">
                         <div class="ui mini loader"></div>
                     </div>
-                    <div class="link item"><img class="mini" src="clickup-icon.svg" alt="ClickUp">Connect to ClickUp</div>
+                    <div class="link item"><img class="mini" src="${ImageFixtures.ClickUpMark}" alt="ClickUp">Connect to ClickUp</div>
                 </div>
             </div>
         """.trimIndent()
@@ -316,7 +317,7 @@ private fun testClient(
     initialFolders = emptyList(),
     initialTimeEntries = emptyList(),
     initialRunningTimeEntry = runningTimeEntry,
-    delayFactor = .005,
+    slowDown = .005,
 )
 
 private fun pressPlay() {

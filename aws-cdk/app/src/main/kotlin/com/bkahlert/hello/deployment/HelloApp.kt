@@ -53,7 +53,7 @@ sealed interface Stage {
         private val appDir = Paths.get(System.getProperty("user.dir"))
         private val rootDir = appDir.parent.parent.also { check(it.resolve("aws-cdk").exists()) }
 
-        override val webClientDistribution = rootDir / "apps" / "api-client" / "build" / "distributions"
+        override val webClientDistribution = rootDir / "apps" / "playground-app" / "build" / "distributions"
 
         override val clickUpCode: Code =
             Code.fromAsset((rootDir / "aws-lambdas" / "clickup-api-handlers" / "build" / "libs" / "clickup-api-handlers-all.jar").pathString)

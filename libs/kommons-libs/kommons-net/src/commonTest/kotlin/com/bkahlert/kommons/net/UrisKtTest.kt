@@ -46,4 +46,11 @@ class UrisKtTest {
         Uri.completeUri().fragmentParameters.toMap().shouldContainExactly(mapOf("foo" to listOf("far"), "faz" to emptyList()))
         Uri.emptyUri().fragmentParameters shouldBe Parameters.Empty
     }
+
+
+    @Test
+    fun div() = testAll {
+        Uri.completeUri() / "path-segment" shouldBe Uri.parse("https://username:password@example.com:8080/poo/par/path-segment?qoo=qar&qaz#foo=far&faz")
+        Uri.emptyUri() / "path-segment" shouldBe Uri.parse("/path-segment")
+    }
 }

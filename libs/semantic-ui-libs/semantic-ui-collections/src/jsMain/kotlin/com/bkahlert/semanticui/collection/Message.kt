@@ -1,7 +1,9 @@
 package com.bkahlert.semanticui.collection
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.State
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Attached
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Compact
@@ -12,17 +14,25 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Negative
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Positive
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Success
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Warning
+import com.bkahlert.semanticui.core.attributes.StatesScope
 import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
 import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.element.Icon
 import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
 import org.w3c.dom.HTMLDivElement
 
 public interface MessageElement : SemanticElement<HTMLDivElement>
+
+/** [State.Hidden](https://semantic-ui.com/collection/message.html#hidden) */
+public fun StatesScope<MessageElement>.hidden(): StatesScope<MessageElement> = +State.Hidden
+
+/** [State.Visible](https://semantic-ui.com/collection/message.html#visible) */
+public fun StatesScope<MessageElement>.visible(): StatesScope<MessageElement> = +State.Visible
 
 /** [Variation.Floating](https://semantic-ui.com/collections/message.html#floating) */
 public fun VariationsScope<MessageElement>.floating(): VariationsScope<MessageElement> = +Floating
@@ -32,6 +42,9 @@ public fun VariationsScope<MessageElement>.compact(): VariationsScope<MessageEle
 
 /** [Variation.Attached](https://semantic-ui.com/collections/message.html#attached) */
 public fun VariationsScope<MessageElement>.attached(): VariationsScope<MessageElement> = +Attached
+
+/** [Variation.Attached](https://semantic-ui.com/collections/message.html#attached) */
+public fun VariationsScope<MessageElement>.attached(value: Attached.VerticallyAttached): VariationsScope<MessageElement> = +value
 
 /** [Variation.Warning](https://semantic-ui.com/collections/message.html#warning) */
 public fun VariationsScope<MessageElement>.warning(): VariationsScope<MessageElement> = +Warning
@@ -71,6 +84,30 @@ public fun Message(
         classes("message")
     }, content)
 }
+
+/**
+ * Creates a [SemanticUI icon message](https://semantic-ui.com/collections/message.html#icon-message).
+ */
+@Composable
+public fun IconMessage(
+    icon: String,
+    attrs: SemanticAttrBuilderContext<MessageElement>? = null,
+    content: SemanticContentBuilder<MessageElement>? = null,
+) {
+    Message({
+        attrs?.invoke(this)
+        classes("icon", "message")
+    }) {
+        Icon(icon)
+        if (content != null) {
+            S("content") {
+                content()
+            }
+        }
+    }
+}
+
+// Dismissable Block
 
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable

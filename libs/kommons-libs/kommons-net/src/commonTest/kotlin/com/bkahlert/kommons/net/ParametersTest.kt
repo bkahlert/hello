@@ -8,19 +8,19 @@ import kotlin.test.Test
 class ParametersTest {
 
     @Test fun build_with_parameters() {
-        Parameters.build(Parameters.build(Parameters.Empty, fun ParametersBuilder.() {
+        Parameters.build(Parameters.build(Parameters.Empty) {
             appendAll("foo", emptyList())
-        }), fun ParametersBuilder.() {
+        }) {
             append("bar", "baz")
-        }) shouldBe Fixture
+        } shouldBe Fixture
     }
 
     @Test fun build_without_parameters() {
-        Parameters.build(Parameters.Empty, fun ParametersBuilder.() {
+        Parameters.build(Parameters.Empty) {
             append("bar", "baz")
-        }) shouldBe Parameters.build(Parameters.Empty, fun ParametersBuilder.() {
+        } shouldBe Parameters.build(Parameters.Empty) {
             append("bar", "baz")
-        })
+        }
     }
 
     @Test fun append() {

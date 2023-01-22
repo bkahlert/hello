@@ -4,16 +4,20 @@ public sealed interface Modifier {
     public val classNames: Array<out String>
 
     public sealed class State(override vararg val classNames: String) : Modifier {
+        override fun toString(): String = "${classNames.joinToString()} state"
+
         public object Active : State("active")
-        public object Hidden : State("hidden")
-        public object Indeterminate : State("indeterminate")
-        public object Focus : State("focus")
-        public object Loading : State("loading")
         public object Disabled : State("disabled")
         public object Error : State("error")
+        public object Focus : State("focus")
+        public object Hidden : State("hidden")
+        public object Indeterminate : State("indeterminate")
+        public object Loading : State("loading")
+        public object Visible : State("visible")
     }
 
     public sealed class Variation(override vararg val classNames: String) : Modifier {
+        override fun toString(): String = "${classNames.joinToString()} variation"
 
         public sealed class Action(pos: String?) : Variation(*listOfNotNull(pos, "action").toTypedArray()) {
             public companion object : Action(null)
@@ -64,6 +68,7 @@ public sealed interface Modifier {
         public object Avatar : Variation("avatar")
 
         public object Basic : Variation("basic")
+        public object Blurring : Variation("blurring")
         public object Bordered : Variation("bordered")
         public object Borderless : Variation("borderless")
 
@@ -71,8 +76,9 @@ public sealed interface Modifier {
         public object Centered : Variation("centered")
 
         public object Circular : Variation("circular")
+        public object Clearing : Variation("clearing")
 
-        public open class Colored(value: String) : Variation(value) {
+        public sealed class Colored(value: String) : Variation(value) {
             public object Red : Colored("red")
             public object Orange : Colored("orange")
             public object Yellow : Colored("yellow")
@@ -86,6 +92,7 @@ public sealed interface Modifier {
             public object Brown : Colored("brown")
             public object Grey : Colored("grey")
             public object Black : Colored("black")
+            public companion object : List<Colored> by listOf(Red, Orange, Yellow, Olive, Green, Teal, Blue, Violet, Purple, Pink, Brown, Grey, Black)
         }
 
         public object Compact : Variation("compact")
@@ -93,7 +100,13 @@ public sealed interface Modifier {
         public object Dimmable : Variation("dimmable")
         public object Divided : Variation("divided")
 
-        public object Error : Variation("warning")
+        public open class Emphasis(value: String) : Variation(value) {
+            public object Secondary : Emphasis("secondary")
+            public object Tertiary : Emphasis("tertiary")
+            public companion object : List<Emphasis> by listOf(Secondary, Tertiary)
+        }
+
+        public object Error : Variation("error")
 
         public open class Floated(pos: String) : Variation(pos, "floated") {
             public object Left : Floated("left")
@@ -113,6 +126,8 @@ public sealed interface Modifier {
         }
 
         public object Info : Variation("info")
+        public object Inline : Variation("inline")
+        public object InlineCenter : Variation("centered", "inline")
         public object Inverted : Variation("inverted")
 
         public object Labeled : Variation("labeled")
@@ -127,18 +142,21 @@ public sealed interface Modifier {
             public object VeryShort : LineLength("very", "short")
         }
 
-        public object Negative : Variation("positive")
+        public object Negative : Variation("negative")
 
+        public object Padded : Variation("padded")
         public object Positive : Variation("success")
 
         public open class Size(value: String) : Variation(value) {
             public object Mini : Size("mini")
             public object Tiny : Size("tiny")
             public object Small : Size("small")
+            public object Medium : Size("medium")
             public object Large : Size("large")
             public object Big : Size("big")
             public object Huge : Size("huge")
             public object Massive : Size("massive")
+            public companion object : List<Size> by listOf(Mini, Tiny, Small, Medium, Large, Big, Huge, Massive)
         }
 
         public object Relaxed : Variation("relaxed")
@@ -147,7 +165,13 @@ public sealed interface Modifier {
         public object Scrolling : Variation("scrolling")
         public object Selection : Variation("selection")
         public object Spaced : Variation("spaced")
-        public object Success : Variation("negative")
+        public object Success : Variation("success")
+
+        public abstract class TextAlignment(pos: String) : Variation(pos, "aligned") {
+            public object Center : TextAlignment("center")
+            public object Left : TextAlignment("left")
+            public object Right : TextAlignment("right")
+        }
 
         public object Transparent : Variation("transparent")
         public object Toggle : Variation("toggle")

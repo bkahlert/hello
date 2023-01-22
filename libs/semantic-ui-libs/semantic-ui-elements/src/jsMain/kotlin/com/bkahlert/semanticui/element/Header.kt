@@ -1,6 +1,10 @@
 package com.bkahlert.semanticui.element
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Attached
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Inverted
+import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
@@ -17,9 +21,34 @@ import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLHeadingElement
 
-public interface HeaderElement<TElement : Element> : SemanticElement<TElement>
-public interface HeaderHeadingElement : SemanticElement<HTMLHeadingElement>
-public interface HeaderDivElement : SemanticElement<HTMLDivElement>
+public interface HeaderElement<out TElement : Element> : SemanticElement<TElement>
+public interface HeaderHeadingElement : HeaderElement<HTMLHeadingElement>
+public interface HeaderDivElement : HeaderElement<HTMLDivElement>
+
+// Content
+
+// States
+
+// Dividing
+// Block
+
+/** [Variation.Attached.VerticallyAttached](https://semantic-ui.com/elements/header.html#attached) */
+public fun VariationsScope<HeaderElement<Element>>.attached(): VariationsScope<HeaderElement<Element>> = +Attached
+
+/** [Variation.Attached.VerticallyAttached](https://semantic-ui.com/elements/header.html#attached) */
+public fun VariationsScope<HeaderElement<Element>>.attached(value: Attached.VerticallyAttached): VariationsScope<HeaderElement<Element>> = +value
+
+// Floating
+
+
+/** [Variation.TextAlignment](https://semantic-ui.com/elements/header.html#text-alignment) */
+public fun VariationsScope<HeaderElement<Element>>.aligned(value: Variation.TextAlignment): VariationsScope<HeaderElement<Element>> = +value
+
+/** [Variation.Colored](https://semantic-ui.com/elements/header.html#colored) */
+public fun VariationsScope<HeaderElement<Element>>.colored(value: Variation.Colored): VariationsScope<HeaderElement<Element>> = +value
+
+/** [Variation.Inverted](https://semantic-ui.com/elements/header.html#inverted) */
+public fun VariationsScope<HeaderElement<Element>>.inverted(): VariationsScope<HeaderElement<Element>> = +Inverted
 
 /**
  * Creates a [SemanticUI page header](https://semantic-ui.com/elements/header.html#page-headers).
@@ -118,10 +147,13 @@ public fun Header(
 @Composable
 public fun IconHeader(
     vararg icon: String,
-    attrs: SemanticAttrBuilderContext<IconElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderDivElement>? = null,
     content: ContentBuilder<HTMLDivElement>? = null,
-): Unit = Header({ classes("icon") }) {
-    Icon(*icon) { attrs?.invoke(this) }
+): Unit = Header({
+    attrs?.invoke(this)
+    classes("icon")
+}) {
+    Icon(*icon)
     Div({ classes("content") }, content)
 }
 
@@ -131,10 +163,13 @@ public fun IconHeader(
 @Composable
 public fun IconSubHeader(
     vararg icon: String,
-    attrs: SemanticAttrBuilderContext<IconElement>? = null,
+    attrs: SemanticAttrBuilderContext<HeaderDivElement>? = null,
     content: ContentBuilder<HTMLDivElement>? = null,
-): Unit = Header({ classes("icon", "sub") }) {
-    Icon(*icon) { attrs?.invoke(this) }
+): Unit = Header({
+    attrs?.invoke(this)
+    classes("icon", "sub")
+}) {
+    Icon(*icon)
     Div({ classes("content") }, content)
 }
 

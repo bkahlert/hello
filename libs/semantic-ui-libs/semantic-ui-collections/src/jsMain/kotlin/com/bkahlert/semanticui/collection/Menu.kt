@@ -1,8 +1,10 @@
 package com.bkahlert.semanticui.collection
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.State
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation
 import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
+import com.bkahlert.semanticui.core.attributes.StatesScope
 import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
@@ -68,11 +70,14 @@ public interface MenuItemElement<out TElement : Element> : SemanticElement<Eleme
 public interface MenuItemDivElement : MenuItemElement<HTMLDivElement>
 public interface MenuItemAnchorElement : MenuItemElement<HTMLAnchorElement>
 
-/** [Variation.Borderless](https://semantic-ui.com/collections/menu.html#borderless) */
-public fun VariationsScope<MenuElement>.borderless(): VariationsScope<MenuElement> = +Modifier.Variation.Borderless
+/** Undocumented [State.Disabled] */
+public fun StatesScope<MenuItemElement<Element>>.disabled(): StatesScope<MenuItemElement<Element>> = +State.Disabled
 
 /** [Variation.Borderless](https://semantic-ui.com/collections/menu.html#borderless) */
-public fun VariationsScope<MenuItemElement<Element>>.borderless(): VariationsScope<MenuItemElement<Element>> = +Modifier.Variation.Borderless
+public fun VariationsScope<MenuElement>.borderless(): VariationsScope<MenuElement> = +Variation.Borderless
+
+/** [Variation.Borderless](https://semantic-ui.com/collections/menu.html#borderless) */
+public fun VariationsScope<MenuItemElement<Element>>.borderless(): VariationsScope<MenuItemElement<Element>> = +Variation.Borderless
 
 /**
  * Creates a [SemanticUI item](https://semantic-ui.com/collections/menu.html#content).

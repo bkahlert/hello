@@ -31,6 +31,12 @@ public fun Placeholder(
 /** [Variation.LineLength](https://semantic-ui.com/elements/placeholder.html#line-length) */
 public fun VariationsScope<PlaceholderElement>.lineLength(value: Variation.LineLength): VariationsScope<PlaceholderElement> = +value
 
+/** [Variation.Fluid](https://semantic-ui.com/elements/placeholder.html#fluid) */
+public fun VariationsScope<PlaceholderElement>.fluid(): VariationsScope<PlaceholderElement> = +Variation.Fluid
+
+/** [Variation.Inverted](https://semantic-ui.com/elements/placeholder.html#inverted) */
+public fun VariationsScope<PlaceholderElement>.inverted(): VariationsScope<PlaceholderElement> = +Variation.Inverted
+
 /**
  * Creates a [SemanticUI placeholder line](https://semantic-ui.com/elements/placeholder.html#line).
  */

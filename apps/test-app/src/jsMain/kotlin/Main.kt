@@ -1,6 +1,7 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
@@ -22,7 +23,7 @@ fun main() {
 @Composable
 fun Counter() {
 
-    var count: Int by mutableStateOf(0)
+    var count: Int by remember { mutableStateOf(0) }
 
     Div({ style { padding(25.px) } }) {
         Button(attrs = {

@@ -12,7 +12,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                api("com.bkahlert.kommons:kommons-color")
+                api("com.bkahlert.kommons:kommons-color") { because("CssColorValue") }
                 api(project(":semantic-ui-core"))
                 api(project(":semantic-ui-elements"))
                 api(project(":semantic-ui-collections"))

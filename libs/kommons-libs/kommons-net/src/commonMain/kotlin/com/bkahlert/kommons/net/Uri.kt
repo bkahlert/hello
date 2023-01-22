@@ -4,10 +4,19 @@ import kotlinx.serialization.Serializable
 
 /**
  * URI
- * as described in [RFC3986](https://www.rfc-editor.org/rfc/rfc3986).
+ * as specified in [RFC3986](https://www.rfc-editor.org/rfc/rfc3986).
  *
  * Treated as a [CharSequence], this URI yields the string representation
  * as specified in [RFC3986 section 5.3](https://www.rfc-editor.org/rfc/rfc3986#section-5.3).
+ *
+ * In contrast to [io.ktor.http.Url] all implementations of this interface
+ * - implement [CharSequence]
+ * - can be (de-)serialized with [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization)
+ * - handle [data URIs](https://www.rfc-editor.org/rfc/rfc2397)
+ *
+ * URIs—except for data URIs—can be converted
+ * to [io.ktor.http.Url] using [io.ktor.http.Url.toUri], and
+ * back using [Uri.toUrl].
  */
 @Serializable(with = UriSerializer::class)
 public sealed interface Uri : CharSequence {
@@ -27,6 +36,27 @@ public sealed interface Uri : CharSequence {
     public val fragment: String?
 
     public companion object {
+
+        /**
+         * Delimiter of the [path component](https://www.rfc-editor.org/rfc/rfc3986#section-3.3).
+         */
+        public const val PATH_COMPONENT_DELIMITER: String = "/"
+
+        /**
+         * Separator of path segments
+         * as specified in [Path component](https://www.rfc-editor.org/rfc/rfc3986#section-3.3).
+         */
+        public const val PATH_SEGMENTS_SEPARATOR: String = "/"
+
+        /**
+         * Delimiter of the [query component](https://www.rfc-editor.org/rfc/rfc3986#section-3.4).
+         */
+        public const val QUERY_COMPONENT_DELIMITER: String = "?"
+
+        /**
+         * Delimiter of the [fragment component](https://www.rfc-editor.org/rfc/rfc3986#section-3.5).
+         */
+        public const val FRAGMENT_COMPONENT_DELIMITER: String = "#"
 
         /**
          * Regular expression for parsing [Uri] instances
@@ -101,11 +131,11 @@ internal data class GenericUri(
             }
             append(path)
             query?.also {
-                append("?")
+                append(Uri.QUERY_COMPONENT_DELIMITER)
                 append(it)
             }
             fragment?.also {
-                append("#")
+                append(Uri.PATH_COMPONENT_DELIMITER)
                 append(it)
             }
         }

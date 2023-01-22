@@ -49,7 +49,7 @@ public fun VariationsScope<ImageElement<Element>>.rounded(): VariationsScope<Ima
 /** [Variation.Circular](https://semantic-ui.com/elements/image.html#circular) */
 public fun VariationsScope<ImageElement<Element>>.circular(): VariationsScope<ImageElement<Element>> = +Circular
 
-/** [Variation.VerticallyAligned aligned](https://semantic-ui.com/elements/image.html#vertically-aligned) */
+/** [Variation.VerticallyAligned](https://semantic-ui.com/elements/image.html#vertically-aligned) */
 public fun VariationsScope<ImageElement<Element>>.verticallyAligned(value: Variation.VerticallyAligned): VariationsScope<ImageElement<Element>> = +value
 
 /** [Variation.Centered](https://semantic-ui.com/elements/image.html#centered) */

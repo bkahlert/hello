@@ -25,12 +25,12 @@ public fun rememberClickUpMenuTestViewModel(
 ): ClickUpMenuViewModel {
     val initialState = testClient.init()
     return rememberClickUpMenuViewModel(
-        initialState = initialState,
-        refreshCoroutineScope = refreshCoroutineScope,
-        storage = storage,
         configurers = arrayOf(ClickUpTestClientConfigurer(
             name = "Demo (${init::class.simpleName})",
             provide = { testClient }
         )),
+        initialState = initialState,
+        refreshCoroutineScope = refreshCoroutineScope,
+        storage = storage,
     )
 }

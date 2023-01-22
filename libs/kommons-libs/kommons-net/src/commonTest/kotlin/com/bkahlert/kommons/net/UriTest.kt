@@ -88,13 +88,3 @@ class UriTest {
         Uri.parseOrNull("data:").shouldBeNull()
     }
 }
-
-private const val COMPLETE_URI_STRING: String = "https://username:password@example.com:8080/poo/par?qoo=qar&qaz#foo=far&faz"
-private val COMPLETE_URI: Uri = Uri("https", Authority("username:password", "example.com", 8080), "/poo/par", "qoo=qar&qaz", "foo=far&faz")
-fun Uri.Companion.completeUriString(): String = COMPLETE_URI_STRING
-fun Uri.Companion.completeUri(): Uri = COMPLETE_URI
-
-private const val EMPTY_URI_STRING: String = ""
-private val EMPTY_URI: Uri = Uri(null, null, "", null, null)
-fun Uri.Companion.emptyUriString(): String = EMPTY_URI_STRING
-fun Uri.Companion.emptyUri(): Uri = EMPTY_URI

@@ -126,7 +126,7 @@ public sealed class OAuth2AuthorizationState(
             logger.info("Redirecting to $authorizationUrl")
             window.location.href = authorizationUrl
             coroutineScope { cancel("Redirection to ${authorizationServer.authorizationEndpoint}") }
-            return compute(authorizationServer, clientId)
+            return load(authorizationServer, clientId)
         }
     }
 
@@ -241,24 +241,27 @@ public sealed class OAuth2AuthorizationState(
                     tokensStorage.set(null)
                 }
             }
-            return compute(authorizationServer, clientId)
+            return load(authorizationServer, clientId)
         }
     }
 
     public companion object {
 
         /**
-         * Computes the current [OAuth2AuthorizationState] based on the specified [authorizationServer]
+         * Loads the current [OAuth2AuthorizationState] based on the specified [authorizationServer]
          * and [clientId].
          */
-        public fun compute(
+        public fun load(
             authorizationServer: OAuth2AuthorizationServer,
             clientId: String,
         ): OAuth2AuthorizationState {
+
             val tokenInfoStorage = TokenInfoStorageImpl(authorizationServer.issuer)
 
             val searchParams = URL(window.location.href).searchParams
+
             return when (val authorizationCode = searchParams.get("code")) {
+
                 null -> when (tokenInfoStorage.get()?.bearerTokens) {
                     null -> Unauthorized(authorizationServer, clientId)
                     else -> Authorized(authorizationServer, clientId, tokenInfoStorage)

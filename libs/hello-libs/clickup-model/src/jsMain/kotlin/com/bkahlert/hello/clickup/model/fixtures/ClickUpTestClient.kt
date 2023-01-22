@@ -25,7 +25,7 @@ import com.bkahlert.kommons.randomString
 import kotlinx.coroutines.delay
 import kotlin.js.Date
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.times
 import kotlin.require as kotlinRequire
 import kotlin.requireNotNull as kotlinRequireNotNull
 
@@ -46,7 +46,7 @@ public open class ClickUpTestClient(
     ).flatten(),
     initialTimeEntries: List<TimeEntry> = emptyList(),
     public val initialRunningTimeEntry: TimeEntry? = ClickUpFixtures.TimeEntry.running(),
-    public val delayFactor: Double = .2,
+    public val slowDown: Double = .2,
 ) : ClickUpClient {
 
     private var user: User = initialUser
@@ -57,21 +57,21 @@ public open class ClickUpTestClient(
     private var folders: List<Folder> = initialFolders
     private var timeEntries: List<TimeEntry> = initialTimeEntries
     private var runningTimeEntry: TimeEntry? = initialRunningTimeEntry
-    private suspend fun adaptedDelay(duration: Duration) = delay(duration * delayFactor)
+    private suspend fun adaptedDelay(duration: Duration) = delay(duration * slowDown)
 
     override suspend fun getUser(): User {
-        adaptedDelay(1.5.seconds)
+        adaptedDelay(DEMO_BASE_DELAY)
         return user
     }
 
     override suspend fun getTeams(): List<Team> {
-        adaptedDelay(2.5.seconds)
+        adaptedDelay(1.5 * DEMO_BASE_DELAY)
         return teams
     }
 
     override suspend fun createTask(listId: TaskListID, name: String): Task {
         require(name.isNotEmpty()) { "invalid task name" }
-        adaptedDelay(.5.seconds)
+        adaptedDelay(.3 * DEMO_BASE_DELAY)
         val list = requireNotNull(lists.firstOrNull { it.id == listId }) {
             "unknown list $listId"
         }
@@ -80,7 +80,7 @@ public open class ClickUpTestClient(
         }
         val space = requireNotNull(list.space) { "unknown space for $list" }
         val taskId = TaskID(randomString(7))
-        adaptedDelay(1.seconds)
+        adaptedDelay(0.6 * DEMO_BASE_DELAY)
         return Task(
             id = taskId,
             customId = null,
@@ -137,7 +137,7 @@ public open class ClickUpTestClient(
         date_updated_lt: Date?,
         custom_fields: List<CustomFieldFilter>?,
     ): List<Task> {
-        adaptedDelay(3.seconds)
+        adaptedDelay(2 * DEMO_BASE_DELAY)
         return tasks.asSequence()
             .filter { space_ids == null || space_ids.contains(it.space.id) }
             .filter { project_ids == null || project_ids.contains(it.folder.id) }
@@ -155,33 +155,33 @@ public open class ClickUpTestClient(
     }
 
     override suspend fun getTask(taskId: TaskID): Task? {
-        adaptedDelay(1.seconds)
+        adaptedDelay(0.6 * DEMO_BASE_DELAY)
         return tasks.firstOrNull { it.id == taskId }
     }
 
     override suspend fun updateTask(task: Task): Task {
-        adaptedDelay(1.seconds)
+        adaptedDelay(0.6 * DEMO_BASE_DELAY)
         tasks = tasks.map { it.takeUnless { it.id == task.id } ?: task }
         return task
     }
 
     override suspend fun getSpaces(team: Team, archived: Boolean): List<Space> {
-        adaptedDelay(.5.seconds)
+        adaptedDelay(0.3 * DEMO_BASE_DELAY)
         return spaces
     }
 
     override suspend fun getLists(space: Space, archived: Boolean): List<TaskList> {
-        adaptedDelay(.5.seconds)
+        adaptedDelay(0.3 * DEMO_BASE_DELAY)
         return lists.filterBy(space)
     }
 
     override suspend fun getLists(folder: Folder, archived: Boolean): List<TaskList> {
-        adaptedDelay(.5.seconds)
+        adaptedDelay(0.3 * DEMO_BASE_DELAY)
         return lists.filterBy(folder)
     }
 
     override suspend fun getFolders(space: Space, archived: Boolean): List<Folder> {
-        adaptedDelay(.5.seconds)
+        adaptedDelay(0.3 * DEMO_BASE_DELAY)
         return folders.filterBy(space)
     }
 
@@ -201,17 +201,17 @@ public open class ClickUpTestClient(
     }
 
     override suspend fun getTimeEntry(team: Team, timeEntryID: TimeEntryID): TimeEntry? {
-        adaptedDelay(.5.seconds)
+        adaptedDelay(0.3 * DEMO_BASE_DELAY)
         return timeEntries.firstOrNull { it.wid == team.id && it.id == timeEntryID }
     }
 
     override suspend fun getRunningTimeEntry(team: Team, assignee: User?): TimeEntry? {
-        adaptedDelay(.5.seconds)
+        adaptedDelay(0.3 * DEMO_BASE_DELAY)
         return runningTimeEntry
     }
 
     override suspend fun startTimeEntry(team: Team, taskId: TaskID?, description: String?, billable: Boolean, vararg tags: Tag): TimeEntry {
-        adaptedDelay(1.seconds)
+        adaptedDelay(0.6 * DEMO_BASE_DELAY)
         stopTimeEntry(team)
         val timeEntry = taskId?.let {
             checkNotNull(getTask(taskId = it)).let { task ->
@@ -247,7 +247,7 @@ public open class ClickUpTestClient(
     }
 
     override suspend fun stopTimeEntry(team: Team): TimeEntry? {
-        adaptedDelay(1.seconds)
+        adaptedDelay(0.6 * DEMO_BASE_DELAY)
         return runningTimeEntry?.also {
             val timeEntry = it.copy(end = Date())
             timeEntries = timeEntries + timeEntry
@@ -256,7 +256,7 @@ public open class ClickUpTestClient(
     }
 
     override suspend fun addTagsToTimeEntries(team: Team, timeEntryIDs: List<TimeEntryID>, tags: List<Tag>) {
-        adaptedDelay(1.5.seconds)
+        adaptedDelay(10.3 * DEMO_BASE_DELAY)
         timeEntries = timeEntries.map {
             it.takeUnless { it.wid == team.id && timeEntryIDs.contains(it.id) } ?: it.copy(tags = buildSet { addAll(it.tags);addAll(tags) }.toList())
         }
