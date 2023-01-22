@@ -1,6 +1,7 @@
 package com.bkahlert.hello.debug.clickup
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.clickup.model.ClickUpException
 import com.bkahlert.hello.clickup.model.Team
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
@@ -13,9 +14,8 @@ import com.bkahlert.hello.clickup.viewmodel.fixtures.rememberClickUpMenuTestView
 import com.bkahlert.hello.clickup.viewmodel.fixtures.toFullyLoaded
 import com.bkahlert.hello.clickup.viewmodel.fixtures.toPartiallyLoaded
 import com.bkahlert.hello.clickup.viewmodel.fixtures.toTeamSelecting
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
-import com.bkahlert.hello.debug.clickupException
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 
 @Composable
 fun ClickUpMenuDemo() {
@@ -84,7 +84,9 @@ fun ClickUpMenuDemo() {
                         if (failing > 0) {
                             failing--
                             console.warn("...will fail")
-                            throw clickupException
+                            throw ClickUpException(
+                                "something went wrong", "TEST-1234", RuntimeException("underlying problem")
+                            )
                         }
                         console.warn("...will succeed")
                         return super.stopTimeEntry(team)

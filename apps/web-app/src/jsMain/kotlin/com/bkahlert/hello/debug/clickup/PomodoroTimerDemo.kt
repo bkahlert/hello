@@ -13,9 +13,9 @@ import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.completed
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.running
 import com.bkahlert.hello.clickup.viewmodel.PomodoroTimer
 import com.bkahlert.hello.clickup.viewmodel.rememberPomodoroTimerState
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
 import com.bkahlert.kommons.minus
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.js.Date

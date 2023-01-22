@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 import com.bkahlert.semanticui.custom.DimmingLoader
 import com.bkahlert.semanticui.element.PrimaryButton
 import kotlinx.coroutines.delay

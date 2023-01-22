@@ -1,8 +1,8 @@
 package com.bkahlert.hello.debug.misc
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 import org.jetbrains.compose.web.dom.Text
 import kotlin.js.Json
 import kotlin.js.Promise

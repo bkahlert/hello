@@ -1,8 +1,6 @@
 package com.bkahlert.hello.debug.search
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.ui.search.MultiSearchInput
 import com.bkahlert.hello.ui.search.PasteHandlingMultiSearchInput
 import com.bkahlert.hello.ui.search.SearchEngine
@@ -11,6 +9,8 @@ import com.bkahlert.hello.ui.search.SearchEngine.Google
 import com.bkahlert.hello.ui.search.SearchInput
 import com.bkahlert.hello.ui.search.rememberMultiSearchInputState
 import com.bkahlert.hello.ui.search.rememberSearchEngineSelectState
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 
 @Composable
 fun SearchInputDemos() {

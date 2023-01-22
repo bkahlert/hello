@@ -20,8 +20,6 @@ public fun ErrorMessage(
     attrs: SemanticAttrBuilderContext<MessageElement>? = null,
 ) {
     ErrorMessage(attrs) {
-        console.error("An error occurred", throwable)
-
         Header {
             Text(throwable.errorMessage)
         }

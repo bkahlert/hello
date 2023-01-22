@@ -23,23 +23,21 @@ public sealed class HelloClient(
 ) {
     public val userInfo: UserInfoApiClient? = apiClients[UserInfoApiClient::class]?.let { UserInfoApiClient(it, httpClient) }
 
-    override fun toString(): String = this::class.simpleName.toString()
-
-
-    public class Anonymous(
+    public class Failed(
+        private val reason: String,
         apiClients: Map<KClass<out ApiClient>, String?>,
-    ) : HelloClient(apiClients)
-
+    ) : HelloClient(apiClients) {
+        override fun toString(): String = "Failed. Reason: $reason"
+    }
 
     public class LoggedOut(
         apiClients: Map<KClass<out ApiClient>, String?>,
         private val authorizationState: Unauthorized,
     ) : HelloClient(apiClients) {
-
+        override fun toString(): String = "Logged out"
         public suspend fun logIn(): OAuth2AuthorizationState =
             authorizationState.authorize()
     }
-
 
     public class LoggedIn(
         apiClients: Map<KClass<out ApiClient>, String?>,
@@ -54,6 +52,7 @@ public sealed class HelloClient(
             })
         },
     ) {
+        override fun toString(): String = "Logged in"
 
         public val userProps: UserPropsApiClient? = apiClients[UserPropsApiClient::class]?.let { UserPropsApiClient(it, httpClient) }
 
@@ -83,9 +82,9 @@ public sealed class HelloClient(
         public suspend fun load(
             config: HelloClientConfig,
         ): HelloClient {
-            logger.info("Config: $config")
-            val openIDProvider = config.openIDProvider ?: return Anonymous(config.apiClients)
-            val clientId = config.clientId ?: return Anonymous(config.apiClients)
+            logger.info("Loading with config: $config")
+            val openIDProvider = config.openIDProvider ?: return Failed("OpenID provider configuration missing", config.apiClients)
+            val clientId = config.clientId ?: return Failed("Client ID missing", config.apiClients)
 
             val metadata = openIDProvider.loadOpenIDConfiguration()
             val authServer = OAuth2AuthorizationServer.from(metadata)
@@ -97,6 +96,7 @@ public sealed class HelloClient(
             clientId: String,
             apiClients: Map<KClass<out ApiClient>, String?>,
         ): HelloClient {
+            logger.info("Loading with authorization server: $authServer")
             val authorizationState = OAuth2AuthorizationState.compute(authServer, clientId)
             return load(authorizationState, apiClients)
         }
@@ -105,6 +105,8 @@ public sealed class HelloClient(
             authorizationState: OAuth2AuthorizationState,
             apiClients: Map<KClass<out ApiClient>, String?>,
         ): HelloClient {
+            logger.info("Loading with authorization state: $authorizationState")
+
             val helloClient = when (authorizationState) {
                 is Unauthorized -> LoggedOut(apiClients, authorizationState)
                 is Authorizing -> LoggedIn(apiClients, authorizationState.getTokens())
@@ -122,7 +124,8 @@ public sealed class HelloClient(
                     logger.warn("Failed to get ClickUp API token", it)
                 }.getOrNull()
             }
-            logger.debug("$helloClient")
+
+            logger.info("Finished loading $helloClient")
             return helloClient
         }
     }

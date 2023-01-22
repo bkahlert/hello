@@ -2,12 +2,12 @@ package com.bkahlert.hello.debug.kommons
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.Brand
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.semanticui.SiteColors
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.deg
 import com.bkahlert.kommons.text.toKebabCasedString
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 import com.bkahlert.semanticui.custom.backgroundColor
 import com.bkahlert.semanticui.custom.color
 import org.jetbrains.compose.web.css.AlignContent

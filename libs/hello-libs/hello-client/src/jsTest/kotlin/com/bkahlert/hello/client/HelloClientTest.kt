@@ -8,7 +8,7 @@ class HelloClientTest {
     @Test
     fun instantiation() {
         shouldNotThrowAny {
-            HelloClient.Anonymous(emptyMap())
+            HelloClient.Failed(emptyMap())
         }
     }
 }

@@ -1,9 +1,10 @@
 package com.bkahlert.hello.debug.semanticui
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
-import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.State.Active
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Inverted
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 import com.bkahlert.semanticui.element.Divider
 import com.bkahlert.semanticui.element.Line
 import com.bkahlert.semanticui.element.Paragraph
@@ -67,7 +68,7 @@ fun ModulesDemos() {
                     Line()
                 }
             }
-            Dimmer({ raw(Modifier.State.Active) })
+            Dimmer({ raw(Active) })
         }
         Demo("Dimmer (Inverted)") {
             Placeholder {
@@ -78,7 +79,7 @@ fun ModulesDemos() {
                     Line()
                 }
             }
-            Dimmer({ raw(Modifier.State.Active, Modifier.Variation.Inverted) })
+            Dimmer({ raw(Active, Inverted) })
         }
     }
 }

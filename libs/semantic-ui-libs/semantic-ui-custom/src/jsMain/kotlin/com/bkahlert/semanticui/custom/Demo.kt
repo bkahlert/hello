@@ -1,11 +1,10 @@
-package com.bkahlert.hello.debug
+package com.bkahlert.semanticui.custom
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.hello.clickup.model.ClickUpException
 import com.bkahlert.semanticui.collection.Header
 import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
@@ -22,11 +21,13 @@ import com.bkahlert.semanticui.element.Icon
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.marginBottom
 import org.jetbrains.compose.web.css.marginTop
+import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 
+/** A composable to hold [Demo] composables. */
 @Composable
-fun Demos(
+public fun Demos(
     name: String,
     attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
     content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
@@ -40,20 +41,22 @@ fun Demos(
     }
 }
 
+/** A composable to demonstrate the specified [content]. */
 @Composable
-fun Demo(
-    name: String,
+public fun Demo(
+    name: String?,
     attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
     content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
 ) {
     var dirty by remember { mutableStateOf(false) }
     S("ui", "segment", attrs = attrs) {
+        Div { }
         if (!dirty) {
             TextMenu({
                 raw(Small)
                 style { marginTop((-1).em); marginBottom(0.em) }
             }) {
-                Header { Text(name) }
+                name?.also { Header { Text(it) } }
                 Menu({ classes("right", "small") }) {
                     LinkItem({
                         onClick { dirty = true }
@@ -71,9 +74,9 @@ fun Demo(
     }
 }
 
-val clickupException = ClickUpException(
-    "something went wrong", "TEST-1234", RuntimeException("underlying problem")
-)
-
-fun <T> response(value: T) = Result.success(value)
-fun <T> failedResponse(exception: Throwable = clickupException) = Result.failure<T>(exception)
+/** A composable to demonstrate the specified [content]. */
+@Composable
+public fun Demo(
+    attrs: SemanticAttrBuilderContext<SemanticElement<HTMLDivElement>>? = null,
+    content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
+): Unit = Demo(null, attrs, content)

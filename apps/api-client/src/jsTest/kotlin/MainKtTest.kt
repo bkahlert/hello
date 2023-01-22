@@ -1,3 +1,4 @@
+import app.UserInfo
 import com.bkahlert.kommons.json.LenientJson
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe

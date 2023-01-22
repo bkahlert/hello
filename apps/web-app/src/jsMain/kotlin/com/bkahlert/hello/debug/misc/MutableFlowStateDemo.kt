@@ -5,11 +5,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import com.bkahlert.hello.SimpleLogger.Companion.simpleLogger
-import com.bkahlert.hello.debug.Demo
 import com.bkahlert.semanticui.collection.Message
 import com.bkahlert.semanticui.collection.info
 import com.bkahlert.semanticui.collection.size
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
+import com.bkahlert.semanticui.custom.Demo
 import com.bkahlert.semanticui.element.PrimaryButton
 import com.bkahlert.semanticui.element.SecondaryButton
 import com.bkahlert.semanticui.element.compact

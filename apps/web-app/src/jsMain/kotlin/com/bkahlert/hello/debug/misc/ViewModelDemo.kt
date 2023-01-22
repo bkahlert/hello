@@ -17,14 +17,12 @@ import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.running
 import com.bkahlert.hello.clickup.viewmodel.PomodoroTimer
 import com.bkahlert.hello.clickup.viewmodel.rememberPomodoroTimerState
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
-import com.bkahlert.hello.debug.failedResponse
 import com.bkahlert.hello.debug.misc.ViewModelDemoStuff.TestViewModel
-import com.bkahlert.hello.debug.response
 import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.isOdd
 import com.bkahlert.kommons.randomString
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 import com.bkahlert.semanticui.element.Header
 import com.bkahlert.semanticui.view.Item
 import com.bkahlert.semanticui.view.Items
@@ -96,8 +94,8 @@ private object ViewModelDemoStuff {
     suspend fun restCall(): Result<String> {
         delay(500)
         return when (Now.epochSeconds.isOdd) {
-            true -> response("rest response at ${Date().toTimeString()}")
-            else -> failedResponse()
+            true -> Result.success("rest response at ${Date().toTimeString()}")
+            else -> Result.failure(RuntimeException("error message"))
         }
     }
 

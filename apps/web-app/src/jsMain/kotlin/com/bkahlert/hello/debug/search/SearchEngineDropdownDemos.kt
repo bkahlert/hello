@@ -1,13 +1,13 @@
 package com.bkahlert.hello.debug.search
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.ui.search.SearchEngine
 import com.bkahlert.hello.ui.search.SearchEngine.Bing
 import com.bkahlert.hello.ui.search.SearchEngine.Google
 import com.bkahlert.hello.ui.search.SearchEngineDropdown
 import com.bkahlert.hello.ui.search.rememberSearchEngineSelectState
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 
 @Composable
 fun SearchEngineDropdownDemos() {

@@ -13,10 +13,10 @@ import com.bkahlert.hello.clickup.view.ActivityDropdown
 import com.bkahlert.hello.clickup.view.ActivityGroup
 import com.bkahlert.hello.clickup.view.activities
 import com.bkahlert.hello.clickup.view.rememberActivityDropdownState
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
 import com.bkahlert.hello.debug.clickup.ActivityDropdownFixtures.select
 import com.bkahlert.kommons.color.Color
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 
 @Composable
 fun ActivityDropdownDemo() {

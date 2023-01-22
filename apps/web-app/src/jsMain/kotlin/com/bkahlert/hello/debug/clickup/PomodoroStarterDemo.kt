@@ -6,8 +6,8 @@ import com.bkahlert.hello.clickup.Pomodoro.Type.Pro
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.viewmodel.PomodoroStarter
 import com.bkahlert.hello.clickup.viewmodel.rememberPomodoroStarterState
-import com.bkahlert.hello.debug.Demo
-import com.bkahlert.hello.debug.Demos
+import com.bkahlert.semanticui.custom.Demo
+import com.bkahlert.semanticui.custom.Demos
 
 @Composable
 fun PomodoroStarterDemo() {
