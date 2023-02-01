@@ -43,6 +43,7 @@ kotlin {
                 implementation("com.bkahlert.semantic-ui:semantic-ui")
                 implementation("com.bkahlert.hello:clickup")
                 implementation("com.bkahlert.hello:hello-client")
+                implementation("com.bkahlert.hello:hello-search")
             }
         }
 

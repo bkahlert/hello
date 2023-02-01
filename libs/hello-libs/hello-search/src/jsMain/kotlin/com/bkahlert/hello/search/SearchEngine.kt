@@ -1,6 +1,6 @@
-package com.bkahlert.hello.ui.search
+package com.bkahlert.hello.search
 
-import com.bkahlert.hello.ui.search.SearchEngine.Google
+import com.bkahlert.hello.search.SearchEngine.Google
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.net.Uri
@@ -11,7 +11,7 @@ import com.bkahlert.kommons.util.successor
  * Search engines, such as [Google].
  */
 @Suppress("SpellCheckingInspection")
-enum class SearchEngine(
+public enum class SearchEngine(
     /**
      * Name of the search engine.
      */
@@ -19,15 +19,15 @@ enum class SearchEngine(
     /**
      * Brand color of the search engine.
      */
-    val color: Color,
+    public val color: Color,
     /**
      * URL creator for a given query.
      */
-    val url: (String) -> Uri,
+    public val url: (String) -> Uri,
     /**
      * Name(s) of the icon [Semantic UI icon](https://semantic-ui.com/elements/icon.html).
      */
-    vararg val icon: String,
+    public vararg val icon: String,
 ) {
     /**
      * [Linguee](https://www.linguee.de)
@@ -202,24 +202,24 @@ enum class SearchEngine(
     /**
      * The [SearchEngine] preceeding this one.
      */
-    val prev: SearchEngine get() = predecessor
+    public val prev: SearchEngine get() = predecessor
 
     /**
      * Returns the [SearchEngine] preceeding this one among the specified [engines].
      */
-    fun prev(engines: List<SearchEngine>): SearchEngine = engines.predecessor { it == this }.first()
+    public fun prev(engines: List<SearchEngine>): SearchEngine = engines.predecessor { it == this }.first()
 
     /**
      * The [SearchEngine] following this one.
      */
-    val next: SearchEngine get() = successor
+    public val next: SearchEngine get() = successor
 
     /**
      * The [SearchEngine] following this one among the specified [engines].
      */
-    fun next(engines: List<SearchEngine>): SearchEngine = engines.successor { it == this }.first()
+    public fun next(engines: List<SearchEngine>): SearchEngine = engines.successor { it == this }.first()
 
-    companion object {
-        val Default: SearchEngine = Google
+    public companion object {
+        public val Default: SearchEngine = Google
     }
 }

@@ -1,4 +1,4 @@
-package com.bkahlert.hello.ui
+package com.bkahlert.hello
 
 import com.bkahlert.semanticui.custom.BreakPoints
 import com.bkahlert.semanticui.custom.Length

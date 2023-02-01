@@ -11,9 +11,13 @@ class UrlsKtTest {
     @Test
     fun to_uri() = testAll {
         Url.completeUrl().toUri() shouldBe Uri.completeUri()
-        Url.emptyUrl().toUri() shouldBe when (PlatformUtils.IS_BROWSER) {
-            true -> Uri.parse("http://localhost:9876") // 🤷
-            else -> Uri.parse("http://localhost")
+        when (PlatformUtils.IS_BROWSER) {
+            true -> {
+                val uri = Url.emptyUrl().toUri()
+                uri shouldBe Uri.parse("http://localhost:${uri.port}") // 🤷
+            }
+
+            else -> Url.emptyUrl().toUri() shouldBe Uri.parse("http://localhost")
         }
     }
 

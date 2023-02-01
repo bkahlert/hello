@@ -15,9 +15,10 @@ import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.Spaces
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.TaskListBuilder
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.Teams
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.User
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.timeEntry
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
-import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
+import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures.ClickUpMark
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.clickup.viewmodel.fixtures.rememberClickUpMenuTestViewModel
@@ -54,12 +55,14 @@ class ClickUpMenuTest {
         shouldRender(
             """
             <div>
-                <div class="ui mini dimmable fluid one item menu">
+                <div class="ui dimmable mini fluid one item menu">
                     <div class="ui inverted dimmer">
-                        <div class="ui mini loader"></div>
+                        <div class="content">
+                            <div class="ui mini loader"></div>
+                        </div>
                     </div>
                     <div class="ui active inverted dimmer"></div>
-                    <div class="link item"><img class="mini" src="${ImageFixtures.ClickUpMark}" alt="ClickUp">Connect to ClickUp</div>
+                    <div class="link item"><img class="mini" style="mix-blend-mode: luminosity;" src="$ClickUpMark" alt="ClickUp">Connect to ClickUp</div>
                 </div>
             </div>
         """.trimIndent()
@@ -76,11 +79,13 @@ class ClickUpMenuTest {
         shouldRender(
             """
             <div>
-                <div class="ui mini dimmable fluid one item menu">
+                <div class="ui dimmable mini fluid one item menu">
                     <div class="ui inverted dimmer">
-                        <div class="ui mini loader"></div>
+                        <div class="content">
+                            <div class="ui mini loader"></div>
+                        </div>
                     </div>
-                    <div class="link item"><img class="mini" src="${ImageFixtures.ClickUpMark}" alt="ClickUp">Connect to ClickUp</div>
+                    <div class="link item"><img class="mini" style="mix-blend-mode: luminosity;" src="$ClickUpMark" alt="ClickUp">Connect to ClickUp</div>
                 </div>
             </div>
         """.trimIndent()
@@ -97,12 +102,13 @@ class ClickUpMenuTest {
         shouldRender(
             """
             <div>
-                <div class="ui mini dimmable menu">
+                <div class="ui dimmable mini menu">
                     <div class="ui inverted dimmer">
-                        <div class="ui mini loader"></div>
+                        <div class="content">
+                            <div class="ui mini loader"></div>
+                        </div>
                     </div>
-                    <div class="ui borderless item dropdown" tabindex="0">
-                        <img class="rounded avatar" src="${ClickUpFixtures.User.profilePicture}" alt="User john.doe"><i class="dropdown icon"></i>
+                    <div class="ui borderless item dropdown" tabindex="0"><img class="rounded avatar" src="${User.profilePicture}" alt="User john.doe"><i class="dropdown icon"></i>
                         <div class="menu" tabindex="-1">
                             <div class="link item"><i class="sync icon"></i>Refresh</div>
                             <div class="link item"><i class="sign-out icon"></i>Sign-out</div>
@@ -127,12 +133,14 @@ class ClickUpMenuTest {
         shouldRender(
             """
             <div>
-                <div class="ui mini dimmable menu">
+                <div class="ui dimmable mini menu">
                     <div class="ui inverted dimmer">
-                        <div class="ui mini loader"></div>
+                        <div class="content">
+                            <div class="ui mini loader"></div>
+                        </div>
                     </div>
                     <div class="ui borderless item dropdown" tabindex="0">
-                        <img class="rounded avatar" src="${ClickUpFixtures.User.profilePicture}" alt="User john.doe"><i class="dropdown icon"></i>
+                        <img class="rounded avatar" src="${User.profilePicture}" alt="User john.doe"><i class="dropdown icon"></i>
                         <div class="menu" tabindex="-1">
                             <div class="link item"><i class="sync icon"></i>Refresh</div>
                             <div class="link item"><i class="sign-out icon"></i>Sign-out</div>
@@ -156,12 +164,14 @@ class ClickUpMenuTest {
         shouldRender(
             """
             <div>
-                <div class="ui mini dimmable menu">
+                <div class="ui dimmable mini menu">
                     <div class="ui inverted dimmer">
-                        <div class="ui mini loader"></div>
+                        <div class="content">
+                            <div class="ui mini loader"></div>
+                        </div>
                     </div>
                     <div class="ui borderless item dropdown" tabindex="0">
-                        <img class="rounded avatar" src="${ClickUpFixtures.User.profilePicture}" alt="User john.doe"><i class="dropdown icon"></i>
+                        <img class="rounded avatar" src="${User.profilePicture}" alt="User john.doe"><i class="dropdown icon"></i>
                         <div class="menu" tabindex="-1">
                             <div class="link item"><i class="sync icon"></i>Refresh</div>
                             <div class="link item"><i class="sign-out icon"></i>Sign-out</div>
@@ -206,9 +216,9 @@ class ClickUpMenuTest {
         pressPlay()
         delay(.5.seconds)
 
-        testClient.getRunningTimeEntry(Teams.first(), ClickUpFixtures.User) should {
+        testClient.getRunningTimeEntry(Teams.first(), User) should {
             it?.task?.id?.stringValue shouldBe "task-1"
-            it?.user shouldBe ClickUpFixtures.User
+            it?.user shouldBe User
             it?.billable shouldBe false
             it?.start should { start -> (Date() - start!!) < 1.seconds }
             it?.end shouldBe null
@@ -230,7 +240,7 @@ class ClickUpMenuTest {
         pressStop()
         delay(.5.seconds)
 
-        testClient.getRunningTimeEntry(Teams.first(), ClickUpFixtures.User) shouldBe null
+        testClient.getRunningTimeEntry(Teams.first(), User) shouldBe null
         testClient.getTask(TaskID("task-1")) should {
             it?.tags!! should {
                 contain(Pomodoro.Type.Default.tag)
@@ -259,9 +269,9 @@ class ClickUpMenuTest {
         pressPlay()
         delay(.5.seconds)
 
-        testClient.getRunningTimeEntry(Teams.first(), ClickUpFixtures.User) should {
+        testClient.getRunningTimeEntry(Teams.first(), User) should {
             it?.task?.id?.stringValue shouldBe "task-2"
-            it?.user shouldBe ClickUpFixtures.User
+            it?.user shouldBe User
             it?.billable shouldBe false
             it?.start should { start -> (Date() - start!!) < 1.seconds }
             it?.end shouldBe null
@@ -309,7 +319,7 @@ private fun testClient(
         task = tasks.firstOrNull()?.asPreview()
     ),
 ) = ClickUpTestClient(
-    initialUser = ClickUpFixtures.User,
+    initialUser = User,
     initialTeams = Teams,
     initialTasks = tasks.toList(),
     initialSpaces = listOf(space),

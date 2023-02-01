@@ -1,5 +1,6 @@
 import com.bkahlert.hello.clickup.demo.ClickUpDemos
 import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
+import com.bkahlert.hello.search.demos.SearchDemos
 import com.bkahlert.kommons.binding.adapt
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.demo.DemoView
@@ -31,6 +32,7 @@ fun main() {
             AppDemoProvider,
             ExperimentsDemoProvider,
             ClickUpDemos,
+            SearchDemos,
             *SemanticUiDemoProviders,
             state = BoundDemoViewState(activeDemoBinding),
         ) {

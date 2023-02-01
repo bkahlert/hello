@@ -1,4 +1,4 @@
-package com.bkahlert.hello.ui.header
+package com.bkahlert.hello.header
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.web.css.AlignContent

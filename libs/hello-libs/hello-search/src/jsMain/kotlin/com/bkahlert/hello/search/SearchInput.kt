@@ -1,4 +1,4 @@
-package com.bkahlert.hello.ui.search
+package com.bkahlert.hello.search
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -13,6 +13,7 @@ import com.bkahlert.kommons.net.port
 import com.bkahlert.kommons.net.toUriOrNull
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.core.attributes.Modifier
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.element.Icon
@@ -39,23 +40,23 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Input
 
 @Stable
-interface SearchInputState {
-    var query: String
+public interface SearchInputState {
+    public var query: String
 }
 
-class SearchInputStateImpl(
+public class SearchInputStateImpl(
     query: String = "",
 ) : SearchInputState {
-    override var query by mutableStateOf(query)
+    override var query: String by mutableStateOf(query)
 }
 
 @Composable
-fun rememberSearchInputState(
+public fun rememberSearchInputState(
     query: String = "",
 ): SearchInputState = remember(query) { SearchInputStateImpl(query) }
 
 @Composable
-fun SearchInput(
+public fun SearchInput(
     state: SearchInputState = rememberSearchInputState(),
     attrs: SemanticAttrBuilderContext<InputElement>? = null,
     onSearch: ((String) -> Unit)? = { console.info("onSearch($it)") },
@@ -88,23 +89,23 @@ fun SearchInput(
 
 
 @Stable
-interface MultiSearchInputState : SearchInputState, SearchEngineSelectState {
-    fun prev() {
+public interface MultiSearchInputState : SearchInputState, SearchEngineSelectState {
+    public fun prev() {
         selection = selection.map { it.prev(values) }
     }
 
-    fun next() {
+    public fun next() {
         selection = selection.map { it.next(values) }
     }
 }
 
-class MultiSearchInputStateImpl(
+public class MultiSearchInputStateImpl(
     searchInputState: SearchInputState,
     searchEngineSelectState: SearchEngineSelectState,
 ) : MultiSearchInputState, SearchInputState by searchInputState, SearchEngineSelectState by searchEngineSelectState
 
 @Composable
-fun rememberMultiSearchInputState(
+public fun rememberMultiSearchInputState(
     searchInputState: SearchInputState = rememberSearchInputState(),
     searchEngineSelectState: SearchEngineSelectState = rememberSearchEngineSelectState(),
 ): MultiSearchInputState = remember(searchInputState, searchEngineSelectState) {
@@ -115,7 +116,7 @@ fun rememberMultiSearchInputState(
 }
 
 @Composable
-fun MultiSearchInput(
+public fun MultiSearchInput(
     state: MultiSearchInputState = rememberMultiSearchInputState(),
     attrs: SemanticAttrBuilderContext<InputElement>? = null,
     onSearch: ((String, List<SearchEngine>) -> Unit)? = { query, engines -> console.log("onSearch($query; $engines)") },
@@ -163,13 +164,13 @@ fun MultiSearchInput(
                 alignItems(AlignItems.Center)
             }
         }) {
-            SearchEngineSelect(state) { raw(Modifier.Variation.Size.Mini) }
+            SearchEngineSelect(state) { raw(Mini) }
         }
     }
 }
 
 @Composable
-fun PasteHandlingMultiSearchInput(
+public fun PasteHandlingMultiSearchInput(
     onSearch: (String, List<Uri>) -> Unit = { _, urls ->
         if (urls.size == 1) window.openInSameTab(urls.first())
         else urls.forEach { window.openInNewTab(it) }

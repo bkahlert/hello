@@ -10,11 +10,17 @@ import com.bkahlert.kommons.binding.DevSession
 import com.bkahlert.kommons.binding.adapt
 import com.bkahlert.kommons.dom.body
 import com.bkahlert.kommons.dom.createChildDivElement
+import com.bkahlert.semanticui.collection.Item
+import com.bkahlert.semanticui.collection.Menu
+import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.semanticui.custom.zIndex
 import com.bkahlert.semanticui.demo.DemoContentBuilder
 import com.bkahlert.semanticui.demo.DemoProvider
 import com.bkahlert.semanticui.demo.DemoView
 import com.bkahlert.semanticui.demo.DemoViewState
+import com.bkahlert.semanticui.element.Button
+import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.module.Content
 import com.bkahlert.semanticui.module.Modal
 import com.bkahlert.semanticui.module.ModalContentElement
@@ -24,8 +30,17 @@ import com.bkahlert.semanticui.module.centered
 import com.bkahlert.semanticui.module.fullScreen
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.dom.addClass
 import org.jetbrains.compose.web.css.Color
+import org.jetbrains.compose.web.css.Position
 import org.jetbrains.compose.web.css.backgroundColor
+import org.jetbrains.compose.web.css.bottom
+import org.jetbrains.compose.web.css.em
+import org.jetbrains.compose.web.css.left
+import org.jetbrains.compose.web.css.position
+import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.renderComposable
+import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.events.EventTarget
 import org.w3c.dom.events.KeyboardEvent
 
@@ -58,11 +73,17 @@ public fun <T : DevSession> setupDevMode(
         applyValue(value)
         addValueChangeListener { _, newValue -> applyValue(newValue) }
         if (keyboardEventTarget != null) bindKeyboardEvents(keyboardEventTarget, startValue = true, stopValue = false)
+        bindMenu(document.body().createChildDivElement { addClass("dev-mode-controls") }, startValue = true, stopValue = false)
     }
 
     return binding
 }
 
+/**
+ * Binds
+ * the `F4` to toggle [DevMode.state], and
+ * the `ESC` to [DevMode.stop].
+ */
 private fun <T> Binding<T>.bindKeyboardEvents(
     eventTarget: EventTarget,
     startValue: T,
@@ -85,6 +106,51 @@ private fun <T> Binding<T>.bindKeyboardEvents(
         },
     )
 }
+
+/**
+ * Creates a hover menu
+ * that can be used to toggle [DevMode.state].
+ */
+private fun <T> Binding<T>.bindMenu(
+    root: HTMLDivElement,
+    startValue: T,
+    stopValue: T,
+) {
+    renderComposable(root) {
+        var active by asMutableState()
+        Menu({
+            classes("compact", "tiny", "secondary")
+            style {
+                position(Position.Fixed)
+                bottom(1.em)
+                left(0.5.em)
+                zIndex(2000)
+            }
+        }) {
+            Item {
+                Button({
+                    classes("animated", "fade", "teal", "basic")
+                    tabIndex(0)
+                    onClick {
+                        active = when (active == stopValue) {
+                            true -> startValue
+                            else -> stopValue
+                        }
+                    }
+                }) {
+                    if (active == stopValue) {
+                        S("visible", "content") { Icon("wrench"); Text("F4") }
+                        S("hidden", "content") { Text("Debug") }
+                    } else {
+                        S("visible", "content") { Icon("close") }
+                        S("hidden", "content") { Text("Close") }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 /**
  * Variant of [setupDevMode] that

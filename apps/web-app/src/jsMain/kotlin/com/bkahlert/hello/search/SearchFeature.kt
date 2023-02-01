@@ -1,4 +1,4 @@
-package com.bkahlert.hello.ui.search
+package com.bkahlert.hello.search
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

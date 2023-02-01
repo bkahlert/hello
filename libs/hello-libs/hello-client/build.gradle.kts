@@ -11,12 +11,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("com.bkahlert.kommons:kommons-core")
                 api("com.bkahlert.kommons:kommons-net")
-                implementation("com.bkahlert.kommons:kommons-text")
-
-                implementation(project(":clickup-model"))
-//                api(project(":clickup-client"))
             }
         }
     }

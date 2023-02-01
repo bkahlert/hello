@@ -135,7 +135,7 @@ internal data class GenericUri(
                 append(it)
             }
             fragment?.also {
-                append(Uri.PATH_COMPONENT_DELIMITER)
+                append(Uri.FRAGMENT_COMPONENT_DELIMITER)
                 append(it)
             }
         }

@@ -2,6 +2,7 @@ package com.bkahlert.semanticui.devmode
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
+import com.bkahlert.kommons.binding.DevMode
 import com.bkahlert.kommons.binding.DevSession
 import org.jetbrains.compose.web.dom.DOMScope
 import org.jetbrains.compose.web.renderComposable

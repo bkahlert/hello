@@ -1,4 +1,4 @@
-package com.bkahlert.hello.ui.search
+package com.bkahlert.hello.search
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -60,9 +60,9 @@ import kotlin.js.json
 import com.bkahlert.semanticui.element.List as SemanticList
 
 @Stable
-interface SearchEngineSelectState : MultipleDropdownState<SearchEngine>
+public interface SearchEngineSelectState : MultipleDropdownState<SearchEngine>
 
-class SearchEngineSelectStateImpl(
+public class SearchEngineSelectStateImpl(
     engines: List<SearchEngine> = emptyList(),
     selection: List<SearchEngine> = emptyList(),
     onSelect: (old: List<SearchEngine>, new: List<SearchEngine>) -> Unit,
@@ -80,7 +80,7 @@ class SearchEngineSelectStateImpl(
 )
 
 @Composable
-fun rememberSearchEngineSelectState(
+public fun rememberSearchEngineSelectState(
     vararg engines: SearchEngine = SearchEngine.values(),
     selected: (SearchEngine) -> Boolean = { it == SearchEngine.Default },
     onEngineSelect: (old: List<SearchEngine>, new: List<SearchEngine>) -> Unit = { old, new ->
@@ -106,7 +106,7 @@ fun rememberSearchEngineSelectState(
 }
 
 @Composable
-fun SearchEngineSelect(
+public fun SearchEngineSelect(
     state: SearchEngineSelectState = rememberSearchEngineSelectState(),
     attrs: SemanticAttrBuilderContext<ListElement>? = null,
 ) {
@@ -156,7 +156,7 @@ fun SearchEngineSelect(
 }
 
 @Composable
-fun SearchEngineDropdown(
+public fun SearchEngineDropdown(
     state: SearchEngineSelectState = rememberSearchEngineSelectState(),
     debug: Boolean = false,
 ) {
@@ -234,7 +234,7 @@ fun SearchEngineDropdown(
  * that transforms into a close button.
  */
 @Composable
-fun ClosableSearchEngineButton(
+public fun ClosableSearchEngineButton(
     searchEngine: SearchEngine,
     onClose: () -> Unit = { console.log("onClose($searchEngine)") },
 ) {

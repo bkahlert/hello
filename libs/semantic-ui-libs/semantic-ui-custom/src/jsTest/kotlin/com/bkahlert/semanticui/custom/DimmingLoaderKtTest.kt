@@ -20,6 +20,6 @@ class DimmingLoaderKtTest {
                 Text("foo")
             }
         }
-        root { it.innerHTML shouldBe "<div class=\"ui inverted active dimmer\"><div class=\"ui text loader\" style=\"color: yellow;\">foo</div></div>" }
+        root { it.innerHTML shouldBe "<div class=\"ui inverted active dimmer\"><div class=\"content\"><div class=\"ui text loader\" style=\"color: yellow;\">foo</div></div></div>" }
     }
 }

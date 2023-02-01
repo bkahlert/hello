@@ -81,7 +81,7 @@ object CustomStyleSheet : StyleSheet() {
         child(self, type("*")) style {
             opacity(0)
             backgroundRepeat("no-repeat")
-            backgroundPosition("center center")
+            backgroundPosition("50% 50%")
         }
     }
 
@@ -97,7 +97,7 @@ object CustomStyleSheet : StyleSheet() {
 fun CSSBuilder.spinner() {
     backgroundImage("""url("${Spinner(colors.black.fade(.67))}")""")
     backgroundRepeat("no-repeat")
-    backgroundPosition("center center")
+    backgroundPosition("50% 50%")
 }
 
 @Deprecated("use semantic UI loader")
