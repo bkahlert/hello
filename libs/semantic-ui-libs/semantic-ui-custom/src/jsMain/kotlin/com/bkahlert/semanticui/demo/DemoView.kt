@@ -14,9 +14,13 @@ import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.jQuery
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.Segment
+import org.jetbrains.compose.web.css.em
+import org.jetbrains.compose.web.css.marginRight
+import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.ContentBuilder
+import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLDivElement
@@ -49,13 +53,27 @@ public fun DemoView(
     val tabs: Set<DemoProviderTab> = remember(trashContent, providers) {
         buildSet {
             if (trashContent != null) add(
-                DemoProviderTab(DemoProvider("trash", "—", trashContent)) {
+                DemoProviderTab(DemoProvider("trash", "—", null, trashContent)) {
                     Icon("teal", "colored", "trash")
                 }
             )
             providers.mapTo(this) {
                 DemoProviderTab(it) {
-                    Text(it.name)
+                    when (val src = it.logo) {
+                        null -> Text(it.name)
+                        else -> {
+                            Img(
+                                src = src.toString(),
+                                alt = it.name
+                            ) {
+                                style {
+                                    width(1.5.em)
+                                    marginRight(0.5.em)
+                                }
+                            }
+                            Text(it.name)
+                        }
+                    }
                 }
             }
         }.apply {
@@ -110,7 +128,7 @@ private fun TabMenu(
     onActivate: (Tab) -> Unit = { tab -> console.info("onActivate($tab)") },
 ) {
     val currentTab = activeTab ?: tabs.firstOrNull()
-    S("ui", "pointing", "icon", "menu") {
+    S("ui", "pointing", "stackable", "icon", "menu") {
         firstContent?.invoke(this)
         tabs.forEach { tab ->
             A(null, {

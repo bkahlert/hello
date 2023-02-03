@@ -15,6 +15,7 @@ import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.States
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
+import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.IconSubHeader
 import com.bkahlert.semanticui.element.Line
@@ -36,6 +37,7 @@ import com.bkahlert.semanticui.module.verticallyAligned
 import org.jetbrains.compose.web.dom.Text
 
 public val DimmerDemos: SemanticDemo = SemanticDemo(
+    SemanticType.Module,
     "Dimmer",
     Types {
         Demo("Dimmer") {

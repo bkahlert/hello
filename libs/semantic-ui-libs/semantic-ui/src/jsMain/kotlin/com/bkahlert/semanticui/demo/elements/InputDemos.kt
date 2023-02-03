@@ -10,6 +10,7 @@ import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.States
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
+import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.Input
 import com.bkahlert.semanticui.element.action
@@ -29,6 +30,7 @@ import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Text
 
 public val InputDemos: SemanticDemo = SemanticDemo(
+    SemanticType.Element,
     "Input",
     Types {
         Demo("Input") {

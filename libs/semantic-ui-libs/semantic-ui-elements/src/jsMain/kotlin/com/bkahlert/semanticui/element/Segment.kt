@@ -33,6 +33,9 @@ public fun VariationsScope<SegmentElement>.attached(value: Attached.VerticallyAt
 /** [Variation.Padded](https://semantic-ui.com/elements/segment.html#padded) */
 public fun VariationsScope<SegmentElement>.padded(): VariationsScope<SegmentElement> = +Variation.Padded
 
+/** [Variation.Padded](https://semantic-ui.com/elements/segment.html#padded) */
+public fun VariationsScope<SegmentElement>.veryPadded(): VariationsScope<SegmentElement> = +Variation.VeryPadded
+
 /** [Variation.Compact](https://semantic-ui.com/elements/segment.html#compact) */
 public fun VariationsScope<SegmentElement>.compact(): VariationsScope<SegmentElement> = +Variation.Compact
 

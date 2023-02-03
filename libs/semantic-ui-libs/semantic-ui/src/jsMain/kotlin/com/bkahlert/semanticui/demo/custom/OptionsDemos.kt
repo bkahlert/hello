@@ -13,6 +13,7 @@ import com.bkahlert.semanticui.element.PlaceholderElement
 import com.bkahlert.semanticui.element.fluid
 
 public val OptionsDemos: SemanticDemo = SemanticDemo(
+    null,
     "Options",
     Variations {
         Demo("No Options") {

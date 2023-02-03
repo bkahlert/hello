@@ -145,6 +145,7 @@ public sealed interface Modifier {
         public object Negative : Variation("negative")
 
         public object Padded : Variation("padded")
+        public object VeryPadded : Variation("very", "padded")
         public object Positive : Variation("success")
 
         public open class Size(value: String) : Variation(value) {

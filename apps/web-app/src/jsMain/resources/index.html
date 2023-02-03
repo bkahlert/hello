@@ -7,6 +7,46 @@
     <title>Hello!</title>
     <link rel="shortcut icon"
           href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIxMSA5IDEwNyAxMTAiIGN1cnNvcj0iZGVmYXVsdCI+PHN0eWxlPjwhW0NEQVRBWy5Ce21peC1ibGVuZC1tb2RlOm11bHRpcGx5fV1dPjwvc3R5bGU+PGRlZnM+PHBhdGggaWQ9IkEiIGQ9Ik0xMSAxMTVWMTNhNCA0IDAgMCAxIDQtNGgxOGE0IDQgMCAwIDEgNCA0djM0YTQgNCAwIDAgMCA0IDRoMzRhNCA0IDAgMCAwIDQtNFYxM2E0IDQgMCAwIDEgNC00aDE4YTQgNCAwIDAgMSA0IDR2MTAyYTQgNCAwIDAgMS00IDRIODNhNCA0IDAgMCAxLTQtNFY3NmE0IDQgMCAwIDAtNC00SDQxYy0yLjIgMC00IDEuOC00IDR2MzlhNCA0IDAgMCAxLTQgNEgxNWE0IDQgMCAwIDEtNC00eiIvPjxnIGlkPSJCIj48cmVjdCB4PSI5MiIgeT0iOTMiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgcng9IjQiLz48cGF0aCBkPSJNOTEuNSAxM2MtLjItMi4zNSAyLjE2LTQgNC41Mi00SDk2aDE3LjQ5YzIuMzQgMCA0LjE4IDEuOTkgMy45OSA0LjMybC00LjY2IDY0LjA2YTMuOTkgMy45OSAwIDAgMS0zLjk3IDMuNjJoLTguNTJjLTIuMDUgMC0zLjc2LTEuNTUtMy45Ni0zLjU5TDkxLjUgMTMiLz48L2c+PC9kZWZzPjx1c2UgeGxpbms6aHJlZj0iI0EiIGNsYXNzPSJCIiBmaWxsPSIjYzIxZjczIi8+PGcgZmlsbD0iIzI5YWFlMiI+PHVzZSB4bGluazpocmVmPSIjQiIgY2xhc3M9IkIiLz48dXNlIHhsaW5rOmhyZWY9IiNCIj48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiBjYWxjTW9kZT0ic3BsaW5lIiBkdXI9IjE1cyIgdmFsdWVzPSIwOzE7MCIga2V5VGltZXM9IjA7MC41OzEiIGtleVNwbGluZXM9IjAuNDIgMCAwLjU4IDE7MC40MiAwIDAuNTggMSIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48L3VzZT48L2c+PC9zdmc+"/>
+    <style>
+        .app {
+            display: flex;
+            min-height: 100vh;
+            flex-flow: column;
+        }
+
+        .bookmarks { flex: 1 100%; }
+
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+
+            padding: 1rem;
+            row-gap: 1rem;
+            column-gap: 1rem;
+        }
+
+        /* everyone takes a row */
+        .toolbar > * { flex: 1 100%; }
+
+        /* links and tasks share a row */
+        @media all and (min-width: 768px) {
+            .links { flex: 0; }
+            .tasks { flex: 3 auto; }
+        }
+
+        /* everyone shares a row */
+        @media all and (min-width: 1200px) {
+            .search {
+                order: 1;
+                flex: 2 auto;
+                margin-left: 1em;
+                margin-right: 1em;
+            }
+            .tasks { order: 2; }
+        }
+    </style>
     <link rel="stylesheet" href="semantic/dist/semantic.min.css" type="text/css">
     <script
             crossorigin="anonymous"
@@ -15,7 +55,7 @@
     <script src="semantic/dist/semantic.min.js"></script>
 </head>
 <body>
-<div id="root"></div>
+<div id="root" class="app"></div>
 <script src="hello.js"></script>
 </body>
 </html>

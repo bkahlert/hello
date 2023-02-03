@@ -2,13 +2,15 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpClient
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Yellow
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Floated
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
 import com.bkahlert.semanticui.custom.Options
+import com.bkahlert.semanticui.element.BasicButton
 import com.bkahlert.semanticui.element.Divider
 import com.bkahlert.semanticui.element.IconHeader
 import com.bkahlert.semanticui.element.IconSubHeader
-import com.bkahlert.semanticui.element.SecondaryButton
+import com.bkahlert.semanticui.element.colored
 import com.bkahlert.semanticui.element.floated
 import com.bkahlert.semanticui.module.Actions
 import com.bkahlert.semanticui.module.BasicModal
@@ -49,7 +51,8 @@ public fun ConfigurationModal(
                 }
 
                 Actions {
-                    SecondaryButton({
+                    BasicButton({
+                        v.colored(Yellow)
                         v.deny().floated(Floated.Right)
                     }) { Text("Abort") }
                 }

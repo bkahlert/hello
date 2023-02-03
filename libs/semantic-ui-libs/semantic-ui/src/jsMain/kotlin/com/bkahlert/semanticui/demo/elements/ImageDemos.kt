@@ -6,6 +6,7 @@ import com.bkahlert.semanticui.demo.Demos
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
+import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Image
 import com.bkahlert.semanticui.element.avatar
 import com.bkahlert.semanticui.element.bordered
@@ -17,6 +18,7 @@ import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 
 public val ImageDemos: SemanticDemo = SemanticDemo(
+    SemanticType.Element,
     "Image",
     Types {
         Demo("Image") { Image(JOHN100BG) }

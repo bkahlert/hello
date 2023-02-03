@@ -43,6 +43,7 @@ import com.bkahlert.semanticui.collection.borderless
 import com.bkahlert.semanticui.collection.target
 import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Tiny
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import com.bkahlert.semanticui.custom.DimmingLoader
@@ -390,7 +391,8 @@ public fun ClickUpMenu(
 ) {
     Menu({
         v.dimmable()
-        raw(Mini)
+        raw(Tiny)
+        style { property("box-shadow", "none") }
         if (state is Disabled || state is Disconnected) {
             raw(Modifier.Variation.Fluid)
             classes("one", "item")

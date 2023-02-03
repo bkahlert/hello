@@ -26,6 +26,7 @@ import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.States
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
+import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.Segment
 import com.bkahlert.semanticui.element.attached
@@ -37,6 +38,7 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.Ul
 
 public val MessageDemos: SemanticDemo = SemanticDemo(
+    SemanticType.Collection,
     "Message",
     Types {
         Demo("Message") {

@@ -21,6 +21,7 @@ import org.jetbrains.compose.web.dom.Text
 import kotlin.time.times
 
 public val DimmingLoaderDemos: SemanticDemo = SemanticDemo(
+    null,
     "Dimming Loader",
     Types {
         Demo("Dimming Loader") {

@@ -5,17 +5,17 @@ import com.bkahlert.kommons.net.Svg
 
 public object ImageFixtures : Iterable<DataUri> {
 
-    /** A transparent 1x1 [GIF](https://en.wikipedia.org/wiki/GIF) pixel. */
-    public val Spacer: DataUri by lazy { DataUri.parse(SPACER) }
-
-    /** An [SVG](https://en.wikipedia.org/wiki/SVG) depicting John Doe. */
-    public val JohnDoe: DataUri by lazy { DataUri.parse(JOHN) }
-
     /** The [BKAHLERT](https://bkahlert.com) favicon as a [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val BKAHLERTFavicon: DataUri by lazy { DataUri.parse(BKAHLERT_FAVICON) }
 
+    /** The mark of the [ClickUp](https://clickup.com) logo an [SVG](https://en.wikipedia.org/wiki/SVG). */
+    public val ClickUpMark: DataUri by lazy { DataUri.parse(CLICKUP_MARK) }
+
     /** The [Hello!](https://github.com/bkahlert/hello) favicon as an animated [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val HelloFavicon: DataUri by lazy { DataUri.parse(HELLO_FAVICON) }
+
+    /** An [SVG](https://en.wikipedia.org/wiki/SVG) depicting John Doe. */
+    public val JohnDoe: DataUri by lazy { DataUri.parse(JOHN) }
 
     /** The [Kommons](https://github.com/bkahlert/kommons) logo as an animated [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val KommonsLogo: DataUri by lazy { DataUri.Svg(KOMMONS_LOGO) }
@@ -23,24 +23,81 @@ public object ImageFixtures : Iterable<DataUri> {
     /** The logo of the fictional Pear company as an [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val PearLogo: DataUri by lazy { DataUri.Svg(PEAR_LOGO) }
 
-    /** The mark of the [ClickUp](https://clickup.com) logo an [SVG](https://en.wikipedia.org/wiki/SVG). */
-    public val ClickUpMark: DataUri by lazy { DataUri.parse(CLICKUP_MARK) }
+    /** The [Semantic UI](https://semantic-ui.com/) logo as an [PNG](https://en.wikipedia.org/wiki/PNG). */
+    public val SemanticUiLogo: DataUri by lazy { DataUri.parse(SEMANTIC_UI) }
+
+    /** A transparent 1x1 [GIF](https://en.wikipedia.org/wiki/GIF) pixel. */
+    public val Spacer: DataUri by lazy { DataUri.parse(SPACER) }
 
     override fun iterator(): Iterator<DataUri> = iterator {
-        yield(JohnDoe)
+        yield(ClickUpMark)
         yield(BKAHLERTFavicon)
         yield(HelloFavicon)
+        yield(JohnDoe)
         yield(KommonsLogo)
         yield(PearLogo)
-        yield(ClickUpMark)
+        yield(SemanticUiLogo)
     }
 }
 
+@Suppress("LongLine")
+private const val BKAHLERT_FAVICON = "" +
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
+    "9zdmciIHZpZXdCb3g9IjcgMTAgMTE1IDEwOSI+PGcgc3R5bGU9Imlzb2xhdGlvbjppc29sYX" +
+    "RlIj48ZyBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6bXVsdGlwbHkiPjxwYXRoIGQ9Ik03LDE0YT" +
+    "MuOTMsMy45MywwLDAsMSw0LjIxLTRINDguNEM3OCwxMCw5MC45LDIxLDkwLjIzLDM5LjU0LD" +
+    "kwLDQ2LDg2LDUyLDc4LDU3Yy0xLjgyLDEuMjEtNSw0LC42Myw3LjkxLDEyLDguMzYsMTUuMT" +
+    "YsMTYuMjcsMTUuMTYsMjQuNCwwLDIwLjI1LTEyLjYzLDI5LjY5LTQzLjI4LDI5LjY5SDExLj" +
+    "JBNC4yLDQuMiwwLDAsMSw3LDExNC44Wk01Mi4zNSw1NEM2MC4yLDU0LDY3LDQ5LjYsNjcsND" +
+    "JjMC03LjgzLTcuMDktMTItMTUuODQtMTJoLTE0QTQuMiw0LjIsMCwwLDAsMzMsMzQuMlY0OS" +
+    "44QTQuMiw0LjIsMCwwLDAsMzcuMiw1NFptLS40MSw0NkM2OC4yMiwxMDAsNzAsOTQuNDIsNz" +
+    "AsODdhNy40LDcuNCwwLDAsMC0uMi0yLjMyQzY4LjY0LDgyLjg0LDY1LjE3LDc3LjgyLDY0LD" +
+    "c2YTMuNzcsMy43NywwLDAsMC0zLjE1LTJIMzcuMkE0LjIsNC4yLDAsMCwwLDMzLDc4LjJWOT" +
+    "UuOGE0LjIsNC4yLDAsMCwwLDQuMiw0LjJaIiBzdHlsZT0iZmlsbDojYzIxZjczIi8+PC9nPj" +
+    "xwYXRoIGQ9Ik00NiwxMTlsLTIxLjExLDBjLTMuMjEuMDcuMTEtLjA2LTQuODksMFYxMEg0Nl" +
+    "Y0NC42N2MuNDMsMy45MSw1LjMxLDUuNTgsNy42MSwyLjQ4TDgzLjY3LDExLjYzQzg1LDkuOT" +
+    "IsODYuNjMsMTAsODcuODksMTBoMjIuODljMy4yOSwwLDUuMTgsMi44MSwzLjIxLDUuNUw4NC" +
+    "w1Mi42OEM4My4wOCw1NCw4Miw1Niw4NCw1OWwzNy4xMiw1NS4wOGMxLjQyLDIuNzIuODgsNC" +
+    "45NC0zLjU0LDQuOTJIOTVjLTIsMC0yLDAtMy41Mi0yLjA2TDY0LjA4LDc2LjE5QzYzLDc0LD" +
+    "YwLDczLDU3LjQ1LDc1LjU3TDQ3LDg4LjMxQTQuMTQsNC4xNCwwLDAsMCw0Niw5MC45NEM0Ni" +
+    "w5Nyw0NiwxMTgsNDYsMTE5IiBzdHlsZT0iZmlsbDojMmNhY2UzO21peC1ibGVuZC1tb2RlOm" +
+    "11bHRpcGx5Ii8+PC9nPjwvc3ZnPg=="
 
-@Suppress("SpellCheckingInspection")
-private const val SPACER: String = "" +
-    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAA" +
-    "ALAAAAAABAAEAAAIBRAA7"
+private const val CLICKUP_MARK: String = "" +
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
+    "9zdmciIHZpZXdCb3g9IjAgMCA0NCA0NCI+PGxpbmVhckdyYWRpZW50IGlkPSJBIiBncmFkaW" +
+    "VudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjYuOTg1IiB5MT0iMzMuNzIxIiB4Mj0iMz" +
+    "cuMDE1IiB5Mj0iMzMuNzIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4OTMwZm" +
+    "QiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0OWNjZjkiLz48L2xpbmVhckdyYW" +
+    "RpZW50PjxwYXRoIGQ9Ik03IDMxLjdsNS41LTQuMmMyLjkgMy44IDYuMSA1LjYgOS42IDUuNn" +
+    "M2LjUtMS44IDkuMy01LjZsNS42IDQuMWMtNCA1LjUtOS4xIDguNC0xNC45IDguNFMxMS4yID" +
+    "M3LjEgNyAzMS43eiIgZmlsbD0idXJsKCNBKSIvPjxsaW5lYXJHcmFkaWVudCBpZD0iQiIgZ3" +
+    "JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSI3LjY0IiB5MT0iMTIuODQ5IiB4Mj" +
+    "0iMzYuNDEyIiB5Mj0iMTIuODQ5Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZj" +
+    "AyZjAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmM4MDAiLz48L2xpbmVhck" +
+    "dyYWRpZW50PjxwYXRoIGQ9Ik0yMi4xIDEzLjJsLTkuOSA4LjUtNC42LTUuM0wyMi4xIDRsMT" +
+    "QuMyAxMi41LTQuNiA1LjMtOS43LTguNnoiIGZpbGw9InVybCgjQikiLz48L3N2Zz4K"
+
+@Suppress("LongLine")
+private const val HELLO_FAVICON = "" +
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
+    "9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm" +
+    "94PSIxMSA5IDEwNyAxMTAiIGN1cnNvcj0iZGVmYXVsdCI+PHN0eWxlPjwhW0NEQVRBWy5Ce2" +
+    "1peC1ibGVuZC1tb2RlOm11bHRpcGx5fV1dPjwvc3R5bGU+PGRlZnM+PHBhdGggaWQ9IkEiIG" +
+    "Q9Ik0xMSAxMTVWMTNhNCA0IDAgMCAxIDQtNGgxOGE0IDQgMCAwIDEgNCA0djM0YTQgNCAwID" +
+    "AgMCA0IDRoMzRhNCA0IDAgMCAwIDQtNFYxM2E0IDQgMCAwIDEgNC00aDE4YTQgNCAwIDAgMS" +
+    "A0IDR2MTAyYTQgNCAwIDAgMS00IDRIODNhNCA0IDAgMCAxLTQtNFY3NmE0IDQgMCAwIDAtNC" +
+    "00SDQxYy0yLjIgMC00IDEuOC00IDR2MzlhNCA0IDAgMCAxLTQgNEgxNWE0IDQgMCAwIDEtNC" +
+    "00eiIvPjxnIGlkPSJCIj48cmVjdCB4PSI5MiIgeT0iOTMiIHdpZHRoPSIyNiIgaGVpZ2h0PS" +
+    "IyNiIgcng9IjQiLz48cGF0aCBkPSJNOTEuNSAxM2MtLjItMi4zNSAyLjE2LTQgNC41Mi00SD" +
+    "k2aDE3LjQ5YzIuMzQgMCA0LjE4IDEuOTkgMy45OSA0LjMybC00LjY2IDY0LjA2YTMuOTkgMy" +
+    "45OSAwIDAgMS0zLjk3IDMuNjJoLTguNTJjLTIuMDUgMC0zLjc2LTEuNTUtMy45Ni0zLjU5TD" +
+    "kxLjUgMTMiLz48L2c+PC9kZWZzPjx1c2UgeGxpbms6aHJlZj0iI0EiIGNsYXNzPSJCIiBmaW" +
+    "xsPSIjYzIxZjczIi8+PGcgZmlsbD0iIzI5YWFlMiI+PHVzZSB4bGluazpocmVmPSIjQiIgY2" +
+    "xhc3M9IkIiLz48dXNlIHhsaW5rOmhyZWY9IiNCIj48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPS" +
+    "JvcGFjaXR5IiBjYWxjTW9kZT0ic3BsaW5lIiBkdXI9IjE1cyIgdmFsdWVzPSIwOzE7MCIga2" +
+    "V5VGltZXM9IjA7MC41OzEiIGtleVNwbGluZXM9IjAuNDIgMCAwLjU4IDE7MC40MiAwIDAuNT" +
+    "ggMSIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48L3VzZT48L2c+PC9zdmc+"
 
 /**
  * Created with
@@ -463,41 +520,6 @@ private const val JOHN: String = "" +
     "ggMS4yNGwuNTUuNTUgMTEwLjM3IDUwLjAyeiIvPjwvc3ZnPg=="
 
 // language=svg
-private const val PEAR_LOGO = """<?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 512 512" overflow="visible" xml:space="preserve">
-<g>
-    <path fill="#953F97" d="M337.3,367.85c14.58,30.64,37.79,49.62,72.21,53.42c2.71,0.3,4.44,1.09,2.19,4.12
-        c-2.22,2.98-4.31,6.04-6.46,9.06c-2.79,1.87-5.92,2.15-9.17,2.15c-85.7,0-171.41,0-257.11-0.01c-3.23,0-6.4-0.15-9.14-2.19
-        c-16.15-19.34-25.48-41.68-29.28-66.46c2.71-2.8,6.26-2.2,9.57-2.2c30.06-0.06,60.12-0.03,90.17-0.04
-        c42.27,0,84.54-0.02,126.81,0.03C330.6,365.75,334.31,365.16,337.3,367.85z"/>
-    <path fill="#F4821F" d="M387.03,235.76c11.22,12.46,11.23,12.5-3.32,18.82c-22.12,9.61-37.01,26.24-46.74,47.92
-        c-2.66,1.6-5.56,2.01-8.63,2.01c-70.79,0-141.57,0.01-212.36-0.05c-2.94,0-6.1,0.41-8.41-2.19c7.91-25.86,24.79-46.12,41.52-66.48
-        c2.55-1.93,5.51-2.17,8.56-2.17c73.59-0.01,147.18-0.01,220.77-0.01C381.49,233.63,384.4,234.09,387.03,235.76z"/>
-    <path fill="#E3363F" d="M107.57,302.28c76.47,0.07,152.93,0.15,229.4,0.22c-8.17,21.82-7.55,43.6,0.33,65.34
-        c-78.92,0.03-157.84,0.07-236.76,0.11C97.38,345.47,100.23,323.64,107.57,302.28z"/>
-    <path fill="#FCB621" d="M387.03,235.76c-79.31,0.01-158.63,0.03-237.94,0.04c15.78-20.08,28.54-41.87,37.44-65.86
-        c2.54-1.38,5.26-1.8,8.13-1.8c50.13-0.01,100.27-0.02,150.4,0.03c2.8,0,5.69-0.17,7.99,1.97
-        C356.69,196,370.77,216.45,387.03,235.76z"/>
-    <path fill="#1A9CD7" d="M129.82,434.41c91.81,0.01,183.61,0.03,275.42,0.04c-21.13,30.3-51.46,46.74-85.89,56.9
-        c-69.63,20.54-144.97-1.22-187.68-54.16C130.96,436.33,130.43,435.34,129.82,434.41z"/>
-    <path fill="#5FBB48" d="M353.04,170.15c-55.51-0.07-111.01-0.13-166.52-0.2c10.44-28.75,23.03-55.35,56.77-63.58
-        c8.3-2.03,12.23-0.51,11.12,8.11c-1.63,12.73,4.68,15.07,15.71,14.4c14.13-0.85,27.4-4,39.79-10.73c2.96-1.61,5.3-1.76,8.31-0.02
-        C338.38,129.79,348.61,148.01,353.04,170.15z"/>
-    <path fill="#5FBB48" d="M351.01,24.54c-0.35,46.91-29.8,81.48-76.35,89.88c-4.32,0.78-5.24-0.81-5.4-4.6
-        c-2.01-46.93,24.28-83.15,69.02-94.92C351.11,11.52,351.11,11.52,351.01,24.54z"/>
-</g>
-</svg>
-"""
-
-@Suppress("LongLine")
-private const val BKAHLERT_FAVICON =
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjcgMTAgMTE1IDEwOSI+PGcgc3R5bGU9Imlzb2xhdGlvbjppc29sYXRlIj48ZyBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6bXVsdGlwbHkiPjxwYXRoIGQ9Ik03LDE0YTMuOTMsMy45MywwLDAsMSw0LjIxLTRINDguNEM3OCwxMCw5MC45LDIxLDkwLjIzLDM5LjU0LDkwLDQ2LDg2LDUyLDc4LDU3Yy0xLjgyLDEuMjEtNSw0LC42Myw3LjkxLDEyLDguMzYsMTUuMTYsMTYuMjcsMTUuMTYsMjQuNCwwLDIwLjI1LTEyLjYzLDI5LjY5LTQzLjI4LDI5LjY5SDExLjJBNC4yLDQuMiwwLDAsMSw3LDExNC44Wk01Mi4zNSw1NEM2MC4yLDU0LDY3LDQ5LjYsNjcsNDJjMC03LjgzLTcuMDktMTItMTUuODQtMTJoLTE0QTQuMiw0LjIsMCwwLDAsMzMsMzQuMlY0OS44QTQuMiw0LjIsMCwwLDAsMzcuMiw1NFptLS40MSw0NkM2OC4yMiwxMDAsNzAsOTQuNDIsNzAsODdhNy40LDcuNCwwLDAsMC0uMi0yLjMyQzY4LjY0LDgyLjg0LDY1LjE3LDc3LjgyLDY0LDc2YTMuNzcsMy43NywwLDAsMC0zLjE1LTJIMzcuMkE0LjIsNC4yLDAsMCwwLDMzLDc4LjJWOTUuOGE0LjIsNC4yLDAsMCwwLDQuMiw0LjJaIiBzdHlsZT0iZmlsbDojYzIxZjczIi8+PC9nPjxwYXRoIGQ9Ik00NiwxMTlsLTIxLjExLDBjLTMuMjEuMDcuMTEtLjA2LTQuODksMFYxMEg0NlY0NC42N2MuNDMsMy45MSw1LjMxLDUuNTgsNy42MSwyLjQ4TDgzLjY3LDExLjYzQzg1LDkuOTIsODYuNjMsMTAsODcuODksMTBoMjIuODljMy4yOSwwLDUuMTgsMi44MSwzLjIxLDUuNUw4NCw1Mi42OEM4My4wOCw1NCw4Miw1Niw4NCw1OWwzNy4xMiw1NS4wOGMxLjQyLDIuNzIuODgsNC45NC0zLjU0LDQuOTJIOTVjLTIsMC0yLDAtMy41Mi0yLjA2TDY0LjA4LDc2LjE5QzYzLDc0LDYwLDczLDU3LjQ1LDc1LjU3TDQ3LDg4LjMxQTQuMTQsNC4xNCwwLDAsMCw0Niw5MC45NEM0Niw5Nyw0NiwxMTgsNDYsMTE5IiBzdHlsZT0iZmlsbDojMmNhY2UzO21peC1ibGVuZC1tb2RlOm11bHRpcGx5Ii8+PC9nPjwvc3ZnPg=="
-
-@Suppress("LongLine")
-private const val HELLO_FAVICON =
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIxMSA5IDEwNyAxMTAiIGN1cnNvcj0iZGVmYXVsdCI+PHN0eWxlPjwhW0NEQVRBWy5Ce21peC1ibGVuZC1tb2RlOm11bHRpcGx5fV1dPjwvc3R5bGU+PGRlZnM+PHBhdGggaWQ9IkEiIGQ9Ik0xMSAxMTVWMTNhNCA0IDAgMCAxIDQtNGgxOGE0IDQgMCAwIDEgNCA0djM0YTQgNCAwIDAgMCA0IDRoMzRhNCA0IDAgMCAwIDQtNFYxM2E0IDQgMCAwIDEgNC00aDE4YTQgNCAwIDAgMSA0IDR2MTAyYTQgNCAwIDAgMS00IDRIODNhNCA0IDAgMCAxLTQtNFY3NmE0IDQgMCAwIDAtNC00SDQxYy0yLjIgMC00IDEuOC00IDR2MzlhNCA0IDAgMCAxLTQgNEgxNWE0IDQgMCAwIDEtNC00eiIvPjxnIGlkPSJCIj48cmVjdCB4PSI5MiIgeT0iOTMiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgcng9IjQiLz48cGF0aCBkPSJNOTEuNSAxM2MtLjItMi4zNSAyLjE2LTQgNC41Mi00SDk2aDE3LjQ5YzIuMzQgMCA0LjE4IDEuOTkgMy45OSA0LjMybC00LjY2IDY0LjA2YTMuOTkgMy45OSAwIDAgMS0zLjk3IDMuNjJoLTguNTJjLTIuMDUgMC0zLjc2LTEuNTUtMy45Ni0zLjU5TDkxLjUgMTMiLz48L2c+PC9kZWZzPjx1c2UgeGxpbms6aHJlZj0iI0EiIGNsYXNzPSJCIiBmaWxsPSIjYzIxZjczIi8+PGcgZmlsbD0iIzI5YWFlMiI+PHVzZSB4bGluazpocmVmPSIjQiIgY2xhc3M9IkIiLz48dXNlIHhsaW5rOmhyZWY9IiNCIj48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPSJvcGFjaXR5IiBjYWxjTW9kZT0ic3BsaW5lIiBkdXI9IjE1cyIgdmFsdWVzPSIwOzE7MCIga2V5VGltZXM9IjA7MC41OzEiIGtleVNwbGluZXM9IjAuNDIgMCAwLjU4IDE7MC40MiAwIDAuNTggMSIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48L3VzZT48L2c+PC9zdmc+"
-
-// language=svg
 private const val KOMMONS_LOGO: String = """<?xml version="1.0" encoding="utf-8"?>
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" aria-label="Kommons" role="img" viewBox="0 0 60 60" style="cursor: default;">
     <defs>
@@ -555,17 +577,51 @@ private const val KOMMONS_LOGO: String = """<?xml version="1.0" encoding="utf-8"
 </svg>
 """
 
-private const val CLICKUP_MARK: String = "" +
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
-    "9zdmciIHZpZXdCb3g9IjAgMCA0NCA0NCI+PGxpbmVhckdyYWRpZW50IGlkPSJBIiBncmFkaW" +
-    "VudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjYuOTg1IiB5MT0iMzMuNzIxIiB4Mj0iMz" +
-    "cuMDE1IiB5Mj0iMzMuNzIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4OTMwZm" +
-    "QiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0OWNjZjkiLz48L2xpbmVhckdyYW" +
-    "RpZW50PjxwYXRoIGQ9Ik03IDMxLjdsNS41LTQuMmMyLjkgMy44IDYuMSA1LjYgOS42IDUuNn" +
-    "M2LjUtMS44IDkuMy01LjZsNS42IDQuMWMtNCA1LjUtOS4xIDguNC0xNC45IDguNFMxMS4yID" +
-    "M3LjEgNyAzMS43eiIgZmlsbD0idXJsKCNBKSIvPjxsaW5lYXJHcmFkaWVudCBpZD0iQiIgZ3" +
-    "JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSI3LjY0IiB5MT0iMTIuODQ5IiB4Mj" +
-    "0iMzYuNDEyIiB5Mj0iMTIuODQ5Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZj" +
-    "AyZjAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmM4MDAiLz48L2xpbmVhck" +
-    "dyYWRpZW50PjxwYXRoIGQ9Ik0yMi4xIDEzLjJsLTkuOSA4LjUtNC42LTUuM0wyMi4xIDRsMT" +
-    "QuMyAxMi41LTQuNiA1LjMtOS43LTguNnoiIGZpbGw9InVybCgjQikiLz48L3N2Zz4K"
+// language=svg
+private const val PEAR_LOGO = """<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 512 512" overflow="visible" xml:space="preserve">
+<g>
+    <path fill="#953F97" d="M337.3,367.85c14.58,30.64,37.79,49.62,72.21,53.42c2.71,0.3,4.44,1.09,2.19,4.12
+        c-2.22,2.98-4.31,6.04-6.46,9.06c-2.79,1.87-5.92,2.15-9.17,2.15c-85.7,0-171.41,0-257.11-0.01c-3.23,0-6.4-0.15-9.14-2.19
+        c-16.15-19.34-25.48-41.68-29.28-66.46c2.71-2.8,6.26-2.2,9.57-2.2c30.06-0.06,60.12-0.03,90.17-0.04
+        c42.27,0,84.54-0.02,126.81,0.03C330.6,365.75,334.31,365.16,337.3,367.85z"/>
+    <path fill="#F4821F" d="M387.03,235.76c11.22,12.46,11.23,12.5-3.32,18.82c-22.12,9.61-37.01,26.24-46.74,47.92
+        c-2.66,1.6-5.56,2.01-8.63,2.01c-70.79,0-141.57,0.01-212.36-0.05c-2.94,0-6.1,0.41-8.41-2.19c7.91-25.86,24.79-46.12,41.52-66.48
+        c2.55-1.93,5.51-2.17,8.56-2.17c73.59-0.01,147.18-0.01,220.77-0.01C381.49,233.63,384.4,234.09,387.03,235.76z"/>
+    <path fill="#E3363F" d="M107.57,302.28c76.47,0.07,152.93,0.15,229.4,0.22c-8.17,21.82-7.55,43.6,0.33,65.34
+        c-78.92,0.03-157.84,0.07-236.76,0.11C97.38,345.47,100.23,323.64,107.57,302.28z"/>
+    <path fill="#FCB621" d="M387.03,235.76c-79.31,0.01-158.63,0.03-237.94,0.04c15.78-20.08,28.54-41.87,37.44-65.86
+        c2.54-1.38,5.26-1.8,8.13-1.8c50.13-0.01,100.27-0.02,150.4,0.03c2.8,0,5.69-0.17,7.99,1.97
+        C356.69,196,370.77,216.45,387.03,235.76z"/>
+    <path fill="#1A9CD7" d="M129.82,434.41c91.81,0.01,183.61,0.03,275.42,0.04c-21.13,30.3-51.46,46.74-85.89,56.9
+        c-69.63,20.54-144.97-1.22-187.68-54.16C130.96,436.33,130.43,435.34,129.82,434.41z"/>
+    <path fill="#5FBB48" d="M353.04,170.15c-55.51-0.07-111.01-0.13-166.52-0.2c10.44-28.75,23.03-55.35,56.77-63.58
+        c8.3-2.03,12.23-0.51,11.12,8.11c-1.63,12.73,4.68,15.07,15.71,14.4c14.13-0.85,27.4-4,39.79-10.73c2.96-1.61,5.3-1.76,8.31-0.02
+        C338.38,129.79,348.61,148.01,353.04,170.15z"/>
+    <path fill="#5FBB48" d="M351.01,24.54c-0.35,46.91-29.8,81.48-76.35,89.88c-4.32,0.78-5.24-0.81-5.4-4.6
+        c-2.01-46.93,24.28-83.15,69.02-94.92C351.11,11.52,351.11,11.52,351.01,24.54z"/>
+</g>
+</svg>
+"""
+
+@Suppress("SpellCheckingInspection")
+private const val SEMANTIC_UI: String = "" +
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACABAMAAAAxEHz4AAAAMF" +
+    "BMVEU1vbKi29bi8/Jcxr17z8fE6OT///+J08zY8O2t39psysKW19Hs9/a549/O7OkAAAA1s3" +
+    "4QAAAACXBIWXMAAAsTAAALEwEAmpwYAAACUUlEQVRoBe2YvWsUURTFX3bHDzMqih+VhdWAij" +
+    "CFCBaBLRYFSaEIqU3cnIzRLKmsRCxkbQXD2EgIgqksUogoREhABoONWFinSuM/IYTBNzP3vf" +
+    "WdeWDj+5UD5+Tlztl77xv13xAIBAJR/9Or/lpbdffzCPt8XWmln0rwh+wUr/+IGr9Y/SYabH" +
+    "P6NxA8YPRHYOALYZDAxHdn/TsYeeiaiEkhJctwFTZucRWQLDnpj8HKgpPBdVh54WRQWPVDJ3" +
+    "0MK+edDI7CilsOHlUUF973rtxYLagSqj2tf1kG6zX2OeFmoPUX681h3rEN6uhXnk6XJaR+yY" +
+    "Pq47NAqsgcbtU67Gig3Dhs+eVMbNAGMrf8CfwMtnwNFtoZHGejL3PgeYRD0DxrNZNR4RIplg" +
+    "1pKeUNclTJZADZqXCHNTiABs/pKjbZpovQZJ4rZQeCbJkxmKRmkr2xe7yMGL5n+GDcT3pEFY" +
+    "zz9T7ZFCRPCYdpGJjj08SPd8053yOoJ+SqKZmCYKAo4kJkgb3x7KEB25+6P0UUPC8u9xTNtV" +
+    "ohZhVPPJKrJkeUcK9BMgENKZXrd+p7hJ5qReFrkJMGJ0Wf5gxi7PoZrIsOnFOvsSs384Qy6O" +
+    "jQiw0+c79xfKs8OUjMBr1g7JjmzCIz14YbZU1mwKy/ETSXT9+M+mcKbsKuYxwtb95MDTsYx9" +
+    "2/G8xgHMue/8GQuW+0ns457KTUzVWySK03kjnXhvoYZnb91hvMcj3Uc+HeFPqM7Odv5d8niX" +
+    "6I75m0xWpSnv72msdX4ZV+T/0jAoFAIPAbiNmfkNF0IpoAAAAASUVORK5CYII="
+
+@Suppress("SpellCheckingInspection")
+private const val SPACER: String = "" +
+    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAA" +
+    "ALAAAAAABAAEAAAIBRAA7"

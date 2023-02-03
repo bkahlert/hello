@@ -8,12 +8,14 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Floated
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.TextAlignment
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.TextAlignment.Center
 import com.bkahlert.semanticui.demo.Demo
+import com.bkahlert.semanticui.demo.Demos
 import com.bkahlert.semanticui.demo.LoremIpsumParagraph
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Groups
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.States
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
+import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.PiledSegment
 import com.bkahlert.semanticui.element.PiledSegments
@@ -38,10 +40,12 @@ import com.bkahlert.semanticui.element.horizontal
 import com.bkahlert.semanticui.element.inverted
 import com.bkahlert.semanticui.element.loading
 import com.bkahlert.semanticui.element.padded
+import com.bkahlert.semanticui.element.veryPadded
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 
 public val SegmentDemos: SemanticDemo = SemanticDemo(
+    SemanticType.Element,
     "Segment",
     Types {
         Demo("Segment") {
@@ -128,8 +132,13 @@ public val SegmentDemos: SemanticDemo = SemanticDemo(
             Segment({ v.attached() }) { P { Text("Attached") } }
             Segment({ v.attached(Bottom) }) { P { Text("Bottom Attached") } }
         }
-        Demo("Padded") {
-            Segment({ v.padded() }) { LoremIpsumParagraph() }
+        Demos("Padded") {
+            Demo("Padded") {
+                Segment({ v.padded() }) { LoremIpsumParagraph() }
+            }
+            Demo("Very Padded") {
+                Segment({ v.veryPadded() }) { LoremIpsumParagraph() }
+            }
         }
         Demo("Compact") {
             Segment({ v.compact() }) { LoremIpsumParagraph() }

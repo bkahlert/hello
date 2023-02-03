@@ -7,6 +7,7 @@ import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
 import org.jetbrains.compose.web.css.textAlign
 
 public val ErrorMessageDemos: SemanticDemo = SemanticDemo(
+    null,
     "Error Message",
     Types {
         Demo("Error Message") {

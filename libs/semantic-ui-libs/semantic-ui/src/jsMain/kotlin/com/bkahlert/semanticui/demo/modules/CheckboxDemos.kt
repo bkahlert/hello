@@ -3,6 +3,7 @@ package com.bkahlert.semanticui.demo.modules
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
+import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.module.Checkbox
 import com.bkahlert.semanticui.module.CheckboxElementType.Radio
 import com.bkahlert.semanticui.module.CheckboxElementType.Slider
@@ -15,6 +16,7 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.events.SyntheticChangeEvent
 
 public val CheckboxDemos: SemanticDemo = SemanticDemo(
+    SemanticType.Module,
     "Checkbox",
     Types {
         Demo("Checkbox") {

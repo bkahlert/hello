@@ -17,7 +17,7 @@
     <style>
         body {
             background-attachment: fixed;
-            background-color: #231F20;
+            background-color: #231f20;
             background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNDQwIiBoZWlnaHQ9IjI1MCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSIgeG1sbnM6dj0iaHR0cHM6Ly92ZWN0YS5pby9uYW5vIj48ZGVmcz48bGluZWFyR3JhZGllbnQgeDE9IjAlIiB5MT0iMTAwJSIgeDI9IjEwMCUiIHkyPSIwJSIgaWQ9IkEiPjxzdG9wIHN0b3AtY29sb3I9InJnYmEoMjU1LCAyMTUsIDM4LCAxKSIgb2Zmc2V0PSIwIi8+PHN0b3Agc3RvcC1vcGFjaXR5PSIwIiBzdG9wLWNvbG9yPSJyZ2JhKDI1NSwgMjE1LCAzOCwgMSkiIG9mZnNldD0iLjY2Ii8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgeDE9IjEwMCUiIHkxPSIxMDAlIiB4Mj0iMCUiIHkyPSIwJSIgaWQ9IkIiPjxzdG9wIHN0b3AtY29sb3I9InJnYmEoMjU1LCAyMTUsIDM4LCAxKSIgb2Zmc2V0PSIwIi8+PHN0b3Agc3RvcC1vcGFjaXR5PSIwIiBzdG9wLWNvbG9yPSJyZ2JhKDI1NSwgMjE1LCAzOCwgMSkiIG9mZnNldD0iLjY2Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHBhdGggZmlsbD0iIzIzMWYyMCIgZD0iTTAgMGgxNDQwdjI1MEgweiIvPjxnIGZpbGw9InVybCgjQSkiPjxwYXRoIGQ9Ik0zOCAyNTBMMjg4IDBoMTAwLjVsLTI1MCAyNTB6Ii8+PHBhdGggZD0iTTI3Ny42IDI1MGwyNTAtMjUwaDIzNS41bC0yNTAgMjUweiIvPjxwYXRoIGQ9Ik01MDcuMiAyNTBsMjUwLTI1MGgxNjAuNWwtMjUwIDI1MHoiLz48cGF0aCBkPSJNNzM1LjggMjUwbDI1MC0yNTBoMTA4bC0yNTAgMjUweiIvPjwvZz48ZyBmaWxsPSJ1cmwoI0IpIj48cGF0aCBkPSJNMTQzOSAyNTBMMTE4OSAwSDk1My41bDI1MCAyNTB6Ii8+PHBhdGggZD0iTTExOTkuNCAyNTBMOTQ5LjQgMEg4MDkuOWwyNTAgMjUweiIvPjxwYXRoIGQ9Ik05NDAuOCAyNTBMNjkwLjggMEgzNzQuM2wyNTAgMjUweiIvPjxwYXRoIGQ9Ik03MDUuMiAyNTBMNDU1LjIgMGgtMjMxbDI1MCAyNTB6Ii8+PC9nPjxwYXRoIGQ9Ik0xMjAyLjEzMiAyNTBMMTQ0MCAxMi4xMzJWMjUweiIgZmlsbD0idXJsKCNBKSIvPjxwYXRoIGQ9Ik0wIDI1MGgyMzcuODY4TDAgMTIuMTMyeiIgZmlsbD0idXJsKCNCKSIvPjwvc3ZnPg==");
             background-position: center bottom;
             background-repeat: no-repeat;
@@ -26,6 +26,75 @@
     </style>
 </head>
 <body>
+<!--<style>-->
+<!--    .app {-->
+<!--        display: flex;-->
+<!--        min-height: 100vh;-->
+<!--        flex-flow: column;-->
+<!--        border: 1px solid #0f0;-->
+<!--    }-->
+
+<!--    .app > * {-->
+<!--        border: 1px solid #060;-->
+<!--    }-->
+
+<!--    .bookmarks {-->
+<!--        border: 3px solid #0f0;-->
+<!--        flex: 1 100%;-->
+<!--    }-->
+
+
+<!--    .toolbar {-->
+<!--        display: flex;-->
+<!--        flex-wrap: wrap;-->
+<!--        /*align-content: flex-start;*/-->
+<!--        align-items: center;-->
+
+<!--        padding: 1rem;-->
+<!--        row-gap: 1rem;-->
+<!--        column-gap: 1rem;-->
+<!--        border: 1px solid #f00;-->
+<!--    }-->
+
+<!--    .toolbar > * {-->
+<!--        border: 1px solid #660000;-->
+<!--        flex: 1 100%;-->
+<!--    }-->
+
+<!--    @media all and (min-width: 768px) {-->
+<!--        .links { order: 0; flex: 1 auto; }-->
+<!--        .tasks { order: 1; flex: 3 auto; }-->
+<!--        .search { order: 2; }-->
+<!--    }-->
+
+<!--    @media all and (min-width: 1200px) {-->
+<!--        .search { order: 1; flex: 2 auto; }-->
+<!--    }-->
+<!--</style>-->
+<!--<div id="root" class="app">-->
+<!--    <div class="toolbar">-->
+<!--        <div class="links">-->
+<!--            <div class="ui olive inverted segment">-->
+<!--                Links <br> Links-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="search">-->
+<!--            <div class="ui teal inverted segment">-->
+<!--                Search-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="tasks">-->
+<!--            <div class="ui purple inverted segment">-->
+<!--                ClickUp-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="bookmarks">-->
+<!--        <div class="ui blue inverted bottom attached segment">-->
+<!--            start.me-->
+<!--        </div>-->
+<!--    </div>-->
+</div>
 <div id="root"></div>
 <script src="playground-app.js"></script>
 </body>

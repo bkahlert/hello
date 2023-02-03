@@ -47,7 +47,7 @@ public object ClickUpStyleSheet : StyleSheet() {
         ".ui.menu .item > img:not(.ui).mini" style {
             width(2.2.em)
             maxHeight(1.6.em)
-            margin((-.5).em, 0.em)
+            margin((-.2).em, 0.em)
         }
         ".ui.menu .item.link > img:not(.ui)" style {
             marginRight(0.25.em)

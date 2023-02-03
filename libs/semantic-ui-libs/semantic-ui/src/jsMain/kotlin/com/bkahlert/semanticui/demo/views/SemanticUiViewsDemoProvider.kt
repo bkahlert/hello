@@ -6,7 +6,11 @@ import com.bkahlert.semanticui.demo.Grid
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 
-public val SemanticUiViewsDemoProvider: DemoProvider = DemoProvider("semantic-ui-views", "Semantic UI—Views") {
+public val SemanticUiViewsDemoProvider: DemoProvider = DemoProvider(
+    id = "semantic-ui-views",
+    name = "Views",
+    logo = "https://semantic-ui.com/images/logo.png",
+) {
     Grid {
         Column {
             P { Text("—") }

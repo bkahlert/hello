@@ -11,6 +11,7 @@ import org.w3c.dom.HTMLDivElement
 public data class DemoProvider(
     public val id: String,
     public val name: String,
+    public val logo: CharSequence? = null,
     public val content: DemoContentBuilder,
 )
 
