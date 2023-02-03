@@ -1,0 +1,58 @@
+:root {
+    --overscroll-blend-z-index: calc(var(--modal-z-index) - 100);
+}
+
+.overscroll-blend {
+    background-color: var(--background-color);
+}
+
+.overscroll-blend::before,
+.overscroll-blend::after {
+    display: block;
+    content: "";
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: var(--overscroll-blend-z-index);
+}
+
+.overscroll-blend::before {
+    position: fixed;
+    top: 0;
+    height: 1rem;
+    background-image: linear-gradient(
+            180deg,
+            var(--background-color),
+            var(--background-color-transparent)
+    );
+}
+
+.overscroll-blend::after {
+    position: absolute;
+    top: 100%;
+    margin-top: -10rem;
+    height: 10rem;
+    padding: 1rem calc(env(safe-area-inset-right) + 1rem) 1rem calc(env(safe-area-inset-left) + 1rem);
+    background: url("../hello-logo.svg") 0 100%/auto 1.5rem content-box no-repeat,
+    url("../hello-logo.svg") 2px 100%/auto 1.5rem content-box no-repeat,
+    linear-gradient(
+            0deg,
+            var(--background-color),
+            var(--background-color-transparent)
+    );
+    background-blend-mode: saturation, multiply, normal;
+}
+
+
+/* TODO support content not fitting in height; must be tested with overscroll background
+.overscroll-blend {
+    height: -webkit-fit-content;
+    height: fit-content;
+}
+
+.overscroll-blend::after {
+    position: absolute;
+    top: initial;
+    bottom: 0;
+}
+*/

@@ -7,15 +7,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.VerticallyAligned.Bottom
-import com.bkahlert.semanticui.core.dimmer
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.jQuery
 import com.bkahlert.semanticui.demo.Demo
+import com.bkahlert.semanticui.demo.custom.ComponentType
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.States
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
-import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.IconSubHeader
 import com.bkahlert.semanticui.element.Line
@@ -31,13 +30,14 @@ import com.bkahlert.semanticui.module.PageDimmer
 import com.bkahlert.semanticui.module.active
 import com.bkahlert.semanticui.module.blurring
 import com.bkahlert.semanticui.module.dimmable
+import com.bkahlert.semanticui.module.dimmer
 import com.bkahlert.semanticui.module.disabled
 import com.bkahlert.semanticui.module.inverted
 import com.bkahlert.semanticui.module.verticallyAligned
 import org.jetbrains.compose.web.dom.Text
 
 public val DimmerDemos: SemanticDemo = SemanticDemo(
-    SemanticType.Module,
+    ComponentType.Module,
     "Dimmer",
     Types {
         Demo("Dimmer") {
@@ -69,15 +69,15 @@ public val DimmerDemos: SemanticDemo = SemanticDemo(
                 IconSubHeader("heart", attrs = { v.inverted() }) { Text("Dimmed Message!") }
                 if (dim) {
                     DisposableEffect(Unit) {
-                        jQuery(scopeElement.parentElement)
+                        val dimmer = jQuery(scopeElement.parentElement)
                             .dimmer(
-                                "onHide" to fun() {
+                                "onHide" to {
                                     console.log("onHide")
                                     dim = false
                                 },
                             )
                             .dimmer("show")
-                        onDispose { jQuery(scopeElement.parentElement).dimmer("hide") }
+                        onDispose { dimmer.dimmer("destroy") }
                     }
                 }
             }
@@ -103,8 +103,10 @@ public val DimmerDemos: SemanticDemo = SemanticDemo(
                 Content()
                 Dimmer {
                     DisposableEffect(Unit) {
-                        jQuery(scopeElement.parentElement).dimmer("show")
-                        onDispose { jQuery(scopeElement.parentElement).dimmer("hide") }
+                        val dimmer = jQuery(scopeElement.parentElement).dimmer("show")
+                        onDispose {
+                            dimmer.dimmer("destroy").remove()
+                        }
                     }
                 }
             }
@@ -112,8 +114,10 @@ public val DimmerDemos: SemanticDemo = SemanticDemo(
                 Content()
                 Dimmer({ v.inverted() }) {
                     DisposableEffect(Unit) {
-                        jQuery(scopeElement.parentElement).dimmer("show")
-                        onDispose { jQuery(scopeElement.parentElement).dimmer("hide") }
+                        val dimmer = jQuery(scopeElement.parentElement).dimmer("show")
+                        onDispose {
+                            dimmer.dimmer("destroy").remove()
+                        }
                     }
                 }
             }

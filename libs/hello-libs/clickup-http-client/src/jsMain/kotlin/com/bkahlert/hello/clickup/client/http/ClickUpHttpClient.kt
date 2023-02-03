@@ -20,16 +20,16 @@ import com.bkahlert.hello.clickup.model.div
 import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.json.Lenient
-import com.bkahlert.kommons.json.serialize
+import com.bkahlert.kommons.json.LenientJson
+import com.bkahlert.kommons.ktor.TokenAuthPlugin
 import com.bkahlert.kommons.logging.InlineLogging
+import com.bkahlert.kommons.uri.div
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.HttpResponseValidator
-import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.plugin
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -37,15 +37,16 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.js.Date
 
@@ -75,6 +76,7 @@ public data class ClickUpHttpClient(
                         is ResponseException -> {
                             kotlin
                                 .runCatching { ex.response.body<ErrorInfo>() }
+                                .onFailure { if (it is CancellationException) throw it }
                                 .map { (err, eCode) -> ClickUpException(err, eCode, ex) }
                                 .getOrElse { ex }
                         }
@@ -83,13 +85,7 @@ public data class ClickUpHttpClient(
                     }
                 }
             }
-            install("ClickUp-PersonalToken-Authorization") {
-                plugin(HttpSend).intercept { context ->
-                    logger.debug("setting ${HttpHeaders.Authorization}=$accessToken")
-                    context.headers[HttpHeaders.Authorization] = accessToken.token
-                    execute(context)
-                }
-            }
+            install(TokenAuthPlugin) { token = accessToken }
         }
     }
 
@@ -179,7 +175,7 @@ public data class ClickUpHttpClient(
                 parameter("date_updated_gt", date_updated_gt)
                 parameter("date_updated_lt", date_updated_lt)
                 custom_fields?.forEach { parameter("custom_fields", it) }
-                custom_fields?.forEach { parameter("custom_fields", it.serialize(pretty = false)) }
+                custom_fields?.forEach { parameter("custom_fields", LenientJson.encodeToString(it)) }
             }.value
         }
 

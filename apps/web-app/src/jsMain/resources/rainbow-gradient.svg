@@ -1,5 +1,4 @@
-<svg version="1.1" width="320" height="320" viewBox="0 0 320 320" fill="none" stroke="#000" stroke-linecap="round"
-     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Rainbow gradient" role="img" cursor="default" width="320" height="320" viewBox="0 0 320 320" stroke="#000" stroke-linecap="round">
     <style>
         .blue { stroke: rgb(41, 171, 226); }
         .red { stroke: rgb(194, 30, 115); }

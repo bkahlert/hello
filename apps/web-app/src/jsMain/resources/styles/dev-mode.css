@@ -1,0 +1,55 @@
+:root {
+    --dev-mode-z-index: calc(var(--modal-z-index) + 1000);
+}
+
+.dev-mode-controls {
+    position: fixed;
+
+    margin-left: -4.4em;
+    transition: all 0.15s ease-out;
+
+    bottom: max(env(safe-area-inset-bottom), 25%);
+    left: 0;
+    z-index: var(--dev-mode-z-index);
+    mix-blend-mode: hard-light;
+}
+
+.dev-mode-controls:hover,
+.dev-mode-controls.active {
+    margin-left: -.3em;
+}
+
+.dev-mode-controls .ui.button {
+    text-shadow: 0 0 0 black;
+    box-shadow: 1px 1px 4px 2px var(--shade-color);
+}
+
+.dev-mode-controls:hover .ui.button {
+    text-shadow: 0 0 0 white;
+    box-shadow: 1px 1px 4px 2px var(--shade-color);
+}
+
+/* Reduce animations in demos */
+.demo .ui.placeholder {
+    -webkit-animation-iteration-count: 1;
+    animation-iteration-count: 1;
+    -webkit-animation: none;
+    animation: none;
+}
+
+/* reduce distraction by reducing opacity when not hovered */
+@media (hover: hover) {
+
+    .demo {
+        transition: filter 0.25s ease;
+        filter: drop-shadow(0px 2px 80px var(--shade-color));
+    }
+
+    .demo:not(:hover) {
+        filter: drop-shadow(0px 0px 0px var(--shade-color-transparent));
+    }
+
+    .demo:hover .demo:not(:hover) {
+        filter: inherit;
+    }
+}

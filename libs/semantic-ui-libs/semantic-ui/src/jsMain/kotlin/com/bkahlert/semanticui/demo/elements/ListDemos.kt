@@ -3,11 +3,12 @@ package com.bkahlert.semanticui.demo.elements
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Floated.Right
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Huge
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.VerticallyAligned.Top
+import com.bkahlert.semanticui.core.attributes.raw
 import com.bkahlert.semanticui.demo.Demo
+import com.bkahlert.semanticui.demo.custom.ComponentType
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Content
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
-import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Content
 import com.bkahlert.semanticui.element.Description
 import com.bkahlert.semanticui.element.Header
@@ -23,7 +24,7 @@ import org.jetbrains.compose.web.dom.Text
 import com.bkahlert.semanticui.element.List as SemanticList
 
 public val ListDemos: SemanticDemo = SemanticDemo(
-    SemanticType.Element,
+    ComponentType.Element,
     "List",
     Content {
         Demo("Item") {

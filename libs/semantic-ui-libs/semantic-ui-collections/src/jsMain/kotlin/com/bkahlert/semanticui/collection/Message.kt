@@ -16,6 +16,7 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Success
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Warning
 import com.bkahlert.semanticui.core.attributes.StatesScope
 import com.bkahlert.semanticui.core.attributes.VariationsScope
+import com.bkahlert.semanticui.core.attributes.raw
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
@@ -116,7 +117,7 @@ public fun SemanticElementScope<MessageElement>.Header(
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     Div({
-        modifiers.forEach { classes(*it.classNames) }
+        modifiers.forEach { raw(it) }
         classes("header")
     }, content)
 }

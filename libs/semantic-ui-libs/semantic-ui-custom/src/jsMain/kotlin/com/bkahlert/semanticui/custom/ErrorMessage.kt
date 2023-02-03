@@ -17,13 +17,13 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 public fun ErrorMessage(
     throwable: Throwable,
+    message: String = throwable.errorMessage,
     attrs: SemanticAttrBuilderContext<MessageElement>? = null,
+    content: SemanticContentBuilder<MessageElement>? = null,
 ) {
-    ErrorMessage(attrs) {
-        Header {
-            Text(throwable.errorMessage)
-        }
-        Accordion(throwable) {
+    ErrorMessage(message, attrs) {
+        content?.invoke(this)
+        Accordion {
             Dropdown("Stacktrace") {
                 Pre({
                     style {
@@ -35,6 +35,20 @@ public fun ErrorMessage(
                 }
             }
         }
+    }
+}
+
+@Composable
+public fun ErrorMessage(
+    message: String,
+    attrs: SemanticAttrBuilderContext<MessageElement>? = null,
+    content: SemanticContentBuilder<MessageElement>? = null,
+) {
+    ErrorMessage(attrs) {
+        Header {
+            Text(message)
+        }
+        content?.invoke(this)
     }
 }
 

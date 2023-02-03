@@ -14,6 +14,7 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Positive
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Toggle
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Vertical
 import com.bkahlert.semanticui.core.attributes.StatesScope
+import com.bkahlert.semanticui.core.attributes.TypeScope
 import com.bkahlert.semanticui.core.attributes.VariationsScope
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
@@ -27,6 +28,17 @@ import org.w3c.dom.HTMLDivElement
 public interface ButtonElement<out TElement : Element> : SemanticElement<TElement>
 public interface ButtonDivElement : ButtonElement<HTMLDivElement>
 public interface ButtonAnchorElement : SemanticElement<HTMLAnchorElement>
+
+
+/** [Type.Emphasis](https://semantic-ui.com/elements/button.html#emphasis) */
+public fun TypeScope<ButtonElement<Element>>.emphasis(value: Variation.Emphasis): TypeScope<ButtonElement<Element>> = +value
+
+/** Primary [Type.Emphasis](https://semantic-ui.com/elements/button.html#emphasis) */
+public fun TypeScope<ButtonElement<Element>>.primary(): TypeScope<ButtonElement<Element>> = emphasis(Variation.Emphasis.Primary)
+
+/** Secondary [Type.Emphasis](https://semantic-ui.com/elements/button.html#emphasis) */
+public fun TypeScope<ButtonElement<Element>>.secondary(): TypeScope<ButtonElement<Element>> = emphasis(Variation.Emphasis.Secondary)
+// Tertiary does not exist
 
 // SocialVariation
 
@@ -87,36 +99,13 @@ public fun Button(
 }, content)
 
 /**
- * Creates a [SemanticUI primary button](https://semantic-ui.com/elements/button.html#emphasis).
- */
-@Composable
-public fun PrimaryButton(
-    attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
-    content: SemanticContentBuilder<ButtonDivElement>? = null,
-): Unit = Button({
-    classes("primary")
-    attrs?.invoke(this)
-}, content)
-
-/**
- * Creates a [SemanticUI secondary button](https://semantic-ui.com/elements/button.html#emphasis).
- */
-@Composable
-public fun SecondaryButton(
-    attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
-    content: SemanticContentBuilder<ButtonDivElement>? = null,
-): Unit = Button({
-    classes("secondary")
-    attrs?.invoke(this)
-}, content)
-
-/**
  * Creates a [SemanticUI icon button](https://semantic-ui.com/elements/button.html#icon).
  */
+@Suppress("NOTHING_TO_INLINE") // = avoidance of unnecessary recomposition scope
 @Composable
-public fun IconButton(
-    attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
-    content: SemanticContentBuilder<ButtonDivElement>? = null,
+public inline fun IconButton(
+    noinline attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
+    noinline content: SemanticContentBuilder<ButtonDivElement>? = null,
 ): Unit = Button({
     classes("icon")
     attrs?.invoke(this)
@@ -125,10 +114,11 @@ public fun IconButton(
 /**
  * Creates a [SemanticUI labeled icon button](https://semantic-ui.com/elements/button.html#icon).
  */
+@Suppress("NOTHING_TO_INLINE") // = avoidance of unnecessary recomposition scope
 @Composable
-public fun LabeledIconButton(
-    attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
-    content: SemanticContentBuilder<ButtonDivElement>? = null,
+public inline fun LabeledIconButton(
+    noinline attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
+    noinline content: SemanticContentBuilder<ButtonDivElement>? = null,
 ): Unit = Button({
     classes("labeled", "icon")
     attrs?.invoke(this)
@@ -137,22 +127,13 @@ public fun LabeledIconButton(
 /**
  * Creates a [SemanticUI basic button](https://semantic-ui.com/elements/button.html#basic).
  */
+@Suppress("NOTHING_TO_INLINE") // = avoidance of unnecessary recomposition scope
 @Composable
-public fun BasicButton(
-    attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
-    content: SemanticContentBuilder<ButtonDivElement>? = null,
+public inline fun BasicButton(
+    noinline attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
+    noinline content: SemanticContentBuilder<ButtonDivElement>? = null,
 ): Unit = Button({
     classes("basic")
-    attrs?.invoke(this)
-}, content)
-
-/** Creates a [SemanticUI inverted button](https://semantic-ui.com/elements/button.html#inverted). */
-@Composable
-public fun InvertedButton(
-    attrs: SemanticAttrBuilderContext<ButtonDivElement>? = null,
-    content: SemanticContentBuilder<ButtonDivElement>? = null,
-): Unit = Button({
-    classes("inverted")
     attrs?.invoke(this)
 }, content)
 
@@ -162,7 +143,7 @@ public fun InvertedButton(
  * based on an anchor tag.
  */
 @Composable
-public fun AnkerButton(
+public fun AnchorButton(
     href: String? = null,
     attrs: SemanticAttrBuilderContext<ButtonAnchorElement>? = null,
     content: SemanticContentBuilder<ButtonAnchorElement>? = null,

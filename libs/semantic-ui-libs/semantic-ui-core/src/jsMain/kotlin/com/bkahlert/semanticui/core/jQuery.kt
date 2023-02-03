@@ -1,38 +1,124 @@
 package com.bkahlert.semanticui.core
 
+import org.w3c.dom.Element
 import kotlin.js.Json
 import kotlin.js.json
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * An interface for the [jQuery library](https://jquery.com).
  */
-public external class jQuery(deep: Any?) {
-    // built-in
-    public fun attr(propertyName: String): String?
-    public fun attr(propertyName: String, value: Any?): jQuery
-    public fun children(selector: String = definedExternally): jQuery
-    public fun click(): jQuery
-    public fun closest(selector: String = definedExternally): jQuery
-    public fun css(propertyName: String, value: Any?): jQuery
-    public fun find(selector: String = definedExternally): jQuery
-    public fun focus(): jQuery
-    public fun siblings(selector: String = definedExternally): jQuery
+@Suppress("ClassName")
+public external interface jQuery {
 
-    // Semantic UI
-    public fun accordion(options: Json = definedExternally): jQuery
-    public fun dimmer(options: Json = definedExternally): jQuery
-    public fun dimmer(behavior: String, vararg args: Any? = definedExternally): jQuery
-    public fun dropdown(options: Json = definedExternally): jQuery
-    public fun dropdown(behavior: String, vararg args: Any? = definedExternally): jQuery
-    public fun popup(options: Json = definedExternally): jQuery
-    public fun popup(behavior: String, vararg args: Any? = definedExternally): jQuery
-    public fun transition(options: Json = definedExternally): jQuery
-    public fun transition(behavior: String, vararg args: Any? = definedExternally): jQuery
-    public fun modal(options: Json = definedExternally): jQuery
-    public fun modal(behavior: String, vararg args: Any? = definedExternally): jQuery
-    public fun progress(options: Json = definedExternally): jQuery
-    public fun progress(behavior: String, vararg args: Any? = definedExternally): jQuery
+    /** Perform a custom animation of a set of CSS properties. */
+    public fun animate(properties: Json = definedExternally, options: Json = definedExternally): jQuery
+
+    /**
+     * Get the value of an attribute for the first element in the set of matched elements.
+     */
+    public fun attr(propertyName: String): String?
+
+    /**
+     * Set one or more attributes for the set of matched elements.
+     */
+    public fun attr(propertyName: String, value: Any?): jQuery
+
+    /**
+     * Get the children of each element in the set of matched elements, optionally filtered by a selector.
+     */
+    public fun children(selector: String = definedExternally): jQuery
+
+    /**
+     * Trigger the "click" JavaScript event on an element.
+     */
+    public fun click(): jQuery
+
+    /**
+     * For each element in the set, get the first element that matches the
+     * selector by testing the element itself and traversing up through its ancestors in the DOM tree.
+     */
+    public fun closest(selector: String = definedExternally): jQuery
+
+    /**
+     * Set one CSS property for the set of matched elements.
+     */
+    public fun css(propertyName: String, value: Any?): jQuery
+
+    /**
+     * Iterate over a jQuery object, executing a function for each matched element.
+     */
+    public fun each(fn: (index: Int, element: Element) -> Unit): jQuery
+
+    /**
+     * Get the descendants of each element in the current set of matched elements, filtered by the [selector].
+     */
+    public fun find(selector: String = definedExternally): jQuery
+
+    /**
+     * Trigger the "focus" JavaScript event on an element.
+     */
+    public fun focus(): jQuery
+
+    /**
+     * Retrieve one of the elements matched by the jQuery object.
+     */
+    public operator fun get(index: Int): Element
+
+    /**
+     * The number of elements in the jQuery object.
+     */
+    public val length: Int
+
+    /**
+     * Get the immediately preceding sibling of each element in the set of matched elements.
+     *
+     * If a [selector] is provided, it retrieves the previous sibling only if it matches that selector.
+     */
+    public fun prev(selector: String = definedExternally): jQuery
+
+    /**
+     * Remove the set of matched elements from the DOM.
+     */
+    public fun remove(selector: String = definedExternally): jQuery
+
+    /**
+     * Get the siblings of each element in the set of matched elements, optionally filtered by a selector.
+     */
+    public fun siblings(selector: String = definedExternally): jQuery
 }
+
+/** Creates a jQuery instance using the optional [deep]. */
+public external fun jQuery(deep: Any? = definedExternally): jQuery
+
+/**
+ * Returns the view of the elements matched by this [jQuery] instance.
+ */
+public fun jQuery.asList(): List<Element> = object : AbstractList<Element>() {
+    override val size: Int get() = this@asList.length
+
+    override fun get(index: Int): Element = when (index) {
+        in 0..lastIndex -> this@asList[index]
+        else -> throw IndexOutOfBoundsException("index $index is not in range [0..$lastIndex]")
+    }
+}
+
+/** Perform a custom animation of a set of CSS properties. */
+public fun jQuery.animate(
+    vararg properties: Pair<String, Any?>,
+    duration: Duration = 400.milliseconds,
+    easing: String = "swing",
+    complete: () -> Unit = {},
+): jQuery = animate(
+    properties = json(*properties),
+    options = json(
+        "duration" to duration.inWholeMilliseconds.toInt(),
+        "easing" to easing,
+        "complete" to complete,
+    )
+)
+
 
 /** Convenience shortcut for [jQuery.attr] and [key] prefixed with `data-`. */
 public fun jQuery.dataAttr(key: String): String? =
@@ -42,51 +128,12 @@ public fun jQuery.dataAttr(key: String): String? =
 public fun jQuery.dataAttr(key: String, value: Any?): jQuery =
     attr("data-$key", value)
 
-/**
- * An interface to interact with a [SemanticUI dimmer](https://semantic-ui.com/modules/dimmer.html)
- * using the specified [options].
- */
-public fun jQuery.dimmer(vararg options: Pair<String, Any?>): jQuery = dimmer(json(*options))
-
-/**
- * An interface to interact with a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html)
- * using the specified [options].
- *
- * @see <a href="https://semantic-ui.com/modules/dropdown.html#initializing-existing-html">Initializing</a>
- */
-public fun jQuery.dropdown(vararg options: Pair<String, Any?>): jQuery = dropdown(json(*options))
-
-/**
- * An interface to interact with a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html)
- * using the specified [options].
- *
- * @see <a href="https://semantic-ui.com/modules/popup.html#initializing-a-popup">Initializing</a>
- */
-public fun jQuery.popup(vararg options: Pair<String, Any?>): jQuery = popup(json(*options))
-
-/**
- * An interface to interact with a [SemanticUI modal](https://semantic-ui.com/modules/modal.html)
- * using the specified [options].
- */
-public fun jQuery.modal(vararg options: Pair<String, Any?>): jQuery = modal(json(*options))
-
-/**
- * An interface to interact with a [SemanticUI modal](https://semantic-ui.com/modules/modal.html)
- * using the specified [options].
- */
-public fun jQuery.modal(options: Map<String, Any?>): jQuery = modal(json(*options.toList().toTypedArray()))
-
-/**
- * An interface to interact with a [SemanticUI progress](https://semantic-ui.com/modules/progress.html)
- * using the specified [options].
- */
-public fun jQuery.progress(vararg options: Pair<String, Any?>): jQuery = progress(json(*options))
-
 
 /**
  * Helper function to convert an optional value to something that jQuery / Semantic UI
  * accepts as an array.
  */
+@Deprecated("verify alternatives and move to appropriate module")
 public fun <T> T?.toJsonArrayOrEmpty(transform: (T) -> String = { it.toString() }): Array<String> =
     this?.let { arrayOf(transform(it)) } ?: emptyArray()
 
@@ -94,5 +141,6 @@ public fun <T> T?.toJsonArrayOrEmpty(transform: (T) -> String = { it.toString() 
  * Helper function to convert collections to something that jQuery / Semantic UI
  * accepts as an array.
  */
+@Deprecated("verify alternatives and move to appropriate module")
 public fun <T> Iterable<T>.toJsonArray(transform: (T) -> String = { it.toString() }): Array<String> =
     map { transform(it) }.toTypedArray()

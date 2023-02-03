@@ -20,8 +20,8 @@ import com.bkahlert.hello.clickup.model.User
 import com.bkahlert.hello.clickup.model.asCreator
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.running
 import com.bkahlert.kommons.compareTo
-import com.bkahlert.kommons.net.Uri
 import com.bkahlert.kommons.randomString
+import com.bkahlert.kommons.uri.Uri
 import kotlinx.coroutines.delay
 import kotlin.js.Date
 import kotlin.time.Duration

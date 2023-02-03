@@ -42,7 +42,7 @@ public fun Element.toggleClass(vararg cssClasses: String): Boolean = cssClasses.
  * - with the specified [block] applied to it, and
  * - appended to the current element as a new child.
  */
-public inline fun <reified T : Element> Element.createChildElement(
+public inline fun <reified T : Element> Element.appendTypedElement(
     localName: String,
     options: ElementCreationOptions? = null,
     block: T.() -> Unit = {},
@@ -59,24 +59,12 @@ public inline fun <reified T : Element> Element.createChildElement(
 }
 
 /**
- * Returns an [Element]
- * - created using the specified [localName] and the optional [options],
- * - with the specified [block] applied to it, and
- * - appended to the current element as a new child.
- */
-public fun Element.createChildElement(
-    localName: String,
-    options: ElementCreationOptions? = null,
-    block: Element.() -> Unit = {},
-): Element = createChildElement<Element>(localName, options, block)
-
-/**
  * Returns an [HTMLDivElement]
  * - created using the optional [options],
  * - with the specified [block] applied to it, and
  * - appended to the current element as a new child.
  */
-public fun Element.createChildDivElement(
+public fun Element.appendDivElement(
     options: ElementCreationOptions? = null,
-    block: Element.() -> Unit = {},
-): HTMLDivElement = createChildElement<HTMLDivElement>("div", options, block)
+    block: HTMLDivElement.() -> Unit = {},
+): HTMLDivElement = appendTypedElement<HTMLDivElement>("div", options, block)

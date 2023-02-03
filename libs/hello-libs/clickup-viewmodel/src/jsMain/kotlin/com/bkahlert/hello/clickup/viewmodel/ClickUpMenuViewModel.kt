@@ -2,7 +2,6 @@ package com.bkahlert.hello.clickup.viewmodel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.hello.clickup.model.ClickUpClient
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
@@ -23,6 +22,8 @@ import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
 import com.bkahlert.kommons.logging.InlineLogging
+import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,7 +55,7 @@ public interface ClickUpMenuViewModel {
 public fun rememberClickUpMenuViewModel(
     vararg configurers: Configurer<ClickUpClient> = arrayOf(ClickUpTestClientConfigurer()),
     initialState: ClickUpMenuState = Disconnected,
-    refreshCoroutineScope: CoroutineScope = rememberCoroutineScope(),
+    refreshCoroutineScope: CoroutineScope = rememberReportingCoroutineScope(),
     storage: Storage = InMemoryStorage(),
 ): ClickUpMenuViewModel =
     remember(initialState, storage) {
@@ -82,7 +83,7 @@ public class ClickUpMenuViewModelImpl(
 
     /**
      * Updates the [state] using the specified [name] and the specified [operation]
-     * optionally in the [background], that is, hiding any progress indication.
+     * optionally in the [background], that is, hiding any progress sign.
      */
     private fun update(name: String, background: Boolean = false, operation: suspend CoroutineScope.(Succeeded) -> ClickUpMenuState) {
         if (!background) {
@@ -178,7 +179,7 @@ public class ClickUpMenuViewModelImpl(
     ): Connected {
         val previousSelection = storage.selections[team]
         logger.debug("Previous selection for team ${team.id}: $previousSelection")
-        val runningTimeEntry = kotlin.runCatching { state.getRunningTimeEntry(team) }
+        val runningTimeEntry = kotlin.runCatching { state.getRunningTimeEntry(team) }.onFailure { if (it is CancellationException) throw it }
         val runningTimeEntryId = runningTimeEntry.map { it?.id }
         logger.debug("Running time entry: $runningTimeEntryId")
         val selectedActivityIds = buildList {

@@ -31,12 +31,12 @@ kotlin {
 }
 
 tasks.withType(KotlinCompilationTask::class).configureEach {
-    val composePlugin = "plugin:androidx.compose.compiler.plugins.kotlin"
-    compilerOptions {
-        freeCompilerArgs.set(freeCompilerArgs.get() + listOf("-P", "$composePlugin:suppressKotlinVersionCompatibilityCheck=1.8.0"))
-    }
+//    val composePlugin = "plugin:androidx.compose.compiler.plugins.kotlin"
+//    compilerOptions {
+//        freeCompilerArgs.set(freeCompilerArgs.get() + listOf("-P", "$composePlugin:suppressKotlinVersionCompatibilityCheck=1.8.10"))
+//    }
 }
 
 compose {
-    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.0-alpha02")
+    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.3")
 }

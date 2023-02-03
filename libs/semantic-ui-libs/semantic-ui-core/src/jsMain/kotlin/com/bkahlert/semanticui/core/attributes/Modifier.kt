@@ -1,9 +1,11 @@
 package com.bkahlert.semanticui.core.attributes
 
 public sealed interface Modifier {
-    public val classNames: Array<out String>
+    public val classNames: List<String>
 
-    public sealed class State(override vararg val classNames: String) : Modifier {
+    public sealed class State(override val classNames: List<String>) : Modifier {
+        protected constructor(vararg classNames: String) : this(classNames.asList())
+
         override fun toString(): String = "${classNames.joinToString()} state"
 
         public object Active : State("active")
@@ -16,7 +18,9 @@ public sealed interface Modifier {
         public object Visible : State("visible")
     }
 
-    public sealed class Variation(override vararg val classNames: String) : Modifier {
+    public sealed class Variation(override val classNames: List<String>) : Modifier {
+        protected constructor(vararg classNames: String) : this(classNames.asList())
+
         override fun toString(): String = "${classNames.joinToString()} variation"
 
         public sealed class Action(pos: String?) : Variation(*listOfNotNull(pos, "action").toTypedArray()) {
@@ -54,7 +58,7 @@ public sealed interface Modifier {
         public object Animated : Variation("animated")
 
         public object Attached : Variation("attached") {
-            public abstract class AttachedAndPosition(pos: String) : Variation(pos, *Attached.classNames)
+            public abstract class AttachedAndPosition(pos: String) : Variation(listOf(pos) + Attached.classNames)
 
             public abstract class VerticallyAttached(pos: String) : AttachedAndPosition(pos)
             public object Top : VerticallyAttached("top")
@@ -101,6 +105,7 @@ public sealed interface Modifier {
         public object Divided : Variation("divided")
 
         public open class Emphasis(value: String) : Variation(value) {
+            public object Primary : Emphasis("primary")
             public object Secondary : Emphasis("secondary")
             public object Tertiary : Emphasis("tertiary")
             public companion object : List<Emphasis> by listOf(Secondary, Tertiary)

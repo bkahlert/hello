@@ -1,103 +1,116 @@
 package com.bkahlert.hello.clickup.viewmodel
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.Pomodoro
 import com.bkahlert.hello.clickup.Pomodoro.Companion.format
+import com.bkahlert.hello.clickup.Pomodoro.Status
 import com.bkahlert.hello.clickup.Pomodoro.Status.Aborted
 import com.bkahlert.hello.clickup.Pomodoro.Status.Completed
-import com.bkahlert.hello.clickup.Pomodoro.Status.Prepared
-import com.bkahlert.hello.clickup.Pomodoro.Status.Running
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TimeEntry
-import com.bkahlert.semanticui.core.jQuery
+import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.toMomentString
 import com.bkahlert.semanticui.custom.color
+import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.element.Icon
-import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.fontWeight
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.Text
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @Stable
 public interface PomodoroTimerState {
     public val timeEntry: TimeEntry
     public val pomodoro: Pomodoro
-    public val fps: Double
-    public val progressIndicating: Boolean
     public val acousticFeedback: AcousticFeedback
     public val onStop: (List<Tag>) -> Unit
+
+    public val status: Status
+    public val remaining: StateFlow<Duration>
 }
 
 public class PomodoroTimerStateImpl(
     override val timeEntry: TimeEntry,
-    override val fps: Double,
-    override val progressIndicating: Boolean,
     override val acousticFeedback: AcousticFeedback,
     override val onStop: (List<Tag>) -> Unit,
+
+    externalScope: CoroutineScope,
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : PomodoroTimerState {
     override val pomodoro: Pomodoro = Pomodoro.of(timeEntry)
+
+    override val status: Status get() = pomodoro.status
+
+    override val remaining: MutableStateFlow<Duration> = MutableStateFlow(pomodoro.duration - timeEntry.passed)
+
+    // TODO only allow aborting; onStop/Complete needs to be handled outside of timer view
+    private val logging = false
+
+    init {
+        if (logging) console.debug("PomodoroTimerStateImpl: launching coroutine")
+        externalScope.launch(defaultDispatcher) {
+            while (pomodoro.duration - timeEntry.passed >= 0.5.seconds) {
+                if (logging) console.debug(
+                    "PomodoroTimerStateImpl: launched coroutine",
+                    "pomodoro: ", pomodoro.duration.toMomentString(),
+                    "passed: ", timeEntry.passed.toMomentString(),
+                    "remaining: ", (pomodoro.duration - timeEntry.passed).toMomentString(),
+                )
+                remaining.update { pomodoro.duration - timeEntry.passed }
+                delay(500.milliseconds)
+            }
+
+            acousticFeedback.completed.play()
+            onStop(listOf(Completed.tag))
+        }
+    }
 }
 
 @Composable
 public fun rememberPomodoroTimerState(
     timeEntry: TimeEntry,
-    fps: Double = 15.0,
-    progressIndicating: Boolean = false,
     acousticFeedback: AcousticFeedback = AcousticFeedback.NoFeedback,
     onStop: (TimeEntry, List<Tag>) -> Unit = { _, tags ->
-        console.log("stopped ${timeEntry.id} with $tags")
+        console.debug("rememberPomodoroTimerState: stopped ${timeEntry.id} with $tags")
     },
+    externalScope: CoroutineScope = rememberReportingCoroutineScope(),
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ): PomodoroTimerState {
-    return remember(timeEntry, fps, progressIndicating, acousticFeedback, onStop) {
+    return remember(timeEntry, acousticFeedback, onStop) {
         PomodoroTimerStateImpl(
             timeEntry = timeEntry,
-            fps = fps,
-            progressIndicating = progressIndicating,
             acousticFeedback = acousticFeedback,
             onStop = { tags -> onStop(timeEntry, tags) },
+            externalScope = externalScope,
+            defaultDispatcher = defaultDispatcher,
         )
     }
 }
+
 
 @Composable
 public fun PomodoroTimer(
     state: PomodoroTimerState,
     stop: () -> Boolean = { false },
 ) {
-    var tick: Long by remember(state) { mutableStateOf(0L) }
-    val pomodoro = state.pomodoro
-    val status = pomodoro.status
-    val passed = tick.let { state.timeEntry.passed }
-    val remaining = pomodoro.duration - passed
-    val progress = (passed / pomodoro.duration).coerceAtMost(1.0)
 
-    if (state.progressIndicating) {
-        Div({
-            classes("ui", "top", "attached", "indicating", "progress")
-            attr("data-value", "${passed.inWholeSeconds}")
-            attr("data-total", "${pomodoro.duration.inWholeSeconds}")
-        }) {
-            Div({ classes("bar") })
-            DisposableEffect(tick) {
-                when (status) {
-                    Prepared -> jQuery(scopeElement).progress("remove active")
-                    // supposed to work with data-value, but not always working (see Debug Mode F4)
-                    Running -> jQuery(scopeElement).progress("set percent", "${progress * 100.0}")
-                    Aborted -> jQuery(scopeElement).progress("set error")
-                    Completed -> jQuery(scopeElement).progress("set success")
-                }
-                onDispose { jQuery(scopeElement).progress("remove active") }
-            }
-        }
-    }
+    val status = state.pomodoro.status
+    val remaining by state.remaining.collectAsState()
 
     Div {
         if (state.timeEntry.ended) {
@@ -134,21 +147,6 @@ public fun PomodoroTimer(
                     fontWeight(700)
                 }
             }) { Text(remaining.format()) }
-        }
-    }
-
-    if (remaining < 0.5.seconds) {
-        DisposableEffect(state) {
-            state.acousticFeedback.completed.play()
-            state.onStop(listOf(Completed.tag))
-            onDispose { }
-        }
-    } else {
-        DisposableEffect(state) {
-            val timeout = 1.seconds / state.fps
-            // avoid flickering by initially waiting one second
-            val handle: Int = window.setInterval({ tick++ }, timeout = timeout.inWholeMilliseconds.toInt())
-            onDispose { window.clearInterval(handle) }
         }
     }
 }

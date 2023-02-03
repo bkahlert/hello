@@ -12,10 +12,15 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-net")
+                implementation("com.bkahlert.kommons:kommons-inc")
                 implementation("com.bkahlert.semantic-ui:semantic-ui")
                 implementation("com.bkahlert.hello:clickup")
-                implementation("com.bkahlert.hello:hello-client")
-                implementation("com.bkahlert.hello:hello-search")
+                implementation("com.bkahlert.hello:hello")
+            }
+        }
+        val jsTest by getting {
+            dependencies {
+                implementation("com.bkahlert.semantic-ui:semantic-ui-test")
             }
         }
 

@@ -27,8 +27,8 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
 import com.bkahlert.kommons.logging.InlineLogger
 import com.bkahlert.kommons.logging.InlineLogging
+import com.bkahlert.kommons.successor
 import com.bkahlert.kommons.text.simpleKebabCasedName
-import com.bkahlert.kommons.util.successor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

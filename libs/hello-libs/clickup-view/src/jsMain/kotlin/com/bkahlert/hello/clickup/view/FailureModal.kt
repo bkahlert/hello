@@ -6,13 +6,14 @@ import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Red
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Yellow
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
+import com.bkahlert.semanticui.core.attributes.raw
 import com.bkahlert.semanticui.core.dataAttr
 import com.bkahlert.semanticui.custom.data
 import com.bkahlert.semanticui.custom.errorMessage
 import com.bkahlert.semanticui.element.BasicButton
+import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.IconHeader
-import com.bkahlert.semanticui.element.InvertedButton
 import com.bkahlert.semanticui.element.colored
 import com.bkahlert.semanticui.module.Accordion
 import com.bkahlert.semanticui.module.Actions
@@ -22,6 +23,7 @@ import com.bkahlert.semanticui.module.Dropdown
 import com.bkahlert.semanticui.module.approve
 import com.bkahlert.semanticui.module.closable
 import com.bkahlert.semanticui.module.deny
+import com.bkahlert.semanticui.module.inverted
 import com.bkahlert.semanticui.module.onApprove
 import com.bkahlert.semanticui.module.onDeny
 import com.bkahlert.semanticui.module.scrolling
@@ -63,7 +65,7 @@ public fun FailureModal(
             P {
                 Text(cause.errorMessage)
             }
-            Accordion(cause, { raw(Modifier.Variation.Inverted) }) {
+            Accordion({ raw(Modifier.Variation.Inverted) }) {
                 Dropdown("Stacktrace") {
                     Pre {
                         Text(cause.stackTraceToString())
@@ -72,8 +74,8 @@ public fun FailureModal(
             }
         }
         Actions {
-            InvertedButton({
-                v.approve().colored(Yellow)
+            Button({
+                v.approve().colored(Yellow).inverted()
             }) {
                 Icon("redo", "alternate")
                 Text("Retry")
@@ -85,8 +87,8 @@ public fun FailureModal(
                 Icon("remove")
                 Text("Ignore")
             }
-            InvertedButton({
-                v.approve().colored(Red)
+            Button({
+                v.approve().colored(Red).inverted()
                 data("action", "sign-out")
             }) {
                 Icon("sign-out")

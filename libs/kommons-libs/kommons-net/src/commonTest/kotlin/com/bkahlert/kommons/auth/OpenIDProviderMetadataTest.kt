@@ -2,6 +2,7 @@ package com.bkahlert.kommons.auth
 
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.test.testAll
+import com.bkahlert.kommons.uri.Uri
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.decodeFromString
 import kotlin.test.Test
@@ -42,11 +43,11 @@ class OpenIDProviderMetadataTest {
     @Test
     fun deserialize() = testAll {
         LenientJson.decodeFromString<OpenIDProviderMetadata>(json) shouldBe OpenIDProviderMetadata(
-            issuer = "https://provider.example.com",
-            authorizationEndpoint = "https://provider.example.com/oauth2/authorize",
-            tokenEndpoint = "https://provider.example.com/oauth2/token",
-            userinfoEndpoint = "https://provider.example.com/oauth2/userInfo",
-            jwksUri = "https://provider.example.com/.well-known/jwks.json",
+            issuer = Uri.parse("https://provider.example.com"),
+            authorizationEndpoint = Uri.parse("https://provider.example.com/oauth2/authorize"),
+            tokenEndpoint = Uri.parse("https://provider.example.com/oauth2/token"),
+            userinfoEndpoint = Uri.parse("https://provider.example.com/oauth2/userInfo"),
+            jwksUri = Uri.parse("https://provider.example.com/.well-known/jwks.json"),
             registrationEndpoint = null,
             scopesSupported = listOf("openid", "email", "phone", "profile"),
             responseTypesSupported = listOf("code", "token"),

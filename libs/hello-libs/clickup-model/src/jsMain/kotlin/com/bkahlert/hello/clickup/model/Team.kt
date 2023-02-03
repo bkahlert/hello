@@ -2,7 +2,7 @@ package com.bkahlert.hello.clickup.model
 
 import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.kommons.color.Color
-import com.bkahlert.kommons.net.Uri
+import com.bkahlert.kommons.uri.Uri
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

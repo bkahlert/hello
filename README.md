@@ -67,6 +67,23 @@ Kotlin DSL.
 > 💡`gradle-deep` can be found at the root of this repo. It invokes `gradle`
 > with the same passed arguments in each root project directory.
 
+### Working with Compose
+
+The following articles greatly help understand Compose-based UIs better:
+
+- [Kotlin Multiplatform: How To Create an App for Android, Desktop, and Web With Kotlin in One Codebase][compose-multiplatform-example]
+- [ViewModels using Compose: MutableStateFlows or MutableStates?][compose-flows-view-models]
+- [Side-effects in Compose][compose-effects]
+    - [Codelab: Advanced State and Side Effects in Jetpack Compose][compose-effects-codelab]
+- https://dev.to/zachklipp/introduction-to-the-compose-snapshot-system-19cn
+
+### State & Side effects
+
+- use `LaunchedEffect` together with `rememberUpdatedState(callback)` for
+    - [one-shot calls after a certain time](https://developer.android.com/codelabs/jetpack-compose-advanced-state-side-effects#4)
+    - [invoking callbacks regularly using snapshotFlow](https://developer.android.com/codelabs/jetpack-compose-advanced-state-side-effects#6)
+- [use CoroutineScopes created with `rememberCoroutineScope` only in handlers like `onClick`](https://developer.android.com/codelabs/jetpack-compose-advanced-state-side-effects#5)
+
 ## Contributing
 
 Want to contribute?
@@ -84,7 +101,15 @@ MIT. See [LICENSE](LICENSE) for more details.
 
 [compose]: https://developer.android.com/jetpack/compose (Jetpack Compose—Android’s recommended modern toolkit for building native UI)
 
+[compose-effects]: https://developer.android.com/jetpack/compose/side-effects#state-effect-use-cases (Side-effects in Compose)
+
+[compose-effects-codelab]: https://developer.android.com/codelabs/jetpack-compose-advanced-state-side-effects (Codelab: Advanced State and Side Effects in Jetpack Compose)
+
+[compose-flows-view-models]: https://www.droidcon.com/2021/11/19/viewmodels-using-compose-mutablestateflows-or-mutablestates/ (ViewModels using Compose: MutableStateFlows or MutableStates?)
+
 [compose-for-web]: https://compose-web.ui.pages.jetbrains.team (Compose for Web—Reactive web UIs for Kotlin, based on Google's modern toolkit and brought to you by JetBrains)
+
+[compose-multiplatform-example]: https://betterprogramming.pub/kotlin-multiplatform-how-to-create-an-app-for-android-desktop-and-web-with-kotlin-in-one-10bbb565f477 (Kotlin Multiplatform — How To Create an App for Android, Desktop, and Web With Kotlin in One Codebase)
 
 [gradle-include-build]: https://docs.gradle.org/current/userguide/composite_builds.html (Gradle—Composing builds)
 

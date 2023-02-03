@@ -1,5 +1,6 @@
 package com.bkahlert.kommons.auth
 
+import com.bkahlert.kommons.uri.Uri
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,27 +17,27 @@ public data class OpenIDProviderMetadata(
      * This also MUST be identical to the iss Claim value in ID Tokens issued from this Issuer.
      */
     @SerialName("issuer")
-    public val issuer: String,
+    public val issuer: Uri,
 
     /**
      * URL of the OP's OAuth 2.0 Authorization Endpoint [OpenID.Core](https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Core).
      */
     @SerialName("authorization_endpoint")
-    public val authorizationEndpoint: String,
+    public val authorizationEndpoint: Uri,
 
     /**
      * URL of the OP's OAuth 2.0 Token Endpoint [OpenID.Core](https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Core).
      * This is REQUIRED unless only the Implicit Flow is used.
      */
     @SerialName("token_endpoint")
-    public val tokenEndpoint: String?,
+    public val tokenEndpoint: Uri?,
 
     /**
      * URL of the OP's UserInfo Endpoint [OpenID.Core](https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Core).
      * This URL MUST use the https scheme and MAY contain port, path, and query parameter components.
      */
     @SerialName("userinfo_endpoint")
-    public val userinfoEndpoint: String?,
+    public val userinfoEndpoint: Uri?,
 
     /**
      * URL of the OP's JSON Web Key Set [JWK](https://openid.net/specs/openid-connect-discovery-1_0.html#JWK) document.
@@ -50,14 +51,14 @@ public data class OpenIDProviderMetadata(
      * When used, the bare key values MUST still be present and MUST match those in the certificate.
      */
     @SerialName("jwks_uri")
-    public val jwksUri: String,
+    public val jwksUri: Uri,
 
     /**
      * URL of the OP's Dynamic Client Registration Endpoint
      * [OpenID.Registration](https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Registration).
      */
     @SerialName("registration_endpoint")
-    public val registrationEndpoint: String?,
+    public val registrationEndpoint: Uri?,
 
     /**
      * JSON array containing a list of the [OAuth 2.0](https://openid.net/specs/openid-connect-discovery-1_0.html#RFC6749)
@@ -203,7 +204,7 @@ public data class OpenIDProviderMetadata(
      * (and sort of in [OAuth 2.0 Token Revocation](https://ldapwiki.com/wiki/OAuth%202.0%20Token%20Revocation).
      */
     @SerialName("revocation_endpoint")
-    public val revocationEndpoint: String?,
+    public val revocationEndpoint: Uri?,
 
     /**
      * JSON array containing a list of the display parameter values that the OpenID Provider supports.
@@ -280,15 +281,15 @@ public data class OpenIDProviderMetadata(
 
     /**
      * URL that the OpenID Provider provides to the person registering the Client to read about the OP's requirements on how the Relying Party can use the data
-     * provided by the OP. The registration process SHOULD display this URL to the person registering the Client if it is given.
+     * provided by the OP. The registration process SHOULD display this URL to the person registering the Client if it's given.
      */
     @SerialName("op_policy_uri")
-    public val opPolicyUri: String?,
+    public val opPolicyUri: Uri?,
 
     /**
      * URL that the OpenID Provider provides to the person registering the Client to read about OpenID Provider's terms of service.
      * The registration process SHOULD display this URL to the person registering the Client if it is given.
      */
     @SerialName("op_tos_uri")
-    public val opTosUri: String?,
+    public val opTosUri: Uri?,
 )

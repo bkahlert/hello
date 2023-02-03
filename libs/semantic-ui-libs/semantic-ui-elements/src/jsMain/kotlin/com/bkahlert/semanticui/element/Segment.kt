@@ -44,6 +44,12 @@ public fun VariationsScope<SegmentElement>.colored(value: Variation.Colored): Va
 
 /** [Variation.Emphasis](https://semantic-ui.com/elements/segment.html#emphasis) */
 public fun VariationsScope<SegmentElement>.emphasis(value: Variation.Emphasis): VariationsScope<SegmentElement> = +value
+// primary does not exist
+/** Secondary [Variation.Emphasis](https://semantic-ui.com/elements/segment.html#emphasis) */
+public fun VariationsScope<SegmentElement>.secondary(): VariationsScope<SegmentElement> = emphasis(Variation.Emphasis.Secondary)
+
+/** Tertiary [Variation.Emphasis](https://semantic-ui.com/elements/segment.html#emphasis) */
+public fun VariationsScope<SegmentElement>.tertiary(): VariationsScope<SegmentElement> = emphasis(Variation.Emphasis.Tertiary)
 
 /** [Variation.Circular](https://semantic-ui.com/elements/segment.html#circular) */
 public fun VariationsScope<SegmentElement>.circular(): VariationsScope<SegmentElement> = +Variation.Circular

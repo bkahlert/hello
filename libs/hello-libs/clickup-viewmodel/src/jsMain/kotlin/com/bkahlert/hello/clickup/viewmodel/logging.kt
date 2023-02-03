@@ -1,6 +1,7 @@
 package com.bkahlert.hello.clickup.viewmodel
 
 import com.bkahlert.kommons.logging.InlineLogger
+import kotlinx.coroutines.CancellationException
 
 public inline fun <reified R> InlineLogger.grouping(
     label: String? = null,
@@ -86,7 +87,10 @@ public inline fun <reified R> Console.groupCatching(
     else label?.also { group(it) } ?: group()
     val result = runCatching(block)
         .onSuccess { log("${label?.let { "$label " }}returned", render(it)) }
-        .onFailure { error("${label?.let { "$label " }}failed", it) }
+        .onFailure {
+            if (it is CancellationException) throw it
+            else error("${label?.let { "$label " }}failed", it)
+        }
     groupEnd()
     return result
 }

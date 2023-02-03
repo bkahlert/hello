@@ -22,7 +22,7 @@ public fun Items(
     SemanticDivElement({
         classes("ui")
         attrs?.invoke(this)
-        classes("item")
+        classes("items")
     }, content)
 }
 

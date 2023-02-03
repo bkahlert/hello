@@ -13,16 +13,19 @@ import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
+import kotlin.js.Json
+import kotlin.js.json
 
 public interface AccordionElement : SemanticElement<HTMLDivElement>
 
+private fun jQuery.accordion(options: Json = json()): jQuery =
+    asDynamic().accordion(options).unsafeCast<jQuery>()
+
 /**
- * Creates a [SemanticUI icon](https://semantic-ui.com/modules/accordion.html#/definition)
- * using the specified [key] to determine if the visual representation needs to be re-created.
+ * Creates a [SemanticUI icon](https://semantic-ui.com/modules/accordion.html#/definition).
  */
 @Composable
 public fun Accordion(
-    key: Any?,
     attrs: SemanticAttrBuilderContext<AccordionElement>? = null,
     content: SemanticContentBuilder<AccordionElement>? = null,
 ) {
@@ -32,9 +35,9 @@ public fun Accordion(
         classes("accordion")
     }) {
         content?.invoke(this)
-        DisposableEffect(key) {
+        DisposableEffect(Unit) {
             jQuery(scopeElement).accordion()
-            onDispose { }
+            onDispose { /* cleaned up by Accordion module automatically */ } // TODO check
         }
     }
 }

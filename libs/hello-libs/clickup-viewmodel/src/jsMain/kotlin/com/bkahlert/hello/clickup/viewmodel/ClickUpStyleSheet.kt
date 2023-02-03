@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup.viewmodel
 
-import com.bkahlert.kommons.net.DataUri
-import com.bkahlert.kommons.net.Svg
+import com.bkahlert.kommons.uri.DataUri
+import io.ktor.http.ContentType.Image
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.borderRadius
@@ -17,14 +17,14 @@ import org.jetbrains.compose.web.css.width
 
 @Suppress("PublicApiImplicitType")
 public object ClickUpStyleSheet : StyleSheet() {
-    private fun roundedMask(size: Int = 512) = DataUri.Svg(
+    private fun roundedMask(size: Int = 512) = DataUri(Image.SVG) {
         //language=SVG
         """
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="$size" height="$size">
+            <svg xmlns="http://www.w3.org/2000/svg" role="img" cursor="default" width="$size" height="$size">
                 <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#ffffff"/>
             </svg>
         """.trimIndent()
-    )
+    }
 
     init {
         "img.rounded" style {
@@ -47,7 +47,7 @@ public object ClickUpStyleSheet : StyleSheet() {
         ".ui.menu .item > img:not(.ui).mini" style {
             width(2.2.em)
             maxHeight(1.6.em)
-            margin((-.2).em, 0.em)
+            margin((-.18).em, 0.em)
         }
         ".ui.menu .item.link > img:not(.ui)" style {
             marginRight(0.25.em)

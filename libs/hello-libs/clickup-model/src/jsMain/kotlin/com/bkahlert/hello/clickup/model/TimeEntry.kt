@@ -2,8 +2,8 @@ package com.bkahlert.hello.clickup.model
 
 import com.bkahlert.hello.clickup.serialization.DateAsMilliseconds
 import com.bkahlert.kommons.minus
-import com.bkahlert.kommons.net.Uri
-import com.bkahlert.kommons.net.toUrl
+import com.bkahlert.kommons.uri.Uri
+import com.bkahlert.kommons.uri.toUrl
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.Date

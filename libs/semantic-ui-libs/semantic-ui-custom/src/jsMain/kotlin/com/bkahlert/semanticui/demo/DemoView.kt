@@ -1,34 +1,49 @@
 package com.bkahlert.semanticui.demo
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import com.bkahlert.kommons.dom.LocationFragmentParameters
+import com.bkahlert.kommons.js.debug
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
-import com.bkahlert.semanticui.core.dom.SemanticElement
-import com.bkahlert.semanticui.core.jQuery
+import com.bkahlert.semanticui.custom.Tab
+import com.bkahlert.semanticui.custom.TabMenu
+import com.bkahlert.semanticui.custom.rememberTabMenuState
 import com.bkahlert.semanticui.element.Icon
-import com.bkahlert.semanticui.element.Segment
+import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.marginRight
 import org.jetbrains.compose.web.css.width
-import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLAnchorElement
-import org.w3c.dom.HTMLDivElement
 
-@Stable
 public interface DemoViewState {
-    public val active: String?
-    public fun onActivate(id: String)
+    public var active: String?
+}
+
+@Composable
+public fun LocationFragmentParameters.asDemoViewState(
+    name: String,
+): DemoViewState {
+    val state: State<String?> = asFlow().map { it[name] }.collectAsState(get(name))
+    return remember(this, name, state) {
+        object : DemoViewState {
+            override var active: String?
+                get() = state.value
+                set(value) {
+                    set(name, value)
+                }
+        }
+    }
 }
 
 @Composable
@@ -37,9 +52,6 @@ public fun rememberDemoViewState(
 ): DemoViewState = remember(active) {
     object : DemoViewState {
         override var active: String? by mutableStateOf(active)
-        override fun onActivate(id: String) {
-            this.active = id
-        }
     }
 }
 
@@ -47,59 +59,58 @@ public fun rememberDemoViewState(
 @Composable
 public fun DemoView(
     vararg providers: DemoProvider,
-    state: DemoViewState = rememberDemoViewState(),
+    state: DemoViewState = rememberDemoViewState(providers.firstOrNull()?.id),
     trashContent: DemoContentBuilder? = null,
 ) {
-    val tabs: Set<DemoProviderTab> = remember(trashContent, providers) {
+    val tabs = remember {
         buildSet {
-            if (trashContent != null) add(
-                DemoProviderTab(DemoProvider("trash", "—", null, trashContent)) {
+            if (trashContent != null) {
+                add(DemoProviderTab(DemoProvider("trash", "—", null, trashContent)) {
                     Icon("teal", "colored", "trash")
-                }
-            )
-            providers.mapTo(this) {
-                DemoProviderTab(it) {
-                    when (val src = it.logo) {
-                        null -> Text(it.name)
-                        else -> {
-                            Img(
-                                src = src.toString(),
-                                alt = it.name
-                            ) {
-                                style {
-                                    width(1.5.em)
-                                    marginRight(0.5.em)
-                                }
-                            }
-                            Text(it.name)
-                        }
-                    }
-                }
+                })
             }
-        }.apply {
-            console.info("DemoView tabs: ${map { it.id }}")
-        }
 
-    }
-    val activeTab by derivedStateOf {
-        state.active?.let { tabs.firstOrNull { tab -> tab.id == it } }.apply {
-            console.info("DemoView active tab: ${this?.id}")
+            providers
+                .filterNot { it.content.isEmpty() }
+                .forEach {
+                    add(DemoProviderTab(it) {
+                        when (val src = it.logo) {
+                            null -> Text(it.name)
+                            else -> {
+                                Img(
+                                    src = src.toString(),
+                                    alt = it.name
+                                ) {
+                                    style {
+                                        width(1.5.em)
+                                        marginRight(0.5.em)
+                                    }
+                                }
+                                Text(it.name)
+                            }
+                        }
+                    })
+                }
         }
     }
+
+    val tabMenuState = rememberTabMenuState(tabs, state.active)
 
     TabMenu(
-        tabs = tabs,
-        activeTab = activeTab,
+        state = tabMenuState,
+        attrs = { classes("pointing", "stackable", "icon") },
         firstContent = {
             S("header", "item") { Text("Demos") }
         },
-        onActivate = { tab ->
-            console.info("DemoView tab activation: $tab")
-            if (tab is DemoProviderTab) {
-                state.onActivate(tab.id)
-            }
-        },
     )
+
+    LaunchedEffect(tabMenuState) {
+        snapshotFlow { tabMenuState.active }
+            .collect { tab ->
+                console.debug("DemoView: tab", tab, "activated", "state.active", state.active)
+                state.active = tab
+            }
+    }
 }
 
 private class DemoProviderTab(
@@ -108,51 +119,53 @@ private class DemoProviderTab(
     override val tabContent: ContentBuilder<HTMLAnchorElement>,
 ) : Tab {
     override val id: String get() = provider.id
-    override val content: SemanticContentBuilder<SemanticElement<HTMLDivElement>> get() = provider.content
+    override val content: @Composable () -> Unit = @Composable {
+        S(
+            "ui",
+            provider.content.size.orZero().coerceIn(1..3).toWord(),
+            "column", "stackable", "doubling", "grid", "segment",
+        ) {
+            provider.content.forEach {
+                S("column", content = it)
+            }
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class.js != other::class.js) return false
+        other as DemoProviderTab
+        if (id != other.id) return false
+        return true
+    }
+
+    override fun hashCode(): Int = id.hashCode()
     override fun toString(): String = "${DemoProviderTab::class.simpleName}($id)"
 }
 
-private interface Tab {
-    val id: String
-    val tabAttrs: AttrBuilderContext<HTMLAnchorElement>?
-    val tabContent: ContentBuilder<HTMLAnchorElement>
-    val content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>
-}
 
-@Composable
-private fun TabMenu(
-    tabs: Set<Tab> = emptySet(),
-    activeTab: Tab? = null,
-    firstContent: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
-    lastContent: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
-    onActivate: (Tab) -> Unit = { tab -> console.info("onActivate($tab)") },
-) {
-    val currentTab = activeTab ?: tabs.firstOrNull()
-    S("ui", "pointing", "stackable", "icon", "menu") {
-        firstContent?.invoke(this)
-        tabs.forEach { tab ->
-            A(null, {
-                tab.tabAttrs?.invoke(this)
-                classes("item")
-                if (tab == currentTab) classes("active")
-                onClick { onActivate(tab) }
-            }, tab.tabContent)
-        }
-        lastContent?.invoke(this)
-    }
-    Segment {
-        when (currentTab) {
-            null -> {
-                Text("—")
-            }
+private fun Int?.orZero() = this ?: 0
 
-            else -> {
-                currentTab.content(this)
-                DisposableEffect(currentTab) {
-                    jQuery(".modal").modal("refresh")
-                    onDispose { }
-                }
-            }
-        }
-    }
+private fun Int.toWord(
+    lessThanOneValue: String = "one",
+    greaterThanSixteenValue: String = "sixteen",
+) = when (this) {
+    in Int.MIN_VALUE until 1 -> lessThanOneValue
+    1 -> "one"
+    2 -> "two"
+    3 -> "three"
+    4 -> "four"
+    5 -> "five"
+    6 -> "six"
+    7 -> "seven"
+    8 -> "eight"
+    9 -> "nine"
+    10 -> "ten"
+    11 -> "eleven"
+    12 -> "twelve"
+    13 -> "thirteen"
+    14 -> "fourteen"
+    15 -> "fifteen"
+    16 -> "sixteen"
+    else -> greaterThanSixteenValue
 }

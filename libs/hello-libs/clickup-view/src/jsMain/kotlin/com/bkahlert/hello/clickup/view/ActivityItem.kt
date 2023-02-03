@@ -2,14 +2,19 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.bkahlert.kommons.js.debug
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import com.bkahlert.semanticui.core.jQuery
-import com.bkahlert.semanticui.core.popup
 import com.bkahlert.semanticui.custom.textOverflow
 import com.bkahlert.semanticui.module.DropdownMenuElement
 import com.bkahlert.semanticui.module.DropdownMenuItemElement
 import com.bkahlert.semanticui.module.Item
+import com.bkahlert.semanticui.module.popup
 import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.dom.Text
@@ -20,23 +25,40 @@ public fun SemanticElementScope<DropdownMenuElement>.ActivityItem(
     activity: Activity<*>,
     attrs: SemanticAttrBuilderContext<DropdownMenuItemElement>? = null,
 ) {
+
+    var showPopup by remember { mutableStateOf(false) }
     Item({
         attr("data-text", activity.name)
         attr("data-value", activity.id.typedStringValue)
-        attr("data-variation", "mini")
-        attr("data-offset", "0")
-        attr("data-position", "left center")
-        attr("data-html", activity.popupHtml())
         style { textOverflow() }
         style { maxWidth(100.percent) }
-        onMouseEnter { jQuery(it.target).popup("lastResort" to true).popup("show") }
+        onMouseEnter {
+            console.debug("Activity: ${activity.id} — show popup")
+            showPopup = true
+        }
+        onMouseLeave { showPopup = false }
         attrs?.invoke(this)
     }) {
         ActivityIcon(activity)
         Text(activity.name)
-        DisposableEffect(activity) {
+        DisposableEffect(showPopup) {
+            val popup = if (showPopup) {
+                jQuery(scopeElement)
+                    .popup(
+                        "lastResort" to true,
+                        "variation" to "mini",
+                        "position" to "left center",
+                        "html" to activity.popupHtml(),
+                    )
+                    .popup("show")
+            } else {
+                null
+            }
             onDispose {
-                jQuery(scopeElement).popup("destroy")
+                if (popup != null) {
+                    console.debug("Activity: ${activity.id} — destroy popup")
+                    popup.popup("destroy")
+                }
             }
         }
     }

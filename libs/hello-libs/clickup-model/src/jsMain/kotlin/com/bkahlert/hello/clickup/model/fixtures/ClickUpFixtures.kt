@@ -34,16 +34,17 @@ import com.bkahlert.hello.clickup.model.TeamID
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.model.TimeEntryID
 import com.bkahlert.hello.clickup.model.User
+import com.bkahlert.hello.clickup.model.UserID
 import com.bkahlert.hello.clickup.model.Watcher
 import com.bkahlert.hello.clickup.model.asAssignee
 import com.bkahlert.hello.clickup.model.asCreator
+import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.RGB
-import com.bkahlert.kommons.json.deserialize
 import com.bkahlert.kommons.minus
-import com.bkahlert.kommons.net.Uri
 import com.bkahlert.kommons.plus
 import com.bkahlert.kommons.randomString
+import com.bkahlert.kommons.uri.Uri
 import kotlin.js.Date
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
@@ -66,34 +67,35 @@ public object ClickUpFixtures {
         }
         """.trimIndent()
 
-    public val User: User by lazy { UserJson.deserialize() }
+    public val User: User = User(
+        id = UserID(11111),
+        username = "john.doe",
+        email = "john.doe@example.com",
+        color = Color(0xff0000),
+        profilePicture = ImageFixtures.JohnDoe,
+        initials = "JD",
+        weekStartDay = 1,
+        globalFontSupport = false,
+        timezone = "Europe/Berlin"
+    )
+
     public val Teams: List<Team> by lazy {
-        """
-        [
-            {
-                "id": "1111111",
-                "name": "Pear",
-                "color": "#00ff00",
-                "avatar": "${ImageFixtures.PearLogo}",
-                "members": [
-                    {
-                        "user": $UserJson
-                    }
-                ]
-            },
-            {
-                "id": "2222222",
-                "name": "Kommons",
-                "color": "#0000ff",
-                "avatar": "${ImageFixtures.KommonsLogo}",
-                "members": [
-                    {
-                        "user": $UserJson
-                    }
-                ]
-            }
-        ]
-        """.trimIndent().deserialize()
+        listOf(
+            Team(
+                id = TeamID("1111111"),
+                name = "Pear",
+                color = Color(0x0ff00),
+                avatar = ImageFixtures.PearLogo,
+                members = listOf(Named.ofSingle(User)),
+            ),
+            Team(
+                id = TeamID("2222222"),
+                name = "Kommons",
+                color = Color(0x0ff00),
+                avatar = ImageFixtures.KommonsLogo,
+                members = listOf(Named.ofSingle(User)),
+            ),
+        )
     }
 
     public fun space(

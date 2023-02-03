@@ -1,6 +1,7 @@
 package com.bkahlert.hello.clickup.viewmodel
 
 import kotlinx.browser.document
+import kotlinx.coroutines.CancellationException
 import org.w3c.dom.HTMLAudioElement
 
 //@JsModule("./pomodoro-completed.mp3")
@@ -36,7 +37,10 @@ public class DataSoundEffect(
             }
             parentElement.appendChild(audioElement)
             audioElement.play()
-        }.onFailure { console.warn("Failed to play sound effect", it) }
+        }.onFailure {
+            if (it is CancellationException) throw it
+            else console.warn("Failed to play sound effect", it)
+        }
     }
 }
 

@@ -1,7 +1,6 @@
 package com.bkahlert.hello.clickup.viewmodel.fixtures
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
 import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState
@@ -9,6 +8,7 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuViewModel
 import com.bkahlert.hello.clickup.viewmodel.rememberClickUpMenuViewModel
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 public fun rememberClickUpMenuTestViewModel(
     testClient: ClickUpTestClient = ClickUpTestClient(),
-    refreshCoroutineScope: CoroutineScope = rememberCoroutineScope(),
+    refreshCoroutineScope: CoroutineScope = rememberReportingCoroutineScope(),
     storage: Storage = InMemoryStorage(),
     init: ClickUpTestClient.() -> ClickUpMenuState,
 ): ClickUpMenuViewModel {

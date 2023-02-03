@@ -36,7 +36,7 @@ main() {
   local -r GRADLE_NO_DAEMON_OPTION='-Dorg.gradle.daemon=false'
   retry ./gradlew --stop || die "Failed to stop Gradle daemons"
   retry ./gradlew "$GRADLE_NO_DAEMON_OPTION" clean || die "Failed to clean"
-  retry ./gradlew "$GRADLE_NO_DAEMON_OPTION" assemble || die "Failed to assemble"
+  ./gradlew "$GRADLE_NO_DAEMON_OPTION" assemble || die "Failed to assemble"
 }
 
 main "$@"

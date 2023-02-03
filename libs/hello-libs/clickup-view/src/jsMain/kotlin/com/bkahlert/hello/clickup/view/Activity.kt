@@ -16,8 +16,8 @@ import com.bkahlert.hello.clickup.view.Activity.TaskActivity
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Colors
 import com.bkahlert.kommons.compareTo
-import com.bkahlert.kommons.net.Uri
 import com.bkahlert.kommons.toMomentString
+import com.bkahlert.kommons.uri.Uri
 import kotlin.js.Date
 
 /**

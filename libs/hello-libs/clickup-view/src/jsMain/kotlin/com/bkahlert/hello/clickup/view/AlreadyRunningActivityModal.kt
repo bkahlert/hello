@@ -7,9 +7,9 @@ import com.bkahlert.kommons.toMomentString
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Blue
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
 import com.bkahlert.semanticui.element.BasicButton
+import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.IconHeader
-import com.bkahlert.semanticui.element.InvertedButton
 import com.bkahlert.semanticui.element.colored
 import com.bkahlert.semanticui.module.Actions
 import com.bkahlert.semanticui.module.BasicModal
@@ -17,6 +17,7 @@ import com.bkahlert.semanticui.module.Content
 import com.bkahlert.semanticui.module.approve
 import com.bkahlert.semanticui.module.closable
 import com.bkahlert.semanticui.module.deny
+import com.bkahlert.semanticui.module.inverted
 import com.bkahlert.semanticui.module.onApprove
 import com.bkahlert.semanticui.module.onDeny
 import com.bkahlert.semanticui.module.size
@@ -51,16 +52,11 @@ public fun AlreadyRunningActivityModal(
             P { Text("Do you want to continue and stop this session first?") }
         }
         Actions {
-            InvertedButton({
-                v.approve()
-                v.colored(Blue)
-            }) {
+            Button({ v.approve().colored(Blue).inverted() }) {
                 Icon("stop", "circle")
                 Text("Continue")
             }
-            BasicButton({
-                v.deny()
-            }) {
+            BasicButton({ v.deny() }) {
                 Icon("remove")
                 Text("Abort")
             }

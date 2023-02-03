@@ -3,7 +3,7 @@ package com.bkahlert.hello.clickup.model
 import com.bkahlert.hello.clickup.serialization.DateAsMilliseconds
 import com.bkahlert.hello.clickup.serialization.DurationAsMilliseconds
 import com.bkahlert.kommons.compareTo
-import com.bkahlert.kommons.net.Uri
+import com.bkahlert.kommons.uri.Uri
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.js.Date

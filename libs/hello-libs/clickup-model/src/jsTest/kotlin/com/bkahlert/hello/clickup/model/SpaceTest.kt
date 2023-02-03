@@ -1,7 +1,6 @@
 package com.bkahlert.hello.clickup.model
 
 import com.bkahlert.kommons.color.Color
-import com.bkahlert.kommons.json.Lenient
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.decodeFromString
@@ -13,12 +12,12 @@ class SpaceTest {
 
     @Test
     fun serialize() {
-        Json.Lenient.encodeToString(space()) shouldEqualJson spaceJson
+        Json.encodeToString(space()) shouldEqualJson spaceJson
     }
 
     @Test
     fun deserialize() {
-        Json.Lenient.decodeFromString<Space>(spaceJson) shouldBe space()
+        Json.decodeFromString<Space>(spaceJson) shouldBe space()
     }
 }
 

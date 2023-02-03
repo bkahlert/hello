@@ -54,7 +54,7 @@ class ClickUpMenuTest {
 
         shouldRender(
             """
-            <div>
+            <div class="clickup-toolbar">
                 <div class="ui dimmable mini fluid one item menu">
                     <div class="ui inverted dimmer">
                         <div class="content">
@@ -78,7 +78,7 @@ class ClickUpMenuTest {
 
         shouldRender(
             """
-            <div>
+            <div class="clickup-toolbar">
                 <div class="ui dimmable mini fluid one item menu">
                     <div class="ui inverted dimmer">
                         <div class="content">
@@ -101,7 +101,7 @@ class ClickUpMenuTest {
 
         shouldRender(
             """
-            <div>
+            <div class="clickup-toolbar">
                 <div class="ui dimmable mini menu">
                     <div class="ui inverted dimmer">
                         <div class="content">
@@ -132,7 +132,7 @@ class ClickUpMenuTest {
 
         shouldRender(
             """
-            <div>
+            <div class="clickup-toolbar">
                 <div class="ui dimmable mini menu">
                     <div class="ui inverted dimmer">
                         <div class="content">
@@ -163,7 +163,7 @@ class ClickUpMenuTest {
 
         shouldRender(
             """
-            <div>
+            <div class="clickup-toolbar">
                 <div class="ui dimmable mini menu">
                     <div class="ui inverted dimmer">
                         <div class="content">

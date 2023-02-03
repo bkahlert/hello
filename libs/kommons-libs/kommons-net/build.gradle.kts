@@ -12,6 +12,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api("com.bkahlert.kommons:kommons-core") { because("DateTime / Instant") }
+                api("com.bkahlert.kommons:kommons-uri")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json")
                 api("io.ktor:ktor-http")

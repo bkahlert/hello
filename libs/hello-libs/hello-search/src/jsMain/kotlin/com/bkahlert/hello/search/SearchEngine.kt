@@ -3,9 +3,9 @@ package com.bkahlert.hello.search
 import com.bkahlert.hello.search.SearchEngine.Google
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.RGB
-import com.bkahlert.kommons.net.Uri
-import com.bkahlert.kommons.util.predecessor
-import com.bkahlert.kommons.util.successor
+import com.bkahlert.kommons.predecessor
+import com.bkahlert.kommons.successor
+import com.bkahlert.kommons.uri.Uri
 
 /**
  * Search engines, such as [Google].

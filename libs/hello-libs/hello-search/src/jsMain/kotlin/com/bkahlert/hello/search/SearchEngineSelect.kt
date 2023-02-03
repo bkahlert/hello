@@ -91,8 +91,8 @@ public fun rememberSearchEngineSelectState(
     val enginesSelection = engines.filter(selected)
     val options = mapOf(
         "debug" to debug,
-        "message" to json("count" to "{count}/${engines.size} engine(s) selected"),
-        "placeholder" to "no engine selected",
+        "message" to json("count" to "{count}/${engines.size}"),
+        "placeholder" to "no search engine",
         "useLabels" to false,
     )
     return remember(enginesSelection, engines) {
@@ -163,7 +163,7 @@ public fun SearchEngineDropdown(
     InlineMultipleDropdown(state) {
         Input(Hidden) { name("engine");value(state.selectionString) }
         // it's virtually impossible to provide a custom text its always updated by SemanticUI, even with a custom action
-        Text({ classes("default");style { display(DisplayStyle.None) } }) { Text("no engines selected") }
+        Text({ classes("default");style { display(DisplayStyle.None) } }) { Text("no search engine") }
         Div({
             style { // = text class
                 display(DisplayStyle.InlineBlock)
@@ -173,9 +173,9 @@ public fun SearchEngineDropdown(
             }
         }) {
             when (val num = state.selection.size) {
-                0 -> Text("no engines selected")
-                state.values.size -> Text("all engines selected")
-                else -> Text("$num/${state.values.size} engines selected")
+                0 -> Text("no search engine")
+                state.values.size -> Text("all")
+                else -> Text("$num/${state.values.size}")
             }
         }
         Icon("dropdown")

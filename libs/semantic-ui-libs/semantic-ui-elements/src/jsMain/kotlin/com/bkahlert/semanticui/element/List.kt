@@ -88,7 +88,7 @@ public fun SemanticElementScope<ListElement>.Item(
 public fun SemanticElementScope<ListItemElement>.Description(
     attrs: SemanticAttrBuilderContext<ListItemElement>? = null,
     content: SemanticContentBuilder<ListItemElement>? = null,
-): Unit = SemanticDivElement({ attrs?.invoke(this); classes("content") }, content)
+): Unit = SemanticDivElement({ attrs?.invoke(this); classes("description") }, content)
 
 /** Creates a [SemanticUI list item header](https://semantic-ui.com/elements/list.html#header). */
 @Composable
@@ -96,7 +96,7 @@ public fun SemanticElementScope<ListItemElement>.Description(
 public fun SemanticElementScope<ListItemElement>.Header(
     attrs: SemanticAttrBuilderContext<ListItemElement>? = null,
     content: SemanticContentBuilder<ListItemElement>? = null,
-): Unit = SemanticDivElement({ attrs?.invoke(this); classes("content") }, content)
+): Unit = SemanticDivElement({ attrs?.invoke(this); classes("header") }, content)
 
 
 public interface ListItemContentElement : SemanticElement<HTMLDivElement>

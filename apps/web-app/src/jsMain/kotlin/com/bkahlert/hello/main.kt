@@ -1,44 +1,46 @@
 package com.bkahlert.hello
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import com.bkahlert.Brand
 import com.bkahlert.hello.clickup.client.http.ClickUpHttpClientConfigurer
-import com.bkahlert.hello.clickup.demo.ClickUpDemos
+import com.bkahlert.hello.clickup.demo.ClickUpDemoProvider
 import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenu
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
 import com.bkahlert.hello.clickup.viewmodel.rememberClickUpMenuViewModel
-import com.bkahlert.hello.custom.Custom
-import com.bkahlert.hello.custom.linearGradient
+import com.bkahlert.hello.demo.HelloDemoProviders
 import com.bkahlert.hello.search.PasteHandlingMultiSearchInput
-import com.bkahlert.hello.search.demos.SearchDemos
+import com.bkahlert.hello.user.ui.UserMenu
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
-import com.bkahlert.kommons.net.host
-import com.bkahlert.kommons.net.toUriOrNull
+import com.bkahlert.kommons.uri.host
+import com.bkahlert.kommons.uri.toUriOrNull
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.jQuery
-import com.bkahlert.semanticui.custom.Length
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Large
+import com.bkahlert.semanticui.core.updateDebugSettings
+import com.bkahlert.semanticui.custom.IFrame
+import com.bkahlert.semanticui.custom.ReportingCoroutineScope
+import com.bkahlert.semanticui.custom.Sandbox.ALLOW_POPUPS
+import com.bkahlert.semanticui.custom.Sandbox.ALLOW_SAME_ORIGIN
+import com.bkahlert.semanticui.custom.Sandbox.ALLOW_SCRIPTS
+import com.bkahlert.semanticui.custom.Sandbox.ALLOW_TOP_NAVIGATION
+import com.bkahlert.semanticui.custom.Sandbox.ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION
+import com.bkahlert.semanticui.custom.sandbox
+import com.bkahlert.semanticui.custom.src
 import com.bkahlert.semanticui.demo.SemanticUiDemoProviders
-import com.bkahlert.semanticui.devmode.setupDemoDevMode
-import com.bkahlert.semanticui.element.AnkerButton
+import com.bkahlert.semanticui.devmode.DemoDevMode
+import com.bkahlert.semanticui.element.AnchorButton
 import com.bkahlert.semanticui.element.Buttons
 import com.bkahlert.semanticui.element.Icon
-import com.bkahlert.semanticui.element.basic
 import com.bkahlert.semanticui.element.icon
-import io.ktor.http.Url
+import com.bkahlert.semanticui.element.size
+import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
-import org.jetbrains.compose.web.css.Color
+import kotlinx.coroutines.launch
+import kotlinx.dom.clear
 import org.jetbrains.compose.web.css.Style
-import org.jetbrains.compose.web.css.backgroundColor
-import org.jetbrains.compose.web.css.backgroundImage
-import org.jetbrains.compose.web.css.cssRem
-import org.jetbrains.compose.web.css.div
-import org.jetbrains.compose.web.css.height
-import org.jetbrains.compose.web.css.transform
-import org.jetbrains.compose.web.css.unaryMinus
+import org.jetbrains.compose.web.css.border
+import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.renderComposable
 
 @Composable
@@ -46,12 +48,12 @@ fun App() {
     S("toolbar") {
         Buttons({
             classes("links")
-            v.icon().basic()
+            v.icon()
         }) {
-            AnkerButton("https://start.me/p/4K6MOy/dashboard") { Icon("globe") }
-            AnkerButton("https://home.bkahlert.com") { Icon("home") }
-            AnkerButton("https://github.com/bkahlert") { Icon("github") }
-            AnkerButton("https://console.aws.amazon.com/") { Icon("aws") }
+            AnchorButton("https://start.me/p/4K6MOy/dashboard") { Icon("globe") }
+            AnchorButton("https://home.bkahlert.com") { Icon("home") }
+            AnchorButton("https://github.com/bkahlert") { Icon("github") }
+            AnchorButton("https://console.aws.amazon.com/") { Icon("aws") }
         }
 
         S("tasks") {
@@ -67,44 +69,50 @@ fun App() {
 
         S("search") {
             PasteHandlingMultiSearchInput()
-            DisposableEffect(Unit) {
-                jQuery(scopeElement).find("[type=search]").focus()
-                onDispose { }
-            }
         }
     }
 
     S("bookmarks") {
-        S(attrs = {
-            style {
-                property("z-index", "1")
-                height(GRADIENT_HEIGHT)
-                transform { translateY(-GRADIENT_HEIGHT / 2) }
-                backgroundColor(Color.transparent)
-                backgroundImage(
-                    linearGradient(
-                        CUSTOM_BACKGROUND_COLOR.fade(0.0),
-                        CUSTOM_BACKGROUND_COLOR,
-                        CUSTOM_BACKGROUND_COLOR.fade(0.0)
-                    )
+
+        val url: CharSequence? = when (window.location.href.toUriOrNull()?.host) {
+            "localhost" -> "placeholder.html"
+            else -> "https://start.me/p/0PBMOo/dkb"
+        }
+
+        if (url != null) {
+            IFrame("Loading bookmarks …", {
+                v.size(Large)
+            }) {
+                style { border(0.px) }
+                src(url)
+                sandbox(
+                    ALLOW_POPUPS,
+                    ALLOW_SCRIPTS,
+                    ALLOW_SAME_ORIGIN,
+                    ALLOW_TOP_NAVIGATION,
+                    ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION,
                 )
             }
-        })
-        val url = when (window.location.href.toUriOrNull()?.host) {
-            "localhost" -> null
-            else -> Url("https://start.me/p/0PBMOo/dkb")
         }
-        Custom(url)
     }
 }
+
 
 fun main() {
-    setupDemoDevMode(ClickUpDemos, SearchDemos, *SemanticUiDemoProviders)
-    renderComposable("root") {
-        Style(ClickUpStyleSheet)
-        App()
+
+    updateDebugSettings { module, settings ->
+        settings.debug = module !in listOf("transition")
+        settings.verbose = true
+        settings.performance = true
+    }
+
+    ReportingCoroutineScope().launch {
+        DemoDevMode(*SemanticUiDemoProviders, *HelloDemoProviders, ClickUpDemoProvider)
+
+        val root = document.getElementById("root")?.apply { clear() } ?: error("root element does not exist")
+        renderComposable(root) {
+            Style(ClickUpStyleSheet)
+            App()
+        }
     }
 }
-
-val GRADIENT_HEIGHT: Length = 0.3.cssRem
-val CUSTOM_BACKGROUND_COLOR = Brand.colors.white

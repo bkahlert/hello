@@ -13,7 +13,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 api("com.bkahlert.kommons:kommons-dom")
-                implementation("com.bkahlert.kommons:kommons-util")
+                api("com.bkahlert.kommons:kommons-logging-inline")
                 api("com.bkahlert.semantic-ui:semantic-ui")
                 api(project(":clickup-model"))
                 api(project(":clickup-view"))

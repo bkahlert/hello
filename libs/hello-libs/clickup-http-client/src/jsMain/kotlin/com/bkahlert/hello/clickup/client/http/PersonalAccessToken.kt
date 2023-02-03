@@ -1,11 +1,12 @@
 package com.bkahlert.hello.clickup.client.http
 
-import com.bkahlert.kommons.ktor.AuthorizationToken
-import com.bkahlert.kommons.ktor.Token
+import com.bkahlert.kommons.auth.Token
+import kotlinx.serialization.Serializable
 
-public class PersonalAccessToken(
-    public val token: String,
-) : Token by AuthorizationToken(token) {
+@Serializable
+public value class PersonalAccessToken(
+    public override val token: String,
+) : Token {
 
     init {
         require(REGEX.matches(token)) { "token must match $REGEX" }

@@ -9,6 +9,6 @@ class JQueryLibraryTest {
     @Test
     fun append() = runTest {
         composition { JQueryLibrary.appendTo(root) }
-        root.innerHTML shouldStartWith "<script id=\"semantic-ui-test-jquery\">!function(a,b)"
+        root.innerHTML shouldStartWith "<script id=\"semantic-ui-test-jquery\">/*! jQuery v3.6.3 "
     }
 }

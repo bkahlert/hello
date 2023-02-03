@@ -35,6 +35,8 @@ val stacks = mapOf(
     "ClickUp" to "ClickUp",
     "UserInfo" to "UserInfo",
     "UserProps" to "UserProps",
+    "SiteEnvironment" to "SiteEnvironment",
+    "Distribution" to "Distribution",
 )
 
 val synthesize by tasks.registering(Exec::class) {

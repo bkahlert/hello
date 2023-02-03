@@ -15,11 +15,14 @@ public interface SemanticAttrsScope<out TSemantic : SemanticElement<Element>> : 
     /** The [VariationsScope] of [TSemantic]. */
     public val v: VariationsScope<TSemantic>
 
-    /** Adds the specified [modifiers] without further validation to [TSemantic]. */
-    public fun raw(vararg modifiers: Modifier)
-
     /** The [BehaviorScope] of [TSemantic]. */
     public val b: BehaviorScope<TSemantic>
+}
+
+/** Adds the specified [modifier] without further validation to the [AttrsScope]. */
+@Suppress("NOTHING_TO_INLINE")
+public inline fun AttrsScope<Element>.raw(modifier: Modifier) {
+    classes(modifier.classNames)
 }
 
 /** Scope for [State] configuration. */
@@ -48,6 +51,17 @@ public interface VariationsScope<out TSemantic : SemanticElement<Element>> {
     public operator fun Variation.unaryPlus(): VariationsScope<TSemantic>
 }
 
+/**
+ * Scope for type configuration which is treated
+ * like any other variation, as this seems to be the case for
+ * some Semantic UI elements already.
+ *
+ * *Otherwise a [primary basic button](https://semantic-ui.com/elements/button.html#basic) wouldn't be
+ * possible since [primary](https://semantic-ui.com/elements/button.html#emphasis) and
+ * [basic](https://semantic-ui.com/elements/button.html#basic) are different button types.*
+ */
+public typealias TypeScope<TSemantic> = VariationsScope<TSemantic>
+
 /** Scope for behavior configuration. */
 public interface BehaviorScope<out TSemantic : SemanticElement<Element>> {
     /** Raw settings specifying the behavior of [TSemantic]. */
@@ -65,18 +79,14 @@ public open class SemanticAttrsScopeBuilder<out TSemantic : SemanticElement<Elem
 
     override val s: StatesScope<TSemantic> get() = this
     override fun State.unaryPlus(): StatesScope<TSemantic> {
-        classes(*classNames)
+        classes(classNames)
         return s
     }
 
     override val v: VariationsScope<TSemantic> get() = this
     override fun Variation.unaryPlus(): VariationsScope<TSemantic> {
-        classes(*classNames)
+        classes(classNames)
         return v
-    }
-
-    override fun raw(vararg modifiers: Modifier) {
-        modifiers.forEach { classes(*it.classNames) }
     }
 
     override val b: BehaviorScope<TSemantic> get() = this

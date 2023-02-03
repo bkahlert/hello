@@ -52,3 +52,6 @@ tasks.shadowJar {
     mergeServiceFiles()
     transform(Log4j2PluginsCacheFileTransformer::class.java)
 }
+tasks.assemble {
+    finalizedBy(tasks.shadowJar)
+}

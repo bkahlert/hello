@@ -10,12 +10,12 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.TextAlignment.
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.Demos
 import com.bkahlert.semanticui.demo.LoremIpsumParagraph
+import com.bkahlert.semanticui.demo.custom.ComponentType
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Groups
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.States
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
-import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.PiledSegment
 import com.bkahlert.semanticui.element.PiledSegments
@@ -45,7 +45,7 @@ import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 
 public val SegmentDemos: SemanticDemo = SemanticDemo(
-    SemanticType.Element,
+    ComponentType.Element,
     "Segment",
     Types {
         Demo("Segment") {

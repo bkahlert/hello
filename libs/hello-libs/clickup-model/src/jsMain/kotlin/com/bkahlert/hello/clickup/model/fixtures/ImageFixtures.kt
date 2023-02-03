@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup.model.fixtures
 
-import com.bkahlert.kommons.net.DataUri
-import com.bkahlert.kommons.net.Svg
+import com.bkahlert.kommons.uri.DataUri
+import io.ktor.http.ContentType.Image
 
 public object ImageFixtures : Iterable<DataUri> {
 
@@ -11,17 +11,17 @@ public object ImageFixtures : Iterable<DataUri> {
     /** The mark of the [ClickUp](https://clickup.com) logo an [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val ClickUpMark: DataUri by lazy { DataUri.parse(CLICKUP_MARK) }
 
-    /** The [Hello!](https://github.com/bkahlert/hello) favicon as an animated [SVG](https://en.wikipedia.org/wiki/SVG). */
+    /** The [Hello!](https://github.com/bkahlert/hello) favicon as an [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val HelloFavicon: DataUri by lazy { DataUri.parse(HELLO_FAVICON) }
 
     /** An [SVG](https://en.wikipedia.org/wiki/SVG) depicting John Doe. */
     public val JohnDoe: DataUri by lazy { DataUri.parse(JOHN) }
 
     /** The [Kommons](https://github.com/bkahlert/kommons) logo as an animated [SVG](https://en.wikipedia.org/wiki/SVG). */
-    public val KommonsLogo: DataUri by lazy { DataUri.Svg(KOMMONS_LOGO) }
+    public val KommonsLogo: DataUri by lazy { DataUri(Image.SVG, KOMMONS_LOGO) }
 
     /** The logo of the fictional Pear company as an [SVG](https://en.wikipedia.org/wiki/SVG). */
-    public val PearLogo: DataUri by lazy { DataUri.Svg(PEAR_LOGO) }
+    public val PearLogo: DataUri by lazy { DataUri(Image.SVG, PEAR_LOGO) }
 
     /** The [Semantic UI](https://semantic-ui.com/) logo as an [PNG](https://en.wikipedia.org/wiki/PNG). */
     public val SemanticUiLogo: DataUri by lazy { DataUri.parse(SEMANTIC_UI) }
@@ -78,32 +78,28 @@ private const val CLICKUP_MARK: String = "" +
     "dyYWRpZW50PjxwYXRoIGQ9Ik0yMi4xIDEzLjJsLTkuOSA4LjUtNC42LTUuM0wyMi4xIDRsMT" +
     "QuMyAxMi41LTQuNiA1LjMtOS43LTguNnoiIGZpbGw9InVybCgjQikiLz48L3N2Zz4K"
 
-@Suppress("LongLine")
 private const val HELLO_FAVICON = "" +
     "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
-    "9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm" +
-    "94PSIxMSA5IDEwNyAxMTAiIGN1cnNvcj0iZGVmYXVsdCI+PHN0eWxlPjwhW0NEQVRBWy5Ce2" +
-    "1peC1ibGVuZC1tb2RlOm11bHRpcGx5fV1dPjwvc3R5bGU+PGRlZnM+PHBhdGggaWQ9IkEiIG" +
-    "Q9Ik0xMSAxMTVWMTNhNCA0IDAgMCAxIDQtNGgxOGE0IDQgMCAwIDEgNCA0djM0YTQgNCAwID" +
-    "AgMCA0IDRoMzRhNCA0IDAgMCAwIDQtNFYxM2E0IDQgMCAwIDEgNC00aDE4YTQgNCAwIDAgMS" +
-    "A0IDR2MTAyYTQgNCAwIDAgMS00IDRIODNhNCA0IDAgMCAxLTQtNFY3NmE0IDQgMCAwIDAtNC" +
-    "00SDQxYy0yLjIgMC00IDEuOC00IDR2MzlhNCA0IDAgMCAxLTQgNEgxNWE0IDQgMCAwIDEtNC" +
-    "00eiIvPjxnIGlkPSJCIj48cmVjdCB4PSI5MiIgeT0iOTMiIHdpZHRoPSIyNiIgaGVpZ2h0PS" +
-    "IyNiIgcng9IjQiLz48cGF0aCBkPSJNOTEuNSAxM2MtLjItMi4zNSAyLjE2LTQgNC41Mi00SD" +
-    "k2aDE3LjQ5YzIuMzQgMCA0LjE4IDEuOTkgMy45OSA0LjMybC00LjY2IDY0LjA2YTMuOTkgMy" +
-    "45OSAwIDAgMS0zLjk3IDMuNjJoLTguNTJjLTIuMDUgMC0zLjc2LTEuNTUtMy45Ni0zLjU5TD" +
-    "kxLjUgMTMiLz48L2c+PC9kZWZzPjx1c2UgeGxpbms6aHJlZj0iI0EiIGNsYXNzPSJCIiBmaW" +
-    "xsPSIjYzIxZjczIi8+PGcgZmlsbD0iIzI5YWFlMiI+PHVzZSB4bGluazpocmVmPSIjQiIgY2" +
-    "xhc3M9IkIiLz48dXNlIHhsaW5rOmhyZWY9IiNCIj48YW5pbWF0ZSBhdHRyaWJ1dGVOYW1lPS" +
-    "JvcGFjaXR5IiBjYWxjTW9kZT0ic3BsaW5lIiBkdXI9IjE1cyIgdmFsdWVzPSIwOzE7MCIga2" +
-    "V5VGltZXM9IjA7MC41OzEiIGtleVNwbGluZXM9IjAuNDIgMCAwLjU4IDE7MC40MiAwIDAuNT" +
-    "ggMSIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz48L3VzZT48L2c+PC9zdmc+"
+    "9zdmciIGFyaWEtbGFiZWw9IkhlbGxvISIgcm9sZT0iaW1nIiBjdXJzb3I9ImRlZmF1bHQiIH" +
+    "ZpZXdCb3g9IjAgMCAxMjggMTI4Ij4KICAgIDxwYXRoIGZpbGw9IiNjMjFmNzMiCiAgICAgIC" +
+    "AgICBkPSJtMTEsMTE1VjEzYzAtMi4yMSwxLjc5LTQsNC00aDE4YzIuMjEsMCw0LDEuNzksNC" +
+    "w0djM0YzAsMi4yMSwxLjc5LDQsNCw0aDM0YzIuMjEsMCw0LTEuNzksNC00VjEzYzAtMi4yMS" +
+    "wxLjc5LTQsNC00aDE4YzIuMjEsMCw0LDEuNzksNCw0djEwMmMwLDIuMjEtMS43OSw0LTQsNG" +
+    "gtMThjLTIuMjEsMC00LTEuNzktNC00di0zOWMwLTIuMjEtMS43OS00LTQtNGgtMzRjLTIuMi" +
+    "wwLTQsMS44LTQsNHYzOWMwLDIuMjEtMS43OSw0LTQsNEgxNWMtMi4yMSwwLTQtMS43OS00LT" +
+    "RaIi8+CiAgICA8ZyBmaWxsPSIjMjlhYWUyIj4KICAgICAgICA8cmVjdCB4PSI5MiIgeT0iOT" +
+    "MiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgcng9IjQiIHJ5PSI0Ii8+CiAgICAgICAgPHBhdG" +
+    "ggZD0ibTkxLjUsMTNjLS4yLTIuMzUsMi4xNi00LDQuNTItNGgtLjAyczE3LjQ5LDAsMTcuND" +
+    "ksMGMyLjM0LDAsNC4xOCwxLjk5LDMuOTksNC4zMi0xLjM0LDE2LjQtNC42Niw2NC4wNi00Lj" +
+    "Y2LDY0LjA2LS4xOSwyLjA1LTEuOTEsMy42Mi0zLjk3LDMuNjJoLTguNTJjLTIuMDUsMC0zLj" +
+    "c2LTEuNTUtMy45Ni0zLjU5LDAsMC0zLjQ3LTQ4LjMyLTQuODctNjQuNDEiLz4KICAgIDwvZz" +
+    "4KPC9zdmc+Cg=="
 
 /**
  * Created with
  * @see <a href="https://www.sp-studio.de/#%5B%7B%22slug%22%3A%22ski_ski001%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Standard%20body%22%2C%22de%22%3A%22Standardk%C3%B6rper%22%7D%2C%22zIndex%22%3A30%2C%22layerId%22%3A1%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1d%22%3A%22%23FAB777%22%2C%22col1n%22%3A%22%23FFD0A3%22%2C%22col1s%22%3A%22%23F59741%22%2C%22col2n%22%3A%22%23000000%22%2C%22col1l%22%3A%22%23FFE7D0%22%7D%7D%2C%22rotate%22%3A0%7D%2C%7B%22slug%22%3A%22leg_soc002%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Tights%22%2C%22de%22%3A%22Strumpfhose%22%7D%2C%22zIndex%22%3A44%2C%22layerId%22%3A27%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1n%22%3A%22%23000000%22%2C%22col1s%22%3A%22%23666666%22%7D%7D%7D%2C%7B%22slug%22%3A%22leg_pan004%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Torn%20long%20pants%22%2C%22de%22%3A%22Zerrissene%20lange%20Hose%22%7D%2C%22zIndex%22%3A45%2C%22layerId%22%3A25%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1n%22%3A%22%2300498A%22%7D%7D%2C%22translate%22%3A%7B%22x%22%3A0%2C%22y%22%3A0%7D%7D%2C%7B%22slug%22%3A%22leg_sho001%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22standard%20shoes%22%2C%22de%22%3A%22Standardschuhe%22%7D%2C%22zIndex%22%3A46%2C%22layerId%22%3A26%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1n%22%3A%22%23000000%22%7D%7D%7D%2C%7B%22slug%22%3A%22shi_lon060%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%2C%22col2%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Sweater%20(v-neck)%22%2C%22de%22%3A%22Pulli%20(V-Neck)%22%7D%2C%22zIndex%22%3A50%2C%22layerId%22%3A23%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1n%22%3A%22%23C2FF66%22%2C%22col1s%22%3A%22%2369AA07%22%7D%7D%7D%2C%7B%22slug%22%3A%22bod_han001%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Standard%20hands%22%2C%22de%22%3A%22Standardh%C3%A4nde%22%7D%2C%22zIndex%22%3A70%2C%22layerId%22%3A11%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1d%22%3A%22%236486A6%22%2C%22col1n%22%3A%22%238FAFCD%22%2C%22col1s%22%3A%22%23666666%22%2C%22col2n%22%3A%22%23FFFFFF%22%2C%22col2s%22%3A%22%23C2C2C2%22%7D%7D%7D%2C%7B%22slug%22%3A%22fac_mou027%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Mouth%20(teeth)%2012%22%2C%22de%22%3A%22Mund%20(Z%C3%A4hne)%2012%22%7D%2C%22zIndex%22%3A77%2C%22layerId%22%3A6%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1n%22%3A%22%23FFFFFF%22%7D%7D%7D%2C%7B%22slug%22%3A%22fac_eye004%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22flip%22%2C%22leve%22%2C%22col1%22%2C%22col2%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Eyes%20(sideways%20down)%22%2C%22de%22%3A%22Augen%20(Blick%20schr%C3%A4g%20runter)%22%7D%2C%22zIndex%22%3A79%2C%22layerId%22%3A7%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1n%22%3A%22%23FFFFFF%22%2C%22col2n%22%3A%22%23000000%22%7D%7D%7D%2C%7B%22slug%22%3A%22hai_sho052%22%2C%22zIndex%22%3A88%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22flip%22%2C%22leve%22%2C%22shad%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Short%20hair%2054%22%2C%22de%22%3A%22Kurze%20Haare%2054%22%7D%2C%22layerId%22%3A16%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1l%22%3A%22%23666666%22%2C%22col1n%22%3A%22%23434343%22%2C%22col1d%22%3A%22%23252525%22%2C%22col1s%22%3A%22%23121212%22%7D%7D%7D%2C%7B%22slug%22%3A%22fac_nos001%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Nose%20(small)%22%2C%22de%22%3A%22Nase%20(klein)%22%7D%2C%22zIndex%22%3A96%2C%22layerId%22%3A9%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1n%22%3A%22%23000000%22%7D%7D%7D%2C%7B%22slug%22%3A%22fac_bro005%22%2C%22options%22%3A%5B%22move%22%2C%22rota%22%2C%22leve%22%2C%22col1%22%5D%2C%22label%22%3A%7B%22en%22%3A%22Eyebrows%205%22%2C%22de%22%3A%22Augenbrauen%205%22%7D%2C%22zIndex%22%3A104%2C%22layerId%22%3A8%2C%22props%22%3A%7B%22colors%22%3A%7B%22col1n%22%3A%22%23000000%22%7D%7D%7D%5D">sp-studio.de</a>
  */
-@Suppress("SpellCheckingInspection", "LongLine")
+@Suppress("SpellCheckingInspection")
 private const val JOHN: String = "" +
     "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
     "9zdmciIHZpZXdCb3g9IjAgMCA1NzAgODAwIiB4bWxuczp2PSJodHRwczovL3ZlY3RhLmlvL2" +
@@ -521,7 +517,7 @@ private const val JOHN: String = "" +
 
 // language=svg
 private const val KOMMONS_LOGO: String = """<?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" aria-label="Kommons" role="img" viewBox="0 0 60 60" style="cursor: default;">
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="Kommons" role="img" cursor="default" viewBox="0 0 60 60">
     <defs>
         <linearGradient id="upper-k" x1="-720" y1="780" x2="0" y2="60">
             <stop offset="0" stop-color="#29abe2"/>
@@ -579,7 +575,7 @@ private const val KOMMONS_LOGO: String = """<?xml version="1.0" encoding="utf-8"
 
 // language=svg
 private const val PEAR_LOGO = """<?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 512 512" overflow="visible" xml:space="preserve">
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="Pear company" role="img" cursor="default" viewBox="0 0 512 512">
 <g>
     <path fill="#953F97" d="M337.3,367.85c14.58,30.64,37.79,49.62,72.21,53.42c2.71,0.3,4.44,1.09,2.19,4.12
         c-2.22,2.98-4.31,6.04-6.46,9.06c-2.79,1.87-5.92,2.15-9.17,2.15c-85.7,0-171.41,0-257.11-0.01c-3.23,0-6.4-0.15-9.14-2.19

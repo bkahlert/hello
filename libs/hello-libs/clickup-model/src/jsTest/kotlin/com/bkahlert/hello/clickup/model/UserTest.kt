@@ -4,7 +4,7 @@ import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
 import com.bkahlert.hello.clickup.serialization.SerializerTest
 import com.bkahlert.kommons.color.Color
-import com.bkahlert.kommons.net.Uri
+import com.bkahlert.kommons.uri.Uri
 
 @Suppress("unused")
 class UserTest : SerializerTest<User>(

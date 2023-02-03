@@ -34,28 +34,30 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
 import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.dom.open
-import com.bkahlert.semanticui.collection.AnkerItem
+import com.bkahlert.semanticui.collection.AnchorItem
 import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
 import com.bkahlert.semanticui.collection.MenuElement
 import com.bkahlert.semanticui.collection.MenuItemDivElement
 import com.bkahlert.semanticui.collection.borderless
+import com.bkahlert.semanticui.collection.disabled
 import com.bkahlert.semanticui.collection.target
 import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
-import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Tiny
+import com.bkahlert.semanticui.core.attributes.raw
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.semanticui.custom.DimmingLoader
+import com.bkahlert.semanticui.custom.LoadingState
 import com.bkahlert.semanticui.custom.MixBlendMode.Companion.Luminosity
+import com.bkahlert.semanticui.custom.apply
 import com.bkahlert.semanticui.custom.backgroundColor
 import com.bkahlert.semanticui.custom.color
 import com.bkahlert.semanticui.custom.mixBlendMode
 import com.bkahlert.semanticui.custom.textOverflow
 import com.bkahlert.semanticui.element.Icon
-import com.bkahlert.semanticui.module.Dimmer
+import com.bkahlert.semanticui.element.size
 import com.bkahlert.semanticui.module.DropdownItem
-import com.bkahlert.semanticui.module.dimmable
+import com.bkahlert.semanticui.module.inverted
 import kotlinx.browser.window
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.css.AlignItems
@@ -109,7 +111,8 @@ public fun SemanticElementScope<MenuElement>.DisconnectedItems(
     }
 
     LinkItem({
-        onClick { configuring = true }
+        if (configurers.isEmpty()) s.disabled()
+        else onClick { configuring = true }
     }) {
         Img(src = ImageFixtures.ClickUpMark.toString(), alt = "ClickUp") {
             classes("mini")
@@ -128,8 +131,8 @@ public fun SemanticElementScope<MenuElement>.TeamSelectingItems(
 ) {
     if (state.teams.isEmpty()) {
         LinkItem({
+            s.disabled()
             v.borderless()
-            raw(Modifier.State.Disabled)
         }) {
             Span {
                 Text("No teams found")
@@ -137,8 +140,8 @@ public fun SemanticElementScope<MenuElement>.TeamSelectingItems(
         }
     } else {
         LinkItem({
+            s.disabled()
             v.borderless()
-            raw(Modifier.State.Disabled)
         }) {
             Span {
                 Text("Select team:")
@@ -213,7 +216,10 @@ public fun SemanticElementScope<MenuElement>.TeamSelectionItems(
                 team = team,
                 onClick = { onTeamSelect(team.id) }
             ) {
-                if (team.id == selectedTeam?.id) raw(Modifier.State.Disabled, Modifier.State.Active)
+                if (team.id == selectedTeam?.id) {
+                    s.disabled()
+                    raw(Modifier.State.Active)
+                }
             }
         }
 
@@ -226,7 +232,10 @@ public fun SemanticElementScope<MenuElement>.TeamSelectionItems(
                         team = team,
                         onClick = { onTeamSelect(team.id) }
                     ) {
-                        if (team.id == selectedTeam?.id) raw(Modifier.State.Disabled, Modifier.State.Active)
+                        if (team.id == selectedTeam?.id) {
+                            s.disabled()
+                            raw(Modifier.State.Active)
+                        }
                     }
                 }
             }
@@ -283,7 +292,6 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
                 PomodoroTimer(
                     rememberPomodoroTimerState(
                         timeEntry = selectedActivity.timeEntry,
-                        progressIndicating = false,
                         acousticFeedback = AcousticFeedback.PomodoroFeedback,
                         onStop = onTimeEntryStop,
                     ),
@@ -327,7 +335,7 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
             MetaItems(selectedActivity.meta.reversed())
 
             selectedActivity.url?.also { url ->
-                AnkerItem(url.toString(), {
+                AnchorItem(url.toString(), {
                     style { paddingRight(.6.em) }
                     onClick {
                         @Suppress("SpellCheckingInspection")
@@ -356,11 +364,11 @@ public fun ClickUpMenu(
     viewModel: ClickUpMenuViewModel = rememberClickUpMenuViewModel(),
 ) {
 
-    Div { // wrapper to make SemanticUI remove margins
+    Div({ classes("clickup-toolbar") }) {
         when (val state = viewModel.state.collectAsState(Disabled).value) {
             is Transitioning -> {
                 console.info("ClickUp menu is ${state::class.simpleName}")
-                ClickUpMenu(viewModel, state.previousState, loading = true)
+                ClickUpMenu(viewModel, state.previousState, loadingState = LoadingState.On)
             }
 
             is Failed -> {
@@ -387,26 +395,19 @@ public fun ClickUpMenu(
 public fun ClickUpMenu(
     viewModel: ClickUpMenuViewModel,
     state: Succeeded,
-    loading: Boolean = false,
+    loadingState: LoadingState = LoadingState.Off,
 ) {
     Menu({
-        v.dimmable()
-        raw(Tiny)
-        style { property("box-shadow", "none") }
+        apply(loadingState)
+        raw(Mini)
         if (state is Disabled || state is Disconnected) {
             raw(Modifier.Variation.Fluid)
             classes("one", "item")
         }
     }) {
-        DimmingLoader(loading, { raw(Mini) })
+        apply(loadingState, dimmerAttrs = { v.inverted() }, loaderAttrs = { v.size(Mini) })
         when (state) {
-            Disabled -> {
-                Dimmer({ raw(Modifier.State.Active, Modifier.Variation.Inverted) })
-                DisconnectedItems(
-                    onConnect = {},
-                    configurers = emptyArray(),
-                )
-            }
+            Disabled -> DisconnectedItems()
 
             Disconnected -> {
                 DisconnectedItems(

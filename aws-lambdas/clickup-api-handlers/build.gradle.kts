@@ -84,7 +84,3 @@ functionToEventsMapping.forEach { (fn, eventFiles) ->
         }
     }
 }
-
-tasks.build {
-    finalizedBy(tasks.shadowJar)
-}

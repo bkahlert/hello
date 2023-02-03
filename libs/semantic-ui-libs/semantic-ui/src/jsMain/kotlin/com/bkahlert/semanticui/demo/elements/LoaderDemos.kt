@@ -6,11 +6,11 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.LoremIpsumText
+import com.bkahlert.semanticui.demo.custom.ComponentType
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.States
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
-import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.ImageHeader
 import com.bkahlert.semanticui.element.Line
 import com.bkahlert.semanticui.element.Loader
@@ -30,7 +30,7 @@ import com.bkahlert.semanticui.element.size
 import org.jetbrains.compose.web.dom.Text
 
 public val LoaderDemos: SemanticDemo = SemanticDemo(
-    SemanticType.Element,
+    ComponentType.Element,
     "Loader",
     Types {
         Demo("Loader", { v.inverted() }) {

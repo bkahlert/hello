@@ -5,7 +5,7 @@ import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.hello.clickup.serialization.SerializerTest
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.RGB
-import com.bkahlert.kommons.net.Uri
+import com.bkahlert.kommons.uri.Uri
 
 @Suppress("unused")
 class TeamTest : SerializerTest<Team>(

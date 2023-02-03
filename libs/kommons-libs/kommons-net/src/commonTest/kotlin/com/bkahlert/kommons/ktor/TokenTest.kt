@@ -9,7 +9,7 @@ class TokenTest {
     fun install() {
         shouldNotThrowAny {
             JsonHttpClient {
-                installTokenAuth(com.bkahlert.kommons.ktor.authorizationToken)
+                installTokenAuth(authorizationToken)
             }
         }
     }

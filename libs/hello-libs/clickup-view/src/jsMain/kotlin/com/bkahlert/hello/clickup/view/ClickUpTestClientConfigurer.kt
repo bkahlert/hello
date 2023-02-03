@@ -2,10 +2,11 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
-import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.semanticui.element.PrimaryButton
+import com.bkahlert.semanticui.element.Button
+import com.bkahlert.semanticui.element.primary
+import com.bkahlert.semanticui.module.inverted
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
 
@@ -15,8 +16,8 @@ public class ClickUpTestClientConfigurer(
     private val provide: () -> ClickUpTestClient = { ClickUpTestClient() },
 ) : Configurer<ClickUpTestClient> {
     override val content: @Composable SemanticElementScope<SemanticElement<HTMLDivElement>>.(onComplete: (ClickUpTestClient) -> Unit) -> Unit = { onComplete ->
-        PrimaryButton({
-            raw(Modifier.Variation.Inverted)
+        Button({
+            v.primary().inverted()
             onClick {
                 onComplete(provide())
             }

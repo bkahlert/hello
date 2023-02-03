@@ -1,6 +1,6 @@
 package com.bkahlert.hello.clickup.model
 
-import io.ktor.http.URLBuilder
+import com.bkahlert.kommons.uri.div
 import io.ktor.http.Url
 import kotlin.reflect.KClass
 
@@ -54,9 +54,4 @@ public sealed interface Identifier<T> {
     }
 }
 
-
-public infix operator fun Url.div(path: String): Url = URLBuilder(toString())
-    .apply { pathSegments = pathSegments + path }
-    .build()
-
-public infix operator fun <T> Url.div(path: Identifier<T>): Url = div(path.id.toString())
+public infix operator fun <T> Url.div(path: Identifier<T>): Url = div(path.stringValue)

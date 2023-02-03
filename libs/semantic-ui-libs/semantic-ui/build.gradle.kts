@@ -12,8 +12,8 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("com.bkahlert.kommons:kommons-net") { because("Uri type, devmode") }
                 implementation("com.bkahlert.kommons:kommons-text") { because("demos") }
+                implementation("com.bkahlert.kommons:kommons-uri") { because("Uri type, devmode") }
                 api(project(":semantic-ui-core"))
                 api(project(":semantic-ui-elements"))
                 api(project(":semantic-ui-collections"))

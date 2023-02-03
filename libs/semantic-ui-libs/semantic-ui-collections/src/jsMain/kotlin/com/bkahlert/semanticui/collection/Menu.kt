@@ -1,6 +1,7 @@
 package com.bkahlert.semanticui.collection
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import com.bkahlert.semanticui.core.attributes.Modifier.State
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation
 import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
@@ -28,11 +29,33 @@ public fun Menu(
     attrs: SemanticAttrBuilderContext<MenuElement>? = null,
     content: SemanticContentBuilder<MenuElement>? = null,
 ) {
-    SemanticDivElement({
+    val semanticAttrs: SemanticAttrsScope<MenuElement>.() -> Unit = {
         classes("ui")
         attrs?.invoke(this)
         classes("menu")
-    }, content)
+    }
+
+    val semanticContent: SemanticContentBuilder<MenuElement>? = when (content) {
+        null -> null
+        else -> {
+            {
+                content()
+                DisposableEffect(attrs, content) {
+                    // If the added menu is effectively a sub menu, remove its `ui` class.
+                    // Hacky but pragmatic since collection components can exist on their own
+                    // but "as well contain their own content" (https://semantic-ui.com/introduction/glossary.html#project-terminology).
+                    if (scopeElement.parentElement?.classList?.contains("menu") == true) {
+                        scopeElement.classList.remove("ui")
+                    }
+                    onDispose { }
+                }
+            }
+        }
+    }
+    SemanticDivElement(
+        semanticAttrs = semanticAttrs,
+        semanticContent = semanticContent,
+    )
 }
 
 /**
@@ -112,7 +135,7 @@ public fun SemanticElementScope<MenuElement>.Header(
 
 /**
  * Creates a [SemanticUI link item](https://semantic-ui.com/collections/menu.html#link-item).
- * @see [AnkerItem]
+ * @see [AnchorItem]
  */
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable
@@ -132,7 +155,7 @@ public fun SemanticElementScope<MenuElement>.LinkItem(
  */
 @Suppress("unused", "UnusedReceiverParameter")
 @Composable
-public fun SemanticElementScope<MenuElement>.AnkerItem(
+public fun SemanticElementScope<MenuElement>.AnchorItem(
     href: String? = null,
     attrs: SemanticAttrBuilderContext<MenuItemAnchorElement>? = null,
     content: SemanticContentBuilder<MenuItemAnchorElement>? = null,

@@ -10,8 +10,11 @@ import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
 import com.bkahlert.semanticui.core.dom.SemanticElement
+import com.bkahlert.semanticui.core.jQuery
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
+import kotlin.js.Json
+import kotlin.js.json
 
 public interface DimmerElement : SemanticElement<HTMLDivElement>
 public interface DimmerContentElement : SemanticElement<HTMLDivElement>
@@ -45,6 +48,19 @@ public fun VariationsScope<DimmerElement>.verticallyAligned(value: Variation.Ver
  * that can be applied to the [Dimmer] itself and its content.
  */
 public fun VariationsScope<SemanticElement<Element>>.inverted(): VariationsScope<SemanticElement<Element>> = +Variation.Inverted
+
+
+private fun jQuery.dimmer(options: Json): jQuery =
+    asDynamic().dimmer(options).unsafeCast<jQuery>()
+
+public fun jQuery.dimmer(behavior: String, vararg args: Any?): jQuery =
+    asDynamic().dimmer.apply(this, arrayOf(behavior, *args)).unsafeCast<jQuery>()
+
+/**
+ * An interface to interact with a [SemanticUI dimmer](https://semantic-ui.com/modules/dimmer.html)
+ * using the specified [options].
+ */
+public fun jQuery.dimmer(vararg options: Pair<String, Any?>): jQuery = dimmer(json(*options))
 
 
 /**

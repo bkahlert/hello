@@ -1,10 +1,8 @@
 package com.bkahlert.hello.clickup.serialization
 
-import com.bkahlert.kommons.json.Lenient
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
 import kotlin.test.Test
 
 abstract class SerializerTest<T>(
@@ -19,14 +17,14 @@ abstract class SerializerTest<T>(
     @Test
     fun deserialize() {
         mappings.forEach { (serialized, deserialized) ->
-            Json.Lenient.decodeFromString(serializer, serialized) shouldBe deserialized
+            LenientJson.decodeFromString(serializer, serialized) shouldBe deserialized
         }
     }
 
     @Test
     fun serialize() {
         mappings.forEach { (serialized, deserialized) ->
-            Json.Lenient.encodeToString(serializer, deserialized) shouldEqualJson serialized
+            LenientJson.encodeToString(serializer, deserialized) shouldEqualJson serialized
         }
     }
 }

@@ -5,31 +5,25 @@ import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Colors
 import com.bkahlert.kommons.color.deg
 import com.bkahlert.kommons.text.toTitleCasedString
+import com.bkahlert.semanticui.core.S
+import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.custom.SiteColors
 import com.bkahlert.semanticui.custom.backgroundColor
 import com.bkahlert.semanticui.custom.color
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.Demos
-import org.jetbrains.compose.web.css.AlignContent
-import org.jetbrains.compose.web.css.DisplayStyle
-import org.jetbrains.compose.web.css.FlexWrap
-import org.jetbrains.compose.web.css.JustifyContent
-import org.jetbrains.compose.web.css.alignContent
-import org.jetbrains.compose.web.css.display
+import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.em
-import org.jetbrains.compose.web.css.flexWrap
 import org.jetbrains.compose.web.css.fontSize
-import org.jetbrains.compose.web.css.height
-import org.jetbrains.compose.web.css.justifyContent
-import org.jetbrains.compose.web.css.percent
+import org.jetbrains.compose.web.css.marginLeft
+import org.jetbrains.compose.web.css.marginTop
+import org.jetbrains.compose.web.css.padding
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.width
-import org.jetbrains.compose.web.dom.AttrBuilderContext
-import org.jetbrains.compose.web.dom.ContentBuilder
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Small
+import org.jetbrains.compose.web.css.transform
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLDivElement
+import org.jetbrains.compose.web.css.deg as cssDeg
 
 @Composable
 public fun ColorsDemos() {
@@ -144,7 +138,7 @@ private fun SiteColorsDemo() {
             Demo(category, basic = true) {
                 Tiles {
                     colors.forEach { (prop, color) ->
-                        ColoredTile(color, prop.name.toTitleCasedString()) { style { width((100.0 / colors.size).percent) } }
+                        ColoredTile(color, prop.name.toTitleCasedString())
                     }
                 }
             }
@@ -168,7 +162,7 @@ private fun RandomColorsDemo() {
             Demo(name, basic = true) {
                 Tiles {
                     repeat(10) {
-                        ColoredTile(generator()) { style { width(10.0.percent) } }
+                        ColoredTile(generator(), "#$it")
                     }
                 }
             }
@@ -195,40 +189,60 @@ private fun ModifiedColorDemo() {
 
         Demo("Scaled Saturation", basic = true) {
             Tiles {
-                colors.forEach { color ->
-                    ColoredTile(color.toHSL().scaleSaturation(-0.50)) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color.toHSL().scaleSaturation(-0.50), "-0.50")
+                    }
                 }
-                colors.forEach { color ->
-                    ColoredTile(color.toHSL().scaleSaturation(-0.25)) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color.toHSL().scaleSaturation(-0.25), "-0.25")
+                    }
                 }
-                colors.forEach { color ->
-                    ColoredTile(color) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color, "+-0")
+                    }
                 }
-                colors.forEach { color ->
-                    ColoredTile(color.toHSL().scaleSaturation(+0.25)) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color.toHSL().scaleSaturation(+0.25), "+0.25")
+                    }
                 }
-                colors.forEach { color ->
-                    ColoredTile(color.toHSL().scaleSaturation(+0.50)) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color.toHSL().scaleSaturation(+0.50), "+0.50")
+                    }
                 }
             }
         }
 
         Demo("Scaled Lightness", basic = true) {
             Tiles {
-                colors.forEach { color ->
-                    ColoredTile(color.toHSL().scaleLightness(-0.50)) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color.toHSL().scaleLightness(-0.50), "-0.50")
+                    }
                 }
-                colors.forEach { color ->
-                    ColoredTile(color.toHSL().scaleLightness(-0.25)) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color.toHSL().scaleLightness(-0.25), "-0.25")
+                    }
                 }
-                colors.forEach { color ->
-                    ColoredTile(color) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color, "+-0")
+                    }
                 }
-                colors.forEach { color ->
-                    ColoredTile(color.toHSL().scaleLightness(+0.25)) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color.toHSL().scaleLightness(+0.25), "+0.25")
+                    }
                 }
-                colors.forEach { color ->
-                    ColoredTile(color.toHSL().scaleLightness(+0.50)) { style { width((100.0 / colors.size).percent) } }
+                Row {
+                    colors.forEach { color ->
+                        ColoredTile(color.toHSL().scaleLightness(+0.50), "+0.50")
+                    }
                 }
             }
         }
@@ -237,35 +251,46 @@ private fun ModifiedColorDemo() {
 
 @Composable
 private fun Tiles(
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
-    content: ContentBuilder<HTMLDivElement>? = null,
+    content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
 ) {
-    Div({
-        style {
-            display(DisplayStyle.Flex)
-            flexWrap(FlexWrap.Wrap)
-            alignContent(AlignContent.Center)
-            justifyContent(JustifyContent.Center)
-        }
-        attrs?.invoke(this)
-    }, content)
+    S("ui", "equal", "width", "grid", "basic", "top", "attached", "segment", content = content)
+}
+
+@Composable
+private fun Row(
+    content: SemanticContentBuilder<SemanticElement<HTMLDivElement>>? = null,
+) {
+    S("row", attrs = { style { padding(0.px) } }, content = content)
 }
 
 
 @Composable
 private fun ColoredTile(
     color: Color,
-    name: String = color.toString(),
-    attrs: AttrBuilderContext<HTMLDivElement>? = null,
+    name: String,
 ) {
-    Div({
+    S("column", attrs = {
         style {
-            color(color.textColor)
-            width(50.px)
-            height(50.px)
             backgroundColor(color)
-            fontSize(.7.em)
         }
-        attrs?.invoke(this)
-    }) { Small { Text(name) } }
+    }) {
+        S("ui", "mini", "label", attrs = {
+            style {
+                color(color.textColor)
+                backgroundColor(org.jetbrains.compose.web.css.Color.transparent)
+                if (name.length < 10) {
+                    marginTop((-.5).em)
+                    marginLeft((-1.5).em)
+                } else {
+                    marginTop(0.em)
+                    marginLeft((-1.5).em)
+                    transform { rotate(270.cssDeg) }
+                }
+                fontSize(0.5.em)
+            }
+            title("$color")
+        }) {
+            Text(name)
+        }
+    }
 }

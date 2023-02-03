@@ -19,10 +19,3 @@ kotlin {
         }
     }
 }
-
-tasks {
-    val jsBrowserDevelopmentRun = named("jsBrowserDevelopmentRun")
-    val jsDevelopmentExecutableCompileSync = named("jsDevelopmentExecutableCompileSync")
-    // Fix Gradle warning "Execution optimizations have been disabled"
-    jsBrowserDevelopmentRun.configure { dependsOn(jsDevelopmentExecutableCompileSync) }
-}

@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.json
 import com.bkahlert.semanticui.core.attributes.BehaviorScope
 import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation
@@ -22,12 +24,14 @@ import com.bkahlert.semanticui.core.dom.SemanticDivElement
 import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import com.bkahlert.semanticui.core.jQuery
-import com.bkahlert.semanticui.core.modal
 import com.bkahlert.semanticui.element.ButtonElement
 import kotlinx.browser.document
+import kotlinx.dom.createElement
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
+import kotlin.js.Json
+import kotlin.js.json
 
 public interface ModalElement : SemanticElement<HTMLDivElement>
 
@@ -93,6 +97,17 @@ private fun <T, R> ((T) -> R)?.overruleBy(overrulingValue: () -> R): (T) -> R = 
     overrulingValue()
 }
 
+public fun jQuery.modal(options: Json): jQuery =
+    asDynamic().modal(options).unsafeCast<jQuery>()
+
+public fun jQuery.modal(behavior: String, vararg args: Any?): jQuery {
+    return asDynamic().modal.apply(this, arrayOf(behavior, *args)).unsafeCast<jQuery>()
+}
+
+public fun jQuery.modal(vararg options: Pair<String, Any?>): jQuery = modal(json(*options))
+
+public fun jQuery.modal(options: Map<String, Any?>): jQuery = modal(json(options))
+
 /**
  * Creates a [SemanticUI modal](https://semantic-ui.com/modules/modal.html#modal).
  */
@@ -117,20 +132,33 @@ public fun Modal(
         }) {
         content?.invoke(this)
         DisposableEffect(Unit) {
-            // Semantic UI will move the node to the dimmer element but Compose expects the node to be here
-            // in order to dispose it when no longer needed. Let's insert an invisible replacement instead.
-            val insertionPoint = checkNotNull(scopeElement.parentElement) { "missing parent" } to scopeElement.nextSibling
-            val jQueryElement = jQuery(scopeElement)
-            jQueryElement
+            // Semantic UI moves the modal element to the dimmer element,
+            // but Compose expects the modal element where it was created.
+            // Luckily, Compose seems to accept an invisible placeholder instead.
+            val scopeParent = checkNotNull(scopeElement.parentElement) { "missing parent" }
+            val scopeSibling = scopeElement.nextSibling
+            val placeholder = document.createElement("span") { unsafeCast<HTMLElement>().hideVisually() }
+            console.debug("Modal: Adding placeholder", placeholder, "before", scopeSibling)
+            scopeParent.insertBefore(node = placeholder, child = scopeSibling)
+
+            console.debug("Modal: Showing", scopeElement)
+            val modalElement = jQuery(scopeElement)
                 .modal(settings)
                 .modal("show")
-            val invisiblePlaceholder = (document.createElement("span") as HTMLElement).apply { hideVisually() }
-            insertionPoint.first.insertBefore(invisiblePlaceholder, insertionPoint.second)
+
             onDispose {
+                console.debug("Modal: Disposing", modalElement)
                 closing = true
-                jQueryElement
-                    .modal("onHidden" to { jQueryElement.asDynamic().remove() })
-                    .modal("hide")
+                modalElement
+                    .modal("hide", fun() {
+                        console.debug("Modal: Destroying", modalElement)
+                        modalElement.modal("destroy")
+
+                        console.debug("Modal: Removing", modalElement)
+                        modalElement.remove()
+
+                        console.debug("Modal: Disposed", modalElement)
+                    })
             }
         }
     }

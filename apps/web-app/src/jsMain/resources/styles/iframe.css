@@ -1,0 +1,69 @@
+.ui.iframe {
+    display: flex;
+    flex-flow: column;
+}
+
+.ui.iframe > *:not(.ui.loader) {
+    flex: 1;
+}
+
+
+.ui.iframe.dimmable > .ui.loader {
+    transition: all 0.4s ease;
+}
+
+.ui.iframe.dimmable > *:not(.ui.loader) {
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+.ui.iframe.dimmable:not(.loading) > .ui.loader {
+    display: none;
+}
+
+.ui.iframe.dimmable.loading > .ui.loader {
+    display: block;
+}
+
+.ui.iframe.dimmable.loading > *:not(.ui.loader) {
+    opacity: 0;
+}
+
+
+/* reduce distraction by reducing opacity when not hovered */
+@media (hover: hover) {
+    .ui.iframe.dimmable:not(.loading)::before,
+    .ui.iframe.dimmable:not(.loading)::after {
+        display: block;
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0;
+    }
+
+    .ui.iframe.dimmable:not(.loading)::before {
+        background-color: white;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .ui.iframe.dimmable:not(.loading):hover::before {
+        opacity: 1;
+    }
+
+    .ui.iframe.dimmable:not(.loading):hover::after {
+        pointer-events: none;
+    }
+
+    .ui.iframe.dimmable:not(.loading) > *:not(.ui.loader) {
+        mix-blend-mode: multiply;
+        opacity: .2;
+        transition: opacity 0.4s ease;
+    }
+
+    .ui.iframe.dimmable:not(.loading):hover > *:not(.ui.loader) {
+        opacity: 0.95;
+    }
+}

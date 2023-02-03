@@ -8,12 +8,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.dom.openInNewTab
 import com.bkahlert.kommons.dom.openInSameTab
-import com.bkahlert.kommons.net.Uri
-import com.bkahlert.kommons.net.port
-import com.bkahlert.kommons.net.toUriOrNull
+import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.uri.Uri
+import com.bkahlert.kommons.uri.port
+import com.bkahlert.kommons.uri.toUriOrNull
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
+import com.bkahlert.semanticui.core.attributes.raw
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.element.Icon
@@ -59,8 +61,8 @@ public fun rememberSearchInputState(
 public fun SearchInput(
     state: SearchInputState = rememberSearchInputState(),
     attrs: SemanticAttrBuilderContext<InputElement>? = null,
-    onSearch: ((String) -> Unit)? = { console.info("onSearch($it)") },
-    onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
+    onSearch: ((String) -> Unit)? = { console.debug("SearchInput: onSearch($it)") },
+    onPaste: (((String) -> String?) -> Unit)? = { console.debug("SearchInput: onPaste(${it("text/plain")})") },
     content: SemanticContentBuilder<InputElement>? = null,
 ) {
     S("ui", "search") {
@@ -119,8 +121,8 @@ public fun rememberMultiSearchInputState(
 public fun MultiSearchInput(
     state: MultiSearchInputState = rememberMultiSearchInputState(),
     attrs: SemanticAttrBuilderContext<InputElement>? = null,
-    onSearch: ((String, List<SearchEngine>) -> Unit)? = { query, engines -> console.log("onSearch($query; $engines)") },
-    onPaste: (((String) -> String?) -> Unit)? = { console.log("onPaste(${it("text/plain")})") },
+    onSearch: ((String, List<SearchEngine>) -> Unit)? = { query, engines -> console.debug("MultiSearchInput: onSearch($query; $engines)") },
+    onPaste: (((String) -> String?) -> Unit)? = { console.debug("MultiSearchInput: onPaste(${it("text/plain")})") },
     content: SemanticContentBuilder<InputElement>? = null,
 ) {
     SearchInput(

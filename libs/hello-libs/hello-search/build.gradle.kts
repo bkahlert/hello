@@ -12,7 +12,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation("com.bkahlert.kommons:kommons-util")
+                implementation("com.bkahlert.kommons:kommons-core")
                 api("com.bkahlert.semantic-ui:semantic-ui")
             }
         }

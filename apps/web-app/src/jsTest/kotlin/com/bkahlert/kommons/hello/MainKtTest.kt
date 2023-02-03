@@ -1,7 +1,12 @@
 package com.bkahlert.kommons.hello
 
-import com.bkahlert.hello.Grid
+import com.bkahlert.hello.App
 import com.bkahlert.kommons.json.LenientJson
+import com.bkahlert.semanticui.test.GenericToStringLibrary
+import com.bkahlert.semanticui.test.JQueryLibrary
+import com.bkahlert.semanticui.test.SemanticUiLibrary
+import com.bkahlert.semanticui.test.compositionWith
+import io.kotest.assertions.asClue
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.encodeToString
@@ -21,10 +26,16 @@ class MainKtTest {
 
     @Test
     fun compose() = runTest {
-        composition {
-            Grid()
+        compositionWith(JQueryLibrary, SemanticUiLibrary, GenericToStringLibrary) {
+            App()
         }
-        root.innerHTML shouldBe "<div class=\"AppStylesheet-helloGridContainer\"></div>"
+        waitForRecompositionComplete()
+
+        root.querySelectorAll(".toolbar").asClue { it.length shouldBe 1 }
+        root.querySelectorAll(".toolbar > .links").asClue { it.length shouldBe 1 }
+        root.querySelectorAll(".toolbar > .search").asClue { it.length shouldBe 1 }
+        root.querySelectorAll(".toolbar > .tasks").asClue { it.length shouldBe 1 }
+        root.querySelectorAll(".bookmarks").asClue { it.length shouldBe 1 }
     }
 }
 

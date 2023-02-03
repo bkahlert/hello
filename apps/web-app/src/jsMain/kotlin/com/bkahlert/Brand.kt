@@ -9,6 +9,7 @@ object Brand {
     val fonts = listOf(
         "system-ui",
         "-apple-system",
+        "BlinkMacSystemFont",
         "Segoe UI",
         "Roboto",
         "Helvetica",

@@ -15,18 +15,34 @@ import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
 import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.semanticui.core.dropdown
 import com.bkahlert.semanticui.core.jQuery
 import com.bkahlert.semanticui.core.toJsonArray
 import com.bkahlert.semanticui.core.toJsonArrayOrEmpty
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.paddingRight
 import org.w3c.dom.HTMLDivElement
+import kotlin.js.Json
+import kotlin.js.json
 
 public interface DropdownElement : SemanticElement<HTMLDivElement>
 
 /** [Variation.Scrolling](https://semantic-ui.com/modules/dropdown.html#scrolling) */
 public fun VariationsScope<DropdownElement>.scrolling(): VariationsScope<DropdownElement> = +Modifier.Variation.Scrolling
+
+
+private fun jQuery.dropdown(options: Json): jQuery =
+    asDynamic().dropdown(options).unsafeCast<jQuery>()
+
+private fun jQuery.dropdown(behavior: String, vararg args: Any?): jQuery =
+    asDynamic().dropdown.apply(this, arrayOf(behavior, *args)).unsafeCast<jQuery>()
+
+/**
+ * An interface to interact with a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html)
+ * using the specified [options].
+ *
+ * @see <a href="https://semantic-ui.com/modules/dropdown.html#initializing-existing-html">Initializing</a>
+ */
+private fun jQuery.dropdown(vararg options: Pair<String, Any?>): jQuery = dropdown(json(*options))
 
 /**
  * Creates a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html#/definition).
@@ -44,7 +60,7 @@ public fun Dropdown(
         content?.invoke(this)
         DisposableEffect(Unit) {
             jQuery(scopeElement).dropdown()
-            onDispose { }
+            onDispose { /* cleaned up by Dropdown module automatically */ } // TODO check
         }
     }
 }
@@ -113,14 +129,14 @@ public fun <T> InlineDropdown(
                     }
                 },
             )
-            onDispose { }
+            onDispose { /* cleaned up by Accordion module automatically */ } // TODO check
         }
         DisposableEffect(state.selection) {
             jQuery(scopeElement)
                 .dataAttr(MUTED_ATTRIBUTE_NAME, true)
                 .dropdown("set exactly", state.selection.toJsonArrayOrEmpty(state.serializer))
                 .dataAttr(MUTED_ATTRIBUTE_NAME, null)
-            onDispose { }
+            onDispose { /* cleaned up by Accordion module automatically */ } // TODO check
         }
     }
 }
@@ -201,14 +217,14 @@ public fun <T> InlineMultipleDropdown(
                     }
                 },
             )
-            onDispose { }
+            onDispose { /* cleaned up by Accordion module automatically */ } // TODO check
         }
         DisposableEffect(state.selection) {
             jQuery(scopeElement)
                 .dataAttr(MUTED_ATTRIBUTE_NAME, true)
                 .dropdown("set exactly", state.selection.toJsonArray(state.serializer))
                 .dataAttr(MUTED_ATTRIBUTE_NAME, null)
-            onDispose { }
+            onDispose { /* cleaned up by Accordion module automatically */ } // TODO check
         }
     }
 }

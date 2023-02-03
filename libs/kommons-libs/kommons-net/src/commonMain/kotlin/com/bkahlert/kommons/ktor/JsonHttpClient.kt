@@ -17,7 +17,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlin.reflect.KClass
 
 public fun JsonHttpClient(
-    logLevel: LogLevel = LogLevel.HEADERS,
+    logLevel: LogLevel = LogLevel.INFO,
     config: (HttpClientConfig<HttpClientEngineConfig>.() -> Unit)? = null,
 ): HttpClient = HttpClient(JsonHttpClientEngineFactory) {
     install(Logging) { level = logLevel }

@@ -15,13 +15,14 @@ import com.bkahlert.semanticui.collection.Message
 import com.bkahlert.semanticui.collection.info
 import com.bkahlert.semanticui.collection.size
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Tiny
 import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Icon
-import com.bkahlert.semanticui.element.PrimaryButton
 import com.bkahlert.semanticui.element.disabled
+import com.bkahlert.semanticui.element.primary
+import com.bkahlert.semanticui.module.inverted
 import kotlinx.browser.localStorage
 import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.attributes.InputType.Password
@@ -42,7 +43,7 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
     override val content: @Composable SemanticElementScope<SemanticElement<HTMLDivElement>>.(onComplete: (ClickUpHttpClient) -> Unit) -> Unit = { onComplete ->
 
         var accessTokenInput by remember { mutableStateOf("") }
-        val isValid by derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) }
+        val isValid by remember { derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) } }
 
         S("field") {
             Message({
@@ -71,8 +72,8 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
             }
         }
 
-        PrimaryButton({
-            raw(Modifier.Variation.Inverted)
+        Button({
+            v.primary().inverted()
             if (!isValid) s.disabled()
             onClick {
                 onComplete(

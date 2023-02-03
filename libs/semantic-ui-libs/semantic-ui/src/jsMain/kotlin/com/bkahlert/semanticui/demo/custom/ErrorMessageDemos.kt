@@ -26,5 +26,5 @@ public val ErrorMessageDemos: SemanticDemo = SemanticDemo(
     },
 )
 
-private val exception: Throwable
+internal val exception: Throwable
     get() = checkNotNull(runCatching { error("This is just a test") }.exceptionOrNull())

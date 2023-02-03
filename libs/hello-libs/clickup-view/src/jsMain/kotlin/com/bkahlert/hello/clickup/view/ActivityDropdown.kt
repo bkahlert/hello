@@ -131,10 +131,7 @@ public fun ActivityDropdown(
                 Input(Text) {
                     placeholder("Search tasks...")
                     value(query)
-                    onInput {
-                        console.error(it.value)
-                        query = it.value
-                    }
+                    onInput { query = it.value }
                 }
                 Icon("search")
             }

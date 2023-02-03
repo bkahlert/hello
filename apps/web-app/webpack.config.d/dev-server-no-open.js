@@ -4,8 +4,7 @@
 ;(function (config) {
   'use strict';
   if (config.mode === 'development') {
-    config.devServer = config.devServer || {};
-    Object.assign(config.devServer, config.devServer, {
+    config.devServer = Object.assign({}, config.devServer || {}, {
       open: false
     });
   }

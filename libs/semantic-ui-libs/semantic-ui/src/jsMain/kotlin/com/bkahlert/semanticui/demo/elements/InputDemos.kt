@@ -5,12 +5,13 @@ import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Action.Right
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Floating
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Icon.Left
+import com.bkahlert.semanticui.core.attributes.raw
 import com.bkahlert.semanticui.demo.Demo
+import com.bkahlert.semanticui.demo.custom.ComponentType
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.States
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Types
 import com.bkahlert.semanticui.demo.custom.SemanticDemoSection.Variations
-import com.bkahlert.semanticui.demo.custom.SemanticType
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.Input
 import com.bkahlert.semanticui.element.action
@@ -30,7 +31,7 @@ import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Text
 
 public val InputDemos: SemanticDemo = SemanticDemo(
-    SemanticType.Element,
+    ComponentType.Element,
     "Input",
     Types {
         Demo("Input") {

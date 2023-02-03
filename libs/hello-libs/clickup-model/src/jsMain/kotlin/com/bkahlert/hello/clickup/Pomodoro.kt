@@ -101,7 +101,10 @@ public data class Pomodoro(
     }
 
     public enum class Status(public val color: Color) {
-        Prepared(RGB(0x0e566c)), Running(RGB(0x794b02)), Aborted(RGB(0x912d2b)), Completed(RGB(0x1a531b));
+        Prepared(RGB(0x0e566c)),
+        Running(RGB(0x794b02)),
+        Aborted(RGB(0x912d2b)),
+        Completed(RGB(0x1a531b));
 
         public val tag: Tag = Tag("$TAG_PREFIX${name.lowercase()}", color, color)
 
