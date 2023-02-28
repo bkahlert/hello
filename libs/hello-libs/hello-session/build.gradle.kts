@@ -13,6 +13,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 api("com.bkahlert.kommons:kommons-core")
+                api(project(":hello-data"))
                 api(project(":hello-environment"))
                 api("com.bkahlert.kommons:kommons-inc") { because("Uri.resolve") }
                 api("com.bkahlert.kommons:kommons-net") { because("LenientJson, JsonHttpClient") }

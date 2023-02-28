@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.dom.openInNewTab
 import com.bkahlert.kommons.dom.openInSameTab
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.console
 import com.bkahlert.kommons.uri.Uri
 import com.bkahlert.kommons.uri.port
 import com.bkahlert.kommons.uri.toUriOrNull

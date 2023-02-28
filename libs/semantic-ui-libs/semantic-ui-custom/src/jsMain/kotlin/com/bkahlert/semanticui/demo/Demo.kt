@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.dom.appendDivElement
 import com.bkahlert.kommons.dom.data
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.semanticui.collection.Header
 import com.bkahlert.semanticui.collection.Item
 import com.bkahlert.semanticui.collection.LinkItem
@@ -20,6 +20,10 @@ import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Attached
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.semanticui.core.dom.SemanticElement
+import com.bkahlert.semanticui.core.dom.SemanticElementScope
+import com.bkahlert.semanticui.custom.ReportingCoroutineScope
+import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.element.Header
 import com.bkahlert.semanticui.element.HeaderDivElement
 import com.bkahlert.semanticui.element.Icon
@@ -32,6 +36,8 @@ import com.bkahlert.semanticui.element.SegmentElement
 import com.bkahlert.semanticui.element.SegmentGroupElement
 import com.bkahlert.semanticui.element.Segments
 import com.bkahlert.semanticui.element.attached
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.web.css.borderWidth
 import org.jetbrains.compose.web.css.padding
@@ -45,6 +51,8 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLParagraphElement
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+
+private val logger by ConsoleLogging("Demo")
 
 /** A composable to hold [Demo] composables. */
 @Composable
@@ -78,6 +86,8 @@ private fun DemosHeader(
     }
 }
 
+public typealias DemoContentBuilder = @Composable SemanticElementScope<SemanticElement<HTMLDivElement>>.(CoroutineScope) -> Unit
+
 /** A composable to demonstrate the specified [content]. */
 @Composable
 public fun Demo(
@@ -85,7 +95,7 @@ public fun Demo(
     attrs: SemanticAttrBuilderContext<SegmentElement>? = null,
     basic: Boolean = false,
     warning: String? = null,
-    content: SemanticContentBuilder<SegmentElement>? = null,
+    content: DemoContentBuilder? = null,
 ) {
     var reset by remember { mutableStateOf(false) }
     if (reset) {
@@ -96,7 +106,7 @@ public fun Demo(
         }
     } else {
         DemoControls(name, warning = warning, onReset = {
-            console.debug("Resetting demo", name)
+            logger.debug("reset", name)
             reset = true
         })
     }
@@ -116,7 +126,8 @@ public fun Demo(
         if (reset) {
             Text("Resetting ...")
         } else {
-            content?.invoke(this)
+            val demoScope = rememberReportingCoroutineScope()
+            content?.invoke(this, demoScope)
         }
     }
 }
@@ -128,7 +139,7 @@ public fun DemoSandbox(
     name: String,
     basic: Boolean = false,
     warning: String? = null,
-    content: @Composable DOMScope<HTMLDivElement>.() -> Unit,
+    content: @Composable DOMScope<HTMLDivElement>.(CoroutineScope) -> Unit,
 ) {
     var reset by remember { mutableStateOf(false) }
     if (reset) {
@@ -139,7 +150,7 @@ public fun DemoSandbox(
         }
     } else {
         DemoControls(name, warning = warning, onReset = {
-            console.debug("Resetting demo", name)
+            logger.debug("reset", name)
             reset = true
         })
     }
@@ -159,9 +170,13 @@ public fun DemoSandbox(
         } else {
             DisposableEffect(Unit) {
                 val root: HTMLDivElement = scopeElement.appendDivElement()
-                val composition: Composition = renderComposable(root = root, content = content)
+                val demoScope = ReportingCoroutineScope()
+                val composition: Composition = renderComposable(root = root, content = {
+                    content(demoScope)
+                })
                 onDispose {
                     composition.dispose()
+                    demoScope.cancel("Demo disposed: $name")
                 }
             }
         }

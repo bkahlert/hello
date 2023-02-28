@@ -1,5 +1,6 @@
 package com.bkahlert.semanticui.demo.modules
 
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.custom.ComponentType
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
@@ -58,4 +59,5 @@ public val CheckboxDemos: SemanticDemo = SemanticDemo(
     },
 )
 
-private val handler: (SyntheticChangeEvent<*, *>) -> Unit = { console.info("${it.target} changed to ${it.value}") }
+private val logger = ConsoleLogger("CheckboxDemo")
+private val handler: (SyntheticChangeEvent<*, *>) -> Unit = { logger.info("${it.target} changed to ${it.value}") }

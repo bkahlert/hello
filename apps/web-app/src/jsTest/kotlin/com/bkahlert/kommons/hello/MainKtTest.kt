@@ -1,6 +1,6 @@
 package com.bkahlert.kommons.hello
 
-import com.bkahlert.hello.App
+import com.bkahlert.hello.WebApp
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.semanticui.test.GenericToStringLibrary
 import com.bkahlert.semanticui.test.JQueryLibrary
@@ -27,7 +27,7 @@ class MainKtTest {
     @Test
     fun compose() = runTest {
         compositionWith(JQueryLibrary, SemanticUiLibrary, GenericToStringLibrary) {
-            App()
+            WebApp()
         }
         waitForRecompositionComplete()
 

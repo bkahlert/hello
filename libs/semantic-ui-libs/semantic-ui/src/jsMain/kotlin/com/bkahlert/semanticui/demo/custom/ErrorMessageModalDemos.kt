@@ -1,8 +1,7 @@
 package com.bkahlert.semanticui.demo.custom
 
 import androidx.compose.runtime.rememberCoroutineScope
-import com.bkahlert.kommons.js.groupCollapsed
-import com.bkahlert.kommons.js.groupEnd
+import com.bkahlert.kommons.js.console
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Red
 import com.bkahlert.semanticui.custom.ErrorMessageModal
 import com.bkahlert.semanticui.custom.ErrorMessageModalCoroutineExceptionHandler

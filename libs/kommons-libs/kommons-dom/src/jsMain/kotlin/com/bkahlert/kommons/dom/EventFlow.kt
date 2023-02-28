@@ -1,6 +1,7 @@
 package com.bkahlert.kommons.dom
 
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.ConsoleLogger
+import com.bkahlert.kommons.js.grouping
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.flow.Flow
@@ -11,6 +12,8 @@ import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.EventTarget
 import org.w3c.dom.events.KeyboardEvent
 
+private val logger = ConsoleLogger("EventFlow")
+
 /**
  * Returns a cold [Flow] that starts emitting events registered
  * by an [EventListener] added to the [EventTarget] with the specified [type] and [options]
@@ -19,23 +22,29 @@ import org.w3c.dom.events.KeyboardEvent
 public fun EventTarget.asEventFlow(
     type: String,
     options: Any? = null,
-): Flow<Event> = callbackFlow {
-    val eventListener = EventListener { event: Event ->
-        this.trySend(event)
-            .onFailure { throwable ->
-                console.error("Failed to send", type, event, throwable)
-            }
-    }
-    console.debug("EventTarget: Adding", type, "eventListener")
-    if (options != null) this@asEventFlow.addEventListener(type, eventListener, options)
-    else this@asEventFlow.addEventListener(type, eventListener)
-    console.info("EventTarget: Added", type, "eventListener")
+): Flow<Event> = logger.grouping("asEventFlow", "target=${this::class.js.name}", "type=$type", "options=$options") {
+    callbackFlow {
+        val eventListener = EventListener { event: Event ->
+            this.trySend(event)
+                .onFailure { throwable ->
+                    logger.error("Failed to send", type, event, throwable)
+                }
+        }
 
-    awaitClose {
-        console.debug("EventTarget: Removing", type, "eventListener")
-        if (options != null) this@asEventFlow.removeEventListener(type, eventListener, options)
-        else this@asEventFlow.removeEventListener(type, eventListener)
-        console.info("EventTarget: Removed", type, "eventListener")
+        val target = this@asEventFlow
+        val targetName = this@asEventFlow::class.js.name
+
+        logger.grouping("addEventListener", "target=$targetName", "type=$type", "options=$options") {
+            if (options != null) target.addEventListener(type, eventListener, options)
+            else target.addEventListener(type, eventListener)
+        }
+
+        awaitClose {
+            logger.grouping("removeEventListener", "target=$targetName", "type=$type", "options=$options") {
+                if (options != null) target.removeEventListener(type, eventListener, options)
+                else target.removeEventListener(type, eventListener)
+            }
+        }
     }
 }
 

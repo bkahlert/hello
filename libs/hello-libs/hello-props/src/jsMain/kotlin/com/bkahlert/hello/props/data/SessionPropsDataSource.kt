@@ -4,6 +4,7 @@ import com.bkahlert.hello.environment.domain.Environment
 import com.bkahlert.hello.props.domain.Props
 import com.bkahlert.kommons.auth.Session
 import com.bkahlert.kommons.dom.uri
+import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.kommons.js.grouping
 import com.bkahlert.kommons.ktor.JsonHttpClient
 import com.bkahlert.kommons.oauth.API
@@ -24,6 +25,7 @@ public class SessionPropsDataSource(
     private val session: Session.AuthorizedSession,
     private val endpoint: Uri,
 ) : PropsDataSource {
+    private val logger by ConsoleLogging
 
     public constructor(
         session: Session.AuthorizedSession,
@@ -39,14 +41,11 @@ public class SessionPropsDataSource(
         }
     }
 
-    private suspend fun <R> grouping(operation: String, block: suspend () -> R): R =
-        console.grouping("${SessionPropsDataSource::class.simpleName}: $operation", block = block)
-
-    override suspend fun getAll(): Props = grouping(this::getAll.name) {
+    override suspend fun getAll(): Props = logger.grouping(::getAll) {
         client.get("$endpoint").body()
     }
 
-    override suspend fun get(id: String): JsonElement? = grouping(this::get.name) {
+    override suspend fun get(id: String): JsonElement? = logger.grouping(::get, id) {
         val response = client.get("$endpoint/$id")
         when (response.status) {
             HttpStatusCode.NoContent -> null
@@ -54,14 +53,14 @@ public class SessionPropsDataSource(
         }
     }
 
-    override suspend fun set(id: String, value: JsonElement): JsonElement = grouping(this::set.name) {
+    override suspend fun set(id: String, value: JsonElement): JsonElement = logger.grouping(::set, id, value) {
         client.patch("$endpoint/$id") {
             contentType(Application.Json)
             setBody(value)
         }.body()
     }
 
-    override suspend fun remove(id: String): JsonElement? = grouping(this::remove.name) {
+    override suspend fun remove(id: String): JsonElement? = logger.grouping(::remove, id) {
         val response = client.delete("$endpoint/$id")
         when (response.status) {
             HttpStatusCode.NoContent -> null

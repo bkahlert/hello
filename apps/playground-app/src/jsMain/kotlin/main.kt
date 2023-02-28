@@ -38,7 +38,7 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import playground.architecture.ArchitectureDemoProvider
-import playground.experiments.AppDemoProvider
+import playground.clickupapp.ClickUpAppDemoProvider
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -81,7 +81,7 @@ fun main() {
         Style(ClickUpStyleSheet)
 
         DemoView(
-            AppDemoProvider,
+            ClickUpAppDemoProvider,
             *HelloDemoProviders,
             ClickUpDemoProvider,
             ArchitectureDemoProvider,

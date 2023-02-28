@@ -26,7 +26,9 @@ public val ImageDemos: SemanticDemo = SemanticDemo(
     },
     Variations {
         Demos("Size") {
-            Size.take(4).forEach { Demo("$it") { Image(JohnDoeWithBackground, "$it") { v.size(it) } } }
+            Size.take(4).forEach { size ->
+                Demo("$size") { Image(JohnDoeWithBackground, "$size") { v.size(size) } }
+            }
         }
         Demo("Bordered") { Image(JohnDoeWithBackground, "Bordered") { v.bordered() } }
         Demo("Rounded") { Image(JohnDoeWithBackground, "Rounded") { v.rounded() } }

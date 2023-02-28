@@ -12,7 +12,7 @@ import com.bkahlert.hello.clickup.Pomodoro.Status.Aborted
 import com.bkahlert.hello.clickup.Pomodoro.Status.Completed
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TimeEntry
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.console
 import com.bkahlert.kommons.toMomentString
 import com.bkahlert.semanticui.custom.color
 import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
@@ -50,7 +50,7 @@ public class PomodoroTimerStateImpl(
     override val onStop: (List<Tag>) -> Unit,
 
     externalScope: CoroutineScope,
-    defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : PomodoroTimerState {
     override val pomodoro: Pomodoro = Pomodoro.of(timeEntry)
 

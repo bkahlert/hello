@@ -8,7 +8,7 @@ import com.bkahlert.kommons.dom.appendDivElement
 import com.bkahlert.kommons.dom.appendTypedElement
 import com.bkahlert.kommons.dom.asEventFlow
 import com.bkahlert.kommons.dom.body
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.console
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineDispatcher

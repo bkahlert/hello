@@ -1,5 +1,6 @@
 package com.bkahlert.hello.props.domain
 
+import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.kommons.js.grouping
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.JsonElement
@@ -7,11 +8,9 @@ import kotlinx.serialization.json.JsonElement
 public class SetPropUseCase(
     private val getPropsRepositoryUseCase: GetPropsRepositoryUseCase,
 ) {
+    private val logger by ConsoleLogging
 
-    public suspend operator fun invoke(id: String, value: JsonElement): JsonElement? {
-        val setProp: suspend () -> JsonElement? = {
-            getPropsRepositoryUseCase().first()?.setProp(id, value)
-        }
-        return console.grouping(SetPropUseCase::class.simpleName!!, block = setProp)
+    public suspend operator fun invoke(id: String, value: JsonElement): JsonElement? = logger.grouping(::invoke) {
+        getPropsRepositoryUseCase().first()?.setProp(id, value)
     }
 }

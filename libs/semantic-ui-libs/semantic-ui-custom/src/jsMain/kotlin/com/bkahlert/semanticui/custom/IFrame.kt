@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.kommons.js.toString
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.element.Loader
@@ -28,6 +29,7 @@ public inline fun IFrame(
     noinline attrs: SemanticAttrBuilderContext<LoaderElement>? = null,
     noinline frameAttrs: AttrBuilderContext<HTMLIFrameElement>? = null,
 ) {
+    val logger = remember { ConsoleLogger("IFrame") }
     var loaded by remember { mutableStateOf(false) }
 
     Div({
@@ -39,15 +41,15 @@ public inline fun IFrame(
         Iframe(frameAttrs) {
             DisposableEffect(Unit) {
                 val loadEventListener = EventListener {
-                    console.info("IFrame: Loading finished", it)
+                    logger.info("Loading finished", it)
                     loaded = true
                 }
                 loadEventListener.toString { "LoadEventListener" }
                 scopeElement.addEventListener("load", loadEventListener)
-                console.info("IFrame: Added $loadEventListener for", scopeElement)
+                logger.info("Added $loadEventListener for", scopeElement)
                 onDispose {
                     scopeElement.removeEventListener("load", loadEventListener)
-                    console.info("IFrame: Removed $loadEventListener from", scopeElement)
+                    logger.info("Removed $loadEventListener from", scopeElement)
                 }
             }
         }

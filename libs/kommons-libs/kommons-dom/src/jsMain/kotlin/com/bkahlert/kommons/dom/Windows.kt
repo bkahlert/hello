@@ -1,6 +1,7 @@
 package com.bkahlert.kommons.dom
 
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.ConsoleLogging
+import com.bkahlert.kommons.js.grouping
 import com.bkahlert.kommons.uri.Uri
 import com.bkahlert.kommons.uri.formUrlEncode
 import com.bkahlert.kommons.uri.fragmentParameters
@@ -143,6 +144,7 @@ public class LocationFragmentParameters(
     /** Window of which the [Location]'s [Uri.fragmentParameters] belong to. */
     private val window: Window,
 ) : FragmentParameters {
+    private val logger by ConsoleLogging
 
     override val caseInsensitiveName: Boolean get() = window.location.fragmentParameters.caseInsensitiveName
     override fun isEmpty(): Boolean = window.location.fragmentParameters.isEmpty()
@@ -161,9 +163,8 @@ public class LocationFragmentParameters(
      * Returns a cold [Flow] that starts emitting the fragment parameters state as [StringValues] instances
      * the moment it's collected until the flow collection is cancelled.
      */
-    override fun asFlow(): Flow<StringValues> {
-        console.debug("LocationFragmentParametersSource: getting flow", window)
-        return window
+    override fun asFlow(): Flow<StringValues> = logger.grouping(::asFlow, window) {
+        window
             .asEventFlow<HashChangeEvent>()
             .map { it.newURL.toUri().fragmentParameters }
     }

@@ -1,4 +1,4 @@
-package com.bkahlert.hello.demo
+package com.bkahlert.hello.app.ui
 
 import com.bkahlert.kommons.uri.DataUri
 

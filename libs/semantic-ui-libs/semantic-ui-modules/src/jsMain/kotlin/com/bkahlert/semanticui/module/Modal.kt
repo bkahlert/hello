@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.kommons.js.json
 import com.bkahlert.semanticui.core.attributes.BehaviorScope
 import com.bkahlert.semanticui.core.attributes.Modifier
@@ -116,6 +116,7 @@ public fun Modal(
     attrs: SemanticAttrBuilderContext<ModalElement>? = null,
     content: SemanticContentBuilder<ModalElement>? = null,
 ) {
+    val logger = remember { ConsoleLogger("Modal") }
     var closing by remember { mutableStateOf(false) }
     val settings = mutableMapOf<String, Any?>()
     SemanticDivElement<ModalElement>(
@@ -138,26 +139,26 @@ public fun Modal(
             val scopeParent = checkNotNull(scopeElement.parentElement) { "missing parent" }
             val scopeSibling = scopeElement.nextSibling
             val placeholder = document.createElement("span") { unsafeCast<HTMLElement>().hideVisually() }
-            console.debug("Modal: Adding placeholder", placeholder, "before", scopeSibling)
+            logger.debug("Adding placeholder", placeholder, "before", scopeSibling)
             scopeParent.insertBefore(node = placeholder, child = scopeSibling)
 
-            console.debug("Modal: Showing", scopeElement)
+            logger.debug("Showing", scopeElement)
             val modalElement = jQuery(scopeElement)
                 .modal(settings)
                 .modal("show")
 
             onDispose {
-                console.debug("Modal: Disposing", modalElement)
+                logger.debug("Disposing", modalElement)
                 closing = true
                 modalElement
                     .modal("hide", fun() {
-                        console.debug("Modal: Destroying", modalElement)
+                        logger.debug("Destroying", modalElement)
                         modalElement.modal("destroy")
 
-                        console.debug("Modal: Removing", modalElement)
+                        logger.debug("Removing", modalElement)
                         modalElement.remove()
 
-                        console.debug("Modal: Disposed", modalElement)
+                        logger.debug("Disposed", modalElement)
                     })
             }
         }

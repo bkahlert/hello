@@ -13,6 +13,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 api("com.bkahlert.kommons:kommons-core")
+                api(project(":hello-data"))
                 api(project(":hello-environment"))
                 api(project(":hello-session"))
                 api(project(":hello-props"))

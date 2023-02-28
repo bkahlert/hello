@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import com.bkahlert.kommons.devmode.DevMode
 import com.bkahlert.kommons.devmode.DevSession
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.ConsoleLogging
 import org.jetbrains.compose.web.dom.DOMScope
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
@@ -20,21 +20,23 @@ public open class ComposeDevSession(
     public val content: @Composable DOMScope<HTMLDivElement>.() -> Unit,
 ) : DevSession {
 
+    private val logger by ConsoleLogging
+
     init {
-        console.info("Starting composition in", root)
+        logger.info("Starting composition in", root)
     }
 
     private val composition: Composition = renderComposable(root = root, content = content)
 
     public override fun dispose() {
         kotlin.runCatching {
-            console.debug("ComposeDevSession: Disposing composition", composition.toString(), "in", root)
+            logger.debug("Disposing composition", composition.toString(), "in", root)
             composition.dispose()
-            console.debug("ComposeDevSession: Disposing composition container element", root)
+            logger.debug("Disposing composition container element", root)
             root.remove()
-            console.info("ComposeDevSession: Disposed composition in", root)
+            logger.info("Disposed composition in", root)
         }.onFailure {
-            console.error("ComposeDevSession: Failed to dispose composition")
+            logger.error("Failed to dispose composition")
         }
     }
 

@@ -1,7 +1,7 @@
 package com.bkahlert.kommons.logging
 
 /**
- * Browser optimized logger that that is completely implemented with inline functions.
+ * Browser optimized logger that is completely implemented with inline functions.
  * This lets browsers correctly display the use-site.
  */
 @Suppress("NOTHING_TO_INLINE")

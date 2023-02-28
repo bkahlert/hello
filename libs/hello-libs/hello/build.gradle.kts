@@ -17,6 +17,7 @@ kotlin {
                 api(project(":hello-props"))
                 api(project(":hello-user"))
                 api(project(":hello-search"))
+                api(project(":hello-app"))
             }
         }
         val jsTest by getting

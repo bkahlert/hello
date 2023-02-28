@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.VerticallyAligned.Bottom
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.jQuery
@@ -57,6 +58,7 @@ public val DimmerDemos: SemanticDemo = SemanticDemo(
         }
 
         Demo("Page Dimmer") {
+            val logger = remember { ConsoleLogger("PageDimmerDemo") }
             var dim by remember { mutableStateOf(false) }
             Button({
                 if (dim) s.disabled()
@@ -72,7 +74,7 @@ public val DimmerDemos: SemanticDemo = SemanticDemo(
                         val dimmer = jQuery(scopeElement.parentElement)
                             .dimmer(
                                 "onHide" to {
-                                    console.log("onHide")
+                                    logger.info("onHide")
                                     dim = false
                                 },
                             )

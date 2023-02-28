@@ -5,7 +5,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.semanticui.collection.MenuElement
 import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.VariationsScope
@@ -111,6 +113,7 @@ public fun <T> InlineDropdown(
     attrs: SemanticAttrBuilderContext<DropdownElement>? = null,
     content: SemanticContentBuilder<DropdownElement>? = null,
 ) {
+    val logger = remember { ConsoleLogger("InlineDropdown") }
 
     SemanticDivElement<DropdownElement>({
         classes("ui", "inline")
@@ -124,7 +127,7 @@ public fun <T> InlineDropdown(
                 *state.options.toList().toTypedArray(),
                 "onChange" to fun(value: String) {
                     if (scopeElement.getAttribute("data-$MUTED_ATTRIBUTE_NAME") == null) {
-                        if (state.options["debug"] == true) console.log("selection changed by dropdown to $value")
+                        if (state.options["debug"] == true) logger.debug("selection changed by dropdown to $value")
                         state.selectionString = value
                     }
                 },
@@ -200,6 +203,8 @@ public fun <T> InlineMultipleDropdown(
     attrs: SemanticAttrBuilderContext<MultipleDropdownElement>? = null,
     content: SemanticContentBuilder<MultipleDropdownElement>? = null,
 ) {
+    val logger = remember { ConsoleLogger("InlineMultipleDropdown") }
+
     SemanticDivElement<MultipleDropdownElement>({
         classes("ui", "inline")
         attrs?.invoke(this)
@@ -212,7 +217,7 @@ public fun <T> InlineMultipleDropdown(
                 *state.options.toList().toTypedArray(),
                 "onChange" to fun(value: String) {
                     if (scopeElement.getAttribute("data-$MUTED_ATTRIBUTE_NAME") == null) {
-                        if (state.options["debug"] == true) console.log("selection changed by dropdown to $value")
+                        if (state.options["debug"] == true) logger.debug("selection changed by dropdown to $value")
                         state.selectionString = value
                     }
                 },

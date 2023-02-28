@@ -5,6 +5,7 @@ import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.kommons.dom.appendDivElement
 import com.bkahlert.kommons.dom.body
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.kommons.js.toString
 import com.bkahlert.semanticui.module.Modal
 import kotlinx.browser.document
@@ -88,12 +89,14 @@ public fun ErrorMessageModal(
     }
 }
 
+private val logger = ConsoleLogger("CoroutineExceptionHandler")
+
 /**
  * An [CoroutineExceptionHandler] that handles exceptions by showing a [ErrorMessageModal].
  */
 public val ErrorMessageModalCoroutineExceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { context, exception ->
     val message = "Uncaught exception in $context"
-    console.error(message, exception)
+    logger.error(message, exception)
     ErrorMessageModal(message, exception)
 }.also { handler ->
     handler.toString { "ErrorMessageModalCoroutineExceptionHandlerSingleton" }
@@ -105,7 +108,7 @@ public val ErrorMessageModalCoroutineExceptionHandler: CoroutineExceptionHandler
  */
 public fun CoroutineScope.launchReporting(
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit,
 ): Job = launch(ErrorMessageModalCoroutineExceptionHandler, start, block)
 
 /**
@@ -122,5 +125,5 @@ public fun ReportingCoroutineScope(): CoroutineScope =
 @Composable
 public inline fun rememberReportingCoroutineScope(
     crossinline getContext: @DisallowComposableCalls () -> CoroutineContext =
-        { EmptyCoroutineContext }
+        { EmptyCoroutineContext },
 ): CoroutineScope = rememberCoroutineScope { getContext() + ErrorMessageModalCoroutineExceptionHandler }

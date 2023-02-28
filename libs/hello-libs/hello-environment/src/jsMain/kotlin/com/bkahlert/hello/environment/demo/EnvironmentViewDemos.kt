@@ -3,25 +3,17 @@ package com.bkahlert.hello.environment.demo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import com.bkahlert.hello.data.DataRetrieval
 import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
 import com.bkahlert.hello.environment.data.EnvironmentRepository
 import com.bkahlert.hello.environment.domain.Environment
 import com.bkahlert.hello.environment.domain.GetEnvironmentUseCase
-import com.bkahlert.hello.environment.domain.RefreshEnvironmentUseCase
 import com.bkahlert.hello.environment.ui.EnvironmentView
-import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
-import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
+import com.bkahlert.semanticui.custom.ErrorMessage
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.Demos
-import com.bkahlert.semanticui.element.Icon
-import com.bkahlert.semanticui.element.LabeledIconButton
-import com.bkahlert.semanticui.element.disabled
-import com.bkahlert.semanticui.element.size
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.web.dom.Text
+import com.bkahlert.semanticui.element.Loader
 
 @Composable
 public fun EnvironmentViewDemos() {
@@ -32,30 +24,17 @@ public fun EnvironmentViewDemos() {
         Demo("Statically filled") {
             EnvironmentView(Environment("FOO" to "bar", "BAZ" to ""))
         }
-        Demo("Dynamically filled") {
-            val repository = remember { EnvironmentRepository(DynamicEnvironmentDataSource()) }
+        Demo("Dynamically filled") { demoScope ->
+            val repository = remember { EnvironmentRepository(DynamicEnvironmentDataSource(), demoScope) }
             val getEnvironment = remember { GetEnvironmentUseCase(repository) }
-            val refreshEnvironment = remember { RefreshEnvironmentUseCase(repository) }
 
-            val environment by getEnvironment().collectAsState(Environment.EMPTY)
-            var refreshing by remember(environment) { mutableStateOf(false) }
+            val environmentRetrieval by getEnvironment().collectAsState(DataRetrieval.Ongoing)
 
-            val scope = rememberReportingCoroutineScope()
-            LabeledIconButton({
-                if (refreshing) s.disabled()
-                v.size(Mini)
-                onClick {
-                    scope.launch {
-                        refreshing = true
-                        refreshEnvironment()
-                    }
-                }
-            }) {
-                Icon("sync", loading = refreshing)
-                Text("Refresh")
+            when (val retrieval = environmentRetrieval) {
+                is DataRetrieval.Ongoing -> Loader("Loading environment")
+                is DataRetrieval.Succeeded -> EnvironmentView(retrieval.data)
+                is DataRetrieval.Failed -> ErrorMessage(retrieval.cause, retrieval.message)
             }
-
-            EnvironmentView(environment)
         }
     }
 }

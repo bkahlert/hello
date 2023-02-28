@@ -10,10 +10,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import com.bkahlert.kommons.dom.LocationFragmentParameters
-import com.bkahlert.kommons.js.debug
+import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.custom.Tab
 import com.bkahlert.semanticui.custom.TabMenu
+import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.custom.rememberTabMenuState
 import com.bkahlert.semanticui.element.Icon
 import kotlinx.coroutines.flow.map
@@ -25,6 +26,8 @@ import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLAnchorElement
+
+private val logger by ConsoleLogging("DemoView")
 
 public interface DemoViewState {
     public var active: String?
@@ -107,7 +110,7 @@ public fun DemoView(
     LaunchedEffect(tabMenuState) {
         snapshotFlow { tabMenuState.active }
             .collect { tab ->
-                console.debug("DemoView: tab", tab, "activated", "state.active", state.active)
+                logger.debug("activate", tab, "state.active", state.active)
                 state.active = tab
             }
     }
@@ -125,8 +128,9 @@ private class DemoProviderTab(
             provider.content.size.orZero().coerceIn(1..3).toWord(),
             "column", "stackable", "doubling", "grid", "segment",
         ) {
-            provider.content.forEach {
-                S("column", content = it)
+            val demoProviderScope = rememberReportingCoroutineScope()
+            provider.content.forEach { demoProviderContent ->
+                S("column", content = { demoProviderContent(demoProviderScope) })
             }
         }
     }
