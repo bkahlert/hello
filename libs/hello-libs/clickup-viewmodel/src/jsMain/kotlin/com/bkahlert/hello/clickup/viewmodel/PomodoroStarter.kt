@@ -10,7 +10,7 @@ import com.bkahlert.hello.clickup.Pomodoro.Companion.format
 import com.bkahlert.hello.clickup.Pomodoro.Type
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
-import com.bkahlert.kommons.toMomentString
+import com.bkahlert.kommons.time.toMomentString
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.custom.data
 import com.bkahlert.semanticui.element.Icon

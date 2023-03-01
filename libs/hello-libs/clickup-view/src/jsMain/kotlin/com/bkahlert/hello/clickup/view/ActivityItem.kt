@@ -6,10 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.bkahlert.kommons.js.console
+import com.bkahlert.kommons.js.ConsoleLogger
+import com.bkahlert.semanticui.core.Device
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
 import com.bkahlert.semanticui.core.jQuery
+import com.bkahlert.semanticui.core.matches
 import com.bkahlert.semanticui.custom.textOverflow
 import com.bkahlert.semanticui.module.DropdownMenuElement
 import com.bkahlert.semanticui.module.DropdownMenuItemElement
@@ -19,28 +22,34 @@ import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.dom.Text
 
-@Suppress("unused")
+private val logger = ConsoleLogger("ActivityItem")
+
 @Composable
 public fun SemanticElementScope<DropdownMenuElement>.ActivityItem(
     activity: Activity<*>,
     attrs: SemanticAttrBuilderContext<DropdownMenuItemElement>? = null,
 ) {
+    if (Device.NoHoverFeature.matches || Device.Active <= Device.Mobile) {
+        ActivityItemWithoutPopup(activity, attrs)
+    } else {
+        ActivityItemWithPopup(activity, attrs)
+    }
+}
 
+@Composable
+public fun SemanticElementScope<DropdownMenuElement>.ActivityItemWithPopup(
+    activity: Activity<*>,
+    attrs: SemanticAttrBuilderContext<DropdownMenuItemElement>? = null,
+) {
     var showPopup by remember { mutableStateOf(false) }
-    Item({
-        attr("data-text", activity.name)
-        attr("data-value", activity.id.typedStringValue)
-        style { textOverflow() }
-        style { maxWidth(100.percent) }
+    ActivityItemWithoutPopup(activity, {
         onMouseEnter {
-            console.debug("Activity: ${activity.id} — show popup")
+            logger.debug("Activity: ${activity.id} — show popup")
             showPopup = true
         }
         onMouseLeave { showPopup = false }
         attrs?.invoke(this)
     }) {
-        ActivityIcon(activity)
-        Text(activity.name)
         DisposableEffect(showPopup) {
             val popup = if (showPopup) {
                 jQuery(scopeElement)
@@ -56,11 +65,30 @@ public fun SemanticElementScope<DropdownMenuElement>.ActivityItem(
             }
             onDispose {
                 if (popup != null) {
-                    console.debug("Activity: ${activity.id} — destroy popup")
+                    logger.debug("Activity: ${activity.id} — destroy popup")
                     popup.popup("destroy")
                 }
             }
         }
+    }
+}
+
+@Composable
+public fun SemanticElementScope<DropdownMenuElement>.ActivityItemWithoutPopup(
+    activity: Activity<*>,
+    attrs: SemanticAttrBuilderContext<DropdownMenuItemElement>? = null,
+    content: SemanticContentBuilder<DropdownMenuItemElement>? = null,
+) {
+    Item({
+        attr("data-text", activity.name)
+        attr("data-value", activity.id.typedStringValue)
+        style { textOverflow() }
+        style { maxWidth(100.percent) }
+        attrs?.invoke(this)
+    }) {
+        ActivityIcon(activity)
+        Text(activity.name)
+        content?.invoke(this)
     }
 }
 

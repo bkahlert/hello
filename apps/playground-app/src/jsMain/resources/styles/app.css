@@ -8,6 +8,26 @@
     min-height: fill-available;
 }
 
+
+/*
+ * Progress
+ */
+.app > .progress { flex: 1; }
+
+.app > .progress { display: flex; flex-flow: column; justify-content: center; }
+
+.app > .progress { opacity: 0.9; mix-blend-mode: overlay; }
+
+.app > .progress .error.message {
+    max-height: 50vh;
+    overflow-y: scroll;
+    border-radius: 1em;
+}
+
+
+/*
+ * Toolbar
+ */
 .app > .toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -60,10 +80,44 @@
 .app > .toolbar { z-index: 100; box-shadow: 0 4px 8px var(--shade-color); }
 
 
+/*
+ * Content
+ */
+
+/* Content takes the remaining height */
+.app > .content { flex: 1; }
+
+.app > .content { display: flex; flex-flow: column; }
+
+.app > .content > * { flex: 1; }
+
+/*
+ * Content: Bookmarks
+ */
+
 /* Bookmarks take the remaining height */
-/* Must not use z-index so content can blend with background */
-.app > .bookmarks { flex: 1; }
+.app > .content > .bookmarks { flex: 1; }
 
-.app > .bookmarks { display: flex; flex-flow: column; }
+.app > .content > .bookmarks { display: flex; flex-flow: column; }
 
-.app > .bookmarks > * { flex: 1; }
+.app > .content > .bookmarks > * { flex: 1; }
+
+
+/*
+ * Footer
+ */
+
+/*.app > .footer, .app > .footer * { outline: 0.05rem solid red; }*/
+
+/*noinspection CssReplaceWithShorthandSafely*/
+.app > .footer {
+    z-index: calc(var(--overscroll-blend-z-index) + 10);
+    padding: 1rem calc(env(safe-area-inset-right) + 1rem) 1rem calc(env(safe-area-inset-left) + 1rem); /* hack, but same as background image Hello! */
+    margin-left: 6.5rem;
+    padding-top: 0;
+    padding-bottom: 0.15rem;
+}
+
+.app > .footer .ui.menu .ui.inline.loader {
+    margin-bottom: 0;
+}

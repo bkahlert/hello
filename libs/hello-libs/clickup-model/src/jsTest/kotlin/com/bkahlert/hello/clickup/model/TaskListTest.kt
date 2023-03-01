@@ -3,7 +3,7 @@ package com.bkahlert.hello.clickup.model
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures
 import com.bkahlert.hello.clickup.serialization.SerializerTest
 import com.bkahlert.kommons.color.Color
-import kotlin.js.Date
+import kotlinx.datetime.Instant
 
 @Suppress("unused")
 class TaskListTest : SerializerTest<TaskList>(
@@ -54,8 +54,8 @@ fun taskList(
     priority: TaskListPriority? = null,
     assignee: Assignee = ClickUpFixtures.User.asAssignee(),
     taskCount: Int = 45,
-    dueDate: Date? = null,
-    startDate: Date? = null,
+    dueDate: Instant? = null,
+    startDate: Instant? = null,
     folder: FolderPreview = FolderPreview(
         id = FolderID("11087491"),
         name = "hidden",

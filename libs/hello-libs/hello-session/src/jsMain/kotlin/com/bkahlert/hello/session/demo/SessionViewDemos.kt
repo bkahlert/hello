@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.hello.data.Resource
 import com.bkahlert.hello.session.data.SessionRepository
 import com.bkahlert.hello.session.demo.FakeSessionDataSource.Companion.FakeAuthorizedSession
 import com.bkahlert.hello.session.demo.FakeSessionDataSource.Companion.FakeUnauthorizedSession
@@ -14,18 +15,15 @@ import com.bkahlert.hello.session.domain.GetSessionUseCase
 import com.bkahlert.hello.session.domain.ReauthorizeUseCase
 import com.bkahlert.hello.session.domain.UnauthorizeUseCase
 import com.bkahlert.hello.session.ui.SessionView
-import com.bkahlert.kommons.InstantAsEpochSeconds
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.auth.JsonWebTokenPayload.IdTokenPayload
 import com.bkahlert.kommons.auth.OpenIDStandardClaims
 import com.bkahlert.kommons.auth.Session
 import com.bkahlert.kommons.auth.UserInfo
 import com.bkahlert.kommons.randomString
+import com.bkahlert.kommons.time.InstantAsEpochSeconds
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.uri.Uri
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
-import com.bkahlert.semanticui.custom.LoadingState.Off
-import com.bkahlert.semanticui.custom.LoadingState.On
-import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.Demos
 import com.bkahlert.semanticui.element.Icon
@@ -50,22 +48,21 @@ public fun SessionViewDemos() {
         Demo("Authorized") {
             SessionView(FakeAuthorizedSession())
         }
-        Demo("Dynamically filled") {
-            val repository = remember { SessionRepository(FakeSessionDataSource()) }
+        Demo("Dynamically filled") { demoScope ->
+            val repository = remember { SessionRepository(FakeSessionDataSource(), demoScope) }
             val getSession = remember { GetSessionUseCase(repository) }
             val authorize = remember { AuthorizeUseCase(repository) }
             val reauthorize = remember { ReauthorizeUseCase(repository) }
             val unauthorize = remember { UnauthorizeUseCase(repository) }
 
-            val session: Session? by getSession().collectAsState(null)
-            var refreshing by remember(session) { mutableStateOf(false) }
+            val sessionResource: Resource<Session>? by getSession().collectAsState(null)
+            var refreshing by remember(sessionResource) { mutableStateOf(sessionResource == null) }
 
-            val scope = rememberReportingCoroutineScope()
             LabeledIconButton({
                 if (refreshing) s.disabled()
                 v.size(Mini)
                 onClick {
-                    scope.launch {
+                    demoScope.launch {
                         refreshing = true
                         reauthorize()
                     }
@@ -75,25 +72,21 @@ public fun SessionViewDemos() {
                 Text("Refresh")
             }
 
-            when (val current = session) {
-                null -> SessionView()
-                else -> SessionView(
-                    loadingState = if (refreshing) On else Off,
-                    session = current,
-                    onAuthorize = {
-                        refreshing = true
-                        scope.launch { authorize() }
-                    },
-                    onReauthorize = {
-                        refreshing = true
-                        scope.launch { reauthorize() }
-                    },
-                    onUnauthorize = {
-                        refreshing = true
-                        scope.launch { unauthorize() }
-                    },
-                )
-            }
+            SessionView(
+                sessionResource = sessionResource,
+                onAuthorize = {
+                    refreshing = true
+                    demoScope.launch { authorize() }
+                },
+                onReauthorize = {
+                    refreshing = true
+                    demoScope.launch { reauthorize() }
+                },
+                onUnauthorize = {
+                    refreshing = true
+                    demoScope.launch { unauthorize() }
+                },
+            )
         }
     }
 }

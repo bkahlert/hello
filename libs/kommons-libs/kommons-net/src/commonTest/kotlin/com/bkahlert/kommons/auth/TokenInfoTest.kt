@@ -1,9 +1,9 @@
 package com.bkahlert.kommons.auth
 
-import com.bkahlert.kommons.InstantAsEpochSeconds
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.auth.JsonWebTokenPayload.IdTokenPayload
 import com.bkahlert.kommons.test.testAll
+import com.bkahlert.kommons.time.InstantAsEpochSeconds
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.uri.Uri
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.should

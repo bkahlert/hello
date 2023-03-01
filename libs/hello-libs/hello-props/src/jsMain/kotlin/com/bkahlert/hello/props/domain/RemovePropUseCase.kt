@@ -1,16 +1,11 @@
 package com.bkahlert.hello.props.domain
 
-import com.bkahlert.kommons.js.ConsoleLogging
-import com.bkahlert.kommons.js.grouping
-import kotlinx.coroutines.flow.first
-import kotlinx.serialization.json.JsonElement
+import com.bkahlert.hello.props.data.PropsRepository
 
 public class RemovePropUseCase(
-    private val getPropsRepositoryUseCase: GetPropsRepositoryUseCase,
+    private val repository: PropsRepository,
 ) {
-    private val logger by ConsoleLogging
-
-    public suspend operator fun invoke(id: String): JsonElement? = logger.grouping(::invoke) {
-        getPropsRepositoryUseCase().first()?.removeProp(id)
+    public operator fun invoke(id: String) {
+        repository.removeProp(id)
     }
 }

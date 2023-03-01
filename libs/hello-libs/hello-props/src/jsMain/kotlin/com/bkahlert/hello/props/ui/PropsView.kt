@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.hello.data.Resource
 import com.bkahlert.hello.props.domain.Props
 import com.bkahlert.kommons.json.LenientAndPrettyJson
 import com.bkahlert.semanticui.core.S
@@ -13,6 +14,7 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Green
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Red
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
+import com.bkahlert.semanticui.custom.ErrorMessage
 import com.bkahlert.semanticui.custom.LoadingState
 import com.bkahlert.semanticui.custom.apply
 import com.bkahlert.semanticui.element.Content
@@ -20,8 +22,6 @@ import com.bkahlert.semanticui.element.Header
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.IconButton
 import com.bkahlert.semanticui.element.Item
-import com.bkahlert.semanticui.element.Line
-import com.bkahlert.semanticui.element.Placeholder
 import com.bkahlert.semanticui.element.colored
 import com.bkahlert.semanticui.element.disabled
 import com.bkahlert.semanticui.element.divided
@@ -30,7 +30,7 @@ import com.bkahlert.semanticui.element.positive
 import com.bkahlert.semanticui.element.size
 import com.bkahlert.semanticui.module.inverted
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import org.jetbrains.compose.web.dom.Code
 import org.jetbrains.compose.web.dom.Em
 import org.jetbrains.compose.web.dom.Label
@@ -41,28 +41,47 @@ import com.bkahlert.semanticui.element.List as SList
 
 @Composable
 public fun PropsView(
-    props: Props = Props.EMPTY,
-    onUpdate: ((String, JsonElement) -> Unit)? = null,
+    propsResource: Resource<Props?>?,
+    onUpdate: ((String, JsonObject) -> Unit)? = null,
+    loadingState: LoadingState = if (propsResource == null) LoadingState.On else LoadingState.Off,
+) {
+    when (propsResource) {
+        null -> SList({
+            apply(loadingState)
+            v.divided()
+        }) {
+            apply(
+                loadingState,
+                dimmerAttrs = { v.inverted() },
+                loaderAttrs = { v.size(Mini) },
+                loaderText = "Loading props",
+            )
+        }
+
+        is Resource.Success -> PropsView(
+            props = propsResource.data,
+            onUpdate = onUpdate,
+            loadingState = loadingState,
+        )
+
+        is Resource.Failure -> ErrorMessage(propsResource.message, propsResource.cause)
+    }
+}
+
+@Composable
+public fun PropsView(
+    props: Props? = null,
+    onUpdate: ((String, JsonObject) -> Unit)? = null,
     loadingState: LoadingState = LoadingState.Off,
 ) {
     SList({
         apply(loadingState)
         v.divided()
     }) {
-        when (props.content.size) {
-            0 -> {
-                if (loadingState == LoadingState.Off) {
-                    Item { Header { Em { Text("Empty") } } }
-                } else {
-                    Item {
-                        Placeholder {
-                            repeat(4) { Line() }
-                        }
-                    }
-                    apply(loadingState, dimmerAttrs = { v.inverted() }, loaderAttrs = { v.size(Mini) }, loaderText = "Loading props")
-                }
-            }
-
+        apply(loadingState, dimmerAttrs = { v.inverted() }, loaderAttrs = { v.size(Mini) }, loaderText = "Loading props")
+        when (props?.content?.size) {
+            null -> Item { Header { Em { Text("Unavailable") } } }
+            0 -> Item { Header { Em { Text("Empty") } } }
             else -> {
                 props.content.forEach { (key, value) ->
                     val initialValue = LenientAndPrettyJson.encodeToString(value)
@@ -73,7 +92,7 @@ public fun PropsView(
                             val isValid by derivedStateOf {
                                 kotlin.runCatching {
                                     LenientAndPrettyJson.decodeFromString(
-                                        JsonElement.serializer(),
+                                        JsonObject.serializer(),
                                         inputValue
                                     )
                                 }.isSuccess
@@ -93,7 +112,7 @@ public fun PropsView(
                                             v.size(Mini).colored(Green).positive()
                                             if (!isDirty || !isValid) s.disabled()
                                             else onClick {
-                                                onUpdate(key, LenientAndPrettyJson.decodeFromString(JsonElement.serializer(), inputValue))
+                                                onUpdate(key, LenientAndPrettyJson.decodeFromString(JsonObject.serializer(), inputValue))
                                             }
                                         }) { Icon("check") }
                                         IconButton({

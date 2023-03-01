@@ -19,7 +19,7 @@ import io.ktor.http.ContentType.Application
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.browser.window
-import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 
 public class SessionPropsDataSource(
     private val session: Session.AuthorizedSession,
@@ -45,7 +45,7 @@ public class SessionPropsDataSource(
         client.get("$endpoint").body()
     }
 
-    override suspend fun get(id: String): JsonElement? = logger.grouping(::get, id) {
+    override suspend fun get(id: String): JsonObject? = logger.grouping(::get, id) {
         val response = client.get("$endpoint/$id")
         when (response.status) {
             HttpStatusCode.NoContent -> null
@@ -53,14 +53,14 @@ public class SessionPropsDataSource(
         }
     }
 
-    override suspend fun set(id: String, value: JsonElement): JsonElement = logger.grouping(::set, id, value) {
+    override suspend fun set(id: String, value: JsonObject): JsonObject = logger.grouping(::set, id, value) {
         client.patch("$endpoint/$id") {
             contentType(Application.Json)
             setBody(value)
         }.body()
     }
 
-    override suspend fun remove(id: String): JsonElement? = logger.grouping(::remove, id) {
+    override suspend fun remove(id: String): JsonObject? = logger.grouping(::remove, id) {
         val response = client.delete("$endpoint/$id")
         when (response.status) {
             HttpStatusCode.NoContent -> null

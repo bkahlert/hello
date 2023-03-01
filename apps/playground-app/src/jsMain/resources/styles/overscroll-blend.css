@@ -28,13 +28,13 @@
 }
 
 .overscroll-blend::after {
-    position: absolute;
+    position: absolute; /* validate changes values especially on iOS */
     top: 100%;
     margin-top: -10rem;
     height: 10rem;
     padding: 1rem calc(env(safe-area-inset-right) + 1rem) 1rem calc(env(safe-area-inset-left) + 1rem);
     background: url("../hello-logo.svg") 0 100%/auto 1.5rem content-box no-repeat,
-    url("../hello-logo.svg") 2px 100%/auto 1.5rem content-box no-repeat,
+    url("../hello-logo.svg") 0 100%/auto 1.5rem content-box no-repeat,
     linear-gradient(
             0deg,
             var(--background-color),

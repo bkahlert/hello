@@ -12,14 +12,13 @@ import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.completed
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.running
 import com.bkahlert.hello.clickup.viewmodel.PomodoroTimer
 import com.bkahlert.hello.clickup.viewmodel.rememberPomodoroTimerState
-import com.bkahlert.kommons.minus
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.demo.DEMO_BASE_DELAY
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.Demos
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.js.Date
 import kotlin.time.Duration.Companion.days
 
 @Composable
@@ -42,14 +41,14 @@ public fun PomodoroTimerDemo() {
         Demo("completed and exceeded") {
             PomodoroTimer(
                 rememberPomodoroTimerState(
-                    ClickUpFixtures.TimeEntry.completed(start = Date() - 1.days),
+                    ClickUpFixtures.TimeEntry.completed(start = Now - 1.days),
                 )
             )
         }
         Demo("exceeded") {
             PomodoroTimer(
                 rememberPomodoroTimerState(
-                    ClickUpFixtures.TimeEntry.running(start = Date() - 1.days),
+                    ClickUpFixtures.TimeEntry.running(start = Now - 1.days),
                 )
             )
         }
@@ -61,7 +60,7 @@ public fun PomodoroTimerDemo() {
                 var timeEntry by remember {
                     mutableStateOf(
                         ClickUpFixtures.TimeEntry.running(
-                            start = Date(),
+                            start = Now,
                             type = type
                         )
                     )
@@ -72,7 +71,7 @@ public fun PomodoroTimerDemo() {
                         onStop = { entry, tags ->
                             scope.launch {
                                 delay(DEMO_BASE_DELAY)
-                                timeEntry = entry.copy(end = Date(), tags = entry.tags + tags)
+                                timeEntry = entry.copy(end = Now, tags = entry.tags + tags)
                             }
                         },
                     )

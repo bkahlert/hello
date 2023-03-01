@@ -1,5 +1,7 @@
 package com.bkahlert.kommons
 
+import com.bkahlert.kommons.Either.Companion.Left
+import com.bkahlert.kommons.Either.Companion.Right
 import com.bkahlert.kommons.Either.Left
 import com.bkahlert.kommons.Either.Right
 import kotlinx.coroutines.flow.Flow

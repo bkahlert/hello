@@ -1,6 +1,6 @@
 package com.bkahlert.hello.clickup.model
 
-import kotlin.js.Date
+import kotlinx.datetime.Instant
 
 public interface ClickUpClient {
 
@@ -26,12 +26,12 @@ public interface ClickUpClient {
         include_closed: Boolean? = null,
         assignees: List<String>? = null,
         tags: List<String>? = null,
-        due_date_gt: Date? = null,
-        due_date_lt: Date? = null,
-        date_created_gt: Date? = null,
-        date_created_lt: Date? = null,
-        date_updated_gt: Date? = null,
-        date_updated_lt: Date? = null,
+        due_date_gt: Instant? = null,
+        due_date_lt: Instant? = null,
+        date_created_gt: Instant? = null,
+        date_created_lt: Instant? = null,
+        date_updated_gt: Instant? = null,
+        date_updated_lt: Instant? = null,
         custom_fields: List<CustomFieldFilter>? = null,
     ): List<Task>
 

@@ -1,5 +1,7 @@
 package com.bkahlert.kommons.js
 
+import kotlin.js.Date
+import kotlin.random.Random
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
@@ -57,9 +59,49 @@ public external interface Console {
      * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/console/table">console.table()</a>
      */
     public fun table(tabularData: Any? = definedExternally, properties: Array<String>? = definedExternally)
+
+    /**
+     * Starts a timer you can use to track how long an operation takes.
+     *
+     * You give each timer a unique name, and may have up to 10,000 timers running on a given page.
+     * When you call [timeEnd] with the same name, the browser outputs the time, in milliseconds, which elapsed since the timer was started.
+     *
+     * @param label A string representing the name to give the new timer.
+     * Use the same name when calling [timeEnd] to stop the timer and get the time output to the console.
+     *
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/console/time">console.time()</a>
+     */
     public fun time(label: String? = definedExternally)
+
+    /**
+     * Stops a timer that was started before by calling [time].
+     *
+     * See [Timers](https://developer.mozilla.org/en-US/docs/Web/API/console#timers) in the documentation for details and examples.
+     *
+     * @param label A string representing the name of the timer to stop.
+     * Once stopped, the elapsed time is automatically displayed in the Web console along with an indicator that the time has ended.
+     *
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/console/timeEnd">console.timeEnd()</a>
+     */
     public fun timeEnd(label: String? = definedExternally)
+
+    /**
+     * Logs the current value of a timer that was started before by calling [time].
+     *
+     * @param label The name of the timer to log to the console. If this is omitted the label "default" is used.
+     *
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/console/timeLog">console.timeLog()</a>
+     */
     public fun timeLog(label: String? = definedExternally, vararg data: Any?)
+
+    /**
+     * The console.timeStamp method adds a single marker to the browser's Performance tool (Firefox, Chrome). This lets you correlate a point in your code with the other events recorded in the timeline, such as layout and paint events.
+     *
+     * @param label Label for the timestamp. Optional.
+     *
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/console/timeStamp">console.time()</a>
+     */
+    @Deprecated("Non-standard, should not be used in production")
     public fun timeStamp(label: String? = definedExternally)
 
     /**
@@ -73,6 +115,31 @@ public external interface Console {
 
 /** Exposes the [console API](https://developer.mozilla.org/en/DOM/console) to Kotlin. */
 public external val console: Console
+
+
+/* REDIRECTION */
+
+/**
+ * Changes the specified [Console] function [fn] to
+ * additionally invoke the specified [block] with the same arguments.
+ */
+public fun Console.tee(fn: String, block: (args: Array<out Any?>) -> Unit) {
+    val patchFn: (Console, String, (Array<out Any?>) -> Unit) -> Unit = js("Function")(
+        "obj",
+        "fn",
+        "block",
+        // language=javascript
+        @Suppress("JSUnresolvedVariable")
+        """
+        const _fn = obj[fn];
+        obj[fn] = function () {
+          block(Array.from(arguments));
+          _fn(...arguments);
+        };
+        """.trimIndent()
+    ) as (Console, String, (Array<out Any?>) -> Unit) -> Unit
+    patchFn(this, fn, block)
+}
 
 
 /* EXTENSIONS */
@@ -102,6 +169,13 @@ public inline fun Console.group(label: String, collapsed: Boolean) {
 public const val DEBUGGING: Boolean = false
 public const val DEFAULT_COLLAPSED: Boolean = !DEBUGGING
 
+public val timeId: (Int) -> String by lazy {
+    val random = Random(Date.now().toLong())
+    val range: CharRange = '0'..'z'
+    val gen: (Int) -> String = { length -> (1..length).joinToString("") { range.random(random).toString() } }
+    gen
+}
+
 /**
  * Runs the specified [block] wrapped by an optionally [collapsed] group
  * with the specified [label].
@@ -113,9 +187,16 @@ public inline fun <R> Console.grouping(
 ): R {
     if (DEBUGGING) console.info("GROUP START($label)") else group(label = label, collapsed = collapsed)
     try {
+        val timeLabel = "$label-${timeId(4)}"
+        time(timeLabel)
         val result = block()
+        timeEnd(timeLabel)
         if (DEBUGGING) console.info("GROUP RESULT($label)", result)
-        else if (result != Unit) console.debug("⏎ $result")
+        else when (result) {
+            Unit -> {}
+            is Map<*, Any?> -> console.table(data = result.mapKeys { it.toString() })
+            else -> console.debug("⏎ ", result)
+        }
         return result
     } catch (ex: Throwable) {
         if (DEBUGGING) console.error("GROUP EXCEPTION($label)", ex)

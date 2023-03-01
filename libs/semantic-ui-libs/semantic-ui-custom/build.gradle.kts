@@ -12,6 +12,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
+                api("com.bkahlert.kommons:kommons-dom") { because("LocationFragmentParameters") }
                 api("com.bkahlert.kommons:kommons-js") { because("toString") }
                 api("com.bkahlert.kommons:kommons-color") { because("CssColorValue") }
                 api(project(":semantic-ui-core"))

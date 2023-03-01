@@ -41,11 +41,10 @@ import com.bkahlert.hello.clickup.model.asCreator
 import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.RGB
-import com.bkahlert.kommons.minus
-import com.bkahlert.kommons.plus
 import com.bkahlert.kommons.randomString
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.uri.Uri
-import kotlin.js.Date
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -148,8 +147,8 @@ public object ClickUpFixtures {
         public var priority: TaskListPriority? = null
         public var assignee: Assignee? = null
         public var taskCount: Int? = null
-        public var dueDate: Date? = null
-        public var startDate: Date? = null
+        public var dueDate: Instant? = null
+        public var startDate: Instant? = null
         public var space: Space = Spaces.first()
         public var archived: Boolean = false
         public var overrideStatuses: Boolean? = true
@@ -279,9 +278,9 @@ public object ClickUpFixtures {
         description: String? = "Description of task $id",
         status: StatusPreview = Spaces.first().statuses.first().asPreview(),
         orderIndex: Double? = null,
-        dateCreated: Date? = Date() - 3.days,
-        dateUpdated: Date? = null,
-        dateClosed: Date? = null,
+        dateCreated: Instant? = Now - 3.days,
+        dateUpdated: Instant? = null,
+        dateClosed: Instant? = null,
         creator: Creator = User.asCreator(),
         assignees: List<Assignee> = listOf(User.asAssignee()),
         watchers: List<Watcher> = emptyList(),
@@ -289,8 +288,8 @@ public object ClickUpFixtures {
         tags: List<Tag> = emptyList(),
         parent: TaskID? = null,
         priority: TaskPriority? = null,
-        dueDate: Date? = null,
-        startDate: Date? = null,
+        dueDate: Instant? = null,
+        startDate: Instant? = null,
         points: Double? = null,
         timeEstimate: Duration? = 12.hours,
         timeSpent: Duration? = null,
@@ -364,7 +363,7 @@ public object ClickUpFixtures {
                         description = "This is a sample task with status ${status.status}",
                         startDate = when (status.status.lowercase()) {
                             "to do" -> null
-                            else -> Date() - 2.days
+                            else -> Now - 2.days
                         },
                         timeSpent = when (status.status.lowercase()) {
                             "to do" -> null
@@ -385,16 +384,16 @@ public object ClickUpFixtures {
                     list = taskList.asPreview(), folder = folder, space = checkNotNull(taskList.space),
                     name = "Task with most meta data set",
                     description = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\nAt vero eos et accusam et justo duo dolores et ea rebum.<br><strong>Stet clita kasd gubergren,</strong> no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-                    dateCreated = Date() - 3.days,
-                    dateUpdated = Date() - 4.hours,
+                    dateCreated = Now - 3.days,
+                    dateUpdated = Now - 4.hours,
                     dateClosed = null,
                     tags = listOf(
                         Debug.tag,
                         tag("random tag ${randomString(2)}"),
                     ),
                     priority = High,
-                    dueDate = Date() + 2.days,
-                    startDate = Date() - 3.days + 2.hours + 26.minutes,
+                    dueDate = Now + 2.days,
+                    startDate = Now - 3.days + 2.hours + 26.minutes,
                     points = 4.5,
                     timeEstimate = 12.hours,
                     timeSpent = 3.5.hours,
@@ -426,8 +425,8 @@ public object ClickUpFixtures {
         wid: TeamID = Teams.first().id,
         user: User = User,
         billable: Boolean = false,
-        start: Date = Date() - Pomodoro.Type.Default.duration / 2,
-        end: Date? = null,
+        start: Instant = Now - Pomodoro.Type.Default.duration / 2,
+        end: Instant? = null,
         description: String = "A time entry",
         tags: List<Tag> = listOf(Pomodoro.Type.Default.tag),
         source: String? = null,
@@ -449,7 +448,7 @@ public object ClickUpFixtures {
     public val TimeEntry: TimeEntry = timeEntry()
 
     public fun TimeEntry.running(
-        start: Date = Date() - 3.5.minutes,
+        start: Instant = Now - 3.5.minutes,
         type: Pomodoro.Type? = null,
     ): TimeEntry = copy(
         start = start,
@@ -457,8 +456,8 @@ public object ClickUpFixtures {
     )
 
     public fun TimeEntry.aborted(
-        start: Date = Date() - Pomodoro.Type.Default.duration / 2,
-        end: Date = Date(),
+        start: Instant = Now - Pomodoro.Type.Default.duration / 2,
+        end: Instant = Now,
         type: Pomodoro.Type? = Pomodoro.Type.Default,
     ): TimeEntry = copy(
         start = start,
@@ -467,8 +466,8 @@ public object ClickUpFixtures {
     )
 
     public fun TimeEntry.completed(
-        start: Date = Date() - Pomodoro.Type.Default.duration,
-        end: Date = Date(),
+        start: Instant = Now - Pomodoro.Type.Default.duration,
+        end: Instant = Now,
         type: Pomodoro.Type? = Pomodoro.Type.Default,
     ): TimeEntry = copy(
         start = start,

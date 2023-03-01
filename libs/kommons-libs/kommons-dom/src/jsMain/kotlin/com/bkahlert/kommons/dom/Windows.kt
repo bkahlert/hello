@@ -62,7 +62,7 @@ public var Location.uri: Uri
     }
 
 /** The [Location.hash] represented as [Parameters]. */
-public var Location.fragmentParameters: Parameters
+public var Location.fragmentParameters: StringValues
     get() = uri.fragmentParameters
     set(value) {
         hash = value.formUrlEncode(keepEmptyValues = true)
@@ -152,7 +152,7 @@ public class LocationFragmentParameters(
     override fun names(): Set<String> = window.location.fragmentParameters.names()
     override fun getAll(name: String): List<String>? = window.location.fragmentParameters.getAll(name)
     override fun setAll(name: String, values: List<String>?) {
-        window.location.fragmentParameters = Parameters.build {
+        window.location.fragmentParameters = StringValues.build {
             appendAll(window.location.fragmentParameters)
             remove(name)
             if (values != null) appendAll(name, values)

@@ -15,7 +15,6 @@ kotlin {
                 api("com.bkahlert.kommons:kommons-core")
                 api(project(":hello-data"))
                 api(project(":hello-environment"))
-                api("com.bkahlert.kommons:kommons-inc") { because("Uri.resolve") }
                 api("com.bkahlert.kommons:kommons-net") { because("LenientJson, JsonHttpClient") }
                 api("com.bkahlert.semantic-ui:semantic-ui")
             }

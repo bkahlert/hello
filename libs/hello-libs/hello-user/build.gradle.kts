@@ -17,7 +17,6 @@ kotlin {
                 api(project(":hello-environment"))
                 api(project(":hello-session"))
                 api(project(":hello-props"))
-                api("com.bkahlert.kommons:kommons-inc") { because("Uri.resolve") }
                 api("com.bkahlert.kommons:kommons-net") { because("LenientJson, JsonHttpClient") }
                 api("com.bkahlert.semantic-ui:semantic-ui")
             }

@@ -1,6 +1,7 @@
 package com.bkahlert.hello.clickup.model
 
-import com.bkahlert.hello.clickup.serialization.DateAsMilliseconds
+import com.bkahlert.kommons.time.InstantAsEpochMilliseconds
+import com.bkahlert.kommons.time.InstantAsEpochMillisecondsSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,7 +11,7 @@ public data class CustomField(
     @SerialName("name") val name: String,
     @SerialName("type") val type: String,
 //    @SerialName("type_config") val typeConfig: JsonObject?,
-    @SerialName("date_created") val dateCreated: DateAsMilliseconds,
+    @SerialName("date_created") @Serializable(InstantAsEpochMillisecondsSerializer::class) val dateCreated: InstantAsEpochMilliseconds,
     @SerialName("hide_from_guests") val hideFromGuests: Boolean,
     @SerialName("required") val required: Boolean?,
 )

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.kommons.uri.Uri
 import com.bkahlert.semanticui.core.S
+import com.bkahlert.semanticui.core.SemanticUiLogo
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Basic
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Red
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
@@ -106,7 +107,7 @@ public class SemanticDemo(
         if (type != null) {
             LinkList({ v.horizontal() }) {
                 A(type.linkOf(element).toString(), { classes("item") }) {
-                    Image("https://semantic-ui.com/images/logo.png") { v.size(Mini) }
+                    Image(SemanticUiLogo) { v.size(Mini) }
                     S("content") {
                         SubHeader { Text(type.name) }
                         Text(element)

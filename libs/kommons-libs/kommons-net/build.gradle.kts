@@ -12,7 +12,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("com.bkahlert.kommons:kommons-core") { because("DateTime / Instant") }
+                api("com.bkahlert.kommons:kommons-core")
+                api("com.bkahlert.kommons:kommons-time")
                 api("com.bkahlert.kommons:kommons-uri")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json")
@@ -31,12 +32,14 @@ kotlin {
             dependencies {
                 api("io.ktor:ktor-client-js")
                 api("io.ktor:ktor-client-auth")
+                api(project(":kommons-js"))
                 api(project(":kommons-logging-inline"))
             }
         }
 
         val jvmMain by getting {
             dependencies {
+                api("com.bkahlert.kommons:kommons-logging-core")
                 api("io.ktor:ktor-client-okhttp")
             }
         }

@@ -20,7 +20,7 @@ import com.bkahlert.semanticui.element.Container
 import com.bkahlert.semanticui.element.floated
 import com.bkahlert.semanticui.element.primary
 import com.bkahlert.semanticui.element.size
-import io.ktor.http.Parameters
+import io.ktor.util.StringValues
 import kotlinx.browser.window
 import org.jetbrains.compose.web.dom.Text
 
@@ -51,13 +51,13 @@ public val DemoViewDemos: SemanticDemo = SemanticDemo(
             Container({ classes("center", "aligned") }) {
                 BasicButton({
                     v.size(Mini).floated(Floated.Right).primary()
-                    onClick { demoViewSate.active = "bar" }
+                    onClick { demoViewSate.onActivate("bar") }
                 }) { Text("Set demoViewSate=bar") }
 
                 BasicButton({
                     v.size(Mini).floated(Floated.Left).primary()
                     onClick {
-                        window.location.fragmentParameters = Parameters.build(window.location.fragmentParameters) {
+                        window.location.fragmentParameters = StringValues.build(window.location.fragmentParameters) {
                             this[fragmentName] = "foo"
                         }
                     }
@@ -65,7 +65,7 @@ public val DemoViewDemos: SemanticDemo = SemanticDemo(
 
                 S("ui", "label") {
                     Text("State")
-                    S("detail") { Text(demoViewSate.active ?: "—") }
+                    S("detail") { Text(demoViewSate.activeId ?: "—") }
                 }
             }
 

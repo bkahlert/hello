@@ -22,6 +22,6 @@ class ItemKtTest {
                 }
             }
         }
-        root { it.innerHTML shouldBe "<div class=\"ui item\"><div class=\"item\" style=\"color: yellow;\">foo</div></div>" }
+        root { it.innerHTML shouldBe "<div class=\"ui items\"><div class=\"item\" style=\"color: yellow;\">foo</div></div>" }
     }
 }

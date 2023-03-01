@@ -17,7 +17,7 @@ import com.bkahlert.aws.lambda.SLF4J
 import com.bkahlert.aws.lambda.caseInsensitiveHeaders
 import com.bkahlert.aws.lambda.errorResponse
 import com.bkahlert.aws.lambda.jsonResponse
-import com.bkahlert.kommons.toMomentString
+import com.bkahlert.kommons.time.toMomentString
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.json.Json

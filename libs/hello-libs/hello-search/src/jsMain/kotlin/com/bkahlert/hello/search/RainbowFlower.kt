@@ -1,4 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Rainbow gradient" role="img" cursor="default" width="320" height="320" viewBox="0 0 320 320" stroke="#000" stroke-linecap="round">
+package com.bkahlert.hello.search
+
+import com.bkahlert.kommons.uri.DataUri
+import io.ktor.http.ContentType
+
+/** A rainbow flower an animated [SVG](https://en.wikipedia.org/wiki/SVG) used to indicate a multi-selection of various items. */
+public val RainbowFlower: DataUri by lazy { DataUri(ContentType.Image.SVG, RAINBOW_FLOWER_SVG) }
+
+// language=svg
+private const val RAINBOW_FLOWER_SVG =
+    """<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-label="Rainbow gradient" role="img" cursor="default" width="320" height="320" viewBox="0 0 320 320" stroke-linecap="round">
     <style>
         .blue { stroke: rgb(41, 171, 226); }
         .red { stroke: rgb(194, 30, 115); }
@@ -73,3 +83,4 @@
     <use xlink:href="#r6" transform="rotate(270 160 160)"/>
     <use xlink:href="#r6" transform="rotate(330 160 160)"/>
 </svg>
+"""

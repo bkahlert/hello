@@ -44,11 +44,12 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlin.js.Date
 
 public data class ClickUpHttpClient(
     val accessToken: PersonalAccessToken,
@@ -66,26 +67,34 @@ public data class ClickUpHttpClient(
 
     private val restClient by lazy {
         HttpClient(Js) {
-            install(ContentNegotiation) {
-                json(Json.Lenient)
-            }
+            install(ContentNegotiation) { json(Json.Lenient) }
+            install(TokenAuthPlugin) { token = accessToken }
             HttpResponseValidator {
+                validateResponse { response ->
+                    when (response.status.value) {
+                        in 400..599 -> try {
+                            val (err, eCode) = response.body<ErrorInfo>()
+                            throw ClickUpException(err, eCode, null)
+                        } catch (ex: CancellationException) {
+                            throw ex
+                        }
+
+                        else -> {}
+                    }
+                }
                 handleResponseExceptionWithRequest { ex, _ ->
                     logger.error("response validation", ex)
                     throw when (ex) {
                         is ResponseException -> {
-                            kotlin
-                                .runCatching { ex.response.body<ErrorInfo>() }
-                                .onFailure { if (it is CancellationException) throw it }
-                                .map { (err, eCode) -> ClickUpException(err, eCode, ex) }
-                                .getOrElse { ex }
+                            val body = ex.message?.substringAfter(". Text: \"")?.substringBeforeLast("\"") ?: throw ex
+                            val (err, eCode) = LenientJson.decodeFromString<ErrorInfo>(body)
+                            throw ClickUpException(err, eCode, null)
                         }
 
                         else -> ex
                     }
                 }
             }
-            install(TokenAuthPlugin) { token = accessToken }
         }
     }
 
@@ -147,12 +156,12 @@ public data class ClickUpHttpClient(
         include_closed: Boolean?,
         assignees: List<String>?,
         tags: List<String>?,
-        due_date_gt: Date?,
-        due_date_lt: Date?,
-        date_created_gt: Date?,
-        date_created_lt: Date?,
-        date_updated_gt: Date?,
-        date_updated_lt: Date?,
+        due_date_gt: Instant?,
+        due_date_lt: Instant?,
+        date_created_gt: Instant?,
+        date_created_lt: Instant?,
+        date_updated_gt: Instant?,
+        date_updated_lt: Instant?,
         custom_fields: List<CustomFieldFilter>?,
     ): List<Task> =
         runLogging("getting tasks for team=${team.name}") {

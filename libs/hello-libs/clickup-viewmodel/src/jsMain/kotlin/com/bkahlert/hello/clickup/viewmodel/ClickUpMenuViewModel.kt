@@ -126,7 +126,7 @@ public class ClickUpMenuViewModelImpl(
 //    }
 
     override fun enable(client: ClickUpClient?) {
-        if (_state.value is Disabled && client != null) {
+        if ((_state.value is Disabled || _state.value is Disconnected) && client != null) {
             connect(client)
         } else {
             update("initializing") { state ->

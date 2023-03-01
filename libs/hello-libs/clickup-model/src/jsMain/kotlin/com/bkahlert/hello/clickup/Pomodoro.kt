@@ -4,13 +4,13 @@ import com.bkahlert.hello.clickup.Pomodoro.Type.Companion.duration
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.hello.clickup.model.TimeEntryID
-import com.bkahlert.hello.clickup.serialization.DurationAsMilliseconds
 import com.bkahlert.kommons.Creator.Companion.creator
 import com.bkahlert.kommons.Creator.Creator1
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.color.Colors
-import com.bkahlert.kommons.minus
+import com.bkahlert.kommons.time.DurationAsMicrosecondsSerializer
+import com.bkahlert.kommons.time.DurationAsMilliseconds
 import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -24,7 +24,7 @@ public data class Pomodoro(
     /** ID of the [TimeEntry] this session relates to. */
     val timeEntryID: TimeEntryID,
     /** Duration of this session. */
-    val duration: DurationAsMilliseconds,
+    @Serializable(DurationAsMicrosecondsSerializer::class) val duration: DurationAsMilliseconds,
     val status: Status,
 ) {
     /**
@@ -34,7 +34,7 @@ public data class Pomodoro(
     @Serializable
     public enum class Type(
         /** Amount of time a [Pomodoro] of this type takes. */
-        public val duration: DurationAsMilliseconds,
+        @Serializable(DurationAsMicrosecondsSerializer::class) public val duration: DurationAsMilliseconds,
         /** Color used for tags encoding this type. */
         tagColor: Color,
     ) {

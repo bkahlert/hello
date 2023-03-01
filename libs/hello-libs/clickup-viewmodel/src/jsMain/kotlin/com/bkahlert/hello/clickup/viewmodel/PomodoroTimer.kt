@@ -13,7 +13,7 @@ import com.bkahlert.hello.clickup.Pomodoro.Status.Completed
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TimeEntry
 import com.bkahlert.kommons.js.console
-import com.bkahlert.kommons.toMomentString
+import com.bkahlert.kommons.time.toMomentString
 import com.bkahlert.semanticui.custom.color
 import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.element.Icon

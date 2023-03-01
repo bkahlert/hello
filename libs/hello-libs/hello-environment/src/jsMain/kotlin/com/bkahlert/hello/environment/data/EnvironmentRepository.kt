@@ -1,6 +1,6 @@
 package com.bkahlert.hello.environment.data
 
-import com.bkahlert.hello.data.DataRetrieval
+import com.bkahlert.hello.data.Resource
 import com.bkahlert.hello.environment.domain.Environment
 import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.kommons.js.grouping
@@ -26,15 +26,14 @@ public data class EnvironmentRepository(
     private val externalScope: CoroutineScope,
 ) {
     private val logger by ConsoleLogging
-
-    private val environmentFlow: SharedFlow<DataRetrieval<Environment>> = flow<DataRetrieval<Environment>> {
+    private val environmentFlow: SharedFlow<Resource<Environment>> = flow<Resource<Environment>> {
         logger.grouping(EnvironmentDataSource::load) {
             environmentDataSource.load()
         }.also {
-            emit(DataRetrieval.Succeeded(it))
+            emit(Resource.Success(it))
         }
-    }.retry { e ->
-        if (e is ServerResponseException && e.response.status == HttpStatusCode.ServiceUnavailable) {
+    }.retry { ex ->
+        if (ex is ServerResponseException && ex.response.status == HttpStatusCode.ServiceUnavailable) {
             val retryIn = 5.seconds
             logger.warn("Service is unavailable, retrying in $retryIn")
             delay(retryIn)
@@ -42,21 +41,21 @@ public data class EnvironmentRepository(
         } else {
             false
         }
-    }.catch { e ->
-        when (e) {
+    }.catch { ex ->
+        when (ex) {
             is ResponseException -> {
-                when (e.response.status) {
+                when (ex.response.status) {
                     HttpStatusCode.NotFound -> {
-                        emit(DataRetrieval.Failed("Environment could not be found", e))
+                        emit(Resource.Failure("Environment could not be found", ex))
                     }
 
-                    else -> emit(DataRetrieval.Failed("Environment could not be loaded", e))
+                    else -> emit(Resource.Failure("Environment could not be loaded", ex))
                 }
             }
 
-            else -> emit(DataRetrieval.Failed("An unexpected problem occurred while loading environment", e))
+            else -> emit(Resource.Failure("An unexpected problem occurred while loading the environment", ex))
         }
-    }.shareIn(externalScope, SharingStarted.Lazily, 1)
+    }.shareIn(externalScope, SharingStarted.Eagerly, replay = 1)
 
-    public fun environmentFlow(): Flow<DataRetrieval<Environment>> = environmentFlow
+    public fun environmentFlow(): Flow<Resource<Environment>> = environmentFlow
 }

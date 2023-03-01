@@ -60,10 +60,12 @@
     .ui.iframe.dimmable:not(.loading) > *:not(.ui.loader) {
         mix-blend-mode: multiply;
         opacity: .2;
-        transition: opacity 0.4s ease;
+        filter: blur(.3rem);
+        transition: opacity 0.4s ease, filter 0.3s ease;
     }
 
     .ui.iframe.dimmable:not(.loading):hover > *:not(.ui.loader) {
+        filter: blur(0);
         opacity: 0.95;
     }
 }

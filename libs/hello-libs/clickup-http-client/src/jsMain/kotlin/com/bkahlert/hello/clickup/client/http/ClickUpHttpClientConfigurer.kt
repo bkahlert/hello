@@ -14,6 +14,8 @@ import com.bkahlert.semanticui.collection.Header
 import com.bkahlert.semanticui.collection.Message
 import com.bkahlert.semanticui.collection.info
 import com.bkahlert.semanticui.collection.size
+import com.bkahlert.semanticui.core.Device
+import com.bkahlert.semanticui.core.Device.Mobile
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Tiny
 import com.bkahlert.semanticui.core.dom.SemanticElement
@@ -46,7 +48,7 @@ public class ClickUpHttpClientConfigurer : Configurer<ClickUpHttpClient> {
         val isValid by remember { derivedStateOf { PersonalAccessToken.REGEX.matches(accessTokenInput) } }
 
         S("field") {
-            Message({
+            if (Device.Active > Mobile) Message({
                 v.info()
                 v.size(Tiny)
             }) {

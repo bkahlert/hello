@@ -1,10 +1,14 @@
 package com.bkahlert.semanticui.devmode
 
+import androidx.compose.runtime.remember
 import com.bkahlert.kommons.devmode.DevMode
 import com.bkahlert.kommons.dom.LocationFragmentParameters
 import com.bkahlert.kommons.dom.appendDivElement
 import com.bkahlert.kommons.dom.body
+import com.bkahlert.kommons.js.ConsoleLogger
+import com.bkahlert.kommons.js.grouping
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.semanticui.core.jQuery
 import com.bkahlert.semanticui.demo.DemoContentBuilder
 import com.bkahlert.semanticui.demo.DemoProvider
 import com.bkahlert.semanticui.demo.DemoView
@@ -16,6 +20,7 @@ import com.bkahlert.semanticui.module.autofocus
 import com.bkahlert.semanticui.module.blurring
 import com.bkahlert.semanticui.module.centered
 import com.bkahlert.semanticui.module.fullScreen
+import com.bkahlert.semanticui.module.modal
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineDispatcher
@@ -80,9 +85,15 @@ public fun DemoDevMode(
     dispatcher = dispatcher,
     scope = scope,
 ) {
+    val logger = remember { ConsoleLogger("DemoDevMode") }
     DemoView(
         providers = providers,
-        state = LocationFragmentParameters(window).asDemoViewState(name),
+        state = LocationFragmentParameters(window).asDemoViewState(name) {
+            logger.grouping("modal refresh", "tab=$it") {
+                jQuery(".modal").modal("refresh")
+                jQuery(".modal").modal("refresh")
+            }
+        },
         trashContent = trashContent,
     )
 }

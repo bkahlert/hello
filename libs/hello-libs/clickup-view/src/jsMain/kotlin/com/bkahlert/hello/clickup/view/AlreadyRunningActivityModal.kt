@@ -3,7 +3,7 @@ package com.bkahlert.hello.clickup.view
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.Pomodoro
 import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
-import com.bkahlert.kommons.toMomentString
+import com.bkahlert.kommons.time.toMomentString
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Blue
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
 import com.bkahlert.semanticui.element.BasicButton

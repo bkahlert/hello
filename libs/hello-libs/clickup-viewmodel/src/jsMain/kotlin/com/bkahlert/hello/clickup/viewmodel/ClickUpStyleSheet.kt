@@ -1,7 +1,11 @@
 package com.bkahlert.hello.clickup.viewmodel
 
 import com.bkahlert.kommons.uri.DataUri
+import com.bkahlert.semanticui.core.Device
+import com.bkahlert.semanticui.core.mediaMaxDeviceWidth
 import io.ktor.http.ContentType.Image
+import org.jetbrains.compose.web.css.CSSMediaQuery.MediaType
+import org.jetbrains.compose.web.css.CSSMediaQuery.Only
 import org.jetbrains.compose.web.css.StyleSheet
 import org.jetbrains.compose.web.css.backgroundColor
 import org.jetbrains.compose.web.css.borderRadius
@@ -11,20 +15,23 @@ import org.jetbrains.compose.web.css.margin
 import org.jetbrains.compose.web.css.marginRight
 import org.jetbrains.compose.web.css.marginTop
 import org.jetbrains.compose.web.css.maxHeight
+import org.jetbrains.compose.web.css.media
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.rgba
+import org.jetbrains.compose.web.css.vh
 import org.jetbrains.compose.web.css.width
 
 @Suppress("PublicApiImplicitType")
 public object ClickUpStyleSheet : StyleSheet() {
-    private fun roundedMask(size: Int = 512) = DataUri(Image.SVG) {
+    private fun roundedMask(size: Int = 512) = DataUri(
+        Image.SVG,
         //language=SVG
         """
             <svg xmlns="http://www.w3.org/2000/svg" role="img" cursor="default" width="$size" height="$size">
                 <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#ffffff"/>
             </svg>
         """.trimIndent()
-    }
+    )
 
     init {
         "img.rounded" style {
@@ -64,6 +71,23 @@ public object ClickUpStyleSheet : StyleSheet() {
         ".ui.modal.active + .ui.modal.basic" style {
             backgroundColor(rgba(0, 0, 0, .75))
             borderRadius(0.25.cssRem)
+        }
+
+        // hide meta information on small devices
+        media(mediaMaxDeviceWidth(Device.Mobile)) {
+            ".ui.menu:not(.vertical) .right.meta.menu" style {
+                property("display", "none")
+                property("outline", "1px solid blue")
+            }
+        }
+
+        // use 50% of the available screen height for the task dropdown
+        Device.values().forEach { device ->
+            media(Only(MediaType(MediaType.Enum.Screen), device.maxWidthMediaFeature)) {
+                ".ui.dropdown .scrolling.menu, .ui.scrolling.dropdown .menu" style {
+                    maxHeight(50.vh)
+                }
+            }
         }
     }
 }

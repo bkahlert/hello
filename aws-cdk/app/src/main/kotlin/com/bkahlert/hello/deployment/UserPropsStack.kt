@@ -1,5 +1,6 @@
 package com.bkahlert.hello.deployment
 
+import com.bkahlert.aws.cdk.enableCorsOnGatewayResponses
 import com.bkahlert.aws.cdk.export
 import com.bkahlert.aws.cdk.toEnvironment
 import software.amazon.awscdk.Duration
@@ -17,6 +18,7 @@ import software.amazon.awscdk.services.apigateway.StageOptions
 import software.amazon.awscdk.services.cognito.UserPool
 import software.amazon.awscdk.services.dynamodb.Attribute
 import software.amazon.awscdk.services.dynamodb.AttributeType.STRING
+import software.amazon.awscdk.services.dynamodb.BillingMode.PAY_PER_REQUEST
 import software.amazon.awscdk.services.dynamodb.Table
 import software.amazon.awscdk.services.lambda.Architecture
 import software.amazon.awscdk.services.lambda.Code
@@ -26,6 +28,7 @@ import software.amazon.awscdk.services.lambda.Runtime
 import software.amazon.awscdk.services.lambda.Tracing
 import software.amazon.awscdk.services.logs.RetentionDays
 import software.constructs.Construct
+
 
 class UserPropsStack(
     /** The parent of this stack. */
@@ -44,6 +47,7 @@ class UserPropsStack(
     val table = Table.Builder.create(this, "Table")
         .partitionKey(Attribute.builder().name("userId").type(STRING).build())
         .sortKey(Attribute.builder().name("propId").type(STRING).build())
+        .billingMode(PAY_PER_REQUEST)
         .removalPolicy(DESTROY)
         .build()
 
@@ -107,6 +111,7 @@ class UserPropsStack(
         .restApiName("UserProps API")
         .deployOptions(StageOptions.builder().tracingEnabled(true).build())
         .build()
+        .apply { enableCorsOnGatewayResponses(corsOptions) }
         .export("UserPropsApiEndpoint", "URL of the API") { it.url }
 
     init {

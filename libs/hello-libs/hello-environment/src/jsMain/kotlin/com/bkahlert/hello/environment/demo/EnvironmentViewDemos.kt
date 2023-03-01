@@ -4,7 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import com.bkahlert.hello.data.DataRetrieval
+import com.bkahlert.hello.data.Resource.Failure
+import com.bkahlert.hello.data.Resource.Success
 import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
 import com.bkahlert.hello.environment.data.EnvironmentRepository
 import com.bkahlert.hello.environment.domain.Environment
@@ -28,12 +29,12 @@ public fun EnvironmentViewDemos() {
             val repository = remember { EnvironmentRepository(DynamicEnvironmentDataSource(), demoScope) }
             val getEnvironment = remember { GetEnvironmentUseCase(repository) }
 
-            val environmentRetrieval by getEnvironment().collectAsState(DataRetrieval.Ongoing)
+            val environmentResource by getEnvironment().collectAsState(null)
 
-            when (val retrieval = environmentRetrieval) {
-                is DataRetrieval.Ongoing -> Loader("Loading environment")
-                is DataRetrieval.Succeeded -> EnvironmentView(retrieval.data)
-                is DataRetrieval.Failed -> ErrorMessage(retrieval.cause, retrieval.message)
+            when (val resource = environmentResource) {
+                null -> Loader("Loading environment")
+                is Success -> EnvironmentView(resource.data)
+                is Failure -> ErrorMessage(resource.message, resource.cause)
             }
         }
     }

@@ -26,7 +26,7 @@ import com.bkahlert.hello.clickup.viewmodel.fixtures.toFullyLoaded
 import com.bkahlert.hello.clickup.viewmodel.fixtures.toPartiallyLoaded
 import com.bkahlert.hello.clickup.viewmodel.fixtures.toTeamSelecting
 import com.bkahlert.kommons.color.Color.RGB
-import com.bkahlert.kommons.minus
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.semanticui.core.jQuery
 import com.bkahlert.semanticui.test.JQueryLibrary
 import com.bkahlert.semanticui.test.SemanticUiLibrary
@@ -40,7 +40,6 @@ import io.kotest.matchers.string.shouldContain
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.web.testutils.TestScope
 import org.jetbrains.compose.web.testutils.runTest
-import kotlin.js.Date
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.seconds
 
@@ -56,13 +55,12 @@ class ClickUpMenuTest {
             """
             <div class="clickup-toolbar">
                 <div class="ui dimmable mini fluid one item menu">
-                    <div class="ui inverted dimmer">
+                    <div class="ui inverted simple dimmer">
                         <div class="content">
-                            <div class="ui mini loader"></div>
+                            <div class="ui mini disabled loader"></div>
                         </div>
                     </div>
-                    <div class="ui active inverted dimmer"></div>
-                    <div class="link item"><img class="mini" style="mix-blend-mode: luminosity;" src="$ClickUpMark" alt="ClickUp">Connect to ClickUp</div>
+                    <div class="disabled link item"><img class="mini" style="mix-blend-mode: luminosity;" src="$ClickUpMark" alt="ClickUp">Connect to ClickUp</div>
                 </div>
             </div>
         """.trimIndent()
@@ -80,9 +78,9 @@ class ClickUpMenuTest {
             """
             <div class="clickup-toolbar">
                 <div class="ui dimmable mini fluid one item menu">
-                    <div class="ui inverted dimmer">
+                    <div class="ui inverted simple dimmer">
                         <div class="content">
-                            <div class="ui mini loader"></div>
+                            <div class="ui mini disabled loader"></div>
                         </div>
                     </div>
                     <div class="link item"><img class="mini" style="mix-blend-mode: luminosity;" src="$ClickUpMark" alt="ClickUp">Connect to ClickUp</div>
@@ -103,9 +101,9 @@ class ClickUpMenuTest {
             """
             <div class="clickup-toolbar">
                 <div class="ui dimmable mini menu">
-                    <div class="ui inverted dimmer">
+                    <div class="ui inverted simple dimmer">
                         <div class="content">
-                            <div class="ui mini loader"></div>
+                            <div class="ui mini disabled loader"></div>
                         </div>
                     </div>
                     <div class="ui borderless item dropdown" tabindex="0"><img class="rounded avatar" src="${User.profilePicture}" alt="User john.doe"><i class="dropdown icon"></i>
@@ -134,9 +132,9 @@ class ClickUpMenuTest {
             """
             <div class="clickup-toolbar">
                 <div class="ui dimmable mini menu">
-                    <div class="ui inverted dimmer">
+                    <div class="ui inverted simple dimmer">
                         <div class="content">
-                            <div class="ui mini loader"></div>
+                            <div class="ui mini disabled loader"></div>
                         </div>
                     </div>
                     <div class="ui borderless item dropdown" tabindex="0">
@@ -165,9 +163,9 @@ class ClickUpMenuTest {
             """
             <div class="clickup-toolbar">
                 <div class="ui dimmable mini menu">
-                    <div class="ui inverted dimmer">
+                    <div class="ui inverted simple dimmer">
                         <div class="content">
-                            <div class="ui mini loader"></div>
+                            <div class="ui mini disabled loader"></div>
                         </div>
                     </div>
                     <div class="ui borderless item dropdown" tabindex="0">
@@ -220,7 +218,7 @@ class ClickUpMenuTest {
             it?.task?.id?.stringValue shouldBe "task-1"
             it?.user shouldBe User
             it?.billable shouldBe false
-            it?.start should { start -> (Date() - start!!) < 1.seconds }
+            it?.start should { start -> (Now - start!!) < 1.seconds }
             it?.end shouldBe null
             it?.tags!! shouldContain Pomodoro.Type.Default.tag
         }
@@ -273,7 +271,7 @@ class ClickUpMenuTest {
             it?.task?.id?.stringValue shouldBe "task-2"
             it?.user shouldBe User
             it?.billable shouldBe false
-            it?.start should { start -> (Date() - start!!) < 1.seconds }
+            it?.start should { start -> (Now - start!!) < 1.seconds }
             it?.end shouldBe null
             it?.tags!! shouldContain Pomodoro.Type.Default.tag
         }

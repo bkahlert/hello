@@ -1,7 +1,7 @@
 package com.bkahlert.kommons.auth
 
-import com.bkahlert.kommons.InstantAsEpochSeconds
-import com.bkahlert.kommons.InstantAsEpochSecondsSerializer
+import com.bkahlert.kommons.time.InstantAsEpochSeconds
+import com.bkahlert.kommons.time.InstantAsEpochSecondsSerializer
 import com.bkahlert.kommons.uri.Uri
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

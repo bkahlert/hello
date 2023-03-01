@@ -30,31 +30,42 @@ import org.w3c.dom.HTMLAnchorElement
 private val logger by ConsoleLogging("DemoView")
 
 public interface DemoViewState {
-    public var active: String?
+    public val activeId: String?
+    public fun onActivate(id: String?)
 }
 
+// effectively holds the state in the mutable [activeId]
 @Composable
-public fun LocationFragmentParameters.asDemoViewState(
-    name: String,
-): DemoViewState {
-    val state: State<String?> = asFlow().map { it[name] }.collectAsState(get(name))
-    return remember(this, name, state) {
-        object : DemoViewState {
-            override var active: String?
-                get() = state.value
-                set(value) {
-                    set(name, value)
-                }
+public fun rememberDemoViewState(
+    activeId: String?,
+    onActivate: ((String?) -> Unit)? = null, // optional callback
+): DemoViewState = remember(activeId, onActivate) {
+    object : DemoViewState {
+        override var activeId: String? by mutableStateOf(activeId)
+        override fun onActivate(id: String?) {
+            this.activeId = id
+            onActivate?.invoke(id)
         }
     }
 }
 
+// effectively holds the state in the fragment parameter
 @Composable
-public fun rememberDemoViewState(
-    active: String? = null,
-): DemoViewState = remember(active) {
-    object : DemoViewState {
-        override var active: String? by mutableStateOf(active)
+public fun LocationFragmentParameters.asDemoViewState(
+    name: String,
+    onActivate: ((String?) -> Unit)? = null, // optional callback
+): DemoViewState {
+    val state: State<String?> = asFlow().map { it[name] }.collectAsState(get(name))
+    return remember(this, name, state) {
+        object : DemoViewState {
+            override val activeId: String?
+                get() = state.value
+
+            override fun onActivate(id: String?) {
+                set(name, id)
+                onActivate?.invoke(id)
+            }
+        }
     }
 }
 
@@ -97,7 +108,7 @@ public fun DemoView(
         }
     }
 
-    val tabMenuState = rememberTabMenuState(tabs, state.active)
+    val tabMenuState = rememberTabMenuState(tabs, state.activeId)
 
     TabMenu(
         state = tabMenuState,
@@ -110,8 +121,8 @@ public fun DemoView(
     LaunchedEffect(tabMenuState) {
         snapshotFlow { tabMenuState.active }
             .collect { tab ->
-                logger.debug("activate", tab, "state.active", state.active)
-                state.active = tab
+                logger.debug("activate", tab, "state.active", state.activeId)
+                state.onActivate(tab)
             }
     }
 }

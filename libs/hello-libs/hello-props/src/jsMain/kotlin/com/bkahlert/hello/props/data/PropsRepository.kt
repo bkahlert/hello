@@ -1,73 +1,133 @@
 package com.bkahlert.hello.props.data
 
+import com.bkahlert.hello.data.Resource
+import com.bkahlert.hello.data.Resource.Failure
+import com.bkahlert.hello.data.Resource.Success
 import com.bkahlert.hello.props.domain.Props
+import com.bkahlert.kommons.auth.Session
+import com.bkahlert.kommons.auth.Session.AuthorizedSession
+import com.bkahlert.kommons.auth.Session.UnauthorizedSession
+import com.bkahlert.kommons.auth.UserInfo
 import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.kommons.js.grouping
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.onSubscription
-import kotlinx.coroutines.flow.updateAndGet
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.buildJsonObject
+import com.bkahlert.kommons.oauth.OAuth2ResourceServer
+import com.tunjid.mutator.Mutation
+import com.tunjid.mutator.coroutines.StateFlowProducer
+import com.tunjid.mutator.coroutines.stateFlowProducer
+import com.tunjid.mutator.mutation
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.HttpClientEngineConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.transformLatest
+import kotlinx.serialization.json.JsonObject
+import kotlin.time.Duration.Companion.seconds
 
-public class PropsRepository(
-    private val propsDataSource: PropsDataSource,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.Default,
+public data class PropsRepository(
+    private val sessionFlow: Flow<Resource<Session>>,
+    private val propsDataSourceProvider: (AuthorizedSession) -> PropsDataSource,
+    private val externalScope: CoroutineScope,
 ) {
+    public constructor(
+        propsDataSource: PropsDataSource,
+        externalScope: CoroutineScope,
+    ) : this(
+        sessionFlow = flowOf(Success(object : AuthorizedSession {
+            override val userInfo: UserInfo get() = error("unexpected mock invocation")
+            override val diagnostics: Map<String, String?> get() = error("unexpected mock invocation")
+            override suspend fun reauthorize(httpClient: HttpClient?): Session = error("unexpected mock invocation")
+            override suspend fun unauthorize(httpClient: HttpClient?): UnauthorizedSession = error("unexpected mock invocation")
+            override fun installAuth(config: HttpClientConfig<HttpClientEngineConfig>, vararg resources: OAuth2ResourceServer) {
+                error("unexpected mock invocation")
+            }
+        })),
+        propsDataSourceProvider = { propsDataSource },
+        externalScope,
+    )
+
     private val logger by ConsoleLogging
-    private val propsFlow: MutableStateFlow<Props?> = MutableStateFlow(null)
 
-    public suspend fun refreshProps(force: Boolean = false): Props = logger.grouping(::refreshProps, force) {
-        propsFlow.updateAndGet { props ->
-            withContext(ioDispatcher) {
-                when (props) {
-                    null -> propsDataSource.getAll()
-                    else -> if (force) propsDataSource.getAll() else props
+    private val propsDataSourceFlow: Flow<Resource<PropsDataSource?>> = sessionFlow.mapLatest { sessionResource ->
+        logger.grouping("PropsDataSource from session", sessionResource) {
+            when (sessionResource) {
+                is Success -> when (val session = sessionResource.data) {
+                    is UnauthorizedSession -> Success(null)
+                    is AuthorizedSession -> Success(propsDataSourceProvider(session))
                 }
-            }
-        }!!
-    }
 
-    private suspend fun updateProp(id: String, value: JsonElement?): Props? = logger.grouping(::updateProp, id, value) {
-        propsFlow.updateAndGet { props ->
-            withContext(ioDispatcher) {
-                when (props) {
-                    null -> if (value != null) Props(buildJsonObject { put(id, value) }) else Props.EMPTY
-                    else -> if (value != null) props + (id to value) else props - id
-                }
+                is Failure -> Failure("Failed to load props data source", sessionResource.cause)
             }
         }
     }
 
-    public suspend fun getProps(): Props = logger.grouping(::getProps) {
-        when (val props = propsFlow.value) {
-            null -> refreshProps()
-            else -> props
+    private val propsFlow: Flow<Resource<Props?>> = propsDataSourceFlow.transformLatest { propsDataSourceResource ->
+        logger.grouping("Props from PropsDataSource", propsDataSourceResource) {
+            when (propsDataSourceResource) {
+                is Success -> when (val propsDataSource = propsDataSourceResource.data) {
+                    null -> emit(Success(null))
+                    else -> emit(Resource.load { propsDataSource.getAll() })
+                }
+
+                is Failure -> Failure("Failed to load props", propsDataSourceResource.cause)
+            }
         }
     }
 
-    public suspend fun getProp(id: String): JsonElement? = logger.grouping(::getProp, id) {
-        when (val props = propsFlow.value) {
-            null -> refreshProps().content[id]
-            else -> props.content[id]
+    private val propsChanges: Flow<Mutation<Resource<Props?>>> = propsFlow
+        .map {
+            mutation {
+                logger.grouping("resetProps from $this to $it") { it }
+            }
+        }
+
+    private val propsProducer: StateFlowProducer<Resource<Props?>> = externalScope.stateFlowProducer(
+        initialState = Success(null),
+        started = SharingStarted.WhileSubscribed(10.seconds),
+        mutationFlows = listOf(
+            propsChanges,
+        )
+    )
+
+    public fun setProp(id: String, value: JsonObject) {
+        propsProducer.launch {
+            mutate {
+                logger.grouping("setProp", id, value) {
+                    when (this) {
+                        is Success -> when (val props = data) {
+                            null -> Success(null)
+                            else -> Success(props + (id to value))
+                        }
+
+                        is Failure -> this
+                    }
+                }
+            }
         }
     }
 
-    public suspend fun setProp(id: String, value: JsonElement): JsonElement = logger.grouping(::setProp, id, value) {
-        withContext(ioDispatcher) {
-            propsDataSource.set(id, value).also { updateProp(id, it) }
+    public fun removeProp(id: String) {
+        propsProducer.launch {
+            mutate {
+                logger.grouping("removeProp", id) {
+                    when (this) {
+                        is Success -> when (val props = data) {
+                            null -> Success(null)
+                            else -> Success(props - id)
+                        }
+
+                        is Failure -> this
+                    }
+                }
+            }
         }
     }
 
-    public suspend fun removeProp(id: String): JsonElement? = logger.grouping(::removeProp, id) {
-        withContext(ioDispatcher) {
-            propsDataSource.remove(id).also { updateProp(id, it) }
-        }
-    }
-
-    public fun propsFlow(): SharedFlow<Props?> = propsFlow
-        .onSubscription { refreshProps() }
+    public fun propsFlow(): StateFlow<Resource<Props?>> = propsProducer.state
 }

@@ -1,11 +1,12 @@
 package com.bkahlert.hello.session.ui
 
 import androidx.compose.runtime.Composable
+import com.bkahlert.hello.data.Resource
 import com.bkahlert.kommons.auth.Session
 import com.bkahlert.kommons.auth.Session.AuthorizedSession
 import com.bkahlert.kommons.auth.Session.UnauthorizedSession
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
+import com.bkahlert.semanticui.custom.ErrorMessage
 import com.bkahlert.semanticui.custom.LoadingState
 import com.bkahlert.semanticui.custom.apply
 import com.bkahlert.semanticui.element.Header
@@ -13,7 +14,6 @@ import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.element.Item
 import com.bkahlert.semanticui.element.LabeledIconButton
 import com.bkahlert.semanticui.element.divided
-import com.bkahlert.semanticui.element.size
 import com.bkahlert.semanticui.module.inverted
 import org.jetbrains.compose.web.dom.Em
 import org.jetbrains.compose.web.dom.Text
@@ -21,21 +21,49 @@ import com.bkahlert.semanticui.element.List as SList
 
 @Composable
 public fun SessionView(
-    session: Session? = null,
+    sessionResource: Resource<Session>?,
     onReauthorize: (() -> Unit)? = null,
     onAuthorize: (() -> Unit)? = null,
     onUnauthorize: (() -> Unit)? = null,
-    loadingState: LoadingState = if (session == null) LoadingState.Indeterminate else LoadingState.Off,
+    loadingState: LoadingState = if (sessionResource == null) LoadingState.On else LoadingState.Off,
+) {
+    when (sessionResource) {
+        null -> SList({
+            apply(loadingState)
+            v.divided()
+        }) {
+            apply(
+                loadingState,
+                dimmerAttrs = { v.inverted() },
+                loaderText = "Loading session",
+            )
+        }
+
+        is Resource.Success -> SessionView(
+            session = sessionResource.data,
+            onReauthorize = onReauthorize,
+            onAuthorize = onAuthorize,
+            onUnauthorize = onUnauthorize,
+            loadingState = loadingState,
+        )
+
+        is Resource.Failure -> ErrorMessage(sessionResource.message, sessionResource.cause)
+    }
+}
+
+@Composable
+public fun SessionView(
+    session: Session,
+    onReauthorize: (() -> Unit)? = null,
+    onAuthorize: (() -> Unit)? = null,
+    onUnauthorize: (() -> Unit)? = null,
+    loadingState: LoadingState = LoadingState.Off,
 ) {
     SList({
         apply(loadingState)
         v.divided()
     }) {
         when (session) {
-            null -> {
-                apply(loadingState, dimmerAttrs = { v.inverted() }, loaderAttrs = { v.size(Mini) })
-            }
-
             is UnauthorizedSession -> {
                 Item {
                     Header { Em { Text("Signed-out") } }
@@ -44,7 +72,7 @@ public fun SessionView(
                             onClick { onReauthorize() }
                         }) {
                             Icon("sync")
-                            Text("Refresh")
+                            Text("Re-authorize")
                         }
                     }
                     if (onAuthorize != null) {
@@ -52,10 +80,9 @@ public fun SessionView(
                             onClick { onAuthorize() }
                         }) {
                             Icon("sign-in")
-                            Text("Sign-in")
+                            Text("Authorize")
                         }
                     }
-                    apply(loadingState, dimmerAttrs = { v.inverted() }, loaderAttrs = { v.size(Mini) })
                 }
             }
 
@@ -75,10 +102,9 @@ public fun SessionView(
                             onClick { onUnauthorize() }
                         }) {
                             Icon("sign-out")
-                            Text("Sign-out")
+                            Text("Un-authorize")
                         }
                     }
-                    apply(loadingState, dimmerAttrs = { v.inverted() }, loaderAttrs = { v.size(Mini) })
                 }
                 when (session.userInfo.size) {
                     0 -> {
@@ -98,5 +124,6 @@ public fun SessionView(
                 }
             }
         }
+        apply(loadingState)
     }
 }

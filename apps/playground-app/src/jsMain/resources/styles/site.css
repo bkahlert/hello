@@ -24,9 +24,16 @@
     --modal-z-index: 1000;
 }
 
+/* https://css-tricks.com/16px-or-larger-text-prevents-ios-form-zoom/ */
+@media (pointer: coarse) {
+    input, .ui.input {
+        font-size: 16px;
+    }
+}
+
 /* Reset Semantic UI height=100% */
-html,
-body { height: initial; }
+html:root,
+html:root body:not(.dimmed) { height: initial; }
 
 /* Toolbars on mobile device add to the final height. fill-available does not but has limited support. */
 html,

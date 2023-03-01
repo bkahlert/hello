@@ -1,9 +1,9 @@
 package com.bkahlert.kommons.auth
 
-import com.bkahlert.kommons.DurationAsSeconds
-import com.bkahlert.kommons.DurationAsSecondsSerializer
 import com.bkahlert.kommons.auth.JsonWebTokenPayload.IdTokenPayload
-import com.bkahlert.kommons.toMomentString
+import com.bkahlert.kommons.time.DurationAsSeconds
+import com.bkahlert.kommons.time.DurationAsSecondsSerializer
+import com.bkahlert.kommons.time.toMomentString
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

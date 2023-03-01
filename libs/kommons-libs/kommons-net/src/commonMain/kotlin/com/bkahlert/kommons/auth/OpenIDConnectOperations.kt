@@ -84,8 +84,8 @@ public class RevocationException(
         "unsupported_token_type" -> "The type of the provided token is not supported."
         "invalid_client" -> "The provided client credentials are invalid."
         else -> "Unexpected response: $response"
-    }
+    },
 ) : RuntimeException(
-    message = response.errorDescription ?: fallbackDescription,
-    cause = cause,
+    response.errorDescription ?: fallbackDescription,
+    cause,
 )

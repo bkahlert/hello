@@ -1,7 +1,7 @@
 package com.bkahlert.hello.user.domain
 
 import com.bkahlert.kommons.auth.OpenIDStandardClaims
-import com.bkahlert.kommons.auth.Session
+import com.bkahlert.kommons.auth.Session.AuthorizedSession
 import com.bkahlert.kommons.auth.UserInfo
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.ktor.JsonHttpClient
@@ -10,7 +10,7 @@ import io.ktor.client.HttpClient
 import kotlinx.serialization.json.decodeFromJsonElement
 
 public data class User(
-    public val session: Session.AuthorizedSession,
+    public val session: AuthorizedSession,
 ) {
     public val claims: UserInfo get() = session.userInfo
     public val client: HttpClient by lazy { JsonHttpClient { session.installAuth(this) } }

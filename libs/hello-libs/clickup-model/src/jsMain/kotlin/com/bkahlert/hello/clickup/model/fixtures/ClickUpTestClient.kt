@@ -19,11 +19,11 @@ import com.bkahlert.hello.clickup.model.TimeEntryID
 import com.bkahlert.hello.clickup.model.User
 import com.bkahlert.hello.clickup.model.asCreator
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpFixtures.running
-import com.bkahlert.kommons.compareTo
 import com.bkahlert.kommons.randomString
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.uri.Uri
 import kotlinx.coroutines.delay
-import kotlin.js.Date
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.times
 import kotlin.require as kotlinRequire
@@ -89,8 +89,8 @@ public open class ClickUpTestClient(
             description = null,
             status = folder.statuses.first().asPreview(),
             orderIndex = tasks.size.toDouble(),
-            dateCreated = Date(),
-            dateUpdated = Date(),
+            dateCreated = Now,
+            dateUpdated = Now,
             dateClosed = null,
             creator = user.asCreator(),
             assignees = emptyList(),
@@ -129,12 +129,12 @@ public open class ClickUpTestClient(
         include_closed: Boolean?,
         assignees: List<String>?,
         tags: List<String>?,
-        due_date_gt: Date?,
-        due_date_lt: Date?,
-        date_created_gt: Date?,
-        date_created_lt: Date?,
-        date_updated_gt: Date?,
-        date_updated_lt: Date?,
+        due_date_gt: Instant?,
+        due_date_lt: Instant?,
+        date_created_gt: Instant?,
+        date_created_lt: Instant?,
+        date_updated_gt: Instant?,
+        date_updated_lt: Instant?,
         custom_fields: List<CustomFieldFilter>?,
     ): List<Task> {
         adaptedDelay(2 * DEMO_BASE_DELAY)
@@ -221,7 +221,7 @@ public open class ClickUpTestClient(
                     wid = team.id,
                     user = user,
                     billable = billable,
-                    start = Date(),
+                    start = Now,
                     end = null,
                     description = description ?: "",
                     tags = tags.toList(),
@@ -235,7 +235,7 @@ public open class ClickUpTestClient(
             wid = team.id,
             user = user,
             billable = billable,
-            start = Date(),
+            start = Now,
             end = null,
             description = description ?: "",
             tags = tags.toList(),
@@ -249,7 +249,7 @@ public open class ClickUpTestClient(
     override suspend fun stopTimeEntry(team: Team): TimeEntry? {
         adaptedDelay(0.6 * DEMO_BASE_DELAY)
         return runningTimeEntry?.also {
-            val timeEntry = it.copy(end = Date())
+            val timeEntry = it.copy(end = Now)
             timeEntries = timeEntries + timeEntry
             runningTimeEntry = null
         }

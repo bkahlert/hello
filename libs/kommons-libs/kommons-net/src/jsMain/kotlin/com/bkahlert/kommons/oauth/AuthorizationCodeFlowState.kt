@@ -11,10 +11,10 @@ import com.bkahlert.kommons.auth.TokenInfo
 import com.bkahlert.kommons.auth.TokenInfoStorage
 import com.bkahlert.kommons.auth.UserInfo
 import com.bkahlert.kommons.auth.diagnostics
+import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.ktor.JsonHttpClient
 import com.bkahlert.kommons.ktor.interceptOnce
-import com.bkahlert.kommons.logging.InlineLogging
 import com.bkahlert.kommons.onRight
 import com.bkahlert.kommons.uri.toUri
 import com.bkahlert.kommons.uri.toUrl
@@ -67,7 +67,7 @@ public sealed class AuthorizationCodeFlowState(
         override val authorizationServer: OAuth2AuthorizationServer,
         override val clientId: String,
     ) : AuthorizationCodeFlowState(authorizationServer, clientId), Session.UnauthorizedSession {
-        private val logger by InlineLogging
+        private val logger by ConsoleLogging
 
         public override suspend fun authorize(): Session {
             logger.info("Preparing authorization with ${authorizationServer.authorizationEndpoint}")
@@ -104,7 +104,7 @@ public sealed class AuthorizationCodeFlowState(
         val authorizationCode: String,
         val state: String?,
     ) : AuthorizationCodeFlowState(authorizationServer, clientId) {
-        private val logger by InlineLogging
+        private val logger by ConsoleLogging
 
         suspend fun getTokens(): Authorized {
             logger.info("Authorization code received: $authorizationCode")
@@ -138,7 +138,7 @@ public sealed class AuthorizationCodeFlowState(
         override val clientId: String,
         private val tokensStorage: TokenInfoStorage,
     ) : AuthorizationCodeFlowState(authorizationServer, clientId), Session.AuthorizedSession {
-        private val logger by InlineLogging
+        private val logger by ConsoleLogging
         private val tokenInfo get() = tokensStorage.get(authorizationServer.issuer, clientId) ?: error("Failed to load tokens")
 
         /** User information contained in the cached [IdToken] */
@@ -150,9 +150,19 @@ public sealed class AuthorizationCodeFlowState(
             vararg resources: OAuth2ResourceServer,
         ): Unit = config.install(Auth) {
             bearer {
-                loadTokens { tokensStorage.get(authorizationServer.issuer, clientId)?.bearerTokens }
+                loadTokens {
+                    tokensStorage.get(
+                        provider = authorizationServer.issuer,
+                        clientId = clientId,
+                    )?.bearerTokens
+                }
                 refreshTokens {
-                    reauthorize(oldTokens?.refreshToken?.let(::RefreshToken), client) { markAsRefreshTokenRequest() }.bearerTokens
+                    reauthorize(
+                        refreshToken = oldTokens?.refreshToken?.let(::RefreshToken),
+                        httpClient = client,
+                    ) {
+                        markAsRefreshTokenRequest()
+                    }.bearerTokens
                 }
                 sendWithoutRequest { request ->
                     val uri = request.url.build().toUri()
@@ -207,10 +217,10 @@ public sealed class AuthorizationCodeFlowState(
 
             val response: HttpResponse = httpClient
                 .interceptOnce { context ->
-                    console.info("Intercepting request to ${context.url.build()}")
+                    logger.info("Intercepting request to ${context.url.build()}")
                     if (context.headers.contains(HttpHeaders.Authorization)) {
                         context.headers.remove(HttpHeaders.Authorization)
-                        console.warn("Removed ${HttpHeaders.Authorization}")
+                        logger.warn("Removed ${HttpHeaders.Authorization}")
                     }
                     execute(context)
                 }.submitForm(

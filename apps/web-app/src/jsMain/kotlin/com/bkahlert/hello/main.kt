@@ -1,79 +1,62 @@
 package com.bkahlert.hello
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import com.bkahlert.hello.BookmarkProps.Companion.mapBookmarkProps
 import com.bkahlert.hello.ClickUpProps.Companion.mapClickUpProps
 import com.bkahlert.hello.app.ui.AppViewModel
-import com.bkahlert.hello.app.ui.AppViewModelState
-import com.bkahlert.hello.app.ui.LandingScreen
 import com.bkahlert.hello.app.ui.rememberAppViewModel
-import com.bkahlert.hello.clickup.client.http.ClickUpHttpClient
-import com.bkahlert.hello.clickup.client.http.ClickUpHttpClientConfigurer
 import com.bkahlert.hello.clickup.demo.ClickUpDemoProvider
-import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
-import com.bkahlert.hello.clickup.viewmodel.ClickUpMenu
-import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
-import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
-import com.bkahlert.hello.clickup.viewmodel.rememberClickUpMenuViewModel
-import com.bkahlert.hello.data.DataRetrieval
+import com.bkahlert.hello.data.Resource.Failure
+import com.bkahlert.hello.data.Resource.Success
 import com.bkahlert.hello.demo.HelloDemoProviders
 import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
 import com.bkahlert.hello.environment.data.EnvironmentRepository
-import com.bkahlert.hello.environment.ui.EnvironmentView
 import com.bkahlert.hello.search.PasteHandlingMultiSearchInput
 import com.bkahlert.hello.user.ui.UserMenu
-import com.bkahlert.kommons.dom.InMemoryStorage
-import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
-import com.bkahlert.kommons.uri.host
-import com.bkahlert.kommons.uri.toUriOrNull
+import com.bkahlert.kommons.dom.uri
 import com.bkahlert.semanticui.collection.Item
-import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
 import com.bkahlert.semanticui.core.S
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Huge
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Large
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Massive
+import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.core.updateDebugSettings
 import com.bkahlert.semanticui.custom.ErrorMessage
 import com.bkahlert.semanticui.custom.IFrame
-import com.bkahlert.semanticui.custom.LoadingState
 import com.bkahlert.semanticui.custom.ReportingCoroutineScope
 import com.bkahlert.semanticui.custom.Sandbox.ALLOW_POPUPS
 import com.bkahlert.semanticui.custom.Sandbox.ALLOW_SAME_ORIGIN
 import com.bkahlert.semanticui.custom.Sandbox.ALLOW_SCRIPTS
 import com.bkahlert.semanticui.custom.Sandbox.ALLOW_TOP_NAVIGATION
 import com.bkahlert.semanticui.custom.Sandbox.ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION
-import com.bkahlert.semanticui.custom.apply
 import com.bkahlert.semanticui.custom.sandbox
 import com.bkahlert.semanticui.custom.src
 import com.bkahlert.semanticui.demo.SemanticUiDemoProviders
 import com.bkahlert.semanticui.devmode.DemoDevMode
 import com.bkahlert.semanticui.element.AnchorButton
-import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Buttons
+import com.bkahlert.semanticui.element.Container
 import com.bkahlert.semanticui.element.Icon
+import com.bkahlert.semanticui.element.Loader
+import com.bkahlert.semanticui.element.active
 import com.bkahlert.semanticui.element.icon
+import com.bkahlert.semanticui.element.inline
 import com.bkahlert.semanticui.element.size
 import kotlinx.browser.document
-import kotlinx.browser.localStorage
 import kotlinx.browser.window
 import kotlinx.dom.clear
-import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.border
-import org.jetbrains.compose.web.css.em
-import org.jetbrains.compose.web.css.marginLeft
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
 
 @Composable
 fun WebApp(
     viewModel: AppViewModel = rememberAppViewModel(),
 ) {
-    val uiState: State<AppViewModelState> = viewModel.uiState.collectAsState()
 
     S("toolbar") {
         Buttons({
@@ -87,29 +70,8 @@ fun WebApp(
         }
 
         S("tasks") {
-            val clickUpPropsState = viewModel.getProp("clickup").mapClickUpProps().collectAsState(null)
-            when (val clickUpProps = clickUpPropsState.value) {
-                null -> ClickUpMenu(
-                    viewModel = rememberClickUpMenuViewModel(),
-                    state = Disabled,
-                    loadingState = LoadingState.Indeterminate,
-                )
-
-                else -> ClickUpMenu(rememberClickUpMenuViewModel(
-                    configurers = arrayOf(
-                        ClickUpHttpClientConfigurer(),
-                        ClickUpTestClientConfigurer(),
-                    ),
-                    initialState = Disabled,
-                    storage = localStorage.scoped("clickup")
-                ).apply {
-                    if (clickUpProps.apiToken != null) {
-                        val clickUpClient = ClickUpHttpClient(clickUpProps.apiToken, InMemoryStorage())
-                        connect(clickUpClient)
-                    }
-                    enable()
-                })
-            }
+            val clickUpPropsResource by viewModel.getProp("clickup").mapClickUpProps().collectAsState(null)
+            ClickUpMenuElement(clickUpPropsResource)
         }
 
         S("search") {
@@ -117,64 +79,54 @@ fun WebApp(
         }
     }
 
-    S("bookmarks") {
+    S("content") {
 
-        val url: CharSequence? = when (window.location.href.toUriOrNull()?.host) {
-            "localhost" -> "placeholder.html"
-            else -> "https://start.me/p/0PBMOo/dkb"
-        }
+        S("bookmarks") {
+            val bookmarkPropsResource by viewModel.getProp("bookmark").mapBookmarkProps().collectAsState(null)
+            when (val resource = bookmarkPropsResource) {
+                null -> Loader({ v.size(Huge); s.active() })
 
-        if (url != null) {
-            IFrame("Loading bookmarks …", {
-                v.size(Large)
-            }) {
-                style { border(0.px) }
-                src(url)
-                sandbox(
-                    ALLOW_POPUPS,
-                    ALLOW_SCRIPTS,
-                    ALLOW_SAME_ORIGIN,
-                    ALLOW_TOP_NAVIGATION,
-                    ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION,
-                )
+                is Success -> {
+                    val defaultUri = resource.data?.default
+                    IFrame("Loading bookmarks …", { v.size(Large) }) {
+                        style { border(0.px) }
+                        src(defaultUri?.takeIf { it.scheme == window.location.uri.scheme } ?: "placeholder.html")
+                        sandbox(
+                            ALLOW_POPUPS,
+                            ALLOW_SCRIPTS,
+                            ALLOW_SAME_ORIGIN,
+                            ALLOW_TOP_NAVIGATION,
+                            ALLOW_TOP_NAVIGATION_BY_USER_ACTIVATION,
+                        )
+                    }
+                }
+
+                is Failure -> {
+                    ErrorMessage(resource.message, resource.cause)
+                }
             }
         }
     }
 
-    S("session", attrs = {
-        style { marginLeft(5.em) }
-        if (uiState.value is AppViewModelState.Loaded) apply(LoadingState.On)
-    }) {
-        when (val state = uiState.value) {
-            is AppViewModelState.Loading -> Menu({ classes("mini", "compact", "secondary") }) {
-                apply(LoadingState.On, loaderText = "...")
-            }
+    S("footer") {
+        val userResource by viewModel.user.collectAsState(null)
+        when (val resource = userResource) {
+            null -> Menu({ classes("tiny", "compact", "secondary") }) { Item { Loader({ v.size(Mini).inline(); s.active() }) } }
 
-            is AppViewModelState.Loaded -> UserMenu(
-                user = state.user,
+            is Success -> UserMenu(
+                user = resource.data,
                 onSignIn = viewModel::authorize,
+                onReauthorize = { viewModel.reauthorize(force = false) }.takeUnless { resource.data == null },
                 onSignOut = viewModel::unauthorize,
-                {
-                    LinkItem({ onClick { viewModel.reauthorize() } }) {
-                        Icon("sync")
-                        Text("Refresh")
-                    }
-                },
-                attrs = { classes("mini", "compact", "secondary") }
+                attrs = { classes("tiny", "compact", "secondary") }
             )
 
-            is AppViewModelState.Failed -> Menu({ classes("mini", "compact", "secondary") }) {
-                Item {
-                    Buttons {
-                        Button({
-                            onClick { viewModel.reauthorize() }
-                        }) {
-                            Icon("eraser")
-                            Text("Reset")
-                        }
-                    }
-                }
-            }
+            is Failure -> UserMenu(
+                userResource = resource,
+                onReauthorize = { viewModel.reauthorize(force = false) },
+                onForceReauthorize = { viewModel.reauthorize(force = true) },
+                attrs = { classes("tiny", "compact", "secondary") }
+            )
         }
     }
 }
@@ -185,7 +137,7 @@ fun main() {
     updateDebugSettings { module, settings ->
         settings.debug = module !in listOf("transition")
         settings.verbose = true
-        settings.performance = true
+        settings.performance = false
     }
 
     DemoDevMode(*SemanticUiDemoProviders, *HelloDemoProviders, ClickUpDemoProvider)
@@ -194,21 +146,19 @@ fun main() {
     val appRoot = document.getElementById("root")?.apply { clear() } ?: error("root element does not exist")
 
     renderComposable(appRoot) {
-        Style(ClickUpStyleSheet)
-        var showLandingScreen by remember { mutableStateOf(true) }
         val environmentRepository = remember { EnvironmentRepository(DynamicEnvironmentDataSource(), appScope) }
-        val environmentRetrieval by environmentRepository.environmentFlow().collectAsState(DataRetrieval.Ongoing)
-        if (showLandingScreen) {
-            LandingScreen(onTimeout = { showLandingScreen = false })
-        } else {
-            when (val retrieval = environmentRetrieval) {
-                is DataRetrieval.Ongoing -> showLandingScreen = true
-                is DataRetrieval.Succeeded -> {
-                    WebApp(rememberAppViewModel(environment = retrieval.data))
-                    EnvironmentView(retrieval.data)
-                }
+        val environmentResource by environmentRepository.environmentFlow().collectAsState(null)
+        when (val resource = environmentResource) {
+            null -> {
+                Loader({ v.size(Massive); s.active() })
+            }
 
-                is DataRetrieval.Failed -> ErrorMessage(retrieval.cause, retrieval.message)
+            is Success -> {
+                WebApp(rememberAppViewModel(environment = resource.data))
+            }
+
+            is Failure -> S("progress") {
+                Container { ErrorMessage(resource.message, resource.cause) }
             }
         }
     }

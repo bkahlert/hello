@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.model.ClickUpClient
+import com.bkahlert.hello.clickup.model.ClickUpException
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
 import com.bkahlert.hello.clickup.model.TaskListID
@@ -32,8 +33,8 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.dom.open
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.semanticui.collection.AnchorItem
 import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
@@ -330,7 +331,7 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
         )
     }
 
-    Menu({ classes("right") }) {
+    Menu({ classes("meta", "right") }) {
         if (selectedActivity != null) {
             MetaItems(selectedActivity.meta.reversed())
 
@@ -365,7 +366,7 @@ public fun ClickUpMenu(
 ) {
 
     Div({ classes("clickup-toolbar") }) {
-        when (val state = viewModel.state.collectAsState(Disabled).value) {
+        when (val state = viewModel.state.collectAsState().value) {
             is Transitioning -> {
                 console.info("ClickUp menu is ${state::class.simpleName}")
                 ClickUpMenu(viewModel, state.previousState, loadingState = LoadingState.On)
@@ -373,13 +374,17 @@ public fun ClickUpMenu(
 
             is Failed -> {
                 console.warn("ClickUp menu failed state ${state.previousState::class.simpleName}")
+                val cause = state.cause
+                val oauthProblem = cause is ClickUpException && cause.ECODE.startsWith("OAUTH")
+
                 FailureModal(
                     operation = state.operation,
                     cause = state.cause,
-                    onRetry = state.retry,
-                    onIgnore = state.ignore,
+                    onRetry = state.retry.takeUnless { oauthProblem },
+                    onIgnore = state.ignore.takeUnless { oauthProblem },
                     onSignOut = viewModel::disconnect
                 )
+
                 ClickUpMenu(viewModel, state.previousState)
             }
 
@@ -398,7 +403,7 @@ public fun ClickUpMenu(
     loadingState: LoadingState = LoadingState.Off,
 ) {
     Menu({
-        apply(loadingState)
+        apply(loadingState, null)
         raw(Mini)
         if (state is Disabled || state is Disconnected) {
             raw(Modifier.Variation.Fluid)

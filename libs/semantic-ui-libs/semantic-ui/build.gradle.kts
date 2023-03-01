@@ -12,6 +12,8 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
+                api("com.bkahlert.kommons:kommons-dom") { because("LocationFragmentParameters") }
+                api("com.bkahlert.kommons:kommons-js") { because("ConsoleLogger") }
                 implementation("com.bkahlert.kommons:kommons-text") { because("demos") }
                 implementation("com.bkahlert.kommons:kommons-uri") { because("Uri type, devmode") }
                 api(project(":semantic-ui-core"))

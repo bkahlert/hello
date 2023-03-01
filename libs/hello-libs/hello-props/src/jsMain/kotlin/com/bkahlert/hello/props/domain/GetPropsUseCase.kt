@@ -1,17 +1,11 @@
 package com.bkahlert.hello.props.domain
 
+import com.bkahlert.hello.data.Resource
+import com.bkahlert.hello.props.data.PropsRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 
 public class GetPropsUseCase(
-    private val getPropsRepositoryUseCase: GetPropsRepositoryUseCase,
+    private val repository: PropsRepository,
 ) {
-
-    public operator fun invoke(): Flow<Props?> = getPropsRepositoryUseCase().flatMapLatest {
-        when (val propsRepository = it) {
-            null -> flowOf(null)
-            else -> propsRepository.propsFlow()
-        }
-    }
+    public operator fun invoke(): Flow<Resource<Props?>> = repository.propsFlow()
 }

@@ -68,34 +68,12 @@ public inline fun <R> ConsoleLogger.grouping(
     vararg args: Any?,
     collapsed: Boolean = DEFAULT_COLLAPSED,
     block: () -> R,
-): R {
-    val label = buildString {
-        append(name)
-        if (operation != null) append(".$operation(")
-        args.joinTo(this)
-        if (operation != null) append(")")
-    }
-    if (DEBUGGING) console.info("GROUP START($operation)") else console.group(label = label, collapsed = collapsed)
-    try {
-        val result = block()
-        if (DEBUGGING) {
-            console.info("GROUP RESULT($operation)", result)
-        } else {
-            when (result) {
-                Unit -> {}
-                is Map<*, Any?> -> console.table(data = result.mapKeys { it.toString() })
-                else -> console.debug("⏎ $result")
-            }
-        }
-        return result
-    } catch (ex: Throwable) {
-        if (DEBUGGING) console.error("GROUP EXCEPTION($operation)", ex)
-        else console.warn(ex::class.simpleName)
-        throw ex
-    } finally {
-        if (DEBUGGING) console.info("GROUP END($operation)") else console.groupEnd()
-    }
-}
+): R = console.grouping(buildString {
+    append(name)
+    if (operation != null) append(".$operation(")
+    args.joinTo(this)
+    if (operation != null) append(")")
+}, collapsed, block)
 
 /** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */
 public inline fun <R> ConsoleLogger.grouping(

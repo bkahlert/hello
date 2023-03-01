@@ -5,15 +5,19 @@ import com.bkahlert.kommons.auth.JsonWebTokenPayload.IdTokenPayload
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.quoted
 import com.bkahlert.kommons.test.testAll
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.uri.Uri
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.comparables.shouldBeGreaterThan
+import io.kotest.matchers.comparables.shouldBeLessThanOrEqualTo
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.minutes
 
-class TokenTest {
+class JsonWebTokenTest {
 
     @Test
     fun serialization() = testAll {
@@ -83,6 +87,61 @@ class TokenTest {
             it.origin_jti shouldBe "43c369dc-7c26-4ce1-afa9-012cdb4d98f2"
             it shouldBe LenientJson.decodeFromString(AccessTokenPayload.serializer(), DECODED_ACCESS_TOKEN)
         }
+    }
+
+    @Test
+    fun expires_in() {
+        IdTokenTestPayload(expiresAt = Now + 15.minutes).expiresIn should {
+            it.shouldBeGreaterThan(14.9.minutes)
+            it.shouldBeLessThanOrEqualTo(15.minutes)
+        }
+        IdTokenTestPayload(expiresAt = Now - 15.minutes).expiresIn should {
+            it.shouldBeGreaterThan((-15.1).minutes)
+            it.shouldBeLessThanOrEqualTo((-15).minutes)
+        }
+    }
+
+    @Test
+    fun expires_in_description() {
+        IdTokenTestPayload(expiresAt = Now + 15.minutes).expiresInDescription shouldBe "expires in 15m"
+        IdTokenTestPayload(expiresAt = Now - 15.minutes).expiresInDescription shouldBe "expired 15m ago"
+    }
+
+
+    @Test
+    fun issued_ago() {
+        IdTokenTestPayload(issuedAt = Now + 15.minutes).issuedAgo should {
+            it.shouldBeGreaterThan(14.9.minutes)
+            it.shouldBeLessThanOrEqualTo(15.minutes)
+        }
+        IdTokenTestPayload(issuedAt = Now - 15.minutes).issuedAgo should {
+            it.shouldBeGreaterThan((-15.1).minutes)
+            it.shouldBeLessThanOrEqualTo((-15).minutes)
+        }
+    }
+
+    @Test
+    fun issued_ago_description() {
+        IdTokenTestPayload(issuedAt = Now + 15.minutes).issuedAgoDescription shouldBe "issued in 15m"
+        IdTokenTestPayload(issuedAt = Now - 15.minutes).issuedAgoDescription shouldBe "issued 15m ago"
+    }
+
+    @Test
+    fun authenticated_ago() {
+        IdTokenTestPayload(authenticatedAt = Now + 15.minutes).authenticatedAgo should {
+            it.shouldBeGreaterThan(14.9.minutes)
+            it.shouldBeLessThanOrEqualTo(15.minutes)
+        }
+        IdTokenTestPayload(authenticatedAt = Now - 15.minutes).authenticatedAgo should {
+            it.shouldBeGreaterThan((-15.1).minutes)
+            it.shouldBeLessThanOrEqualTo((-15).minutes)
+        }
+    }
+
+    @Test
+    fun authenticated_ago_description() {
+        IdTokenTestPayload(authenticatedAt = Now + 15.minutes).authenticatedAgoDescription shouldBe "authenticated in 15m"
+        IdTokenTestPayload(authenticatedAt = Now - 15.minutes).authenticatedAgoDescription shouldBe "authenticated 15m ago"
     }
 }
 

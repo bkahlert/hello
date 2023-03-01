@@ -15,10 +15,9 @@ import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
 import com.bkahlert.hello.clickup.view.Activity.TaskActivity
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.color.Colors
-import com.bkahlert.kommons.compareTo
-import com.bkahlert.kommons.toMomentString
+import com.bkahlert.kommons.time.Now
+import com.bkahlert.kommons.time.toMomentString
 import com.bkahlert.kommons.uri.Uri
-import kotlin.js.Date
 
 /**
  * Some king of icon like meta information
@@ -171,7 +170,7 @@ public sealed interface Activity<ID : Identifier<*>> {
                 }
                 when (val dueDate = task.dueDate) {
                     null -> {}
-                    else -> when (dueDate.compareTo(Date())) {
+                    else -> when (dueDate.compareTo(Now)) {
                         -1 -> add(Meta("due", "red", "calendar", "times", "outline", text = dueDate.toMomentString(false)))
                         +1 -> add(Meta("due", "calendar", "outline", text = dueDate.toMomentString(false)))
                         0 -> add(Meta("due", "yellow", "calendar", "outline", text = dueDate.toMomentString(false)))

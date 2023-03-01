@@ -1,5 +1,6 @@
 package com.bkahlert.kommons.ktor
 
+import com.bkahlert.kommons.auth.Token
 import io.kotest.assertions.throwables.shouldNotThrowAny
 import kotlin.test.Test
 
@@ -9,10 +10,12 @@ class TokenTest {
     fun install() {
         shouldNotThrowAny {
             JsonHttpClient {
-                installTokenAuth(authorizationToken)
+                install(TokenAuthPlugin) { token = authorizationToken }
             }
         }
     }
 }
 
-val authorizationToken = AuthorizationToken("foo-bar")
+val authorizationToken = object : Token {
+    override val token: String get() = "foo-bar"
+}

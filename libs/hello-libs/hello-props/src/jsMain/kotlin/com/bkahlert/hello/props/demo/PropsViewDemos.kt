@@ -6,24 +6,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.hello.data.Resource
 import com.bkahlert.hello.props.data.PropsRepository
-import com.bkahlert.hello.props.domain.GetPropsRepositoryUseCase
 import com.bkahlert.hello.props.domain.GetPropsUseCase
 import com.bkahlert.hello.props.domain.Props
-import com.bkahlert.hello.props.domain.RefreshPropsUseCase
 import com.bkahlert.hello.props.domain.SetPropUseCase
 import com.bkahlert.hello.props.ui.PropsView
-import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.custom.LoadingState
-import com.bkahlert.semanticui.custom.LoadingState.Indeterminate
-import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.Demos
 import com.bkahlert.semanticui.element.Header
-import com.bkahlert.semanticui.element.Icon
-import com.bkahlert.semanticui.element.LabeledIconButton
-import com.bkahlert.semanticui.element.disabled
-import com.bkahlert.semanticui.element.size
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
@@ -46,7 +38,7 @@ public fun PropsViewDemos() {
                 ),
             )
         }
-        Demo("Dynamically filled") {
+        Demo("Dynamically filled") { demoScope ->
             val repository = remember {
                 PropsRepository(
                     InMemoryPropsDataSource(
@@ -56,51 +48,35 @@ public fun PropsViewDemos() {
                                 put("baz", JsonNull)
                             }
                         ),
-                    )
+                    ),
+                    demoScope,
                 )
             }
-            val getPropsRepository = remember { GetPropsRepositoryUseCase(repository) }
-            val getProps = remember { GetPropsUseCase(getPropsRepository) }
-            val refreshProps = remember { RefreshPropsUseCase(getPropsRepository) }
-            val setProp = remember { SetPropUseCase(getPropsRepository) }
+            val getProps = remember { GetPropsUseCase(repository) }
+            val setProp = remember { SetPropUseCase(repository) }
 
-            val props: Props? by getProps().collectAsState(null)
-            var refreshing by remember(props) { mutableStateOf(false) }
+            val propsResource: Resource<Props?>? by getProps().collectAsState(null)
+            var refreshing by remember(propsResource) { mutableStateOf(propsResource == null) }
 
-            val scope = rememberReportingCoroutineScope()
-            LabeledIconButton({
-                if (refreshing) s.disabled()
-                v.size(Mini)
-                onClick {
-                    scope.launch {
+            if (!refreshing) {
+                Header { Text("Saved") }
+                PropsView(
+                    propsResource = propsResource,
+                    loadingState = if (refreshing) LoadingState.On else LoadingState.Off,
+                )
+            }
+
+            Header { Text("Edit") }
+            PropsView(
+                propsResource = propsResource,
+                onUpdate = { id, value ->
+                    demoScope.launch {
                         refreshing = true
-                        refreshProps()
+                        setProp(id, value)
                     }
-                }
-            }) {
-                Icon("sync", loading = refreshing)
-                Text("Refresh")
-            }
-
-            when (val current = props) {
-                null -> PropsView(loadingState = Indeterminate)
-                else -> {
-                    if (!refreshing) {
-                        Header { Text("Saved") }
-                        PropsView(
-                            props = current,
-                            loadingState = if (refreshing) LoadingState.On else LoadingState.Off,
-                        )
-                    }
-
-                    Header { Text("Edit") }
-                    PropsView(
-                        props = current,
-                        onUpdate = { id, value -> scope.launch { setProp(id, value) } },
-                        loadingState = if (refreshing) LoadingState.On else LoadingState.Off,
-                    )
-                }
-            }
+                },
+                loadingState = if (refreshing) LoadingState.On else LoadingState.Off,
+            )
         }
     }
 }

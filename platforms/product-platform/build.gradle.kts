@@ -13,4 +13,11 @@ dependencies {
     api(platform(libs.kotlinx.coroutines.bom))
     api(platform(libs.kotlinx.serialization.bom))
     api(platform(libs.ktor.bom))
+
+    // Delta state changes for flows, https://github.com/tunjid/Mutator
+    constraints {
+        val mutatorVersion = "0.0.7"
+        api("com.tunjid.mutator:core:$mutatorVersion")
+        api("com.tunjid.mutator:coroutines:$mutatorVersion")
+    }
 }

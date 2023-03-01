@@ -8,6 +8,7 @@ import com.bkahlert.semanticui.collection.error
 import com.bkahlert.semanticui.collection.floating
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
+import com.bkahlert.semanticui.element.SubHeader
 import com.bkahlert.semanticui.module.Accordion
 import com.bkahlert.semanticui.module.Dropdown
 import org.jetbrains.compose.web.css.textAlign
@@ -16,22 +17,32 @@ import org.jetbrains.compose.web.dom.Text
 
 @Composable
 public fun ErrorMessage(
-    throwable: Throwable,
-    message: String = throwable.errorMessage,
+    message: String?,
+    throwable: Throwable? = null,
     attrs: SemanticAttrBuilderContext<MessageElement>? = null,
     content: SemanticContentBuilder<MessageElement>? = null,
 ) {
-    ErrorMessage(message, attrs) {
+    ErrorMessage(attrs) {
+        when (message) {
+            null -> throwable?.message?.also { Header { Text(it) } }
+            else -> {
+                Header { Text(message) }
+                throwable?.message?.also { SubHeader { Text(it) } }
+            }
+        }
         content?.invoke(this)
-        Accordion {
-            Dropdown("Stacktrace") {
-                Pre({
-                    style {
-                        textAlign("left")
-                        textOverflow(whiteSpace = null)
+        when (throwable) {
+            null -> {}
+            else -> Accordion {
+                Dropdown("Stacktrace") {
+                    Pre({
+                        style {
+                            textAlign("left")
+                            textOverflow(whiteSpace = null)
+                        }
+                    }) {
+                        Text(throwable.stackTraceToString())
                     }
-                }) {
-                    Text(throwable.stackTraceToString())
                 }
             }
         }
@@ -39,17 +50,18 @@ public fun ErrorMessage(
 }
 
 @Composable
-public fun ErrorMessage(
-    message: String,
-    attrs: SemanticAttrBuilderContext<MessageElement>? = null,
-    content: SemanticContentBuilder<MessageElement>? = null,
+@Suppress("NOTHING_TO_INLINE") // = avoidance of unnecessary recomposition scope
+public inline fun ErrorMessage(
+    throwable: Throwable?,
+    noinline attrs: SemanticAttrBuilderContext<MessageElement>? = null,
+    noinline content: SemanticContentBuilder<MessageElement>? = null,
 ) {
-    ErrorMessage(attrs) {
-        Header {
-            Text(message)
-        }
-        content?.invoke(this)
-    }
+    ErrorMessage(
+        message = null,
+        throwable = throwable,
+        attrs = attrs,
+        content = content,
+    )
 }
 
 @Composable

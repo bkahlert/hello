@@ -1,26 +1,23 @@
 package com.bkahlert.hello.app.ui
 
-import com.bkahlert.kommons.text.simpleKebabCasedName
+import com.bkahlert.hello.user.domain.User
 
-/** The state of a UI element. */
-public sealed class UiState<out T> {
+public sealed interface UiState {
 
     public data class Loading(
-        public val name: String,
-    ) : UiState<Nothing>() {
-        public companion object {
-            public inline operator fun <reified T : Any> invoke(): Loading =
-                Loading(T::class.simpleKebabCasedName?.replace('-', ' ') ?: "unknown")
-        }
+        public val models: List<String>,
+    ) : UiState {
+        public constructor(vararg models: String) : this(models.asList())
     }
 
-    public data class Loaded<out T>(
-        /** The successfully loaded data. */
-        public val model: T,
-    ) : UiState<T>()
+    public data class Loaded(
+        public val user: User?,
+    ) : UiState
 
     public data class Failed(
+        /** The name of the failed operation. */
+        val operation: String,
         /** The cause of this failed state. */
         val cause: Throwable,
-    ) : UiState<Nothing>()
+    ) : UiState
 }

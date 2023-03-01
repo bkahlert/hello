@@ -26,7 +26,7 @@ public class ClickUpStorage(private val storage: Storage) {
 public class Selections(private val storage: Storage) {
     public operator fun get(team: Team): Selection = get(team.id)
     public operator fun get(teamID: TeamID): Selection {
-        val typedStringValues: List<String> = storage[teamID.stringValue]?.let { JSON.parse(it) } ?: emptyList()
+        val typedStringValues: Array<String> = storage[teamID.stringValue]?.let { JSON.parse(it) } ?: emptyArray()
         return typedStringValues.map { Identifier.of(it) }
     }
 

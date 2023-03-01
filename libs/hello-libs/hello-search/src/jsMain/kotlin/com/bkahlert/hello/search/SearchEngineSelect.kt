@@ -124,7 +124,7 @@ public fun SearchEngineSelect(
             Item {
                 Div({
                     style {
-                        backgroundImage("url(rainbow-gradient.svg)");
+                        backgroundImage("url($RainbowFlower)");
                         backgroundRepeat("no-repeat")
                         backgroundSize("contain")
                         width(2.em)
@@ -154,6 +154,7 @@ public fun SearchEngineSelect(
         }
     }
 }
+
 
 @Composable
 public fun SearchEngineDropdown(

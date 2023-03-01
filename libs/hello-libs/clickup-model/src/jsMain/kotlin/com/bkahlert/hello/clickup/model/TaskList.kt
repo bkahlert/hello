@@ -1,7 +1,8 @@
 package com.bkahlert.hello.clickup.model
 
-import com.bkahlert.hello.clickup.serialization.DateAsMilliseconds
 import com.bkahlert.kommons.color.Color
+import com.bkahlert.kommons.time.InstantAsEpochMilliseconds
+import com.bkahlert.kommons.time.InstantAsEpochMillisecondsSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -15,8 +16,8 @@ public data class TaskList(
     @SerialName("priority") val priority: TaskListPriority?,
     @SerialName("assignee") val assignee: Assignee?,
     @SerialName("task_count") val taskCount: Int?,
-    @SerialName("due_date") val dueDate: DateAsMilliseconds?,
-    @SerialName("start_dare") val startDate: DateAsMilliseconds?,
+    @SerialName("due_date") @Serializable(InstantAsEpochMillisecondsSerializer::class) val dueDate: InstantAsEpochMilliseconds?,
+    @SerialName("start_dare") @Serializable(InstantAsEpochMillisecondsSerializer::class) val startDate: InstantAsEpochMilliseconds?,
     @SerialName("folder") val folder: FolderPreview?,
     @SerialName("space") val space: SpacePreview?,
     @SerialName("archived") val archived: Boolean,

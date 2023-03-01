@@ -1,6 +1,7 @@
 package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Text
+import org.w3c.dom.HTMLElement
 
 @Stable
 public interface ActivityDropdownState : DropdownState<Activity<*>> {
@@ -135,7 +137,13 @@ public fun ActivityDropdown(
                 }
                 Icon("search")
             }
-            Menu({ v.scrolling() }) {
+            Menu({
+                v.scrolling()
+            }) {
+                DisposableEffect(Unit) {
+                    (scopeElement as? HTMLElement)?.style?.setProperty("margin-right", "0", "important")
+                    onDispose { }
+                }
                 state.groups.onEachIndexed { index, group ->
                     if (index > 0) Divider()
                     ActivityGroupHeader(group, onCreate = group.listId?.let { ({ state.onCreate(it, query.takeUnless { it.isEmpty() }) }) })

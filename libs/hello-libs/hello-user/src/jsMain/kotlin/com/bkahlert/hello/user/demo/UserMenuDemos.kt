@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.bkahlert.hello.data.Resource
 import com.bkahlert.hello.session.data.SessionRepository
 import com.bkahlert.hello.session.demo.FakeSessionDataSource
 import com.bkahlert.hello.session.demo.TestUserInfo
@@ -15,13 +16,12 @@ import com.bkahlert.hello.session.domain.UnauthorizeUseCase
 import com.bkahlert.hello.user.domain.GetUserUseCase
 import com.bkahlert.hello.user.domain.User
 import com.bkahlert.hello.user.ui.UserMenu
-import com.bkahlert.kommons.InstantAsEpochSeconds
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.auth.OpenIDStandardClaims
 import com.bkahlert.kommons.randomString
+import com.bkahlert.kommons.time.InstantAsEpochSeconds
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.uri.Uri
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
-import com.bkahlert.semanticui.custom.LoadingState
 import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.Demos
@@ -45,15 +45,15 @@ public fun UserMenuDemos() {
         Demo("Filled") {
             UserMenu(User.JohnDoe)
         }
-        Demo("Dynamically filled") {
-            val repository = remember { SessionRepository(FakeSessionDataSource()) }
-            val getUserInfo = remember { GetUserUseCase(repository) }
+        Demo("Dynamically filled") { demoScope ->
+            val repository = remember { SessionRepository(FakeSessionDataSource(), demoScope) }
+            val getUser = remember { GetUserUseCase(repository) }
             val authorizeUseCase = remember { AuthorizeUseCase(repository) }
             val reauthorizeUseCase = remember { ReauthorizeUseCase(repository) }
             val unauthorizeUseCase = remember { UnauthorizeUseCase(repository) }
 
-            val user: User? by getUserInfo().collectAsState(null)
-            var refreshing by remember(user) { mutableStateOf(false) }
+            val userResource: Resource<User?>? by getUser().collectAsState(null)
+            var refreshing by remember(userResource) { mutableStateOf(userResource == null) }
 
             val scope = rememberReportingCoroutineScope()
             LabeledIconButton({
@@ -70,26 +70,17 @@ public fun UserMenuDemos() {
                 Text("Refresh")
             }
 
-            when (val current = user) {
-                null -> {
-                    UserMenu(
-                        loadingState = if (refreshing) LoadingState.On else LoadingState.Off,
-                        onSignIn = {
-                            refreshing = true
-                            scope.launch { authorizeUseCase() }
-                        },
-                    )
-                }
-
-                else -> UserMenu(
-                    loadingState = if (refreshing) LoadingState.On else LoadingState.Off,
-                    user = current,
-                    onSignOut = {
-                        refreshing = true
-                        scope.launch { unauthorizeUseCase() }
-                    },
-                )
-            }
+            UserMenu(
+                userResource = userResource,
+                onSignIn = {
+                    refreshing = true
+                    scope.launch { authorizeUseCase() }
+                },
+                onSignOut = {
+                    refreshing = true
+                    scope.launch { unauthorizeUseCase() }
+                },
+            )
         }
     }
 }

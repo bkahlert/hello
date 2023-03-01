@@ -6,9 +6,9 @@ import com.bkahlert.kommons.js.grouping
 
 public class ReauthorizeUseCase(private val repository: SessionRepository) {
     private val logger by ConsoleLogging
-    public suspend operator fun invoke() {
+    public suspend operator fun invoke(force: Boolean = false) {
         logger.grouping(::invoke) {
-            repository.reauthorize()
+            repository.reauthorize(force = force)
         }
     }
 }

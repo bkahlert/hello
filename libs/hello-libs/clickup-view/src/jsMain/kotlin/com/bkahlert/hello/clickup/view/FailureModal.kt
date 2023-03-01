@@ -38,9 +38,9 @@ import org.jetbrains.compose.web.dom.Text
 public fun FailureModal(
     operation: String,
     cause: Throwable,
-    onRetry: () -> Unit = { console.log("onRetry()") },
-    onIgnore: () -> Unit = { console.log("onIgnore()") },
-    onSignOut: () -> Unit = { console.log("onSignOut()") },
+    onRetry: (() -> Unit)? = null,
+    onIgnore: (() -> Unit)? = null,
+    onSignOut: (() -> Unit)? = null,
 ) {
 
     val warning = cause is ClickUpException
@@ -49,11 +49,19 @@ public fun FailureModal(
     BasicModal({
         v.size(Small)
         b.onApprove = {
-            if (it.dataAttr("action") == "sign-out") onSignOut()
-            else onRetry()
+            if (it.dataAttr("action") == "sign-out") {
+                if (onSignOut != null) onSignOut()
+            } else {
+                if (onRetry != null) onRetry()
+            }
             true
         }
-        b.onDeny = { onIgnore();true }
+        b.onDeny = {
+            if (onIgnore != null) {
+                onIgnore()
+            }
+            true
+        }
         b.closable = false
     }) {
         IconHeader(*icon) {
@@ -74,25 +82,31 @@ public fun FailureModal(
             }
         }
         Actions {
-            Button({
-                v.approve().colored(Yellow).inverted()
-            }) {
-                Icon("redo", "alternate")
-                Text("Retry")
+            if (onRetry != null) {
+                Button({
+                    v.approve().colored(Yellow).inverted()
+                }) {
+                    Icon("redo", "alternate")
+                    Text("Retry")
+                }
             }
-            BasicButton({
-                v.deny().colored(Yellow)
-                onClick { onIgnore() }
-            }) {
-                Icon("remove")
-                Text("Ignore")
+            if (onIgnore != null) {
+                BasicButton({
+                    v.deny().colored(Yellow)
+                    onClick { onIgnore() }
+                }) {
+                    Icon("remove")
+                    Text("Ignore")
+                }
             }
-            Button({
-                v.approve().colored(Red).inverted()
-                data("action", "sign-out")
-            }) {
-                Icon("sign-out")
-                Text("Sign out")
+            if (onSignOut != null) {
+                Button({
+                    v.approve().colored(Red).inverted()
+                    data("action", "sign-out")
+                }) {
+                    Icon("sign-out")
+                    Text("Sign out")
+                }
             }
         }
     }

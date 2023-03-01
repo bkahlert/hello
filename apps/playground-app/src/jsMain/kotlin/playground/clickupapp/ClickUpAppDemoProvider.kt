@@ -7,38 +7,59 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.app.ui.LandingScreen
 import com.bkahlert.hello.app.ui.rememberAppViewModel
-import com.bkahlert.hello.data.DataRetrieval
+import com.bkahlert.hello.data.Resource
 import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
 import com.bkahlert.hello.environment.data.EnvironmentRepository
 import com.bkahlert.hello.environment.ui.EnvironmentView
+import com.bkahlert.hello.props.data.PropsRepository
+import com.bkahlert.hello.props.demo.InMemoryPropsDataSource
+import com.bkahlert.hello.props.domain.Props
+import com.bkahlert.hello.session.demo.FakeSessionDataSource
 import com.bkahlert.semanticui.custom.ErrorMessage
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.DemoProvider
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
 
 val ClickUpAppDemoProvider: DemoProvider = DemoProvider(
     id = "clickup-app",
     name = "ClickUp App",
     {
-        Demo("Using Mock") {
-            ClickUpApp()
+        val attemptConnect = false
+        Demo("Using Mock (attemptConnect=$attemptConnect)") { demoScope ->
+            if (attemptConnect) {
+                ClickUpApp(
+                    rememberAppViewModel(
+                        sessionDataSource = FakeSessionDataSource(initiallyAuthorized = true),
+                        propsRepository = PropsRepository(
+                            propsDataSource = InMemoryPropsDataSource(Props(buildJsonObject {
+                                put("clickup", buildJsonObject { put("api-token", JsonPrimitive("pk_123_abc")) })
+                            })),
+                            externalScope = demoScope,
+                        )
+                    )
+                )
+            } else {
+                ClickUpApp()
+            }
         }
     },
     {
         Demo("Using Environment") { demoScope ->
             var showLandingScreen by remember { mutableStateOf(true) }
             val environmentRepository = remember { EnvironmentRepository(DynamicEnvironmentDataSource(), demoScope) }
-            val environmentRetrieval by environmentRepository.environmentFlow().collectAsState(DataRetrieval.Ongoing)
+            val environmentResource by environmentRepository.environmentFlow().collectAsState(null)
             if (showLandingScreen) {
                 LandingScreen(onTimeout = { showLandingScreen = false })
             } else {
-                when (val retrieval = environmentRetrieval) {
-                    is DataRetrieval.Ongoing -> showLandingScreen = true
-                    is DataRetrieval.Succeeded -> {
-                        ClickUpApp(rememberAppViewModel(environment = retrieval.data))
-                        EnvironmentView(retrieval.data)
+                when (val resource = environmentResource) {
+                    null -> showLandingScreen = true
+                    is Resource.Success -> {
+                        ClickUpApp(rememberAppViewModel(environment = resource.data))
+                        EnvironmentView(resource.data)
                     }
 
-                    is DataRetrieval.Failed -> ErrorMessage(retrieval.cause, retrieval.message)
+                    is Resource.Failure -> ErrorMessage(resource.message, resource.cause)
                 }
             }
         }

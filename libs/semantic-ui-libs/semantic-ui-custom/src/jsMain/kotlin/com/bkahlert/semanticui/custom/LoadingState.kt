@@ -1,7 +1,8 @@
 package com.bkahlert.semanticui.custom
 
 import androidx.compose.runtime.Composable
-import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
+import com.bkahlert.semanticui.core.attributes.SemanticAttrsScope
+import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.element.Loader
 import com.bkahlert.semanticui.element.LoaderElement
 import com.bkahlert.semanticui.element.active
@@ -10,6 +11,7 @@ import com.bkahlert.semanticui.element.indeterminate
 import com.bkahlert.semanticui.module.Dimmer
 import com.bkahlert.semanticui.module.DimmerElement
 import org.jetbrains.compose.web.attributes.AttrsScope
+import org.jetbrains.compose.web.css.minHeight
 import org.jetbrains.compose.web.dom.ElementScope
 import org.w3c.dom.Element
 
@@ -22,23 +24,28 @@ import org.w3c.dom.Element
  *   that should indicate the loading state
  */
 public sealed class LoadingState(
-    public val dimmableAttrs: AttrsScope<Element>.() -> Unit,
+    public val dimmableAttrs: AttrsScope<Element>.(
+        dimmableAttrs: DimmableAttrsBuilderContext?,
+    ) -> Unit,
     public val dimmableContent: @Composable ElementScope<Element>.(
-        SemanticAttrBuilderContext<DimmerElement>?,
-        SemanticAttrBuilderContext<LoaderElement>?,
+        DimmableContentAttrsBuilderContext<DimmerElement>?,
+        DimmableContentAttrsBuilderContext<LoaderElement>?,
         String?,
     ) -> Unit,
 ) {
 
     public object On : LoadingState(
-        { classes("dimmable", "dimmed") },
+        { dimmableAttrs ->
+            dimmableAttrs?.invoke(this, On)
+            classes("dimmable", "dimmed")
+        },
         { dimmerAttrs, loaderAttrs, loaderText ->
             Dimmer({
-                dimmerAttrs?.invoke(this)
+                dimmerAttrs?.invoke(this, On)
                 classes("simple")
             }) {
                 Loader(loaderText) {
-                    loaderAttrs?.invoke(this)
+                    loaderAttrs?.invoke(this, On)
                     s.active()
                 }
             }
@@ -46,14 +53,17 @@ public sealed class LoadingState(
     )
 
     public object Indeterminate : LoadingState(
-        { classes("dimmable", "dimmed") },
+        { dimmableAttrs ->
+            dimmableAttrs?.invoke(this, Indeterminate)
+            classes("dimmable", "dimmed")
+        },
         { dimmerAttrs, loaderAttrs, loaderText ->
             Dimmer({
-                dimmerAttrs?.invoke(this)
+                dimmerAttrs?.invoke(this, Indeterminate)
                 classes("simple")
             }) {
                 Loader(loaderText) {
-                    loaderAttrs?.invoke(this)
+                    loaderAttrs?.invoke(this, Indeterminate)
                     s.indeterminate()
                 }
             }
@@ -61,14 +71,17 @@ public sealed class LoadingState(
     )
 
     public object Off : LoadingState(
-        { classes("dimmable") },
+        { dimmableAttrs ->
+            dimmableAttrs?.invoke(this, Off)
+            classes("dimmable")
+        },
         { dimmerAttrs, loaderAttrs, loaderText ->
             Dimmer({
-                dimmerAttrs?.invoke(this)
+                dimmerAttrs?.invoke(this, Off)
                 classes("simple")
             }) {
                 Loader(loaderText) {
-                    loaderAttrs?.invoke(this)
+                    loaderAttrs?.invoke(this, Off)
                     s.disabled()
                 }
             }
@@ -76,13 +89,19 @@ public sealed class LoadingState(
     )
 }
 
+/** Function that can be used to manipulate the dimmable [Element] attributes depending on the applied [LoadingState]. */
+public typealias DimmableAttrsBuilderContext = AttrsScope<Element>.(LoadingState) -> Unit
+/** Function that can be used to manipulate the corresponding [SemanticElement] attributes depending on the applied [LoadingState]. */
+public typealias DimmableContentAttrsBuilderContext<TSemantic> = SemanticAttrsScope<TSemantic>.(LoadingState) -> Unit
+
 /**
  * Applies the [loadingState] to the [AttrsScope] of this element.
  */
 public fun AttrsScope<Element>.apply(
     loadingState: LoadingState,
+    dimmableAttrs: DimmableAttrsBuilderContext? = { if (it != LoadingState.Off) style { minHeight("5em") } },
 ) {
-    loadingState.dimmableAttrs(this)
+    loadingState.dimmableAttrs(this, dimmableAttrs)
 }
 
 /**
@@ -93,9 +112,9 @@ public fun AttrsScope<Element>.apply(
 @Composable
 public fun ElementScope<Element>.apply(
     loadingState: LoadingState,
-    dimmerAttrs: SemanticAttrBuilderContext<DimmerElement>? = null,
+    dimmerAttrs: DimmableContentAttrsBuilderContext<DimmerElement>? = null,
     loaderText: String? = null,
-    loaderAttrs: SemanticAttrBuilderContext<LoaderElement>? = null,
+    loaderAttrs: DimmableContentAttrsBuilderContext<LoaderElement>? = null,
 ) {
     loadingState.dimmableContent(this, dimmerAttrs, loaderAttrs, loaderText)
 }

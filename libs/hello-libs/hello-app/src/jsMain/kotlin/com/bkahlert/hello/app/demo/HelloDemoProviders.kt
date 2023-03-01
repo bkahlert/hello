@@ -9,7 +9,8 @@ import com.bkahlert.hello.app.ui.App
 import com.bkahlert.hello.app.ui.HelloImageFixtures
 import com.bkahlert.hello.app.ui.LandingScreen
 import com.bkahlert.hello.app.ui.rememberAppViewModel
-import com.bkahlert.hello.data.DataRetrieval
+import com.bkahlert.hello.data.Resource.Failure
+import com.bkahlert.hello.data.Resource.Success
 import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
 import com.bkahlert.hello.environment.data.EnvironmentRepository
 import com.bkahlert.semanticui.custom.ErrorMessage
@@ -29,14 +30,14 @@ public val HelloAppDemoProvider: DemoProvider = DemoProvider(
         Demo("Using Environment") { demoScope ->
             var showLandingScreen by remember { mutableStateOf(true) }
             val environmentRepository = remember { EnvironmentRepository(DynamicEnvironmentDataSource(), demoScope) }
-            val environmentRetrieval by environmentRepository.environmentFlow().collectAsState(DataRetrieval.Ongoing)
+            val environmentResource by environmentRepository.environmentFlow().collectAsState(null)
             if (showLandingScreen) {
                 LandingScreen(onTimeout = { showLandingScreen = false })
             } else {
-                when (val retrieval = environmentRetrieval) {
-                    is DataRetrieval.Ongoing -> showLandingScreen = true
-                    is DataRetrieval.Succeeded -> App(rememberAppViewModel(environment = retrieval.data))
-                    is DataRetrieval.Failed -> ErrorMessage(retrieval.cause, retrieval.message)
+                when (val resource = environmentResource) {
+                    null -> showLandingScreen = true
+                    is Success -> App(rememberAppViewModel(environment = resource.data))
+                    is Failure -> ErrorMessage(resource.message, resource.cause)
                 }
             }
         }

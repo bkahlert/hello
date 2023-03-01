@@ -1,11 +1,11 @@
 package com.bkahlert.kommons.auth
 
-import com.bkahlert.kommons.InstantAsEpochSeconds
-import com.bkahlert.kommons.InstantAsEpochSecondsSerializer
-import com.bkahlert.kommons.Now
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.json.SingleElementUnwrappingJsonArraySerializer
-import com.bkahlert.kommons.toMomentString
+import com.bkahlert.kommons.time.InstantAsEpochSeconds
+import com.bkahlert.kommons.time.InstantAsEpochSecondsSerializer
+import com.bkahlert.kommons.time.Now
+import com.bkahlert.kommons.time.toMomentString
 import com.bkahlert.kommons.uri.Uri
 import io.ktor.util.decodeBase64String
 import kotlinx.serialization.SerialName
@@ -218,32 +218,29 @@ public interface JsonWebTokenPayload {
     }
 }
 
+/** [Duration] in which this token expires. */
 public val JsonWebTokenPayload.expiresIn: Duration
     get() = expiresAt - Now
 
+/** Descriptive text stating when this token expires, for example `expires in 5m`  */
 public val JsonWebTokenPayload.expiresInDescription: String
-    get() = when (expiresIn) {
-        in Duration.ZERO..Duration.INFINITE -> "expires ${expiresIn.toMomentString()}" // "expires in 5 minutes"
-        else -> "expired ${expiresIn.toMomentString()}" // "expired 5 minutes ago"
-    }
+    get() = with(expiresIn) { "${if (isNegative()) "expired" else "expires"} ${toMomentString()}" }
 
+/** [Duration] this token was issued ago. */
 public val JsonWebTokenPayload.issuedAgo: Duration
     get() = issuedAt - Now
 
+/** Descriptive text stating when this token was issued, for example `issued 5m ago`  */
 public val JsonWebTokenPayload.issuedAgoDescription: String
-    get() = when (issuedAgo) {
-        in Duration.ZERO..Duration.INFINITE -> "issued ${issuedAgo.toMomentString()}" // "issued in 5 minutes"
-        else -> "issued ${issuedAgo.toMomentString()}" // "expired 5 minutes ago"
-    }
+    get() = with(issuedAgo) { "issued ${toMomentString()}" }
 
+/** [Duration] passed since the authentication took place. */
 public val JsonWebTokenPayload.authenticatedAgo: Duration
     get() = authenticatedAt - Now
 
+/** Descriptive text stating how long ago the authentication took place, for example `authenticated 5m ago`  */
 public val JsonWebTokenPayload.authenticatedAgoDescription: String
-    get() = when (authenticatedAgo) {
-        in Duration.ZERO..Duration.INFINITE -> "authenticated ${authenticatedAgo.toMomentString()}" // "authenticated in 5 minutes"
-        else -> "authenticated ${authenticatedAgo.toMomentString()}" // "expired 5 minutes ago"
-    }
+    get() = with(authenticatedAgo) { "authenticated ${toMomentString()}" }
 
 @Serializable
 public data class Identity(

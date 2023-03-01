@@ -1,11 +1,12 @@
 package com.bkahlert.semanticui.demo.custom
 
+import com.bkahlert.semanticui.core.SemanticUiLogo
 import com.bkahlert.semanticui.demo.DemoProvider
 
 public val SemanticUiCustomDemoProvider: DemoProvider = DemoProvider(
     id = "semantic-ui-custom",
     name = "Custom",
-    logo = "https://semantic-ui.com/images/logo.png",
+    logo = SemanticUiLogo,
     {
         DemoDemos()
         DemoViewDemos()

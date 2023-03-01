@@ -12,7 +12,6 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-net")
-                implementation("com.bkahlert.kommons:kommons-inc")
                 implementation("com.bkahlert.semantic-ui:semantic-ui")
                 implementation("com.bkahlert.hello:clickup")
                 implementation("com.bkahlert.hello:hello")
