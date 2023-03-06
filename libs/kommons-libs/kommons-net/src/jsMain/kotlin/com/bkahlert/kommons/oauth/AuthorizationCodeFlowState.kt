@@ -11,11 +11,13 @@ import com.bkahlert.kommons.auth.TokenInfo
 import com.bkahlert.kommons.auth.TokenInfoStorage
 import com.bkahlert.kommons.auth.UserInfo
 import com.bkahlert.kommons.auth.diagnostics
+import com.bkahlert.kommons.encodeBase64Url
 import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.ktor.JsonHttpClient
 import com.bkahlert.kommons.ktor.interceptOnce
 import com.bkahlert.kommons.onRight
+import com.bkahlert.kommons.sha256
 import com.bkahlert.kommons.uri.toUri
 import com.bkahlert.kommons.uri.toUrl
 import io.ktor.client.HttpClient
@@ -36,21 +38,16 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.URLBuilder
+import io.ktor.util.generateNonce
 import io.ktor.utils.io.CancellationException
 import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.browser.sessionStorage
 import kotlinx.browser.window
-import kotlinx.coroutines.await
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.job
-import org.khronos.webgl.ArrayBuffer
-import org.khronos.webgl.Uint32Array
-import org.khronos.webgl.Uint8Array
-import org.khronos.webgl.get
 import org.w3c.dom.url.URL
 import kotlin.coroutines.coroutineContext
-import kotlin.js.Promise
 import kotlin.js.json
 
 /**
@@ -71,10 +68,10 @@ public sealed class AuthorizationCodeFlowState(
 
         public override suspend fun authorize(): Session {
             logger.info("Preparing authorization with ${authorizationServer.authorizationEndpoint}")
-            val state = generateNonce()
-            val codeVerifier = generateNonce()
+            val state = generateNonce() + generateNonce()
+            val codeVerifier = generateNonce() + generateNonce()
             sessionStorage.setItem("codeVerifier-$state", codeVerifier)
-            val codeChallenge = base64URLEncode(sha256(codeVerifier))
+            val codeChallenge = sha256(codeVerifier).encodeBase64Url()
 
             val authorizationUrl = URLBuilder(authorizationServer.authorizationEndpoint.toUrl()).apply {
                 parameters.apply {
@@ -362,42 +359,3 @@ public val TokenInfo.bearerTokens: BearerTokens?
         if (!tokenType.equals("bearer", ignoreCase = true)) return null
         return refreshToken?.let { BearerTokens(accessToken.token, it.token) }
     }
-
-
-private external object crypto {
-    fun getRandomValues(array: Uint32Array): Uint32Array
-    val subtle: SubtleCrypto
-}
-
-private external class SubtleCrypto {
-    fun digest(algorithm: String, data: Uint8Array): Promise<ArrayBuffer>
-}
-
-private external class TextEncoder {
-    fun encode(input: String): Uint8Array
-}
-
-private suspend fun sha256(str: String): ArrayBuffer {
-    return crypto.subtle.digest("SHA-256", TextEncoder().encode(str)).await()
-}
-
-private suspend fun generateNonce(): String {
-    val uint32Array = Uint32Array(4)
-    console.log("uint32Array", uint32Array)
-    val randomValues = crypto.getRandomValues(uint32Array)
-    console.log("randomValues", randomValues)
-    val randomValuesString = 0.until(randomValues.length).joinToString("") { randomValues[it].toString() }
-    console.log("randomValuesString", randomValuesString)
-    val hash = sha256(randomValuesString)
-    console.log("hash", hash)
-    // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
-    val uint8Array = Uint8Array(hash)
-    console.log("uint8Array", uint8Array)
-    return 0.until(uint8Array.length).joinToString("") {
-        uint8Array[it].toString(16).padStart(2, '0')
-    }
-}
-
-private fun base64URLEncode(
-    @Suppress("UNUSED_PARAMETER") string: ArrayBuffer,
-): String = js("btoa(String.fromCharCode.apply(null, new Uint8Array(string))).replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '')") as String

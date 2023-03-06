@@ -3,6 +3,7 @@ package com.bkahlert.kommons.auth
 import com.bkahlert.kommons.auth.JsonWebTokenPayload.IdTokenPayload
 import com.bkahlert.kommons.time.DurationAsSeconds
 import com.bkahlert.kommons.time.DurationAsSecondsSerializer
+import com.bkahlert.kommons.time.asEmoji
 import com.bkahlert.kommons.time.toMomentString
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -38,6 +39,7 @@ public val IdToken.diagnostics: Map<String, String?>
 public val IdTokenPayload.diagnostics: Map<String, String?>
     get() = buildMap {
         put("Subject", subjectIdentifier)
+        put("Email", listOfNotNull(email, emailVerified?.asEmoji()).joinToString(" "))
         put("Issuer", issuerIdentifier.toString())
         put("Audiences", audiences.joinToString())
         put("Validity", "$expiresInDescription / $issuedAgoDescription / $authenticatedAgoDescription")

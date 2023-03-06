@@ -1,0 +1,41 @@
+/*******************************
+        Import Directives
+*******************************/
+
+/*------------------
+       Theme
+-------------------*/
+
+@theme: @@element;
+
+/*--------------------
+   Site Variables
+---------------------*/
+
+/* Default site.variables */
+@import (optional) "@{themesFolder}/default/globals/site.variables";
+
+/* Packaged site.variables */
+@import (optional) "@{themesFolder}/@{site}/globals/site.variables";
+
+/* Component's site.variables */
+@import (optional) "@{themesFolder}/@{theme}/globals/site.variables";
+
+/*-------------------
+ Component Variables
+---------------------*/
+
+/* Default */
+@import (optional) "@{themesFolder}/default/@{type}s/@{element}.variables";
+
+/* Packaged Theme */
+@import (optional) "@{themesFolder}/@{theme}/@{type}s/@{element}.variables";
+
+
+/*------------------
+     Overrides
+-------------------*/
+
+.loadUIOverrides() {
+  @import (optional) "@{themesFolder}/@{theme}/@{type}s/@{element}.overrides";
+}

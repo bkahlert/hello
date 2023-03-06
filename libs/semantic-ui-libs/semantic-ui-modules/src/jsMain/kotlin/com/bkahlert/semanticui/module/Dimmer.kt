@@ -1,6 +1,7 @@
 package com.bkahlert.semanticui.module
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import com.bkahlert.semanticui.core.attributes.Modifier.State.Active
 import com.bkahlert.semanticui.core.attributes.Modifier.State.Disabled
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation
@@ -10,11 +11,9 @@ import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
 import com.bkahlert.semanticui.core.dom.SemanticElement
-import com.bkahlert.semanticui.core.jQuery
+import kotlinx.dom.hasClass
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
-import kotlin.js.Json
-import kotlin.js.json
 
 public interface DimmerElement : SemanticElement<HTMLDivElement>
 public interface DimmerContentElement : SemanticElement<HTMLDivElement>
@@ -41,8 +40,6 @@ public fun VariationsScope<SemanticElement<Element>>.dimmable(): VariationsScope
 /** [Variation.VerticallyAligned](https://semantic-ui.com/modules/dimmer.html#vertically-aligned) */
 public fun VariationsScope<DimmerElement>.verticallyAligned(value: Variation.VerticallyAligned): VariationsScope<DimmerElement> = +value
 
-// SimpleDimmer, https://semantic-ui.com/modules/dimmer.html#simple-dimmer
-
 /**
  * [Variation.Inverted](https://semantic-ui.com/modules/dimmer.html#inverted)
  * that can be applied to the [Dimmer] itself and its content.
@@ -50,25 +47,38 @@ public fun VariationsScope<DimmerElement>.verticallyAligned(value: Variation.Ver
 public fun VariationsScope<SemanticElement<Element>>.inverted(): VariationsScope<SemanticElement<Element>> = +Variation.Inverted
 
 
-private fun jQuery.dimmer(options: Json): jQuery =
-    asDynamic().dimmer(options).unsafeCast<jQuery>()
+public external interface SemanticDimmer : SemanticModule {
+    public fun dimmer(behavior: String, vararg args: Any?): dynamic
+}
 
-public fun jQuery.dimmer(behavior: String, vararg args: Any?): jQuery =
-    asDynamic().dimmer.apply(this, arrayOf(behavior, *args)).unsafeCast<jQuery>()
+public fun Element.dimmer(settings: SemanticDimmerSettings): SemanticDimmer = SemanticUI.create(this, "dimmer", settings)
+
+public external interface SemanticDimmerSettings : SemanticModuleSettings {
+    /** Callback on element show */
+    public var onShow: (() -> Unit)?
+
+    /** Callback on element hide */
+    public var onHide: (() -> Unit)?
+
+    /** Callback on element show or hide */
+    public var onChange: (() -> Unit)?
+}
+
+// @formatter:off
+/** Shows the dimmer */
+public inline fun SemanticDimmer.show(noinline callback: (() -> Unit)? = null): SemanticDimmer = dimmer("show", callback).unsafeCast<SemanticDimmer>()
+/** Hides the dimmer */
+public inline fun SemanticDimmer.hide(noinline callback: (() -> Unit)? = null): SemanticDimmer = dimmer("hide", callback).unsafeCast<SemanticDimmer>()
+public inline fun SemanticDimmer.destroy(): dynamic = dimmer("destroy")
+// @formatter:on
+
 
 /**
- * An interface to interact with a [SemanticUI dimmer](https://semantic-ui.com/modules/dimmer.html)
- * using the specified [options].
- */
-public fun jQuery.dimmer(vararg options: Pair<String, Any?>): jQuery = dimmer(json(*options))
-
-
-/**
- * Creates a [SemanticUI dimmer](https://semantic-ui.com/modules/dimmer.html#dimmer) or
- * a [SemanticUI content dimmer](https://semantic-ui.com/modules/dimmer.html#content-dimmer) if [content] is specified.
+ * Creates a simple [SemanticUI dimmer](https://semantic-ui.com/modules/dimmer.html#dimmer) or
+ * a simple [SemanticUI content dimmer](https://semantic-ui.com/modules/dimmer.html#content-dimmer) if [content] is specified.
  */
 @Composable
-public fun Dimmer(
+public fun SimpleDimmer(
     attrs: SemanticAttrBuilderContext<DimmerElement>? = null,
     content: SemanticContentBuilder<DimmerContentElement>? = null,
 ) {
@@ -84,11 +94,42 @@ public fun Dimmer(
 }
 
 /**
+ * Creates a [SemanticUI dimmer](https://semantic-ui.com/modules/dimmer.html#dimmer) or
+ * a [SemanticUI content dimmer](https://semantic-ui.com/modules/dimmer.html#content-dimmer) if [content] is specified.
+ */
+@Composable
+public fun Dimmer(
+    attrs: SemanticModuleAttrBuilderContext<DimmerElement, SemanticDimmerSettings>? = null,
+    content: SemanticContentBuilder<DimmerContentElement>? = null,
+) {
+    SemanticModuleElement<DimmerElement, SemanticDimmerSettings>({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("dimmer")
+    }) {
+        DisposableEffect(settings) {
+            val dimmerElement = scopeElement.dimmer(settings)
+            if (scopeElement.hasClass("active")) dimmerElement.show()
+            onDispose {
+                dimmerElement.hide {
+                    dimmerElement.destroy()
+                    dimmerElement.asDynamic().remove()
+                    Unit
+                }
+            }
+        }
+        if (content != null) {
+            SemanticDivElement<DimmerContentElement>({ classes("content") }, content)
+        }
+    }
+}
+
+/**
  * Creates a [SemanticUI page dimmer](https://semantic-ui.com/modules/dimmer.html#page-dimmer).
  */
 @Composable
 public fun PageDimmer(
-    attrs: SemanticAttrBuilderContext<DimmerElement>? = null,
+    attrs: SemanticModuleAttrBuilderContext<DimmerElement, SemanticDimmerSettings>? = null,
     content: SemanticContentBuilder<DimmerContentElement>? = null,
 ) {
     Dimmer({

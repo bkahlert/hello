@@ -8,7 +8,6 @@ import com.bkahlert.kommons.dom.body
 import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.kommons.js.grouping
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
-import com.bkahlert.semanticui.core.jQuery
 import com.bkahlert.semanticui.demo.DemoContentBuilder
 import com.bkahlert.semanticui.demo.DemoProvider
 import com.bkahlert.semanticui.demo.DemoView
@@ -16,11 +15,10 @@ import com.bkahlert.semanticui.demo.asDemoViewState
 import com.bkahlert.semanticui.module.Content
 import com.bkahlert.semanticui.module.Modal
 import com.bkahlert.semanticui.module.ModalContentElement
-import com.bkahlert.semanticui.module.autofocus
-import com.bkahlert.semanticui.module.blurring
-import com.bkahlert.semanticui.module.centered
+import com.bkahlert.semanticui.module.SemanticModal
+import com.bkahlert.semanticui.module.SemanticUI
 import com.bkahlert.semanticui.module.fullScreen
-import com.bkahlert.semanticui.module.modal
+import com.bkahlert.semanticui.module.refresh
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.dom.addClass
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.backgroundColor
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.EventTarget
 
 /**
@@ -54,9 +53,11 @@ public fun ModalDevMode(
             Modal({
                 style { backgroundColor(Color.transparent) }
                 v.fullScreen()
-                b.blurring = false // true would blur popups inside the debug mode, too
-                b.autofocus = false
-                b.centered = false
+                settings {
+                    blurring = false // true would blur popups inside the debug mode, too
+                    autofocus = false
+                    centered = false
+                }
             }) {
                 Content(
                     attrs = {
@@ -90,8 +91,8 @@ public fun DemoDevMode(
         providers = providers,
         state = LocationFragmentParameters(window).asDemoViewState(name) {
             logger.grouping("modal refresh", "tab=$it") {
-                jQuery(".modal").modal("refresh")
-                jQuery(".modal").modal("refresh")
+                SemanticUI.jQuery<HTMLElement>(".modal").unsafeCast<SemanticModal>().refresh()
+                SemanticUI.jQuery<HTMLElement>(".modal").unsafeCast<SemanticModal>().refresh()
             }
         },
         trashContent = trashContent,

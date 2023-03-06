@@ -7,15 +7,13 @@ group = "$group.semantic-ui"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 api("com.bkahlert.kommons:kommons-dom") { because("LocationFragmentParameters") }
                 api("com.bkahlert.kommons:kommons-js") { because("ConsoleLogger") }
-                implementation("com.bkahlert.kommons:kommons-text") { because("demos") }
-                implementation("com.bkahlert.kommons:kommons-uri") { because("Uri type, devmode") }
+                api("com.bkahlert.kommons:kommons-text") { because("demos") }
+                api("com.bkahlert.kommons:kommons-uri") { because("Uri type, devmode") }
                 api(project(":semantic-ui-core"))
                 api(project(":semantic-ui-elements"))
                 api(project(":semantic-ui-collections"))
@@ -24,6 +22,5 @@ kotlin {
                 api(project(":semantic-ui-custom"))
             }
         }
-        val jsTest by getting
     }
 }

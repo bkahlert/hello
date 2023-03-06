@@ -7,18 +7,11 @@ group = "$group.semantic-ui"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 api(project(":semantic-ui-core"))
                 api(project(":semantic-ui-elements"))
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation(project(":semantic-ui-test"))
             }
         }
     }

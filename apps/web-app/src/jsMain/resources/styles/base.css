@@ -1,0 +1,140 @@
+/*noinspection CssUnknownTarget*/
+@import url("tailwindcss/base");
+/*noinspection CssUnknownTarget*/
+@import url("tailwindcss/components");
+/*noinspection CssUnknownTarget*/
+@import url("tailwindcss/utilities");
+
+:root {
+    --sat: env(safe-area-inset-top);
+    --sar: env(safe-area-inset-right);
+    --sab: env(safe-area-inset-bottom);
+    --sal: env(safe-area-inset-left);
+
+    --tax: env(titlebar-area-x);
+    --tay: env(titlebar-area-y);
+    --taw: env(titlebar-area-width);
+    --tah: env(titlebar-area-height);
+
+    --kit: env(keyboard-inset-top);
+    --kir: env(keyboard-inset-right);
+    --kib: env(keyboard-inset-bottom);
+    --kil: env(keyboard-inset-left);
+    --kiw: env(keyboard-inset-width);
+    --kih: env(keyboard-inset-height);
+
+    --color-text: rgba(0, 0, 0, 0.87);
+    --color-bg: rgba(73, 105, 167, 1);
+    --color-bg-transparent: rgba(73, 105, 167, 0);
+    --bg-gradient: linear-gradient(
+            290deg,
+            rgb(194, 31, 115),
+            rgb(175, 80, 171),
+            rgb(135, 117, 210),
+            rgb(84, 147, 227),
+            rgb(41, 170, 226)
+    );
+
+    --shadow-color-transparent: rgba(0, 0, 0, 0);
+    --shadow-color: rgba(0, 0, 0, 0.25);
+
+    --modal-z-index: 1000;
+
+    --font-size-base: 1rem;
+    --font-size-lg: 1.3rem;
+    --font-size-xl: 2.5rem;
+}
+
+html {
+    font-family: Raleway, system-ui, sans-serif;
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+}
+
+/* https://css-tricks.com/16px-or-larger-text-prevents-ios-form-zoom/ */
+@media (pointer: coarse) {
+    input, .ui.input {
+        font-size: 16px;
+    }
+}
+
+/* Reset Semantic UI height=100% */
+html:root,
+html:root body:not(.dimmed) { height: initial; }
+
+/* Toolbars on mobile device add to the final height. fill-available does not but has limited support. */
+html,
+body {
+    min-height: 100vh;
+    /* autoprefixer: ignore next */
+    min-height: fill-available;
+}
+
+/* html tag for higher specificity than Semantic UI */
+html body { background-image: var(--bg-gradient); }
+
+
+/* raleway-200 - latin */
+@font-face {
+    font-family: "Raleway";
+    font-style: normal;
+    font-weight: 200;
+    src: local(""), url("../fonts/raleway-v28-latin-200.woff2") format("woff2"), url("../fonts/raleway-v28-latin-200.woff") format("woff");
+}
+
+/* raleway-300 - latin */
+@font-face {
+    font-family: "Raleway";
+    font-style: normal;
+    font-weight: 300;
+    src: local(""), url("../fonts/raleway-v28-latin-300.woff2") format("woff2"), url("../fonts/raleway-v28-latin-300.woff") format("woff");
+}
+
+/* raleway-regular - latin */
+@font-face {
+    font-family: "Raleway";
+    font-style: normal;
+    font-weight: 400;
+    src: local(""), url("../fonts/raleway-v28-latin-regular.woff2") format("woff2"), url("../fonts/raleway-v28-latin-regular.woff") format("woff");
+}
+
+/* raleway-500 - latin */
+@font-face {
+    font-family: "Raleway";
+    font-style: normal;
+    font-weight: 500;
+    src: local(""), url("../fonts/raleway-v28-latin-500.woff2") format("woff2"), url("../fonts/raleway-v28-latin-500.woff") format("woff");
+}
+
+/* raleway-700 - latin */
+@font-face {
+    font-family: "Raleway";
+    font-style: normal;
+    font-weight: 700;
+    src: local(""), url("../fonts/raleway-v28-latin-700.woff2") format("woff2"), url("../fonts/raleway-v28-latin-700.woff") format("woff");
+}
+
+/* raleway-900 - latin */
+@font-face {
+    font-family: "Raleway";
+    font-style: normal;
+    font-weight: 900;
+    src: local(""), url("../fonts/raleway-v28-latin-900.woff2") format("woff2"), url("../fonts/raleway-v28-latin-900.woff") format("woff");
+}
+
+/* raleway-200italic - latin */
+@font-face {
+    font-family: "Raleway";
+    font-style: italic;
+    font-weight: 200;
+    src: local(""), url("../fonts/raleway-v28-latin-200italic.woff2") format("woff2"), url("../fonts/raleway-v28-latin-200italic.woff") format("woff");
+}
+
+/* raleway-300italic - latin */
+@font-face {
+    font-family: "Raleway";
+    font-style: italic;
+    font-weight: 300;
+    src: local(""), url("../fonts/raleway-v28-latin-300italic.woff2") format("woff2"), url("../fonts/raleway-v28-latin-300italic.woff") format("woff");
+}

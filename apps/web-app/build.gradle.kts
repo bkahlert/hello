@@ -1,7 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.DEVELOPMENT
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig.Mode.PRODUCTION
-import org.jetbrains.kotlin.gradle.targets.js.webpack.WebpackDevtool
-
 plugins {
     id("com.bkahlert.kotlin-js-browser-application")
     id("com.bkahlert.compose-for-web-project")
@@ -9,32 +5,10 @@ plugins {
 
 group = "$group.hello"
 
-// set environment variable ORG_GRADLE_PROJECT_isProduction to true on CI
-
 kotlin {
-    js(IR) {
-        browser {
-            commonWebpackConfig {
-                when (mode) {
-                    PRODUCTION -> {
-                        devtool = null
-                    }
 
-                    DEVELOPMENT -> {
-                        devtool = WebpackDevtool.EVAL_SOURCE_MAP
-                        cssSupport { enabled.set(true) }
-                        // main config in webpack.config.d directory
-                    }
-                }
-
-                outputFileName = "hello.js"
-            }
-        }
-    }
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons")
                 implementation("com.bkahlert.kommons:kommons-dom")
@@ -42,11 +16,18 @@ kotlin {
                 implementation("com.bkahlert.semantic-ui:semantic-ui")
                 implementation("com.bkahlert.hello:clickup")
                 implementation("com.bkahlert.hello:hello")
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation("com.bkahlert.semantic-ui:semantic-ui-test")
+
+                implementation(devNpm("less", "^4.1")) { because("dynamic stylesheet language") }
+                implementation(devNpm("less-loader", "^11.1")) { because("Less to CSS compilation") }
+                implementation(devNpm("postcss", "^8.4")) { because("CSS post transformation, e.g. auto-prefixing") }
+                implementation(devNpm("postcss-loader", "^7.0")) { because("Loader to process CSS with PostCSS") }
+                implementation(devNpm("postcss-import", "^15.1")) { because("@import support") }
+                implementation(devNpm("autoprefixer", "^10.4")) { because("autoprefixing by PostCSS") }
+                implementation(devNpm("cssnano", "^5.1")) { because("CSS minification by PostCSS") }
+                implementation(devNpm("tailwindcss", "^3.2")) { because("low-level CSS classes") }
+
+//                implementation("dev.petuska:kmdc:0.1.0")
+//                implementation("dev.petuska:kmdcx:0.1.0")
             }
         }
 

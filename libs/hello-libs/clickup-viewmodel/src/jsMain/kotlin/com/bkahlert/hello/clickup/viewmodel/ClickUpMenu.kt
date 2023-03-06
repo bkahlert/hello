@@ -327,6 +327,7 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
                 selection = selectedActivity,
                 onSelect = { _, activity -> onSelect(listOfNotNull(activity?.id)) },
                 onCreate = { taskListID, name -> onCreateTask(taskListID, name ?: "new task created $Now") },
+                settings = {},
             )
         )
     }

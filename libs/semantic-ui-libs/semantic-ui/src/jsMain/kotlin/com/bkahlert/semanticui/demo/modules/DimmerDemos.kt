@@ -1,7 +1,6 @@
 package com.bkahlert.semanticui.demo.modules
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,7 +8,7 @@ import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.VerticallyAligned.Bottom
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
-import com.bkahlert.semanticui.core.jQuery
+import com.bkahlert.semanticui.demo.DEMO_BASE_DELAY
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.custom.ComponentType
 import com.bkahlert.semanticui.demo.custom.SemanticDemo
@@ -31,11 +30,13 @@ import com.bkahlert.semanticui.module.PageDimmer
 import com.bkahlert.semanticui.module.active
 import com.bkahlert.semanticui.module.blurring
 import com.bkahlert.semanticui.module.dimmable
-import com.bkahlert.semanticui.module.dimmer
 import com.bkahlert.semanticui.module.disabled
 import com.bkahlert.semanticui.module.inverted
 import com.bkahlert.semanticui.module.verticallyAligned
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.dom.Text
+import kotlin.time.times
 
 public val DimmerDemos: SemanticDemo = SemanticDemo(
     ComponentType.Module,
@@ -57,31 +58,31 @@ public val DimmerDemos: SemanticDemo = SemanticDemo(
             }
         }
 
-        Demo("Page Dimmer") {
+        Demo("Page Dimmer") { scope ->
             val logger = remember { ConsoleLogger("PageDimmerDemo") }
             var dim by remember { mutableStateOf(false) }
             Button({
                 if (dim) s.disabled()
-                else onClick { dim = true }
+                else onClick {
+                    dim = true
+                    scope.launch {
+                        delay(2 * DEMO_BASE_DELAY)
+                    }
+                }
             }) {
                 if (dim) Text("Dimmed")
                 else Text("Trigger")
             }
-            PageDimmer {
-                IconSubHeader("heart", attrs = { v.inverted() }) { Text("Dimmed Message!") }
-                if (dim) {
-                    DisposableEffect(Unit) {
-                        val dimmer = jQuery(scopeElement.parentElement)
-                            .dimmer(
-                                "onHide" to {
-                                    logger.info("onHide")
-                                    dim = false
-                                },
-                            )
-                            .dimmer("show")
-                        onDispose { dimmer.dimmer("destroy") }
+            PageDimmer({
+                settings {
+                    if (dim) s.active()
+                    onHide = {
+                        logger.info("onHide")
+                        dim = false
                     }
                 }
+            }) {
+                IconSubHeader("heart", attrs = { v.inverted() }) { Text("Dimmed Message!") }
             }
         }
     },
@@ -100,28 +101,14 @@ public val DimmerDemos: SemanticDemo = SemanticDemo(
         }
     },
     Variations {
-        Demo("Blurring", { v.blurring().dimmable() }) {
+        Demo("Blurring") {
             Segment({ v.blurring().dimmable() }) {
                 Content()
-                Dimmer {
-                    DisposableEffect(Unit) {
-                        val dimmer = jQuery(scopeElement.parentElement).dimmer("show")
-                        onDispose {
-                            dimmer.dimmer("destroy").remove()
-                        }
-                    }
-                }
+                Dimmer({ s.active() })
             }
             Segment({ v.blurring().dimmable() }) {
                 Content()
-                Dimmer({ v.inverted() }) {
-                    DisposableEffect(Unit) {
-                        val dimmer = jQuery(scopeElement.parentElement).dimmer("show")
-                        onDispose {
-                            dimmer.dimmer("destroy").remove()
-                        }
-                    }
-                }
+                Dimmer({ v.inverted(); s.active() })
             }
         }
         Demo("Vertical Alignment") {

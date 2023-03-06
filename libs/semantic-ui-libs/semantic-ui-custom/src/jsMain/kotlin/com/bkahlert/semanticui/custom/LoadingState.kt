@@ -8,7 +8,7 @@ import com.bkahlert.semanticui.element.LoaderElement
 import com.bkahlert.semanticui.element.active
 import com.bkahlert.semanticui.element.disabled
 import com.bkahlert.semanticui.element.indeterminate
-import com.bkahlert.semanticui.module.Dimmer
+import com.bkahlert.semanticui.module.SimpleDimmer
 import com.bkahlert.semanticui.module.DimmerElement
 import org.jetbrains.compose.web.attributes.AttrsScope
 import org.jetbrains.compose.web.css.minHeight
@@ -40,9 +40,8 @@ public sealed class LoadingState(
             classes("dimmable", "dimmed")
         },
         { dimmerAttrs, loaderAttrs, loaderText ->
-            Dimmer({
+            SimpleDimmer({
                 dimmerAttrs?.invoke(this, On)
-                classes("simple")
             }) {
                 Loader(loaderText) {
                     loaderAttrs?.invoke(this, On)
@@ -58,9 +57,8 @@ public sealed class LoadingState(
             classes("dimmable", "dimmed")
         },
         { dimmerAttrs, loaderAttrs, loaderText ->
-            Dimmer({
+            SimpleDimmer({
                 dimmerAttrs?.invoke(this, Indeterminate)
-                classes("simple")
             }) {
                 Loader(loaderText) {
                     loaderAttrs?.invoke(this, Indeterminate)
@@ -76,9 +74,8 @@ public sealed class LoadingState(
             classes("dimmable")
         },
         { dimmerAttrs, loaderAttrs, loaderText ->
-            Dimmer({
+            SimpleDimmer({
                 dimmerAttrs?.invoke(this, Off)
-                classes("simple")
             }) {
                 Loader(loaderText) {
                     loaderAttrs?.invoke(this, Off)

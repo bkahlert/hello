@@ -21,8 +21,11 @@ import com.bkahlert.semanticui.module.Header
 import com.bkahlert.semanticui.module.InlineMultipleDropdown
 import com.bkahlert.semanticui.module.Item
 import com.bkahlert.semanticui.module.Menu
+import com.bkahlert.semanticui.module.MessageSettings
 import com.bkahlert.semanticui.module.MultipleDropdownState
 import com.bkahlert.semanticui.module.MultipleDropdownStateImpl
+import com.bkahlert.semanticui.module.SemanticDropdownSettings
+import com.bkahlert.semanticui.module.SemanticModuleSettingsBuilder
 import com.bkahlert.semanticui.module.Text
 import com.bkahlert.semanticui.module.scrolling
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
@@ -56,7 +59,6 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Text
-import kotlin.js.json
 import com.bkahlert.semanticui.element.List as SemanticList
 
 @Stable
@@ -66,17 +68,19 @@ public class SearchEngineSelectStateImpl(
     engines: List<SearchEngine> = emptyList(),
     selection: List<SearchEngine> = emptyList(),
     onSelect: (old: List<SearchEngine>, new: List<SearchEngine>) -> Unit,
-    options: Map<String, Any?>,
     serializer: (SearchEngine) -> String = { it.name },
     deserializer: (String) -> SearchEngine = run {
         val mappings: Map<String, SearchEngine> = engines.associateBy { it.name }
         ({ mappings.getValue(it) })
     },
+    settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings>,
 ) : SearchEngineSelectState, MultipleDropdownState<SearchEngine> by MultipleDropdownStateImpl<SearchEngine>(
-    options,
     engines,
     selection,
-    onSelect, serializer, deserializer,
+    onSelect,
+    serializer,
+    deserializer,
+    settings,
 )
 
 @Composable
@@ -89,19 +93,19 @@ public fun rememberSearchEngineSelectState(
     debug: Boolean = false,
 ): SearchEngineSelectState {
     val enginesSelection = engines.filter(selected)
-    val options = mapOf(
-        "debug" to debug,
-        "message" to json("count" to "{count}/${engines.size}"),
-        "placeholder" to "no search engine",
-        "useLabels" to false,
-    )
     return remember(enginesSelection, engines) {
         SearchEngineSelectStateImpl(
             engines = engines.toList(),
             selection = enginesSelection,
             onSelect = onEngineSelect,
-            options = options,
-        )
+        ) {
+            this.debug = debug
+            message = MessageSettings {
+                count = "{count}/${engines.size}"
+            }
+            placeholder = "no search engine"
+            useLabels = false
+        }
     }
 }
 

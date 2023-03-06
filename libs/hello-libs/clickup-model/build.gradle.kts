@@ -6,10 +6,8 @@ group = "$group.hello"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 api("com.bkahlert.kommons:kommons-core")
                 api("com.bkahlert.kommons:kommons-color")
@@ -17,7 +15,7 @@ kotlin {
                 api("com.bkahlert.kommons:kommons-uri")
             }
         }
-        val jsTest by getting {
+        jsTest {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }

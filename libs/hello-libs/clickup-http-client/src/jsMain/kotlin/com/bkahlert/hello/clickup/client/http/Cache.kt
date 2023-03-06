@@ -5,7 +5,7 @@ import com.bkahlert.hello.clickup.model.SpaceID
 import com.bkahlert.hello.clickup.model.TeamID
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
-import com.bkahlert.kommons.logging.InlineLogging
+import com.bkahlert.kommons.js.ConsoleLogger
 
 /**
  * Simple cache that uses the specified [storage]
@@ -13,7 +13,7 @@ import com.bkahlert.kommons.logging.InlineLogging
  */
 public class Cache(private val storage: Storage) {
 
-    private val logger by InlineLogging
+    private val logger = ConsoleLogger("Cache")
 
     public fun clear() {
         storage.clear()

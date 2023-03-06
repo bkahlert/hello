@@ -5,7 +5,6 @@ import kotlinx.coroutines.CancellationException
 import org.w3c.dom.HTMLAudioElement
 
 //@JsModule("./pomodoro-completed.mp3")
-//@JsNonModule
 //private external val pomodoroCompleted: String
 
 /** An acoustic signal */

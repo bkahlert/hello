@@ -7,10 +7,8 @@ group = "$group.hello"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 api(project(":hello-environment"))
                 api(project(":hello-session"))
@@ -20,6 +18,5 @@ kotlin {
                 api(project(":hello-app"))
             }
         }
-        val jsTest by getting
     }
 }

@@ -14,9 +14,6 @@ public interface SemanticAttrsScope<out TSemantic : SemanticElement<Element>> : 
 
     /** The [VariationsScope] of [TSemantic]. */
     public val v: VariationsScope<TSemantic>
-
-    /** The [BehaviorScope] of [TSemantic]. */
-    public val b: BehaviorScope<TSemantic>
 }
 
 /** Adds the specified [modifier] without further validation to the [AttrsScope]. */
@@ -62,19 +59,12 @@ public interface VariationsScope<out TSemantic : SemanticElement<Element>> {
  */
 public typealias TypeScope<TSemantic> = VariationsScope<TSemantic>
 
-/** Scope for behavior configuration. */
-public interface BehaviorScope<out TSemantic : SemanticElement<Element>> {
-    /** Raw settings specifying the behavior of [TSemantic]. */
-    public val settings: MutableMap<String, Any?>
-}
 
 public open class SemanticAttrsScopeBuilder<out TSemantic : SemanticElement<Element>>(
     internal val attrsScope: AttrsScope<Element> = AttrsScopeBuilder(),
-    behaviorSettings: MutableMap<String, Any?>?,
 ) : SemanticAttrsScope<TSemantic>,
     StatesScope<TSemantic>,
     VariationsScope<TSemantic>,
-    BehaviorScope<TSemantic>,
     AttrsScope<Element> by attrsScope {
 
     override val s: StatesScope<TSemantic> get() = this
@@ -88,7 +78,4 @@ public open class SemanticAttrsScopeBuilder<out TSemantic : SemanticElement<Elem
         classes(classNames)
         return v
     }
-
-    override val b: BehaviorScope<TSemantic> get() = this
-    override val settings: MutableMap<String, Any?> = behaviorSettings ?: mutableMapOf()
 }

@@ -11,13 +11,14 @@ import com.bkahlert.semanticui.core.Device
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.semanticui.core.jQuery
 import com.bkahlert.semanticui.core.matches
 import com.bkahlert.semanticui.custom.textOverflow
 import com.bkahlert.semanticui.module.DropdownMenuElement
 import com.bkahlert.semanticui.module.DropdownMenuItemElement
 import com.bkahlert.semanticui.module.Item
+import com.bkahlert.semanticui.module.destroy
 import com.bkahlert.semanticui.module.popup
+import com.bkahlert.semanticui.module.show
 import org.jetbrains.compose.web.css.maxWidth
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.dom.Text
@@ -52,21 +53,21 @@ public fun SemanticElementScope<DropdownMenuElement>.ActivityItemWithPopup(
     }) {
         DisposableEffect(showPopup) {
             val popup = if (showPopup) {
-                jQuery(scopeElement)
-                    .popup(
-                        "lastResort" to true,
-                        "variation" to "mini",
-                        "position" to "left center",
-                        "html" to activity.popupHtml(),
-                    )
-                    .popup("show")
+                scopeElement
+                    .popup {
+                        lastResort = true
+                        variation = "mini"
+                        position = "left center"
+                        html = activity.popupHtml()
+                    }
+                    .show()
             } else {
                 null
             }
             onDispose {
                 if (popup != null) {
                     logger.debug("Activity: ${activity.id} — destroy popup")
-                    popup.popup("destroy")
+                    popup.destroy()
                 }
             }
         }

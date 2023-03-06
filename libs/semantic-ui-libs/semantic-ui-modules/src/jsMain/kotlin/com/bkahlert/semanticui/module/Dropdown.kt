@@ -11,20 +11,19 @@ import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.semanticui.collection.MenuElement
 import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.VariationsScope
-import com.bkahlert.semanticui.core.dataAttr
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
 import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.semanticui.core.jQuery
-import com.bkahlert.semanticui.core.toJsonArray
-import com.bkahlert.semanticui.core.toJsonArrayOrEmpty
+import com.bkahlert.semanticui.module.SemanticUI.jQuery
+import com.bkahlert.semanticui.module.JQuery
+import js.core.jso
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.paddingRight
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
-import kotlin.js.Json
-import kotlin.js.json
+import org.w3c.dom.HTMLElement
 
 public interface DropdownElement : SemanticElement<HTMLDivElement>
 
@@ -32,36 +31,127 @@ public interface DropdownElement : SemanticElement<HTMLDivElement>
 public fun VariationsScope<DropdownElement>.scrolling(): VariationsScope<DropdownElement> = +Modifier.Variation.Scrolling
 
 
-private fun jQuery.dropdown(options: Json): jQuery =
-    asDynamic().dropdown(options).unsafeCast<jQuery>()
+public external interface SemanticDropdown : SemanticModule {
+    public fun dropdown(behavior: String, vararg args: Any?): dynamic
+    public fun attr(key: String): String?
+    public fun attr(key: String, value: Any?): SemanticDropdown
+}
 
-private fun jQuery.dropdown(behavior: String, vararg args: Any?): jQuery =
-    asDynamic().dropdown.apply(this, arrayOf(behavior, *args)).unsafeCast<jQuery>()
+public fun SemanticDropdown.dataAttr(key: String): String? = attr("data-$key")
+public fun SemanticDropdown.dataAttr(key: String, value: Any?): SemanticDropdown = attr("data-$key", value)
 
-/**
- * An interface to interact with a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html)
- * using the specified [options].
- *
- * @see <a href="https://semantic-ui.com/modules/dropdown.html#initializing-existing-html">Initializing</a>
- */
-private fun jQuery.dropdown(vararg options: Pair<String, Any?>): jQuery = dropdown(json(*options))
+public fun Element.dropdown(settings: SemanticDropdownSettings): SemanticDropdown = SemanticUI.create(this, "dropdown", settings)
+
+@Suppress("LocalVariableName")
+public external interface SemanticDropdownSettings : SemanticModuleSettings {
+
+    // Frequently used settings
+    /**
+     * - `auto` converts option with "" (blank string) value to placeholder text
+     * - `value` sets string value to placeholder text, leaves "" value
+     * - `false` leaves "" value as a selectable option
+     */
+    public var placeholder: Any?
+
+    // Multiple select settings
+
+    /** Whether multiselect should use labels. Must be set to true when allowAdditions is true */
+    public var useLabels: Boolean?
+
+    // Additional settings
+
+    /**
+     * - `true` uses a fuzzy full text search
+     * - `"exact"` forces the exact search to be matched somewhere in the string
+     * - `false` only matches start of string
+     */
+    public var fullTextSearch: Any?
+
+    // Callbacks
+
+    /** Is called after a dropdown value changes. Receives the name and value of selection and the active menu element */
+    public var onChange: ((value: Any?, text: String, `$choice`: JQuery<HTMLElement>) -> Unit)?
+
+    /** Is called after a dropdown selection is added using a multiple select dropdown, only receives the added value */
+    public var onAdd: ((addedValue: Any?, addedText: String, `$addedChoice`: JQuery<HTMLElement>) -> Unit)?
+
+    /** Is called after a dropdown selection is removed using a multiple select dropdown, only receives the removed value */
+    public var onRemove: ((removedValue: Any?, removedText: String, `$removedChoice`: JQuery<HTMLElement>) -> Unit)?
+
+    /** Allows you to modify a label before it's added. Expects the jQ DOM element for a label to be returned. */
+    public var onLabelCreate: ((value: Any?, text: String) -> Unit)?
+
+    /** Called when a label is remove, return false; will prevent the label from being removed. */
+    public var onLabelRemove: ((value: Any?) -> Unit)?
+
+
+    /** Is called after a label is selected by a user */
+    public var onLabelSelect: ((`$selectedLabels`: JQuery<HTMLElement>) -> Unit)?
+
+    /** Is called after a dropdown is searched with no matching values */
+    public var onNoResults: ((searchValue: String) -> Unit)?
+
+
+    /** Is called before a dropdown is shown. If false is returned, dropdown will not be shown. */
+    public var onShow: (() -> Boolean)?
+
+
+    /** Is called before a dropdown is hidden. If false is returned, dropdown will not be hidden. */
+    public var onHide: (() -> Boolean)?
+
+    // DOM Settings
+    public var message: MessageSettings?
+}
+
+public external interface MessageSettings {
+    /**
+     * Default: "Add <b>{term}</b>"
+     */
+    public var addResult: String?
+
+    /**
+     * Default: "{count} selected"
+     */
+    public var count: String?
+
+    /**
+     * Default: "Max {maxCount} selections"
+     */
+    public var maxSelections: String?
+
+    /**
+     * Default: "No results found."
+     */
+    public var noResults: String?
+}
+
+public fun MessageSettings(init: MessageSettings.() -> Unit): MessageSettings = jso(init)
+
+// @formatter:off
+/** Sets selected values to exactly specified values, removing current selection */
+public inline fun SemanticDropdown.setExactly(vararg values:Any?): SemanticDropdown  =
+    dropdown("set exactly", values).unsafeCast<SemanticDropdown>()
+// @formatter:on
+
+private fun JQuery<HTMLElement>.dropdown(behavior: String, vararg args: Any?): JQuery<HTMLElement> =
+    asDynamic().dropdown.apply(this, arrayOf(behavior, *args)).unsafeCast<JQuery<HTMLElement>>()
 
 /**
  * Creates a [SemanticUI dropdown](https://semantic-ui.com/modules/dropdown.html#/definition).
  */
 @Composable
 public fun Dropdown(
-    attrs: SemanticAttrBuilderContext<DropdownElement>? = null,
-    content: SemanticContentBuilder<DropdownElement>? = null,
+    attrs: SemanticModuleAttrBuilderContext<DropdownElement, SemanticDropdownSettings>? = null,
+    content: SemanticModuleContentBuilder<DropdownElement, SemanticDropdownSettings>? = null,
 ) {
-    SemanticDivElement<DropdownElement>({
+    SemanticModuleElement<DropdownElement, SemanticDropdownSettings>({
         classes("ui")
         attrs?.invoke(this)
         classes("dropdown")
     }) {
         content?.invoke(this)
         DisposableEffect(Unit) {
-            jQuery(scopeElement).dropdown()
+            scopeElement.dropdown(settings)
             onDispose { /* cleaned up by Dropdown module automatically */ } // TODO check
         }
     }
@@ -69,7 +159,6 @@ public fun Dropdown(
 
 @Stable
 public interface DropdownState<T> {
-    public val options: Map<String, Any?>
     public val values: List<T>
     public var selection: T?
     public val onSelect: (old: T?, new: T?) -> Unit
@@ -81,15 +170,17 @@ public interface DropdownState<T> {
         set(value) {
             selection = value.takeIf { it.isNotEmpty() }?.let(deserializer)
         }
+
+    public val settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings>
 }
 
 public class DropdownStateImpl<T>(
-    override val options: Map<String, Any?>,
     override val values: List<T>,
     selection: T?,
     override val onSelect: (old: T?, new: T?) -> Unit,
     override val serializer: (T) -> String,
     override val deserializer: (String) -> T,
+    override val settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings>,
 ) : DropdownState<T> {
     private var _selection by mutableStateOf(selection)
     override var selection: T?
@@ -110,12 +201,12 @@ private const val MUTED_ATTRIBUTE_NAME = "muted"
 @Composable
 public fun <T> InlineDropdown(
     state: DropdownState<T>,
-    attrs: SemanticAttrBuilderContext<DropdownElement>? = null,
-    content: SemanticContentBuilder<DropdownElement>? = null,
+    attrs: SemanticModuleAttrBuilderContext<DropdownElement, SemanticDropdownSettings>? = null,
+    content: SemanticModuleContentBuilder<DropdownElement, SemanticDropdownSettings>? = null,
 ) {
     val logger = remember { ConsoleLogger("InlineDropdown") }
 
-    SemanticDivElement<DropdownElement>({
+    SemanticModuleElement<DropdownElement, SemanticDropdownSettings>({
         classes("ui", "inline")
         attrs?.invoke(this)
         classes("dropdown")
@@ -123,15 +214,16 @@ public fun <T> InlineDropdown(
     }) {
         content?.invoke(this)
         DisposableEffect(state) {
-            jQuery(scopeElement).dropdown(
-                *state.options.toList().toTypedArray(),
-                "onChange" to fun(value: String) {
+            scopeElement.dropdown(state.settings.build().apply {
+                onChange = { value, text, `$choice` ->
+                    console.warn("ONCHANGE", js("arguments"))
                     if (scopeElement.getAttribute("data-$MUTED_ATTRIBUTE_NAME") == null) {
-                        if (state.options["debug"] == true) logger.debug("selection changed by dropdown to $value")
-                        state.selectionString = value
+                        logger.debug("onChange(value: $value, text: $text, \$choice: $`$choice`")
+                        if (debug == true) logger.debug("selection changed by dropdown to $value")
+                        state.selectionString = value as String
                     }
-                },
-            )
+                }
+            })
             onDispose { /* cleaned up by Accordion module automatically */ } // TODO check
         }
         DisposableEffect(state.selection) {
@@ -148,7 +240,6 @@ public interface MultipleDropdownElement : DropdownElement
 
 @Stable
 public interface MultipleDropdownState<T> {
-    public val options: Map<String, Any?>
     public val values: List<T>
     public var selection: List<T>
     public val onSelect: (old: List<T>, new: List<T>) -> Unit
@@ -163,15 +254,16 @@ public interface MultipleDropdownState<T> {
 
     public val noValues: Boolean get() = selection.isEmpty()
     public var allValues: Boolean
+    public val settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings>
 }
 
 public class MultipleDropdownStateImpl<T>(
-    override val options: Map<String, Any?>,
     override val values: List<T> = emptyList(),
     selection: List<T> = emptyList(),
     override val onSelect: (old: List<T>, new: List<T>) -> Unit,
     override val serializer: (T) -> String,
     override val deserializer: (String) -> T,
+    override val settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings>,
 ) : MultipleDropdownState<T> {
     private var _selection by mutableStateOf(selection)
     override var selection: List<T>
@@ -200,12 +292,12 @@ public class MultipleDropdownStateImpl<T>(
 @Composable
 public fun <T> InlineMultipleDropdown(
     state: MultipleDropdownState<T>,
-    attrs: SemanticAttrBuilderContext<MultipleDropdownElement>? = null,
-    content: SemanticContentBuilder<MultipleDropdownElement>? = null,
+    attrs: SemanticModuleAttrBuilderContext<MultipleDropdownElement, SemanticDropdownSettings>? = null,
+    content: SemanticModuleContentBuilder<MultipleDropdownElement, SemanticDropdownSettings>? = null,
 ) {
     val logger = remember { ConsoleLogger("InlineMultipleDropdown") }
 
-    SemanticDivElement<MultipleDropdownElement>({
+    SemanticModuleElement<MultipleDropdownElement, SemanticDropdownSettings>({
         classes("ui", "inline")
         attrs?.invoke(this)
         classes("multiple", "dropdown")
@@ -213,15 +305,15 @@ public fun <T> InlineMultipleDropdown(
     }) {
         content?.invoke(this)
         DisposableEffect(state) {
-            jQuery(scopeElement).dropdown(
-                *state.options.toList().toTypedArray(),
-                "onChange" to fun(value: String) {
+            scopeElement.dropdown(state.settings.build().apply {
+                onChange = { value, text, `$choice` ->
                     if (scopeElement.getAttribute("data-$MUTED_ATTRIBUTE_NAME") == null) {
-                        if (state.options["debug"] == true) logger.debug("selection changed by dropdown to $value")
-                        state.selectionString = value
+                        logger.debug("onChange(value: $value, text: $text, \$choice: $`$choice`")
+                        if (settings.debug == true) logger.debug("selection changed by dropdown to $value")
+                        state.selectionString = value as String
                     }
-                },
-            )
+                }
+            })
             onDispose { /* cleaned up by Accordion module automatically */ } // TODO check
         }
         DisposableEffect(state.selection) {

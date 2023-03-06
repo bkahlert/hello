@@ -19,6 +19,7 @@ public data class User(
     public val nickname: String get() = claims.nickname ?: username ?: id
     public val username: String? get() = claims[USERNAME_CLAIM_NAME]?.let(LenientJson::decodeFromJsonElement)
     public val picture: Uri? get() = claims.picture
+    public val email: String? get() = claims.email
 
     public companion object {
         /** Name for claim `username` */

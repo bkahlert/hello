@@ -15,11 +15,8 @@ import com.bkahlert.semanticui.module.Actions
 import com.bkahlert.semanticui.module.BasicModal
 import com.bkahlert.semanticui.module.Content
 import com.bkahlert.semanticui.module.approve
-import com.bkahlert.semanticui.module.closable
 import com.bkahlert.semanticui.module.deny
 import com.bkahlert.semanticui.module.inverted
-import com.bkahlert.semanticui.module.onApprove
-import com.bkahlert.semanticui.module.onDeny
 import com.bkahlert.semanticui.module.size
 import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.P
@@ -38,9 +35,11 @@ public fun AlreadyRunningActivityModal(
 
     BasicModal({
         v.size(Small)
-        b.onApprove = { onContinue(); true }
-        b.onDeny = { onAbort();true }
-        b.closable = false
+        settings {
+            onApprove = { onContinue(); true }
+            onDeny = { onAbort();true }
+            closable = false
+        }
     }) {
         IconHeader(*icon) {
             Text("Already running session")

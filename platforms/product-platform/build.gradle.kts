@@ -10,6 +10,7 @@ javaPlatform.allowDependencies()
 dependencies {
     api(platform(libs.kommons.bom))
     api(platform(libs.kotlin.bom))
+    api(platform(libs.kotlin.wrapper.bom))
     api(platform(libs.kotlinx.coroutines.bom))
     api(platform(libs.kotlinx.serialization.bom))
     api(platform(libs.ktor.bom))

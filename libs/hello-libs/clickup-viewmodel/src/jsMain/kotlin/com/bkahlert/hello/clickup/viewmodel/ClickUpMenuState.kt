@@ -25,8 +25,7 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelected.Data.FullData
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Connected.TeamSelecting
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
-import com.bkahlert.kommons.logging.InlineLogger
-import com.bkahlert.kommons.logging.InlineLogging
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.kommons.successor
 import com.bkahlert.kommons.text.simpleKebabCasedName
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +67,7 @@ public sealed class ClickUpMenuState {
                 public open val teams: List<Team>,
             ) : Succeeded() {
 
-                protected val logger: InlineLogger by InlineLogging
+                protected val logger: ConsoleLogger = ConsoleLogger("ClickUpMenuState")
 
                 /** Selects the specified [team] and restores the specified [selection]. */
                 public suspend fun select(team: Team, selection: Selection): TeamSelected =

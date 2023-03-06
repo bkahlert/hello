@@ -2,10 +2,8 @@ package com.bkahlert.kommons.hello
 
 import com.bkahlert.hello.WebApp
 import com.bkahlert.kommons.json.LenientJson
-import com.bkahlert.semanticui.test.GenericToStringLibrary
-import com.bkahlert.semanticui.test.JQueryLibrary
-import com.bkahlert.semanticui.test.SemanticUiLibrary
-import com.bkahlert.semanticui.test.compositionWith
+import androidx.compose.runtime.Composable
+import org.jetbrains.compose.web.testutils.TestScope
 import io.kotest.assertions.asClue
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
@@ -26,7 +24,7 @@ class MainKtTest {
 
     @Test
     fun compose() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary, GenericToStringLibrary) {
+        composition {
             WebApp()
         }
         waitForRecompositionComplete()

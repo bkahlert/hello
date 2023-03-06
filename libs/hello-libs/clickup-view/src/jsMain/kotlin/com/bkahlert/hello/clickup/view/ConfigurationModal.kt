@@ -16,8 +16,6 @@ import com.bkahlert.semanticui.module.Actions
 import com.bkahlert.semanticui.module.BasicModal
 import com.bkahlert.semanticui.module.Content
 import com.bkahlert.semanticui.module.deny
-import com.bkahlert.semanticui.module.onApprove
-import com.bkahlert.semanticui.module.onDeny
 import com.bkahlert.semanticui.module.size
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
@@ -30,13 +28,15 @@ public fun ConfigurationModal(
 ) {
     BasicModal({
         v.size(Small)
-        b.onApprove = {
-            console.log("approved", it)
-            true
-        }
-        b.onDeny = {
-            onCancel()
-            false
+        settings {
+            onApprove = {
+                console.log("approved", it)
+                true
+            }
+            onDeny = {
+                onCancel()
+                false
+            }
         }
     }) {
         IconHeader("sign-in") { Text("Connect to ClickUp") }

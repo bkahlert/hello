@@ -27,6 +27,8 @@ import com.bkahlert.semanticui.module.Header
 import com.bkahlert.semanticui.module.InlineDropdown
 import com.bkahlert.semanticui.module.Item
 import com.bkahlert.semanticui.module.Menu
+import com.bkahlert.semanticui.module.SemanticDropdownSettings
+import com.bkahlert.semanticui.module.SemanticModuleSettingsBuilder
 import com.bkahlert.semanticui.module.Text
 import org.jetbrains.compose.web.attributes.InputType.Checkbox
 import org.jetbrains.compose.web.attributes.InputType.Hidden
@@ -53,19 +55,19 @@ public class PomodoroStarterStateImpl(
     onSelect: (old: Type?, new: Type?) -> Unit,
     private val onStart: (selectedType: Type?, billable: Boolean) -> Unit,
     override val onCloseTask: (() -> Unit)?,
-    options: Map<String, Any?>,
     serializer: (Type) -> String = { it.name },
     deserializer: (String) -> Type = run {
         val mappings: Map<String, Type> = values.associateBy { it.name }
         ({ mappings.getValue(it) })
     },
+    settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings>,
 ) : PomodoroStarterState, DropdownState<Type> by DropdownStateImpl(
-    options,
     values,
     selection,
     onSelect,
     serializer,
     deserializer,
+    settings,
 ) {
     override var billable: Boolean by mutableStateOf(billable)
     override fun onStart() {
@@ -90,7 +92,6 @@ public fun rememberPomodoroStarterState(
     debug: Boolean = false,
 ): PomodoroStarterState {
     val selection = types.firstOrNull(selected)
-    val options = mapOf("debug" to debug, "placeholder" to "Select duration...")
     return remember(taskID, billable, acousticFeedback, selection, types, onSelect, onStart) {
         PomodoroStarterStateImpl(
             taskID = taskID,
@@ -101,8 +102,10 @@ public fun rememberPomodoroStarterState(
             onSelect = onSelect,
             onStart = { type, billable -> onStart(taskID, listOf((type ?: Type.Default).tag), billable) },
             onCloseTask = onCloseTask,
-            options = options,
-        )
+        ) {
+            this.debug = debug
+            placeholder = "Select duration..."
+        }
     }
 }
 

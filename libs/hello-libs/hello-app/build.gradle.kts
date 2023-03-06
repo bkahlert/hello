@@ -7,10 +7,8 @@ group = "$group.hello"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 api("com.bkahlert.kommons:kommons-core")
                 api(project(":hello-environment"))
@@ -19,11 +17,6 @@ kotlin {
                 api(project(":hello-user"))
                 api("com.bkahlert.kommons:kommons-net") { because("LenientJson, JsonHttpClient") }
                 api("com.bkahlert.semantic-ui:semantic-ui")
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation("com.bkahlert.semantic-ui:semantic-ui-test")
             }
         }
     }

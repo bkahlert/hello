@@ -7,16 +7,14 @@ group = "$group.kommons"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 api("com.bkahlert.kommons:kommons-core")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core")
             }
         }
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
             }

@@ -27,11 +27,7 @@ import com.bkahlert.hello.clickup.viewmodel.fixtures.toPartiallyLoaded
 import com.bkahlert.hello.clickup.viewmodel.fixtures.toTeamSelecting
 import com.bkahlert.kommons.color.Color.RGB
 import com.bkahlert.kommons.time.Now
-import com.bkahlert.semanticui.core.jQuery
-import com.bkahlert.semanticui.test.JQueryLibrary
-import com.bkahlert.semanticui.test.SemanticUiLibrary
-import com.bkahlert.semanticui.test.compositionWith
-import com.bkahlert.semanticui.test.root
+import com.bkahlert.semanticui.module.SemanticUI.jQuery
 import io.kotest.matchers.collections.contain
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.should
@@ -47,7 +43,7 @@ class ClickUpMenuTest {
 
     @Test
     fun disabled_menu() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel { Disabled })
         }
 
@@ -69,7 +65,7 @@ class ClickUpMenuTest {
 
     @Test
     fun disconnected_menu() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel { Disconnected })
         }
         waitForRecompositionComplete()
@@ -92,7 +88,7 @@ class ClickUpMenuTest {
 
     @Test
     fun team_selecting_menu_with_multiple_teams() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel(ClickUpTestClient(initialTeams = Teams.subList(0, 2))) { toTeamSelecting() })
         }
         waitForRecompositionComplete()
@@ -123,7 +119,7 @@ class ClickUpMenuTest {
 
     @Test
     fun team_selecting_menu_with_single_team() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel(ClickUpTestClient(initialTeams = Teams.subList(0, 1))) { toTeamSelecting() })
         }
         waitForRecompositionComplete()
@@ -154,7 +150,7 @@ class ClickUpMenuTest {
 
     @Test
     fun team_selecting_menu_with_no_teams() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel(ClickUpTestClient(initialTeams = emptyList())) { toTeamSelecting() })
         }
         waitForRecompositionComplete()
@@ -185,7 +181,7 @@ class ClickUpMenuTest {
 
     @Test
     fun partially_loaded_menu() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel(testClient()) { toPartiallyLoaded() })
         }
         waitForRecompositionComplete()
@@ -195,7 +191,7 @@ class ClickUpMenuTest {
 
     @Test
     fun fully_loaded_menu() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel(testClient()) { toFullyLoaded() })
         }
         waitForRecompositionComplete()
@@ -206,7 +202,7 @@ class ClickUpMenuTest {
     @Test
     fun start_pomodoro() = runTest {
         val testClient = testClient(runningTimeEntry = null)
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel(testClient) { toFullyLoaded() })
         }
         waitForRecompositionComplete()
@@ -230,7 +226,7 @@ class ClickUpMenuTest {
         val testClient = testClient(
             runningTimeEntry = timeEntry("already-running", TaskPreview(id = TaskID("task-1"), "Task task-1", Spaces.first().statuses[1].asPreview(), null)),
         )
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel(testClient) { toFullyLoaded() })
         }
         waitForRecompositionComplete()
@@ -259,7 +255,7 @@ class ClickUpMenuTest {
         val testClient = testClient(
             runningTimeEntry = timeEntry("already-running", TaskPreview(id = TaskID("task-1"), "Task task-1", Spaces.first().statuses[1].asPreview(), null)),
         )
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             ClickUpMenu(rememberClickUpMenuTestViewModel(testClient) { toFullyLoaded(select = { _, id -> id == TaskID("task-2") }) })
         }
         waitForRecompositionComplete()
@@ -292,11 +288,11 @@ class ClickUpMenuTest {
 }
 
 infix fun TestScope.shouldRender(expected: String) {
-    root { it.innerHTML shouldBe expected.replace(">\\s+?<".toRegex(), "><") }
+    root.innerHTML shouldBe expected.replace(">\\s+?<".toRegex(), "><")
 }
 
 infix fun TestScope.shouldRenderPartially(expected: String) {
-    root { it.innerHTML shouldContain expected.replace(">\\s+?<".toRegex(), "><") }
+    root.innerHTML shouldContain expected.replace(">\\s+?<".toRegex(), "><")
 }
 
 private fun testClient(

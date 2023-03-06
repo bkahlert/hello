@@ -19,6 +19,8 @@ import com.bkahlert.semanticui.module.DropdownStateImpl
 import com.bkahlert.semanticui.module.Header
 import com.bkahlert.semanticui.module.InlineDropdown
 import com.bkahlert.semanticui.module.Menu
+import com.bkahlert.semanticui.module.SemanticDropdownSettings
+import com.bkahlert.semanticui.module.SemanticModuleSettingsBuilder
 import com.bkahlert.semanticui.module.Text
 import com.bkahlert.semanticui.module.scrolling
 import org.jetbrains.compose.web.attributes.InputType.Hidden
@@ -47,19 +49,19 @@ public class ActivityDropdownStateImpl(
     selection: Activity<*>?,
     override val onSelect: (old: Activity<*>?, new: Activity<*>?) -> Unit,
     override val onCreate: (TaskListID, String?) -> Unit,
-    options: Map<String, Any?>,
     serializer: (Activity<*>) -> String = { it.id.typedStringValue },
     deserializer: (String) -> Activity<*> = run {
         val mappings: Map<String?, Activity<*>> = groups.activities.associateBy { it.id.typedStringValue }
         ({ mappings.getValue(it) })
     },
+    settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings>,
 ) : ActivityDropdownState, DropdownState<Activity<*>> by DropdownStateImpl(
-    options,
     groups.activities,
     selection,
     onSelect,
     serializer,
     deserializer,
+    settings,
 )
 
 @Composable
@@ -72,7 +74,7 @@ public fun rememberActivityDropdownState(
     onCreate: (TaskListID, String?) -> Unit = { taskListId, name ->
         console.log("task added to $taskListId with name ${name?.quoted}")
     },
-    debug: Boolean = false,
+    settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings> = {},
 ): ActivityDropdownState {
     return remember(groups, selection, onSelect) {
         ActivityDropdownStateImpl(
@@ -80,18 +82,17 @@ public fun rememberActivityDropdownState(
             selection = selection,
             onSelect = onSelect,
             onCreate = onCreate,
-            options = mapOf(
-                "debug" to debug,
-                "fullTextSearch" to true,
-                "placeholder" to "Select task...",
-            ),
-        )
+        ) {
+            fullTextSearch = true
+            placeholder = "Select task..."
+            settings.invoke(this)
+        }
     }
 }
 
 @Composable
 public fun ActivityDropdown(
-    state: ActivityDropdownState = rememberActivityDropdownState(),
+    state: ActivityDropdownState = rememberActivityDropdownState {},
 ) {
     var query by mutableStateOf("")
 

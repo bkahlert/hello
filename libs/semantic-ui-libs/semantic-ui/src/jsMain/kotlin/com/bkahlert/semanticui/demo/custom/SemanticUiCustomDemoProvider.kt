@@ -13,7 +13,6 @@ public val SemanticUiCustomDemoProvider: DemoProvider = DemoProvider(
     },
     {
         ColorsDemos()
-        DimmingLoaderDemos()
         ErrorMessageModalDemos()
         ErrorMessageDemos()
     },

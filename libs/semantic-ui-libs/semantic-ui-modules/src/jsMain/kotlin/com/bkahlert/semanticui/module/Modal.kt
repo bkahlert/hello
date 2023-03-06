@@ -7,31 +7,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.kommons.js.ConsoleLogger
-import com.bkahlert.kommons.js.json
-import com.bkahlert.semanticui.core.attributes.BehaviorScope
 import com.bkahlert.semanticui.core.attributes.Modifier
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.ApproveAction
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.DenyAction
-import com.bkahlert.semanticui.core.attributes.Setting
 import com.bkahlert.semanticui.core.attributes.StatesScope
 import com.bkahlert.semanticui.core.attributes.VariationsScope
-import com.bkahlert.semanticui.core.attributes.getValue
-import com.bkahlert.semanticui.core.attributes.setValue
 import com.bkahlert.semanticui.core.dom.SemanticAttrBuilderContext
 import com.bkahlert.semanticui.core.dom.SemanticContentBuilder
 import com.bkahlert.semanticui.core.dom.SemanticDivElement
 import com.bkahlert.semanticui.core.dom.SemanticElement
 import com.bkahlert.semanticui.core.dom.SemanticElementScope
-import com.bkahlert.semanticui.core.jQuery
 import com.bkahlert.semanticui.element.ButtonElement
 import kotlinx.browser.document
 import kotlinx.dom.createElement
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
-import kotlin.js.Json
-import kotlin.js.json
 
 public interface ModalElement : SemanticElement<HTMLDivElement>
 
@@ -44,95 +36,122 @@ public fun VariationsScope<ModalElement>.fullScreen(): VariationsScope<ModalElem
 /** [Variation.Size](https://semantic-ui.com/modules/modal.html#size) */
 public fun VariationsScope<ModalElement>.size(value: Variation.Size): VariationsScope<ModalElement> = +value
 
-// true will blur popups inside the debug mode, too
-public var BehaviorScope<ModalElement>.blurring: Boolean? by Setting()
 
-/** When `true`, the first form input inside the modal will receive focus when shown. Set this to `false` to prevent this behavior. */
-public var BehaviorScope<ModalElement>.autofocus: Boolean? by Setting()
+public external interface SemanticModal : SemanticModule {
+    public fun modal(behavior: String, vararg args: Any?): dynamic
+}
 
-/** Whether to center content vertically. */
-public var BehaviorScope<ModalElement>.centered: Boolean? by Setting()
+public fun Element.modal(settings: SemanticModalSettings): SemanticModal = SemanticUI.create(this, "modal", settings)
 
-/** Setting to `false` will not allow you to close the modal by clicking on the dimmer. */
-public var BehaviorScope<ModalElement>.closable: Boolean? by Setting()
 
-/** If set to `true` will not close other visible modals when opening a new one. */
-public var BehaviorScope<ModalElement>.allowMultiple: Boolean? by Setting()
+public external interface SemanticModalSettings : SemanticModuleSettings {
 
-/** Selector or [jQuery] object specifying the area to dim. */
-public var BehaviorScope<ModalElement>.context: String? by Setting()
+    // true will blur popups inside the debug mode, too
+    public var blurring: Boolean?
 
-/**
- * Is called when a modal starts to show.
- * *Scope: Modal*
- */
-public var BehaviorScope<ModalElement>.onShow: (() -> Unit)? by Setting()
+    /** When `true`, the first form input inside the modal will receive focus when shown. Set this to `false` to prevent this behavior. */
+    public var autofocus: Boolean?
 
-/**
- * Is called after a modal has finished showing animating.
- * *Scope: Modal*
- */
-public var BehaviorScope<ModalElement>.onVisible: (() -> Unit)? by Setting()
+    /** Whether to center content vertically. */
+    public var centered: Boolean?
 
-/**
- * Is called after a modal starts to hide. If the function returns `false`, the modal will not hide.
- * *Scope: Modal*
- */
-public var BehaviorScope<ModalElement>.onHide: ((jQuery) -> Boolean)? by Setting()
+    /** Setting to `false` will not allow you to close the modal by clicking on the dimmer. */
+    public var closable: Boolean?
 
-/**
- * Is called after an [Variation.ApproveAction] occurs. If the function returns `false`, the modal will not hide.
- * *Scope: Click*
- */
-public var BehaviorScope<ModalElement>.onApprove: ((jQuery) -> Boolean)? by Setting()
+    /** If set to `true` will not close other visible modals when opening a new one. */
+    public var allowMultiple: Boolean?
 
-/**
- * Is called after a [Variation.DenyAction] occurs. If the function returns `false` the modal will not hide.
- * *Scope: Modal*
- */
-public var BehaviorScope<ModalElement>.onDeny: ((jQuery) -> Boolean)? by Setting()
+    /** Selector or [jQuery] object specifying the area to dim. */
+    public var context: String?
+
+    /**
+     * Is called when a modal starts to show.
+     * *Scope: Modal*
+     */
+    public var onShow: (() -> Unit)?
+
+    /**
+     * Is called after a modal has finished showing animating.
+     * *Scope: Modal*
+     */
+    public var onVisible: (() -> Unit)?
+
+    /**
+     * Is called after a modal starts to hide. If the function returns `false`, the modal will not hide.
+     * *Scope: Modal*
+     */
+    public var onHide: ((JQuery<HTMLElement>) -> Boolean)?
+
+    /**
+     * Is called after an [Variation.ApproveAction] occurs. If the function returns `false`, the modal will not hide.
+     * *Scope: Click*
+     */
+    public var onApprove: ((JQuery<HTMLElement>) -> Boolean)?
+
+    /**
+     * Is called after a [Variation.DenyAction] occurs. If the function returns `false` the modal will not hide.
+     * *Scope: Modal*
+     */
+    public var onDeny: ((JQuery<HTMLElement>) -> Boolean)?
+}
+
+// @formatter:off
+/** Shows the modal */
+public inline fun SemanticModal.show(): SemanticModal = modal("show").unsafeCast<SemanticModal>()
+/** Hides the modal */
+public inline fun SemanticModal.hide(noinline callback: (() -> Unit)? = null): SemanticModal = modal("hide", callback).unsafeCast<SemanticModal>()
+/** Toggles the modal */
+public inline fun SemanticModal.toggle(): SemanticModal = modal("toggle").unsafeCast<SemanticModal>()
+/** Refreshes centering of modal on page */
+public inline fun SemanticModal.refresh(): SemanticModal = modal("refresh").unsafeCast<SemanticModal>()
+/** Shows associated page dimmer */
+public inline fun SemanticModal.showDimmer(): SemanticModal = modal("show dimmer").unsafeCast<SemanticModal>()
+/** Hides associated page dimmer */
+public inline fun SemanticModal.hideDimmer(): SemanticModal = modal("hide dimmer").unsafeCast<SemanticModal>()
+/** Hides all modals not selected modal in a dimmer */
+public inline fun SemanticModal.hideOthers(noinline callback: (() -> Unit)? = null): SemanticModal = modal("hide others", callback).unsafeCast<SemanticModal>()
+/** Hides all visible modals in the same dimmer */
+public inline fun SemanticModal.hideAll(noinline callback: (() -> Unit)? = null): SemanticModal = modal("hide all", callback).unsafeCast<SemanticModal>()
+/** Caches current modal size */
+public inline fun SemanticModal.cacheSizes(): SemanticModal = modal("cache sizes").unsafeCast<SemanticModal>()
+/** Returns whether the modal can fit on the page */
+public inline fun SemanticModal.canFit():Boolean = modal("can fit").unsafeCast<Boolean>()
+/** Returns whether the modal is active */
+public inline fun SemanticModal.isActive():Boolean = modal("is active").unsafeCast<Boolean>()
+/** Sets modal to active */
+public inline fun SemanticModal.setActive(): SemanticModal = modal("set active").unsafeCast<SemanticModal>()
+public inline fun SemanticModal.destroy(): dynamic = modal("destroy")
+// @formatter:on
 
 private fun <T, R> ((T) -> R)?.overruleBy(overrulingValue: () -> R): (T) -> R = {
     this?.invoke(it)
     overrulingValue()
 }
 
-public fun jQuery.modal(options: Json): jQuery =
-    asDynamic().modal(options).unsafeCast<jQuery>()
-
-public fun jQuery.modal(behavior: String, vararg args: Any?): jQuery {
-    return asDynamic().modal.apply(this, arrayOf(behavior, *args)).unsafeCast<jQuery>()
-}
-
-public fun jQuery.modal(vararg options: Pair<String, Any?>): jQuery = modal(json(*options))
-
-public fun jQuery.modal(options: Map<String, Any?>): jQuery = modal(json(options))
-
 /**
  * Creates a [SemanticUI modal](https://semantic-ui.com/modules/modal.html#modal).
  */
 @Composable
 public fun Modal(
-    attrs: SemanticAttrBuilderContext<ModalElement>? = null,
-    content: SemanticContentBuilder<ModalElement>? = null,
+    attrs: SemanticModuleAttrBuilderContext<ModalElement, SemanticModalSettings>? = null,
+    content: SemanticModuleContentBuilder<ModalElement, SemanticModalSettings>? = null,
 ) {
     val logger = remember { ConsoleLogger("Modal") }
     var closing by remember { mutableStateOf(false) }
-    val settings = mutableMapOf<String, Any?>()
-    SemanticDivElement<ModalElement>(
-        behaviorSettings = settings,
-        semanticAttrs = {
-            classes("ui")
-            attrs?.invoke(this)
-            classes("modal")
-            b.closable = false // "true" not easily supported; would need to propagate the event and stop Semantic UI from closing modal itself
-            b.allowMultiple = true // "false" not easily supported as it would also make Semantic UI close dialogs on its own
-            b.onApprove = b.onApprove.overruleBy { closing }
-            b.onDeny = b.onDeny.overruleBy { closing }
-            b.onHide = b.onHide.overruleBy { closing }
-        }) {
+    SemanticModuleElement<ModalElement, SemanticModalSettings>({
+        classes("ui")
+        attrs?.invoke(this)
+        classes("modal")
+        settings {
+            closable = false // "true" not easily supported; would need to propagate the event and stop Semantic UI from closing modal itself
+            allowMultiple = true // "false" not easily supported as it would also make Semantic UI close dialogs on its own
+            onApprove = onApprove.overruleBy { closing }
+            onDeny = onDeny.overruleBy { closing }
+            onHide = onHide.overruleBy { closing }
+        }
+    }) {
         content?.invoke(this)
-        DisposableEffect(Unit) {
+        DisposableEffect(settings) {
             // Semantic UI moves the modal element to the dimmer element,
             // but Compose expects the modal element where it was created.
             // Luckily, Compose seems to accept an invisible placeholder instead.
@@ -143,23 +162,22 @@ public fun Modal(
             scopeParent.insertBefore(node = placeholder, child = scopeSibling)
 
             logger.debug("Showing", scopeElement)
-            val modalElement = jQuery(scopeElement)
+            val modalElement = scopeElement
                 .modal(settings)
-                .modal("show")
+                .show()
 
             onDispose {
                 logger.debug("Disposing", modalElement)
                 closing = true
-                modalElement
-                    .modal("hide", fun() {
-                        logger.debug("Destroying", modalElement)
-                        modalElement.modal("destroy")
+                modalElement.hide {
+                    logger.debug("Destroying", modalElement)
+                    modalElement.destroy()
 
-                        logger.debug("Removing", modalElement)
-                        modalElement.remove()
+                    logger.debug("Removing", modalElement)
+                    modalElement.asDynamic().remove()
 
-                        logger.debug("Disposed", modalElement)
-                    })
+                    logger.debug("Disposed", modalElement)
+                }
             }
         }
     }
@@ -170,8 +188,8 @@ public fun Modal(
  */
 @Composable
 public fun BasicModal(
-    attrs: SemanticAttrBuilderContext<ModalElement>? = null,
-    content: SemanticContentBuilder<ModalElement>? = null,
+    attrs: SemanticModuleAttrBuilderContext<ModalElement, SemanticModalSettings>? = null,
+    content: SemanticModuleContentBuilder<ModalElement, SemanticModalSettings>? = null,
 ): Unit = Modal({
     attrs?.invoke(this)
     classes("basic")

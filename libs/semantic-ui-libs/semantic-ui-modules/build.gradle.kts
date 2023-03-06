@@ -7,20 +7,14 @@ group = "$group.semantic-ui"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 api("com.bkahlert.kommons:kommons-js")
                 api(project(":semantic-ui-core"))
                 api(project(":semantic-ui-elements"))
                 api(project(":semantic-ui-collections"))
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation(project(":semantic-ui-test"))
+                api(npm("semantize2", "^1.0.1")) { because("custom packaging of jQuery and Semantic UI styles / modules") }
             }
         }
     }

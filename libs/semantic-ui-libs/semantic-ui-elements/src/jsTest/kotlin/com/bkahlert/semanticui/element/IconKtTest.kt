@@ -1,9 +1,5 @@
 package com.bkahlert.semanticui.element
 
-import com.bkahlert.semanticui.test.JQueryLibrary
-import com.bkahlert.semanticui.test.SemanticUiLibrary
-import com.bkahlert.semanticui.test.compositionWith
-import com.bkahlert.semanticui.test.root
 import io.kotest.matchers.shouldBe
 import org.jetbrains.compose.web.css.Color
 import org.jetbrains.compose.web.css.color
@@ -14,9 +10,9 @@ class IconKtTest {
 
     @Test
     fun icon() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             Icon("help") { style { color(Color("yellow")) } }
         }
-        root { it.innerHTML shouldBe "<i class=\"help icon\" style=\"color: yellow;\"></i>" }
+        root.innerHTML shouldBe "<i class=\"help icon\" style=\"color: yellow;\"></i>"
     }
 }

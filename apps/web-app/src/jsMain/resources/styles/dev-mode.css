@@ -5,7 +5,7 @@
 .dev-mode-controls {
     position: fixed;
 
-    margin-left: -4.4em;
+    margin-left: -4.8em;
     transition: all 0.15s ease-out;
 
     bottom: max(env(safe-area-inset-bottom), 25%);
@@ -21,12 +21,12 @@
 
 .dev-mode-controls .ui.button {
     text-shadow: 0 0 0 black;
-    box-shadow: 1px 1px 4px 2px var(--shade-color);
+    box-shadow: 1px 1px 4px 2px var(--shadow-color);
 }
 
 .dev-mode-controls:hover .ui.button {
     text-shadow: 0 0 0 white;
-    box-shadow: 1px 1px 4px 2px var(--shade-color);
+    box-shadow: 1px 1px 4px 2px var(--shadow-color);
 }
 
 /* Reduce animations in demos */
@@ -42,11 +42,11 @@
 
     .demo {
         transition: filter 0.25s ease;
-        filter: drop-shadow(0px 2px 80px var(--shade-color));
+        filter: drop-shadow(0px 2px 80px var(--shadow-color));
     }
 
     .demo:not(:hover) {
-        filter: drop-shadow(0px 0px 0px var(--shade-color-transparent));
+        filter: drop-shadow(0px 0px 0px var(--shadow-color-transparent));
     }
 
     .demo:hover .demo:not(:hover) {

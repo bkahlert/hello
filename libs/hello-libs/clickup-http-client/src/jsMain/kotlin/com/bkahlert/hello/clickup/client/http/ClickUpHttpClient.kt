@@ -19,10 +19,10 @@ import com.bkahlert.hello.clickup.model.User
 import com.bkahlert.hello.clickup.model.div
 import com.bkahlert.hello.clickup.serialization.Named
 import com.bkahlert.kommons.dom.Storage
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.kommons.json.Lenient
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.ktor.TokenAuthPlugin
-import com.bkahlert.kommons.logging.InlineLogging
 import com.bkahlert.kommons.uri.div
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -59,7 +59,7 @@ public data class ClickUpHttpClient(
     //    val clickUpUrl = Url("/api.clickup.com/api/v2")
     val clickUpUrl: Url = Url("https://hello.aws-dev.choam.de/api.clickup.com/api/v2")
 
-    private val logger by InlineLogging
+    private val logger = ConsoleLogger("ClickUpHttpClient")
 
     init {
         logger.debug("initializing ClickUp client with access token")

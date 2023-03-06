@@ -117,31 +117,6 @@ public external interface Console {
 public external val console: Console
 
 
-/* REDIRECTION */
-
-/**
- * Changes the specified [Console] function [fn] to
- * additionally invoke the specified [block] with the same arguments.
- */
-public fun Console.tee(fn: String, block: (args: Array<out Any?>) -> Unit) {
-    val patchFn: (Console, String, (Array<out Any?>) -> Unit) -> Unit = js("Function")(
-        "obj",
-        "fn",
-        "block",
-        // language=javascript
-        @Suppress("JSUnresolvedVariable")
-        """
-        const _fn = obj[fn];
-        obj[fn] = function () {
-          block(Array.from(arguments));
-          _fn(...arguments);
-        };
-        """.trimIndent()
-    ) as (Console, String, (Array<out Any?>) -> Unit) -> Unit
-    patchFn(this, fn, block)
-}
-
-
 /* EXTENSIONS */
 
 /**
@@ -166,8 +141,8 @@ public inline fun Console.group(label: String, collapsed: Boolean) {
     if (collapsed) groupCollapsed(label) else group(label)
 }
 
-public const val DEBUGGING: Boolean = false
-public const val DEFAULT_COLLAPSED: Boolean = !DEBUGGING
+public var CONSOLE_DEBUGGING: Boolean = false
+public var CONSOLE_DEFAULT_COLLAPSED: Boolean = !CONSOLE_DEBUGGING
 
 public val timeId: (Int) -> String by lazy {
     val random = Random(Date.now().toLong())
@@ -182,16 +157,16 @@ public val timeId: (Int) -> String by lazy {
  */
 public inline fun <R> Console.grouping(
     label: String,
-    collapsed: Boolean = DEFAULT_COLLAPSED,
+    collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED,
     block: () -> R,
 ): R {
-    if (DEBUGGING) console.info("GROUP START($label)") else group(label = label, collapsed = collapsed)
+    if (CONSOLE_DEBUGGING) console.info("GROUP START($label)") else group(label = label, collapsed = collapsed)
     try {
         val timeLabel = "$label-${timeId(4)}"
         time(timeLabel)
         val result = block()
         timeEnd(timeLabel)
-        if (DEBUGGING) console.info("GROUP RESULT($label)", result)
+        if (CONSOLE_DEBUGGING) console.info("GROUP RESULT($label)", result)
         else when (result) {
             Unit -> {}
             is Map<*, Any?> -> console.table(data = result.mapKeys { it.toString() })
@@ -199,11 +174,11 @@ public inline fun <R> Console.grouping(
         }
         return result
     } catch (ex: Throwable) {
-        if (DEBUGGING) console.error("GROUP EXCEPTION($label)", ex)
+        if (CONSOLE_DEBUGGING) console.error("GROUP EXCEPTION($label)", ex)
         else console.warn(ex::class.simpleName)
         throw ex
     } finally {
-        if (DEBUGGING) console.info("GROUP END($label)") else groupEnd()
+        if (CONSOLE_DEBUGGING) console.info("GROUP END($label)") else groupEnd()
     }
 }
 
@@ -215,7 +190,7 @@ public inline fun <R> Console.grouping(
     type: KClass<*>,
     operation: String? = null,
     vararg args: Any?,
-    collapsed: Boolean = DEFAULT_COLLAPSED,
+    collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED,
     block: () -> R,
 ): R = grouping(buildString {
     append(type.simpleName ?: "<object>")
@@ -230,7 +205,7 @@ public inline fun <P1 : Any, R> Console.grouping(
     type: KClass<P1>,
     operation: kotlin.reflect.KCallable<R>,
     vararg args: Array<out Any?>,
-    collapsed: Boolean = DEFAULT_COLLAPSED,
+    collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED,
     block: () -> R,
 ): R = grouping(
     type = type,
@@ -244,7 +219,7 @@ public inline fun <P1 : Any, R> Console.grouping(
 /** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */
 public inline fun <reified P1 : Any, R> grouping2(
     operation: kotlin.reflect.KCallable<R>,
-    collapsed: Boolean = DEFAULT_COLLAPSED,
+    collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED,
     block: () -> R,
 ): R {
     val args = js("arguments")
@@ -260,16 +235,16 @@ public inline fun <reified P1 : Any, R> grouping2(
 }
 
 // @formatter:off
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, R> Console.grouping(operation: kotlin.reflect.KFunction1<P1, R>, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type = P1::class, operation=operation.name, args = emptyArray(), collapsed = collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, R> Console.grouping(operation: kotlin.reflect.KFunction2<P1, P2, R>, p2: P2, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2), collapsed=collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, R> Console.grouping(operation: kotlin.reflect.KFunction3<P1, P2, P3, R>, p2: P2, p3: P3, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3), collapsed=collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, R> Console.grouping(operation: kotlin.reflect.KFunction4<P1, P2, P3, P4, R>, p2: P2, p3: P3, p4: P4, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4), collapsed=collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, P5, R> Console.grouping(operation: kotlin.reflect.KFunction5<P1, P2, P3, P4, P5, R>, p2: P2, p3: P3, p4: P4, p5: P5, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4, p5), collapsed=collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction1<P1, R>, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = emptyArray(), collapsed=collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction2<P1, P2, R>, p2: P2, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2), collapsed=collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction3<P1, P2, P3, R>, p2: P2, p3: P3, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3), collapsed=collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction4<P1, P2, P3, P4, R>, p2: P2, p3: P3, p4: P4, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4), collapsed=collapsed, block=block)
-/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, P5, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction5<P1, P2, P3, P4, P5, R>, p2: P2, p3: P3, p4: P4, p5: P5, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4, p5), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, R> Console.grouping(operation: kotlin.reflect.KFunction1<P1, R>, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type = P1::class, operation=operation.name, args = emptyArray(), collapsed = collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, R> Console.grouping(operation: kotlin.reflect.KFunction2<P1, P2, R>, p2: P2, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, R> Console.grouping(operation: kotlin.reflect.KFunction3<P1, P2, P3, R>, p2: P2, p3: P3, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, R> Console.grouping(operation: kotlin.reflect.KFunction4<P1, P2, P3, P4, R>, p2: P2, p3: P3, p4: P4, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, P5, R> Console.grouping(operation: kotlin.reflect.KFunction5<P1, P2, P3, P4, P5, R>, p2: P2, p3: P3, p4: P4, p5: P5, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4, p5), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction1<P1, R>, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = emptyArray(), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction2<P1, P2, R>, p2: P2, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction3<P1, P2, P3, R>, p2: P2, p3: P3, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction4<P1, P2, P3, P4, R>, p2: P2, p3: P3, p4: P4, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4), collapsed=collapsed, block=block)
+/** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, P5, R> Console.grouping(operation: kotlin.reflect.KSuspendFunction5<P1, P2, P3, P4, P5, R>, p2: P2, p3: P3, p4: P4, p5: P5, collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4, p5), collapsed=collapsed, block=block)
 // @formatter:on
 
 /**

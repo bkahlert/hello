@@ -8,14 +8,13 @@ plugins {
 }
 
 kotlin {
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(project.dependencies.platform("com.bkahlert.platform:product-platform"))
             }
         }
-        val commonTest by getting {
+        commonTest {
             dependencies {
                 implementation(project.dependencies.platform("com.bkahlert.platform:test-platform"))
                 implementation("com.bkahlert.kommons:kommons-test")

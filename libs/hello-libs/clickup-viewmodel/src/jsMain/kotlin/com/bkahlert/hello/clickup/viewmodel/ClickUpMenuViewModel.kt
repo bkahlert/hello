@@ -21,7 +21,8 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
 import com.bkahlert.kommons.dom.InMemoryStorage
 import com.bkahlert.kommons.dom.Storage
 import com.bkahlert.kommons.dom.clear
-import com.bkahlert.kommons.logging.InlineLogging
+import com.bkahlert.kommons.js.ConsoleLogger
+import com.bkahlert.kommons.js.grouping
 import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -74,7 +75,7 @@ public class ClickUpMenuViewModelImpl(
     private val refreshCoroutineScope: CoroutineScope,
     storage: Storage = InMemoryStorage(),
 ) : ClickUpMenuViewModel {
-    private val logger by InlineLogging
+    private val logger = ConsoleLogger("ClickUpMenuViewModel")
     private var updateJob: Job? = null
     private val storage = ClickUpStorage(storage)
 
@@ -95,19 +96,22 @@ public class ClickUpMenuViewModelImpl(
         if (!background || _state.value !is Failed) {
             updateJob = refreshCoroutineScope.launch {
                 _state.update { currentState ->
-                    logger.groupCatching(
-                        label = "$name in state ${currentState::class.simpleName}",
-                        render = { JSON.stringify(it, arrayOf("client", "avatar", "profilePicture")) }
+                    logger.grouping(
+                        operation = "$name in state ${currentState::class.simpleName}",
                     ) {
-                        operation(currentState.lastSucceededState)
-                    }.getOrElse {
-                        Failed(
-                            operation = name,
-                            cause = it,
-                            previousState = currentState.lastSucceededState,
-                            ignore = { update(name) { currentState } },
-                            retry = { update(name) { operation(currentState.lastSucceededState) } }
-                        )
+                        try {
+                            operation(currentState.lastSucceededState)
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (e: Throwable) {
+                            Failed(
+                                operation = name,
+                                cause = e,
+                                previousState = currentState.lastSucceededState,
+                                ignore = { update(name) { currentState } },
+                                retry = { update(name) { operation(currentState.lastSucceededState) } }
+                            )
+                        }
                     }
                 }
             }

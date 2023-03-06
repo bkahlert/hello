@@ -66,7 +66,7 @@ public class ConsoleLogger(
 public inline fun <R> ConsoleLogger.grouping(
     operation: String?,
     vararg args: Any?,
-    collapsed: Boolean = DEFAULT_COLLAPSED,
+    collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED,
     block: () -> R,
 ): R = console.grouping(buildString {
     append(name)
@@ -79,7 +79,7 @@ public inline fun <R> ConsoleLogger.grouping(
 public inline fun <R> ConsoleLogger.grouping(
     operation: KCallable<R>,
     vararg args: Any?,
-    collapsed: Boolean = DEFAULT_COLLAPSED,
+    collapsed: Boolean = CONSOLE_DEFAULT_COLLAPSED,
     block: () -> R,
 ): R = grouping(
     operation = operation.name,

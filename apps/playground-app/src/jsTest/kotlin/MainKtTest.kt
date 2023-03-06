@@ -1,8 +1,6 @@
 import androidx.compose.runtime.Composable
 import com.bkahlert.kommons.json.LenientJson
-import com.bkahlert.semanticui.test.JQueryLibrary
-import com.bkahlert.semanticui.test.SemanticUiLibrary
-import com.bkahlert.semanticui.test.compositionWith
+import org.jetbrains.compose.web.testutils.TestScope
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.string.shouldStartWith
 import kotlinx.serialization.encodeToString
@@ -24,7 +22,7 @@ class MainKtTest {
 
     @Test
     fun compose() = runTest {
-        compositionWith(JQueryLibrary, SemanticUiLibrary) {
+        composition {
             Foo()
         }
         root.innerHTML shouldStartWith "<p>Bar</p>"

@@ -7,7 +7,6 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Red
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Colored.Yellow
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Small
 import com.bkahlert.semanticui.core.attributes.raw
-import com.bkahlert.semanticui.core.dataAttr
 import com.bkahlert.semanticui.custom.data
 import com.bkahlert.semanticui.custom.errorMessage
 import com.bkahlert.semanticui.element.BasicButton
@@ -21,11 +20,9 @@ import com.bkahlert.semanticui.module.BasicModal
 import com.bkahlert.semanticui.module.Content
 import com.bkahlert.semanticui.module.Dropdown
 import com.bkahlert.semanticui.module.approve
-import com.bkahlert.semanticui.module.closable
+import com.bkahlert.semanticui.module.dataAttr
 import com.bkahlert.semanticui.module.deny
 import com.bkahlert.semanticui.module.inverted
-import com.bkahlert.semanticui.module.onApprove
-import com.bkahlert.semanticui.module.onDeny
 import com.bkahlert.semanticui.module.scrolling
 import com.bkahlert.semanticui.module.size
 import org.jetbrains.compose.web.dom.Br
@@ -48,21 +45,23 @@ public fun FailureModal(
 
     BasicModal({
         v.size(Small)
-        b.onApprove = {
-            if (it.dataAttr("action") == "sign-out") {
-                if (onSignOut != null) onSignOut()
-            } else {
-                if (onRetry != null) onRetry()
+        settings {
+            onApprove = {
+                if (it.dataAttr("action") == "sign-out") {
+                    if (onSignOut != null) onSignOut()
+                } else {
+                    if (onRetry != null) onRetry()
+                }
+                true
             }
-            true
-        }
-        b.onDeny = {
-            if (onIgnore != null) {
-                onIgnore()
+            onDeny = {
+                if (onIgnore != null) {
+                    onIgnore()
+                }
+                true
             }
-            true
+            closable = false
         }
-        b.closable = false
     }) {
         IconHeader(*icon) {
             Text("Oops, an error occurred")

@@ -1,3 +1,6 @@
+import com.bkahlert.applyDefaultLoggingOptions
+import com.bkahlert.applyDefaultOptions
+import com.bkahlert.defaultWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.js.yarn.yarn
 
 plugins {
@@ -7,8 +10,11 @@ plugins {
 kotlin {
     targets {
         js(IR) {
+            useCommonJs()
             browser {
+                defaultWebpackConfig()
                 testTask {
+                    applyDefaultLoggingOptions()
                     useKarma {
                         useFirefoxHeadless()
                     }
@@ -16,12 +22,13 @@ kotlin {
             }
             nodejs {
                 testTask {
+                    applyDefaultLoggingOptions()
                     useMocha {
                         timeout = "10000"
                     }
                 }
             }
-            yarn.ignoreScripts = false // suppress "warning Ignored scripts due to flag." warning
+            yarn.applyDefaultOptions()
         }
     }
 }

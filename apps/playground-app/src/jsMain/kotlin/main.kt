@@ -1,5 +1,4 @@
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -8,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.demo.ClickUpDemoProvider
 import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
@@ -26,13 +24,9 @@ import com.bkahlert.kommons.auth.Session
 import com.bkahlert.kommons.devmode.DevMode
 import com.bkahlert.kommons.dom.FragmentParameters
 import com.bkahlert.kommons.dom.LocationFragmentParameters
-import com.bkahlert.kommons.js.console
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
-import com.bkahlert.semanticui.core.updateDebugSettings
 import com.bkahlert.semanticui.custom.ErrorMessage
-import com.bkahlert.semanticui.custom.MixBlendMode
-import com.bkahlert.semanticui.custom.mixBlendMode
 import com.bkahlert.semanticui.demo.Demo
 import com.bkahlert.semanticui.demo.DemoView
 import com.bkahlert.semanticui.demo.SemanticUiDemoProviders
@@ -41,25 +35,21 @@ import com.bkahlert.semanticui.devmode.ComposeDevSession
 import com.bkahlert.semanticui.element.BasicButton
 import com.bkahlert.semanticui.element.Header
 import com.bkahlert.semanticui.element.Loader
-import com.bkahlert.semanticui.element.Segment
 import com.bkahlert.semanticui.element.circular
-import com.bkahlert.semanticui.element.inverted
 import com.bkahlert.semanticui.element.primary
 import com.bkahlert.semanticui.element.size
+import com.bkahlert.semanticui.module.updateDebugSettings
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.web.css.Style
-import org.jetbrains.compose.web.css.cssRem
-import org.jetbrains.compose.web.css.fontSize
-import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.css.maxHeight
 import org.jetbrains.compose.web.css.overflowX
 import org.jetbrains.compose.web.css.overflowY
 import org.jetbrains.compose.web.css.vh
 import org.jetbrains.compose.web.dom.Code
+import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Hr
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Pre
@@ -71,7 +61,15 @@ import playground.clickupapp.ClickUpAppDemoProvider
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
+@JsModule("./semantic/semantic.less")
+private external val SemanticStyles: dynamic
+
+@JsModule("./styles/playground-app.scss")
+private external val PlaygroundStyles: dynamic
+
 fun main() {
+    SemanticStyles
+    PlaygroundStyles
 
     updateDebugSettings { module, settings ->
         settings.debug = true || module !in listOf("transition")
@@ -79,12 +77,8 @@ fun main() {
         settings.performance = true
     }
 
-    val rootElement = document.getElementById("root").unsafeCast<HTMLDivElement>().apply {
-        style.padding = "1em"
-    }
+    val rootElement = document.getElementById("root").unsafeCast<HTMLDivElement>()
 
-
-    val virtualConsole = VirtualConsole(console)
     val devMode = DevMode(name = "playground") {
         val rootSibling = document.createElement("div").unsafeCast<HTMLDivElement>().apply {
             classList.add("dev-session")
@@ -92,51 +86,14 @@ fun main() {
         }
 
         ComposeDevSession(rootSibling) {
-            Segment({
-                v.inverted()
+            Div({
+                classes("p-6", "mx-auto", "bg-white", "rounded-xl", "shadow-lg", "flex", "items-center", "space-x-4")
                 style {
-                    mixBlendMode(MixBlendMode.ColorBurn)
-                    fontSize(0.8.cssRem)
-                    lineHeight(1.cssRem)
                     maxHeight(35.vh)
                     overflowX("hidden")
                     overflowY("scroll")
                 }
             }) {
-                val scope = rememberCoroutineScope()
-                DisposableEffect(scope) {
-                    virtualConsole.attachTo(scope, scopeElement)
-                    onDispose { virtualConsole.detachFrom(scopeElement) }
-                }
-            }
-        }
-    }
-
-
-    renderComposable(rootElement) {
-        Style(ClickUpStyleSheet)
-
-        DemoView(
-            ClickUpAppDemoProvider,
-            *HelloDemoProviders,
-            ClickUpDemoProvider,
-            ArchitectureDemoProvider,
-            *SemanticUiDemoProviders,
-            state = LocationFragmentParameters(window).asDemoViewState("demo"),
-        ) {
-            val activationState: State<Boolean> = devMode.activationFlow.collectAsState()
-            S("ui", "statistic") {
-                S("value") { Text(if (activationState.value) "Active" else "Inactive") }
-                S("label") { Hr() }
-                BasicButton({
-                    v.primary().size(Mini).circular()
-                    onClick { devMode.toggle(it.nativeEvent) }
-                }) {
-                    Text("DevMode")
-                }
-            }
-
-            if (true) {
                 Demo("Using Environment") { demoScope ->
                     val environmentRepository = remember { EnvironmentRepository(DynamicEnvironmentDataSource(), demoScope) }
                     val environmentResource by environmentRepository.environmentFlow().collectAsState(null)
@@ -145,7 +102,7 @@ fun main() {
                         is Success -> {
                             val sessionDataSource = remember { OpenIDConnectSessionDataSource(currentEnvironmentResource.data) }
                             val sessionRepository = remember { SessionRepository(sessionDataSource, demoScope) }
-                            val sessionResource by sessionRepository.sessionFlow().onEach { console.warn("session flowing", it) }.collectAsState(null)
+                            val sessionResource by sessionRepository.sessionFlow().collectAsState(null)
                             when (val currentSessionResource = sessionResource) {
                                 null -> Loader("Loading session")
                                 is Success -> {
@@ -183,6 +140,33 @@ fun main() {
 
                         is Failure -> ErrorMessage(currentEnvironmentResource.message, currentEnvironmentResource.cause)
                     }
+                }
+
+            }
+        }
+    }
+
+
+    renderComposable(rootElement) {
+        Style(ClickUpStyleSheet)
+
+        DemoView(
+            ClickUpAppDemoProvider,
+            *HelloDemoProviders,
+            ClickUpDemoProvider,
+            ArchitectureDemoProvider,
+            *SemanticUiDemoProviders,
+            state = LocationFragmentParameters(window).asDemoViewState("demo"),
+        ) {
+            val activationState: State<Boolean> = devMode.activationFlow.collectAsState()
+            S("ui", "statistic") {
+                S("value") { Text(if (activationState.value) "Active" else "Inactive") }
+                S("label") { Hr() }
+                BasicButton({
+                    v.primary().size(Mini).circular()
+                    onClick { devMode.toggle(it.nativeEvent) }
+                }) {
+                    Text("DevMode")
                 }
             }
         }

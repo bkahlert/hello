@@ -7,10 +7,8 @@ group = "$group.hello"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-core")
                 implementation("com.bkahlert.kommons:kommons-dom")
@@ -22,7 +20,7 @@ kotlin {
             }
         }
 
-        val jsTest by getting {
+        jsTest {
             dependencies {
                 implementation("io.ktor:ktor-client-js")
             }

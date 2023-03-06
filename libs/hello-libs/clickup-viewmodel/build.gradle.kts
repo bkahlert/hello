@@ -7,23 +7,15 @@ group = "$group.hello"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 api("com.bkahlert.kommons:kommons-color")
                 api("com.bkahlert.kommons:kommons-dom")
-                api("com.bkahlert.kommons:kommons-logging-inline")
                 api("com.bkahlert.kommons:kommons-time")
                 api("com.bkahlert.semantic-ui:semantic-ui")
                 api(project(":clickup-model"))
                 api(project(":clickup-view"))
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation("com.bkahlert.semantic-ui:semantic-ui-test")
             }
         }
     }

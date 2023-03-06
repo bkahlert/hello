@@ -24,7 +24,6 @@ import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Huge
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Large
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Massive
 import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
-import com.bkahlert.semanticui.core.updateDebugSettings
 import com.bkahlert.semanticui.custom.ErrorMessage
 import com.bkahlert.semanticui.custom.IFrame
 import com.bkahlert.semanticui.custom.ReportingCoroutineScope
@@ -46,6 +45,7 @@ import com.bkahlert.semanticui.element.active
 import com.bkahlert.semanticui.element.icon
 import com.bkahlert.semanticui.element.inline
 import com.bkahlert.semanticui.element.size
+import com.bkahlert.semanticui.module.updateDebugSettings
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.dom.clear
@@ -131,8 +131,15 @@ fun WebApp(
     }
 }
 
+@JsModule("./semantic/semantic.less")
+private external val SemanticStyles: dynamic
+
+@JsModule("./styles/web-app.scss")
+private external val AppStyles: dynamic
 
 fun main() {
+    SemanticStyles
+    AppStyles
 
     updateDebugSettings { module, settings ->
         settings.debug = module !in listOf("transition")

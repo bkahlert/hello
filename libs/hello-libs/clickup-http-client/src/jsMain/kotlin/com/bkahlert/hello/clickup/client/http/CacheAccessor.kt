@@ -1,7 +1,7 @@
 package com.bkahlert.hello.clickup.client.http
 
+import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.kommons.json.LenientJson
-import com.bkahlert.kommons.logging.InlineLogger
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 
@@ -9,7 +9,7 @@ public class CacheAccessor(
     public val key: String,
     public val getter: (String) -> String?,
     public val setter: (String, String?) -> Unit,
-    public val logger: InlineLogger,
+    public val logger: ConsoleLogger,
 ) {
     public inline fun <reified T> load(): T? = getter(key)
         ?.runCatching { LenientJson.decodeFromString<T>(this)?.also { logger.debug("successfully loaded cached response for $key") } }

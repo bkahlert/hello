@@ -63,7 +63,7 @@ public class PomodoroTimerStateImpl(
 
     init {
         if (logging) console.debug("PomodoroTimerStateImpl: launching coroutine")
-        externalScope.launch(defaultDispatcher) {
+        externalScope.launch(defaultDispatcher) { // TODO use intervalFlow
             while (pomodoro.duration - timeEntry.passed >= 0.5.seconds) {
                 if (logging) console.debug(
                     "PomodoroTimerStateImpl: launched coroutine",

@@ -1,11 +1,14 @@
 package com.bkahlert.hello.user.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.bkahlert.hello.data.Resource
 import com.bkahlert.hello.user.domain.User
 import com.bkahlert.kommons.auth.diagnostics
 import com.bkahlert.kommons.uri.DataUri
+import com.bkahlert.kommons.uri.GravatarImageUri
 import com.bkahlert.semanticui.collection.Item
 import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
@@ -163,10 +166,19 @@ public fun Avatar(
 ) {
     A(attrs = { classes("ui", "avatar", "image") }) {
         if (user != null) {
-            val nickname = remember(user) { user.nickname }
+            val nickname by remember(user) { mutableStateOf(user.nickname) }
+//            LaunchedEffect(user.email) {
+//                user.email?.let {
+//                    kotlin.runCatching {
+//                        val json = JsonHttpClient().get(GravatarProfileUri(it, JSON).toUrl()).body<JsonObject>()
+//                        val givenName = json["entry"]?.jsonArray?.firstOrNull()?.jsonObject?.get("name")?.jsonObject?.get("givenName")?.jsonPrimitive?.content
+//                        if (givenName != null) nickname = givenName
+//                    }
+//                }
+//            }
             val diagnostics = remember(user) { user.claims.diagnostics.toList().joinToString("\n") { (key, value) -> "$key: $value" } }
             Image(
-                src = user.picture ?: avatarPlaceholderUri,
+                src = user.picture ?: user.email?.let { GravatarImageUri(it, size = 256) } ?: avatarPlaceholderUri,
                 alt = "Picture of $nickname",
             ) {
                 style { cursor("help") }

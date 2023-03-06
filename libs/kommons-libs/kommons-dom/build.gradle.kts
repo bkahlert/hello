@@ -6,10 +6,8 @@ group = "$group.kommons"
 
 kotlin {
     explicitApi()
-
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
-        val jsMain by getting {
+        jsMain {
             dependencies {
                 api(project(":kommons-js"))
                 api("com.bkahlert.kommons:kommons-uri")
