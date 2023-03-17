@@ -2,7 +2,58 @@ package com.bkahlert.kommons.dom
 
 import org.w3c.dom.get
 import org.w3c.dom.set
+import kotlin.collections.Map.Entry
+import kotlin.collections.MutableMap.MutableEntry
 import org.w3c.dom.Storage as W3cStorage
+
+// TODO test
+public fun org.w3c.dom.Storage.asMap(): Map<String, String> = object : AbstractMap<String, String>() {
+    override val entries: Set<Entry<String, String>>
+        get() = buildSet {
+            0.until(length).mapNotNull {
+                val key = key(it)
+                if (key != null) add(object : Entry<String, String> {
+                    override val key: String get() = key
+                    override val value: String get() = getItem(key) ?: throw NoSuchElementException("Item $key does not exist")
+                })
+            }
+        }
+}
+
+public fun org.w3c.dom.Storage.asMutableMap(): MutableMap<String, String> = object : AbstractMutableMap<String, String>() {
+    override val entries: MutableSet<MutableEntry<String, String>>
+        get() = object : AbstractMutableSet<MutableEntry<String, String>>() {
+            override val size: Int get() = length
+            override fun iterator(): MutableIterator<MutableEntry<String, String>> = object : MutableIterator<MutableEntry<String, String>> {
+                var index = 0
+                override fun hasNext(): Boolean = index < length
+                override fun next(): MutableEntry<String, String> {
+                    val key = key(index++)
+                    return if (key != null) {
+                        object : MutableEntry<String, String> {
+                            override val key: String get() = key
+                            override val value: String get() = getItem(key) ?: throw NoSuchElementException("Item $key does not exist")
+                            override fun setValue(newValue: String): String = value.also { setItem(key, newValue) }
+                        }
+                    } else throw NoSuchElementException("No more items")
+                }
+
+                override fun remove() {
+                    val key = key(index--)
+                    if (key != null) removeItem(key) else throw NoSuchElementException("No more items")
+                }
+            }
+
+            override fun add(element: MutableEntry<String, String>): Boolean =
+                if (this@asMutableMap.getItem(element.key) != null) false
+                else {
+                    this@asMutableMap.setItem(element.key, element.value)
+                    true
+                }
+        }
+
+    override fun put(key: String, value: String): String? = getItem(key).also { setItem(key, value) }
+}
 
 /** Alias for [W3cStorage.removeItem] */
 public inline fun W3cStorage.remove(key: String): Unit = removeItem(key)

@@ -1,7 +1,6 @@
-/* global config */
-// noinspection JSUnnecessarySemicolon
 ;(function (config) {
-  'use strict';
+  'use strict'
+
   config.module.rules.push({
     test: /\.(less)$/,
     use: [{
@@ -14,5 +13,5 @@
       loader: 'less-loader',
       options: {}
     }],
-  });
-})(config);
+  })
+})(config)

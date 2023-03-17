@@ -159,12 +159,12 @@ private class DemoProviderTab(
 }
 
 
-private fun Int?.orZero() = this ?: 0
+public fun Int?.orZero(): Int = this ?: 0
 
-private fun Int.toWord(
+public fun Int.toWord(
     lessThanOneValue: String = "one",
     greaterThanSixteenValue: String = "sixteen",
-) = when (this) {
+): String = when (this) {
     in Int.MIN_VALUE until 1 -> lessThanOneValue
     1 -> "one"
     2 -> "two"

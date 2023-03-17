@@ -1,7 +1,5 @@
-/* global config,require */
-// noinspection JSUnnecessarySemicolon
 ;(function (config) {
-  'use strict';
+  'use strict'
 
   config.module.rules.push(
     {
@@ -18,5 +16,5 @@
         filename: 'fonts/[name][ext][query]',
       }
     }
-  );
-})(config);
+  )
+})(config)

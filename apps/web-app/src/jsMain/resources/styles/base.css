@@ -1,140 +1,191 @@
-/*noinspection CssUnknownTarget*/
-@import url("tailwindcss/base");
-/*noinspection CssUnknownTarget*/
-@import url("tailwindcss/components");
-/*noinspection CssUnknownTarget*/
-@import url("tailwindcss/utilities");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-    --sat: env(safe-area-inset-top);
-    --sar: env(safe-area-inset-right);
-    --sab: env(safe-area-inset-bottom);
-    --sal: env(safe-area-inset-left);
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
 
-    --tax: env(titlebar-area-x);
-    --tay: env(titlebar-area-y);
-    --taw: env(titlebar-area-width);
-    --tah: env(titlebar-area-height);
+  --tax: env(titlebar-area-x);
+  --tay: env(titlebar-area-y);
+  --taw: env(titlebar-area-width);
+  --tah: env(titlebar-area-height);
 
-    --kit: env(keyboard-inset-top);
-    --kir: env(keyboard-inset-right);
-    --kib: env(keyboard-inset-bottom);
-    --kil: env(keyboard-inset-left);
-    --kiw: env(keyboard-inset-width);
-    --kih: env(keyboard-inset-height);
-
-    --color-text: rgba(0, 0, 0, 0.87);
-    --color-bg: rgba(73, 105, 167, 1);
-    --color-bg-transparent: rgba(73, 105, 167, 0);
-    --bg-gradient: linear-gradient(
-            290deg,
-            rgb(194, 31, 115),
-            rgb(175, 80, 171),
-            rgb(135, 117, 210),
-            rgb(84, 147, 227),
-            rgb(41, 170, 226)
-    );
-
-    --shadow-color-transparent: rgba(0, 0, 0, 0);
-    --shadow-color: rgba(0, 0, 0, 0.25);
-
-    --modal-z-index: 1000;
-
-    --font-size-base: 1rem;
-    --font-size-lg: 1.3rem;
-    --font-size-xl: 2.5rem;
+  --kit: env(keyboard-inset-top);
+  --kir: env(keyboard-inset-right);
+  --kib: env(keyboard-inset-bottom);
+  --kil: env(keyboard-inset-left);
+  --kiw: env(keyboard-inset-width);
+  --kih: env(keyboard-inset-height);
 }
 
-html {
-    font-family: Raleway, system-ui, sans-serif;
-    font-size: var(--font-size-base);
-    color: var(--color-text);
-    background-color: var(--color-bg);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color-light: 248 250 252; /* slate-50 */
+  --bg-color-dark: 30 41 59; /* slate-800 */
+  --text-color-light: 15 23 42; /* slate-900 */
+  --text-color-dark: 241 245 249; /* slate-100 */
 }
 
-/* https://css-tricks.com/16px-or-larger-text-prevents-ios-form-zoom/ */
-@media (pointer: coarse) {
-    input, .ui.input {
-        font-size: 16px;
-    }
+@layer base {
+  .bg-light { background-color: rgb(var(--bg-color-light)); }
+  .bg-dark { background-color: rgb(var(--bg-color-dark)); }
+  .bg { @apply bg-light dark:bg-dark; }
+  .text-light { color: rgb(var(--text-color-light)); }
+  .text-dark { color: rgb(var(--text-color-dark)); }
+  .text { @apply text-light dark:text-dark; }
+
+  h1 { @apply text text-2xl; }
+  h2 { @apply text text-xl; }
+  h3 { @apply text text-lg; }
+
+  hr {
+    @apply w-48 h-1 mx-auto rounded border-0;
+    @apply my-4 md:my-10;
+    @apply bg;
+  }
+
+  button {
+    @apply rounded;
+    @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75;
+  }
 }
 
-/* Reset Semantic UI height=100% */
-html:root,
-html:root body:not(.dimmed) { height: initial; }
-
-/* Toolbars on mobile device add to the final height. fill-available does not but has limited support. */
-html,
-body {
-    min-height: 100vh;
-    /* autoprefixer: ignore next */
-    min-height: fill-available;
+:root {
+  --glass-opacity-light-from: 25%;
+  --glass-opacity-light-to: 20%;
+  --glass-opacity-dark-from: 45%;
+  --glass-opacity-dark-to: 40%;
+  --glass-bg-color-light: var(--bg-color-light);
+  --glass-bg-color-dark: var(--bg-color-dark);
+  --glass-text-color-light: var(--text-color-light);
+  --glass-text-color-dark: var(--text-color-dark);
 }
 
-/* html tag for higher specificity than Semantic UI */
-html body { background-image: var(--bg-gradient); }
+@layer components {
+
+  /* vertical area taking the full height and each child element scroll-snapped to the center */
+  .snap-v {
+    @apply relative h-full flex flex-col;
+    /* without snapping might only be applied if scrolled close enough to snap point */
+    @apply snap-mandatory;
+    @apply snap-y overflow-y-auto;
+    @apply [&>*]:snap-center [&>*]:shrink-0;
+  }
+
+  /* snap-v with each child element taking the full width and height */
+  .snap-v-full {
+    @apply snap-v;
+    @apply [&>*]:w-full [&>*]:h-full;
+  }
+
+  /* horizontal area taking the full width and each child element scroll-snapped to the center */
+  .snap-h {
+    @apply relative w-full flex;
+    /* without snapping might only be applied if scrolled close enough to snap point */
+    @apply snap-mandatory;
+    @apply snap-x overflow-x-auto;
+    @apply [&>*]:snap-center [&>*]:shrink-0;
+  }
+
+  /* snap-h with each child element taking the full width and height */
+  .snap-h-full {
+    @apply snap-h;
+    @apply [&>*]:w-full [&>*]:h-full;
+  }
+
+  .snap-v, .snap-h { @apply scroll-smooth; }
+  .snap-v > *, .snap-h > * { @apply snap-normal; }
 
 
-/* raleway-200 - latin */
-@font-face {
-    font-family: "Raleway";
-    font-style: normal;
-    font-weight: 200;
-    src: local(""), url("../fonts/raleway-v28-latin-200.woff2") format("woff2"), url("../fonts/raleway-v28-latin-200.woff") format("woff");
+  /* default shadow of a box */
+  .box-shadow {
+    @apply shadow-lg;
+    @apply dark:shadow-xl;
+  }
+
+  /* default light-variant color of a box */
+  .box-color-light { @apply bg-light text-light; }
+  /* default dark-variant color of a box */
+  .box-color-dark { @apply bg-dark text-dark; }
+  /* default color of a box */
+  .box-color { @apply box-color-light dark:box-color-dark; }
+
+  /* default light-variant background and text color of a glass box */
+  .box-glass-light {
+    @apply backdrop-blur-md;
+    @apply bg-gradient-290;
+    --tw-gradient-stops: rgb(var(--glass-bg-color-light) / var(--glass-opacity-light-from)), rgb(var(--glass-bg-color-light) / var(--glass-opacity-light-to));
+    @apply text-slate-900;
+    @apply ring-1 ring-slate-900/5;
+  }
+
+  /* default dark-variant background and text color of a glass box */
+  .box-glass-dark {
+    @apply backdrop-blur-md;
+    @apply bg-gradient-290;
+    --tw-gradient-stops: rgb(var(--glass-bg-color-dark) / var(--glass-opacity-dark-from)), rgb(var(--glass-bg-color-dark) / var(--glass-opacity-dark-to));
+    @apply text-slate-100;
+    @apply ring-1 ring-slate-50/5;
+  }
+
+  /* default background and text color of a glass box */
+  .box-glass {
+    @apply box-glass-light dark:box-glass-dark;
+  }
+
+  /* default styling for random content in a box */
+  .box-prose {
+    @apply mx-auto;
+    @apply first:mt-0 sm:first:mt-4 mb-4;
+    @apply px-6;
+    @apply py-2;
+    @apply sm:rounded-lg;
+    @apply box-shadow;
+    @apply box-color;
+    @apply prose;
+    @apply prose-slate;
+    @apply sm:prose-sm;
+    @apply lg:prose-lg;
+    @apply xl:prose-xl;
+    @apply dark:prose-invert;
+  }
+
+  /* default styling for a button */
+  .btn {
+    @apply inline-flex items-center gap-x-2;
+    @apply m-1;
+    @apply py-2 px-3;
+    @apply rounded;
+    @apply shadow;
+    @apply box-glass;
+    @apply text;
+    @apply transition;
+    @apply shadow-inner;
+    @apply hover:shadow-slate-600/50;
+    @apply dark:hover:shadow-slate-800;
+    @apply ring ring-offset-1;
+    @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75;
+  }
+
+  .btn > :first-child { @apply shrink-0; }
+  .btn > :last-child { @apply shrink-0; }
 }
 
-/* raleway-300 - latin */
-@font-face {
-    font-family: "Raleway";
-    font-style: normal;
-    font-weight: 300;
-    src: local(""), url("../fonts/raleway-v28-latin-300.woff2") format("woff2"), url("../fonts/raleway-v28-latin-300.woff") format("woff");
-}
+@layer utilities {
+  .flex-center {
+    @apply items-center justify-center;
+  }
 
-/* raleway-regular - latin */
-@font-face {
-    font-family: "Raleway";
-    font-style: normal;
-    font-weight: 400;
-    src: local(""), url("../fonts/raleway-v28-latin-regular.woff2") format("woff2"), url("../fonts/raleway-v28-latin-regular.woff") format("woff");
-}
-
-/* raleway-500 - latin */
-@font-face {
-    font-family: "Raleway";
-    font-style: normal;
-    font-weight: 500;
-    src: local(""), url("../fonts/raleway-v28-latin-500.woff2") format("woff2"), url("../fonts/raleway-v28-latin-500.woff") format("woff");
-}
-
-/* raleway-700 - latin */
-@font-face {
-    font-family: "Raleway";
-    font-style: normal;
-    font-weight: 700;
-    src: local(""), url("../fonts/raleway-v28-latin-700.woff2") format("woff2"), url("../fonts/raleway-v28-latin-700.woff") format("woff");
-}
-
-/* raleway-900 - latin */
-@font-face {
-    font-family: "Raleway";
-    font-style: normal;
-    font-weight: 900;
-    src: local(""), url("../fonts/raleway-v28-latin-900.woff2") format("woff2"), url("../fonts/raleway-v28-latin-900.woff") format("woff");
-}
-
-/* raleway-200italic - latin */
-@font-face {
-    font-family: "Raleway";
-    font-style: italic;
-    font-weight: 200;
-    src: local(""), url("../fonts/raleway-v28-latin-200italic.woff2") format("woff2"), url("../fonts/raleway-v28-latin-200italic.woff") format("woff");
-}
-
-/* raleway-300italic - latin */
-@font-face {
-    font-family: "Raleway";
-    font-style: italic;
-    font-weight: 300;
-    src: local(""), url("../fonts/raleway-v28-latin-300italic.woff2") format("woff2"), url("../fonts/raleway-v28-latin-300italic.woff") format("woff");
+  .debug {
+    @apply ring-8 ring-fuchsia-500/50 ring-inset ring-offset-0;
+  }
+  .debug > * {
+    @apply ring-1 ring-fuchsia-700/50 ring-inset ring-offset-0;
+  }
 }

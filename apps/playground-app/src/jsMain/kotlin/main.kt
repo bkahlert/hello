@@ -1,14 +1,12 @@
-import androidx.compose.runtime.Composable
+import ScreensType.Vertical
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.demo.ClickUpDemoProvider
+import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
 import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
 import com.bkahlert.hello.data.Resource.Failure
 import com.bkahlert.hello.data.Resource.Success
@@ -21,28 +19,53 @@ import com.bkahlert.hello.session.data.OpenIDConnectSessionDataSource
 import com.bkahlert.hello.session.data.SessionRepository
 import com.bkahlert.hello.session.ui.SessionView
 import com.bkahlert.kommons.auth.Session
+import com.bkahlert.kommons.auth.Session.AuthorizedSession
 import com.bkahlert.kommons.devmode.DevMode
-import com.bkahlert.kommons.dom.FragmentParameters
-import com.bkahlert.kommons.dom.LocationFragmentParameters
+import com.bkahlert.kommons.dom.fragmentParameters
+import com.bkahlert.kommons.uri.build
 import com.bkahlert.semanticui.core.S
-import com.bkahlert.semanticui.core.attributes.Modifier.Variation.Size.Mini
 import com.bkahlert.semanticui.custom.ErrorMessage
+import com.bkahlert.semanticui.custom.rememberReportingCoroutineScope
 import com.bkahlert.semanticui.demo.Demo
-import com.bkahlert.semanticui.demo.DemoView
+import com.bkahlert.semanticui.demo.DemoProvider
 import com.bkahlert.semanticui.demo.SemanticUiDemoProviders
-import com.bkahlert.semanticui.demo.asDemoViewState
+import com.bkahlert.semanticui.demo.orZero
+import com.bkahlert.semanticui.demo.toWord
 import com.bkahlert.semanticui.devmode.ComposeDevSession
-import com.bkahlert.semanticui.element.BasicButton
 import com.bkahlert.semanticui.element.Header
 import com.bkahlert.semanticui.element.Loader
-import com.bkahlert.semanticui.element.circular
-import com.bkahlert.semanticui.element.primary
-import com.bkahlert.semanticui.element.size
 import com.bkahlert.semanticui.module.updateDebugSettings
+import dev.fritz2.core.RenderContext
+import dev.fritz2.core.RootStore
+import dev.fritz2.core.Store
+import dev.fritz2.core.Window
+import dev.fritz2.core.classes
+import dev.fritz2.core.id
+import dev.fritz2.core.lensOf
+import dev.fritz2.core.render
+import dev.fritz2.core.storeOf
+import dev.fritz2.core.type
+import dev.fritz2.headless.components.dataCollection
+import dev.fritz2.headless.foundation.Aria
+import dev.fritz2.headless.foundation.attrIfNotSet
+import dev.fritz2.headless.foundation.utils.scrollintoview.ScrollBehavior
+import dev.fritz2.headless.foundation.utils.scrollintoview.ScrollMode
+import dev.fritz2.headless.foundation.utils.scrollintoview.ScrollPosition
+import dev.fritz2.routing.MapRouter
+import io.ktor.util.StringValues
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.maxHeight
 import org.jetbrains.compose.web.css.overflowX
@@ -50,22 +73,50 @@ import org.jetbrains.compose.web.css.overflowY
 import org.jetbrains.compose.web.css.vh
 import org.jetbrains.compose.web.dom.Code
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Hr
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Pre
 import org.jetbrains.compose.web.dom.Text
-import org.jetbrains.compose.web.renderComposable
+import org.w3c.dom.CENTER
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.SMOOTH
+import org.w3c.dom.ScrollIntoViewOptions
+import org.w3c.dom.ScrollLogicalPosition
+import playground.PlaygroundContainer
 import playground.architecture.ArchitectureDemoProvider
 import playground.clickupapp.ClickUpAppDemoProvider
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
+import playground.components.Page
+import playground.components.app.AppShowcases
+import playground.components.environment.EnvironmentShowcases
+import playground.components.environment.EnvironmentStore
+import playground.components.environment.environmentView
+import playground.components.horizontalScreens
+import playground.components.loader
+import playground.components.navigationBar
+import playground.components.pages
+import playground.components.props.PropsShowcases
+import playground.components.props.PropsStore
+import playground.components.props.propsView
+import playground.components.proseBox
+import playground.components.session.SessionShowcases
+import playground.components.session.SessionStore
+import playground.components.session.sessionView
+import playground.components.slideOver
+import playground.components.user.UserShowcases
+import playground.components.user.UserStore
+import playground.components.user.userDropdown
+import playground.components.verticalScreens
+import playground.fritz2.Fritz2HeadlessUiDemoAdapter
+import playground.fritz2.HeadlessUiShowcases
+import playground.fritz2.compose
+import com.bkahlert.hello.fritz2.icon
+import playground.tailwind.heroicons.OutlineHeroIcons
+import org.w3c.dom.ScrollBehavior as ScrollBehaviorW3C
 
 @JsModule("./semantic/semantic.less")
 private external val SemanticStyles: dynamic
 
 @JsModule("./styles/playground-app.scss")
-private external val PlaygroundStyles: dynamic
+external val PlaygroundStyles: dynamic
 
 fun main() {
     SemanticStyles
@@ -146,73 +197,327 @@ fun main() {
         }
     }
 
+    val envStore = EnvironmentStore(DynamicEnvironmentDataSource())
+    val sessionStore = envStore.data.map { it?.let { SessionStore(OpenIDConnectSessionDataSource(it)) } }
+    val userStore = sessionStore.mapLatest { it?.let(::UserStore) }
+    val propsStore = sessionStore.flatMapLatest {
+        it?.data
+            ?.filterIsInstance<AuthorizedSession>()
+            ?.combine(envStore.data.filterNotNull(), ::SessionPropsDataSource)
+            ?.map { PropsStore(it) }
+            ?: flowOf(null)
+    }
 
-    renderComposable(rootElement) {
-        Style(ClickUpStyleSheet)
+    class PagesStore(
+        initialPages: List<Page>,
+    ) : RootStore<List<Page>>(initialPages) {
+        constructor(vararg initialPages: Page) : this(initialPages.asList())
 
-        DemoView(
-            ClickUpAppDemoProvider,
-            *HelloDemoProviders,
-            ClickUpDemoProvider,
-            ArchitectureDemoProvider,
-            *SemanticUiDemoProviders,
-            state = LocationFragmentParameters(window).asDemoViewState("demo"),
+        val router = MapRouter(mapOf("page" to (initialPages.firstOrNull()?.id ?: "")))
+        val selectedPage: Store<Page?> = router.mapByKey("page").map(lensOf("page", { id ->
+            current.firstNotNullOfOrNull { p ->
+                if (p.id == id) p
+                else p.pages.firstOrNull { it.id == id }
+            }
+        }, { _, page -> page?.id ?: "" }))
+    }
+
+    val pages = PagesStore(
+        PlaygroundContainer,
+        Page(
+            id = "hello",
+            label = "Hello!",
+            description = "Hello! app showcases",
+            icon = ImageFixtures.HelloFavicon,
+            groups = listOf(
+                listOf(
+                    HeadlessUiShowcases,
+                    EnvironmentShowcases,
+                    SessionShowcases,
+                    UserShowcases,
+                    PropsShowcases,
+                    AppShowcases,
+                )
+            ),
+            content = {
+                val x = storeOf(
+                    listOf(
+                        HeadlessUiShowcases,
+                        EnvironmentShowcases,
+                        SessionShowcases,
+                        UserShowcases,
+                        PropsShowcases,
+                        AppShowcases,
+                    )
+                )
+                if (true) {
+                    x.current.forEach { page ->
+                        button("btn") {
+                            type("button")
+                            +page.label
+                            clicks handledBy {
+                                window.location.fragmentParameters = StringValues.build(window.location.fragmentParameters) {
+                                    set("page", page.id)
+                                }
+                            }
+                        }
+                    }
+                } else horizontalScreens("max-h-[50vh]") {
+                    x.current.forEach { page ->
+                        screen("overflow-clip scale-50") {
+                            id(page.id)
+                            page.content?.invoke(this)
+                        }
+                    }
+                }
+            }
+        ),
+        Fritz2HeadlessUiDemoAdapter(playground.headlessdemo.pages, "page"),
+        DemoPageContainer,
+    )
+
+    render(".app") {
+
+        navigationBar(
+            "sticky top-0 inset-x-0 z-[20]",
+            selection = pages.selectedPage.map(lensOf(
+                id = "nav",
+                getter = { it },
+                setter = { _, navItem -> navItem as? Page }
+            )),
+            navItems = pages.current,
+            startContent = {
+                div("flex flex-shrink-0 items-center") {
+                    button(
+                        classes(
+                            "group",
+                            "inline-flex w-full items-center justify-center",
+                            "text-left",
+                            "hover:box-glass",
+                            "focus:outline-none focus-visible:ring focus-visible:ring-white focus-visible:ring-opacity-75"
+                        )
+                    ) {
+                        type("button")
+                        icon("shrink-0 block h-8 w-auto", ImageFixtures.HelloFavicon)
+                        clicks.map { null } handledBy pages.selectedPage.update
+                    }
+                }
+            }
         ) {
-            val activationState: State<Boolean> = devMode.activationFlow.collectAsState()
-            S("ui", "statistic") {
-                S("value") { Text(if (activationState.value) "Active" else "Inactive") }
-                S("label") { Hr() }
-                BasicButton({
-                    v.primary().size(Mini).circular()
-                    onClick { devMode.toggle(it.nativeEvent) }
-                }) {
-                    Text("DevMode")
+            userStore.render {
+                if (it != null) userDropdown("ml-3", it)
+                else loader()
+            }
+        }
+
+        if (false) div("w-screen h-screen pt-16 -mt-16") {
+            verticalScreens {
+                pages.current.forEach { container ->
+                    if (container.pages.isEmpty()) {
+                        screen("overflow-clip") {
+                            id(container.id)
+                            container.content?.invoke(this)
+                        }
+                    } else {
+                        horizontalScreens {
+                            screen("overflow-clip") {
+                                id(container.id)
+                                container.content?.invoke(this)
+                            }
+                            container.pages.forEach { page ->
+                                screen("overflow-clip") {
+                                    id(page.id)
+                                    page.content?.invoke(this)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            pages.selectedPage.data.render { page ->
+                if (page == null) {
+                    screens(
+                        "w-screen h-screen pt-16 -mt-16",
+                        pages = pages,
+                        selectedPage = storeOf(pages.selectedPage.current.also { console.warn("SELECTED PAGE", it) }),
+                        type = Vertical,
+                    )
+                } else {
+                    div("w-full h-screen pt-16 -mt-16") {
+                        page.content?.invoke(this)
+                    }
+                }
+            }
+        }
+
+        val diag = storeOf(false)
+
+        Window.keydowns
+            .filter { it.key.equals("f4", ignoreCase = true) }
+            .map { !diag.current } handledBy diag.update
+
+        slideOver(
+            diag,
+            name = "Diagnostics",
+        ) {
+            div("relative z-10 flex justify-end -mt-6") {
+                userStore.render {
+                    if (it != null) userDropdown("-translate-y-8", it)
+                    else div("-translate-y-6") { loader() }
+                }
+            }
+            envStore.data.render { environmentView(it) }
+            hr {}
+            sessionStore.flatMapLatest { it?.data ?: emptyFlow() }.render { sessionView(it) }
+            hr {}
+            propsStore.flatMapLatest { it?.data ?: emptyFlow() }.render { propsView(it) }
+        }
+    }
+}
+
+fun DemoProvider.toPage(): Page {
+    val provider = this
+    return Page(
+        id = id,
+        label = name,
+        icon = OutlineHeroIcons.square_2_stack,
+        content = {
+            div("m-2 p-2 ring-1 ring-gray-300 rounded-md") {
+                compose {
+                    Style(ClickUpStyleSheet)
+                    S(
+                        "ui",
+                        provider.content.size.orZero().coerceIn(1..3).toWord(),
+                        "column", "stackable", "doubling", "grid", "segment",
+                    ) {
+                        val demoProviderScope = rememberReportingCoroutineScope()
+                        provider.content.forEach { demoProviderContent ->
+                            S("column", content = { demoProviderContent(demoProviderScope) })
+                        }
+                    }
+                }
+            }
+        },
+    )
+}
+
+val DemoPageContainer = Page(
+    id = "demo",
+    label = "V2 Demos",
+    description = "Hello! v2 demos",
+    icon = SemanticUiDemoProviders.first().logo.also { console.warn(it) } ?: OutlineHeroIcons.square_2_stack,
+    groups = listOf(
+        listOf(ClickUpAppDemoProvider),
+        HelloDemoProviders.asList(),
+        listOf(ClickUpDemoProvider),
+        listOf(ArchitectureDemoProvider),
+        SemanticUiDemoProviders.asList(),
+    ).map { it.map { it.toPage() } },
+    content = { proseBox { span { +"TODO" } } },
+)
+
+enum class ScreensType(
+    val classes: String,
+) {
+    Vertical("snap-v"),
+    VerticalFull("snap-v-full"),
+    Horizontal("snap-h"),
+    HorizontalFull("snap-h-full"),
+}
+
+
+fun RenderContext.screens(
+    pages: Store<List<Page>>,
+    selectedPage: Store<Page?> = storeOf(null),
+    type: ScreensType = Vertical,
+) = screens(null, pages, selectedPage, type)
+
+// selected: the element worked with
+// active: the focussed element that can be selected
+fun RenderContext.screens(
+    classes: String?,
+    pages: Store<List<Page>>,
+    selectedPage: Store<Page?> = storeOf(null),
+    type: ScreensType = Vertical,
+) {
+
+    dataCollection<Page>(classes) {
+        data(pages.data, Page::id)
+        selection.single(selectedPage)
+
+        dataCollectionItems(type.classes) {
+            scrollIntoView(
+                behavior = ScrollBehavior.smooth,
+                mode = ScrollMode.always,
+                vertical = ScrollPosition.center,
+                horizontal = ScrollPosition.center,
+            )
+            attrIfNotSet("role", Aria.Role.navigation)
+            items.renderEach(Page::id, into = this) { item ->
+                dataCollectionItem(
+                    item = item,
+                    id = item.id,
+                    classes = classes("overflow-y-auto"),
+                ) {
+                    attrIfNotSet("role", Aria.Role.main)
+                    attr("data-screen-selected", selected.asString())
+                    attr("data-screen-active", active.asString())
+
+                    className(selected.combine(active) { s, a ->
+                        classes(
+                            if (s) "ring-4 ring-slate-500/25 ring-inset ring-offset-0"
+                            else if (a) "ring-8 ring-slate-500/33 ring-inset ring-offset-0"
+                            else "ring-none",
+//                            if (s) "opacity-100"
+//                            else if (a) "opacity-75" else "opacity-50"
+//                            if (s) "opacity-100"
+//                            else if (a) "opacity-75" else "opacity-50"
+                        )
+                    })
+
+                    // Screen container
+                    div(
+                        classes(
+                            "space-y-5 py-4 sm:px-4",
+                        )
+                    ) {
+                        // Screen header
+                        div(
+                            classes(
+//                                "z-10",
+//                                "sticky top-0 left-0",
+                                "flex items-center justify-center sm:justify-start gap-x-2",
+                            )
+                        ) {
+                            icon("shrink-0 w-6 h-6", item.icon)
+                            div("text-xl font-bold") { +item.label }
+                        }
+
+                        // Screen content
+                        div {
+                            className(selected.combine(active) { sel, act ->
+                                classes(
+//                                    "transition duration-300 ease-in",
+//                                    if (act) "" else "",
+//                                    if (sel) "scale-100" else "scale-75"
+                                )
+                            })
+                            item.content?.invoke(this)
+                        }
+                    }
+
+                    selected.mapNotNull { if (it) domNode else null } handledBy {
+                        it.scrollIntoView(
+                            ScrollIntoViewOptions(
+                                behavior = ScrollBehaviorW3C.SMOOTH,
+                                inline = ScrollLogicalPosition.CENTER,
+                                block = ScrollLogicalPosition.CENTER,
+                            )
+                        )
+                    }
                 }
             }
         }
     }
-}
-
-@Composable
-public fun FragmentParameters.collectAsState(
-    name: String,
-    context: CoroutineContext = EmptyCoroutineContext,
-): State<List<String>?> = produceState(getAll(name), this, context) {
-    if (context == EmptyCoroutineContext) {
-        asFlow(name).collect { value = it }
-    } else withContext(context) {
-        asFlow(name).collect { value = it }
-    }
-}
-
-@Composable
-public fun FragmentParameters.collectAsMutableState(
-    name: String,
-    context: CoroutineContext = EmptyCoroutineContext,
-): MutableState<List<String>?> {
-    val downStream: State<List<String>?> = produceState(getAll(name), this, context) {
-        if (context == EmptyCoroutineContext) {
-            asFlow(name).collect { value = it }
-        } else withContext(context) {
-            asFlow(name).collect { value = it }
-        }
-    }
-    return remember {
-        object : MutableState<List<String>?> {
-            override var value: List<String>?
-                get() = downStream.value
-                set(value) {
-                    setAll(name, value)
-                }
-
-            override fun component1(): List<String>? = value
-            override fun component2(): (List<String>?) -> Unit = { value = it }
-        }
-    }
-//    val result = remember { mutableStateOf(downStream.value) }
-//    LaunchedEffect(result) {
-//        snapshotFlow { result.value }
-//            .collect { setAll(name, it) }
-//    }
-//    return result
 }

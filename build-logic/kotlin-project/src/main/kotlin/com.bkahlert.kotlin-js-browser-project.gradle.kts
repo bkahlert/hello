@@ -13,12 +13,12 @@ kotlin {
             useCommonJs()
             browser {
                 defaultWebpackConfig()
-                testTask {
+                testTask(Action {
                     applyDefaultLoggingOptions()
                     useKarma {
                         useFirefoxHeadless()
                     }
-                }
+                })
             }
             yarn.applyDefaultOptions()
         }

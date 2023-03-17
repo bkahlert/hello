@@ -21,4 +21,11 @@ dependencies {
         api("com.tunjid.mutator:core:$mutatorVersion")
         api("com.tunjid.mutator:coroutines:$mutatorVersion")
     }
+
+    // Reactive web apps library, similar to Compose but simpler, https://github.com/jwstegemann/fritz2
+    constraints {
+        val fritz2Version = "1.0-RC4"
+        api("dev.fritz2:core:$fritz2Version")
+        api("dev.fritz2:headless:$fritz2Version")
+    }
 }

@@ -3,6 +3,7 @@
 dependencyResolutionManagement {
     repositories {
         gradlePluginPortal()
+        mavenCentral()
     }
 }
 includeBuild("../platforms")

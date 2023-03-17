@@ -10,6 +10,8 @@ import software.amazon.awscdk.services.cognito.OAuthFlows
 import software.amazon.awscdk.services.cognito.OAuthScope
 import software.amazon.awscdk.services.cognito.OAuthSettings
 import software.amazon.awscdk.services.cognito.SignInAliases
+import software.amazon.awscdk.services.cognito.StandardAttribute
+import software.amazon.awscdk.services.cognito.StandardAttributes
 import software.amazon.awscdk.services.cognito.UserPool
 import software.amazon.awscdk.services.cognito.UserPoolClient
 import software.amazon.awscdk.services.cognito.UserPoolClientIdentityProvider
@@ -45,6 +47,13 @@ class UserPoolProviderStack(
         .userPoolName(name)
         .selfSignUpEnabled(true)
         .signInAliases(SignInAliases.builder().email(true).username(true).build())
+        .standardAttributes(
+            StandardAttributes.builder()
+                .email(StandardAttribute.builder().required(false).mutable(true).build())
+                .nickname(StandardAttribute.builder().required(false).mutable(true).build())
+                .profilePicture(StandardAttribute.builder().required(false).mutable(true).build())
+                .build()
+        )
         .removalPolicy(RemovalPolicy.DESTROY)
         .build()
         .export("UserPoolProviderUrl", "URL of the user pool provider") { it.userPoolProviderUrl }

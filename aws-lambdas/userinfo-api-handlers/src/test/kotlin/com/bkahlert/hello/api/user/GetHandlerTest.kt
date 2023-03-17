@@ -17,6 +17,8 @@ import kotlinx.datetime.Instant
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.params.ParameterizedTest
 
+// TODO replace with token from auth module
+
 class GetHandlerTest {
 
     @Disabled

@@ -31,7 +31,7 @@ kotlin {
 }
 
 tasks.withType(KotlinCompilationTask::class).configureEach {
-    val kotlinVersion = "1.8.20-Beta"
+    val kotlinVersion = "1.8.20-RC"
     val composePlugin = "plugin:androidx.compose.compiler.plugins.kotlin"
     compilerOptions {
         if (kotlinVersion.split(".").last().split("-").first().toIntOrNull() != 20) {
@@ -41,5 +41,5 @@ tasks.withType(KotlinCompilationTask::class).configureEach {
 }
 
 compose {
-    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.3-dev-k1.8.20-Beta-c5841510cbf")
+    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.4-dev-k1.8.20-RC-88d9f3a8232")
 }

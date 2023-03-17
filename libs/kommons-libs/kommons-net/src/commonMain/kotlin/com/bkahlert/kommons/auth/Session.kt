@@ -8,6 +8,14 @@ import io.ktor.client.plugins.HttpClientPlugin
 
 public sealed interface Session {
 
+    public object Undetermined : UnauthorizedSession {
+        override suspend fun authorize(): Session {
+            error("Cannot authorize undetermined session.")
+        }
+
+        override fun toString(): String = "Undetermined"
+    }
+
     public interface UnauthorizedSession : Session {
         public suspend fun authorize(): Session
     }

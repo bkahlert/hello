@@ -6,11 +6,11 @@
        Fonts
 --------------------*/
 
-@fontName          : 'Raleway';
+@fontName          : 'ui-sans-serif','system-ui','-apple-system','BlinkMacSystemFont','Segoe UI','Roboto','Helvetica Neue','Arial','Noto Sans','sans-serif','Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
 @fontSmoothing     : antialiased;
 
-@headerFont        : @fontName, system-ui, sans-serif;
-@pageFont          : @fontName, system-ui, sans-serif;
+@headerFont        : @fontName;
+@pageFont          : @fontName;
 
 @googleFontName    : @fontName;
 @importGoogleFonts : false;

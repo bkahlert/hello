@@ -90,7 +90,7 @@ fun WebApp(
                     val defaultUri = resource.data?.default
                     IFrame("Loading bookmarks …", { v.size(Large) }) {
                         style { border(0.px) }
-                        src(defaultUri?.takeIf { it.scheme == window.location.uri.scheme } ?: "placeholder.html")
+                        src(defaultUri?.takeIf { it.scheme == window.location.uri.scheme } ?: "about:blank")
                         sandbox(
                             ALLOW_POPUPS,
                             ALLOW_SCRIPTS,

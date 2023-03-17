@@ -13,20 +13,20 @@ kotlin {
             useCommonJs()
             browser {
                 defaultWebpackConfig()
-                testTask {
+                testTask(Action {
                     applyDefaultLoggingOptions()
                     useKarma {
                         useFirefoxHeadless()
                     }
-                }
+                })
             }
             nodejs {
-                testTask {
+                testTask(Action {
                     applyDefaultLoggingOptions()
                     useMocha {
                         timeout = "10000"
                     }
-                }
+                })
             }
             yarn.applyDefaultOptions()
         }

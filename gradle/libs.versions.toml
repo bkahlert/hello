@@ -1,8 +1,8 @@
 [versions]
 # Gradle plugin; the compiler is configured in `com.bkahlert.compose-for-web-project.gradle.kts`
-compose = "1.3.1-rc02"
+compose = "1.4.0-alpha01-dev977"
 kommons = "2.8.0"
-kotlin = "1.8.20-Beta"
+kotlin = "1.8.20-RC"
 # https://github.com/JetBrains/kotlin-wrappers/blob/master/kotlin-wrappers-bom/README.md
 # https://central.sonatype.com/artifact/org.jetbrains.kotlin-wrappers/kotlin-wrappers-bom
 kotlin-wrappers = "1.0.0-pre.507"
