@@ -10,25 +10,42 @@ import com.bkahlert.kommons.uri.DataUri
 import com.bkahlert.kommons.uri.Uri
 import kotlin.reflect.KProperty1
 
+public interface HasTitle {
+    public val label: String
+}
+
+public interface HasIcon {
+    public val icon: Uri
+    public val activeIcon: Uri get() = icon
+}
+
+public interface HasPageContent {
+    public val pageContent: ContentBuilder?
+}
+
 public open class Page(
     public val id: String,
-    public override val label: String,
-    public override val description: String? = null,
-    public override val icon: Uri,
-    public override val activeIcon: Uri = icon,
-    public override val disabled: Boolean = false,
-    public override val groups: List<PageGroup> = emptyList(),
-    public val content: ContentBuilder? = null,
-) : NavItem by SimpleNavItem(label, description, icon, activeIcon, disabled, groups) {
+    override val label: String,
+    description: String? = null,
+    override val icon: Uri,
+    override val activeIcon: Uri = icon,
+    disabled: Boolean = false,
+    public val groups: List<List<HasPageContent>> = emptyList(),
+    override val pageContent: ContentBuilder? = null,
+) : HasTitle, HasIcon, HasPageContent, NavItem by SimpleNavItem(label, description, icon, activeIcon, disabled, buildList<List<SimpleNavItem>> {
+    groups.forEach { group: List<HasPageContent> ->
+        add(group.filterIsInstance<SimpleNavItem>())
+    }
+}) {
 
     public constructor(
         id: String,
         label: String,
         description: String?,
         heroIcon: KProperty1<HeroIcons, DataUri>,
-        vararg groups: PageGroup,
+        vararg groups: List<HasPageContent>,
         disabled: Boolean = false,
-        content: ContentBuilder? = null,
+        pageContent: ContentBuilder? = null,
     ) : this(
         id = id,
         label = label,
@@ -37,17 +54,17 @@ public open class Page(
         activeIcon = heroIcon.get(SolidHeroIcons),
         disabled = disabled,
         groups = groups.asList(),
-        content = content,
+        pageContent = pageContent,
     )
 
     public constructor(
         id: String,
         label: String,
         heroIcon: KProperty1<HeroIcons, DataUri>,
-        vararg groups: PageGroup,
+        vararg groups: List<HasPageContent>,
         disabled: Boolean = false,
-        content: ContentBuilder? = null,
-    ) : this(id, label, null, heroIcon, *groups, disabled = disabled, content = content)
+        pageContent: ContentBuilder? = null,
+    ) : this(id, label, null, heroIcon, *groups, disabled = disabled, pageContent = pageContent)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -65,6 +82,5 @@ public open class Page(
     }
 }
 
-public typealias PageGroup = List<Page>
-
-public val Page.pages: List<Page> get() = groups.flatten()
+public val Page.pages: List<Page>
+    get() = groups.flatten().filterIsInstance<Page>()

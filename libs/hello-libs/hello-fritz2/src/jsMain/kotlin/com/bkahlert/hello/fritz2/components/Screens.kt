@@ -30,10 +30,10 @@ import org.w3c.dom.ScrollLogicalPosition
 public enum class ScreensType(
     public val classes: String,
 ) {
-    Vertical("snap-v"),
-    VerticalFull("snap-v-full"),
-    Horizontal("snap-h"),
-    HorizontalFull("snap-h-full"),
+    Vertical("snap-panels-v"),
+    VerticalFull("snap-panels-v-full"),
+    Horizontal("snap-panels-h"),
+    HorizontalFull("snap-panels-h-full"),
 }
 
 public fun RenderContext.screens(
@@ -112,7 +112,7 @@ public fun RenderContext.screens(
 //                                    if (sel) "scale-100" else "scale-75"
                                 )
                             })
-                            item.content?.invoke(this)
+                            item.pageContent?.invoke(this)
                         }
                     }
 
@@ -160,8 +160,8 @@ public class Screens<C : HTMLElement>(tag: Tag<C>, id: String?) : Tag<C> by tag 
         initialize: Screen<C, CS>.() -> Unit,
     ) {
         val index = screenCount++
-        addComponentStructureInfo("screen", this@screen.scope, this)
-        tag(this, classes, "$componentId-screen-$index", scope) {
+        addComponentStructureInfo("snap-panel", this@screen.scope, this)
+        tag(this, classes("snap-panel", classes), "$componentId-screen-$index", scope) {
             Screen(this@Screens, this, index).run {
                 initialize()
                 render()

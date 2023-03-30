@@ -11,6 +11,7 @@ import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
 import com.bkahlert.aws.lambda.jsonResponse
 import com.bkahlert.aws.lambda.requiredUserId
 import com.bkahlert.aws.lambda.userId
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 
 class GetAllHandler(
@@ -36,7 +37,8 @@ class GetAllHandler(
         })
             .items.orEmpty()
             .associateBy { it[ddbTable.sortKey]!!.asS() }
-            .mapValues { it.value.filterKeys(ddbTable).toJsonObject() }
+            .mapValues { it.value[ddbTable.valueKey] }
+            .mapValues { it.value?.toJsonElement() ?: JsonNull }
             .let(::JsonObject)
     }
 }

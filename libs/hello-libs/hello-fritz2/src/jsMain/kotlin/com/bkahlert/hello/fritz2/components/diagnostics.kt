@@ -21,9 +21,6 @@ public fun RenderContext.diagnostics(
         enabled,
         name = "Diagnostics",
     ) {
-        div {
-            +"Hello, Fritz2!"
-        }
         content?.invoke(this)
     }
 }

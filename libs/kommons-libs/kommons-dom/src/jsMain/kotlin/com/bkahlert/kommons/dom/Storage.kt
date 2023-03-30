@@ -135,7 +135,7 @@ public class ScopedStorage(
     private val scope: String,
     private val storage: Storage,
 ) : Storage {
-    private val prefix = "$scope."
+    private val prefix = "$scope:"
     override val keys: Set<String> get() = storage.keys.mapNotNull { if (it.startsWith(prefix)) it.removePrefix(prefix) else null }.toSet()
     override operator fun get(key: String): String? = storage["$prefix$key"]
     override operator fun set(key: String, value: String?): Unit = storage.set("$prefix$key", value)

@@ -30,10 +30,10 @@ private fun exec(@Suppress("SameParameterValue") command: String, vararg args: S
  */
 class CommandLineTool(
     /** Command name of the command line tool. */
-    private val command: String,
+    internal val command: String,
 ) {
     /** The absolute path to the binary of this command line tool. */
-    private val binary: String by lazy { exec("which", command) }
+    private val binary: String by lazy { com.bkahlert.aws.exec("which", command) }
 
     /** Returns the command line to invoke this tool with the specified [args]. */
     fun commandLine(args: List<String>): List<String> =
@@ -42,6 +42,9 @@ class CommandLineTool(
     /** Returns the command line to invoke this tool with the specified [args]. */
     fun commandLine(vararg args: String): List<String> =
         commandLine(args.asList())
+
+    fun exec(vararg args: String): String =
+        com.bkahlert.aws.exec(binary, *args)
 }
 
 /**
@@ -53,11 +56,16 @@ class CommandLineToolExec(
 ) {
     /** Sets the command line to this [tool] and the specified [args]. */
     operator fun invoke(args: List<String>): Exec =
-        exec.commandLine(tool.commandLine(args))
+        runCatching { exec.commandLine(tool.commandLine(args)) }
+            .getOrElse {
+                exec.logger.error("Failed to set command line to ${tool.command} $args", it)
+                exec.enabled = false
+                exec
+            }
 
     /** Sets the command line to this [tool] and the specified [args]. */
     operator fun invoke(vararg args: String): Exec =
-        exec.commandLine(tool.commandLine(*args))
+        invoke(args.asList())
 }
 
 private operator fun CommandLineTool.getValue(thisRef: Exec, property: KProperty<*>): CommandLineToolExec =
@@ -74,3 +82,10 @@ val CDK: CommandLineTool = CommandLineTool("cdk")
 
 /** [AWS CDK Toolkit](https://docs.aws.amazon.com/cdk/v2/guide/cli.html) [Exec] task integration */
 val Exec.cdk: CommandLineToolExec by CDK
+
+
+/** [jq Command Line Interface](https://stedolan.github.io/jq/) */
+val JQ: CommandLineTool = CommandLineTool("jq")
+
+/** [jq Command Line Interface](https://stedolan.github.io/jq/) [Exec] task integration */
+val Exec.jq: CommandLineToolExec by JQ

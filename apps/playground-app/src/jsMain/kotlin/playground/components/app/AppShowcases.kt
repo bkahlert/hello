@@ -2,20 +2,13 @@
 
 package playground.components.app
 
-import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
-import com.bkahlert.hello.environment.domain.Environment
+import com.bkahlert.hello.fritz2.app.AppStore
+import com.bkahlert.hello.fritz2.app.props.StoragePropsDataSource
+import com.bkahlert.hello.fritz2.app.session.FakeSession
 import com.bkahlert.hello.fritz2.components.Page
 import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
 import com.bkahlert.hello.fritz2.components.showcase.showcase
 import com.bkahlert.hello.fritz2.components.showcase.showcases
-import com.bkahlert.hello.props.demo.InMemoryPropsDataSource
-import com.bkahlert.hello.props.domain.Props
-import com.bkahlert.hello.session.demo.FakeSessionDataSource
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
-import playground.components.environment.EnvironmentStore
-import playground.components.props.PropsStore
-import playground.components.session.SessionStore
 
 public val AppShowcases: Page = Page(
     "app",
@@ -24,34 +17,26 @@ public val AppShowcases: Page = Page(
     heroIcon = HeroIcons::window,
 ) {
     showcases("App") {
-        val attemptConnect = false
-        showcase("Using Mock (attemptConnect=$attemptConnect)") {
-            if (attemptConnect) {
-                clickUpApp(
-                    AppStore(
-                        environment = Environment.EMPTY,
-                        sessionStore = SessionStore(FakeSessionDataSource(initiallyAuthorized = true)),
-                        propsStoreProvider = { x, y ->
-                            PropsStore(
-                                propsDataSource = InMemoryPropsDataSource(Props(buildJsonObject {
-                                    put("clickup", buildJsonObject { put("api-token", JsonPrimitive("pk_123_abc")) })
-                                })),
-                            )
-                        })
+        showcase("Without ClickUp API Token") {
+            clickUpApp(
+                AppStore(
+                    sessionResolver = { _ -> { FakeSession.Authorized() } },
+                    propsProvider = { _, _ -> StoragePropsDataSource.InMemoryPropsDataSource() }
                 )
-            } else {
-                clickUpApp(AppStore())
-            }
+            )
         }
-        showcase("Using Environment") {
-            val envStore = EnvironmentStore(DynamicEnvironmentDataSource())
-            envStore.data.render { env ->
-                if (env == null) {
-                    landingScreen()
-                } else {
-                    clickUpApp(AppStore(environment = env))
-                }
-            }
+//        showcase("With ClickUp API Token") {
+//            clickUpApp(
+//                AppStore(
+//                    sessionResolver = { _ -> { FakeSession.Authorized() } },
+//                    propsProvider = { _, _ ->
+//                        InMemoryPropsDataSource("clickup" to buildJsonObject { put("api-token", JsonPrimitive("pk_123_abc")) })
+//                    }
+//                )
+//            )
+//        }
+        showcase("Actual") {
+            clickUpApp(AppStore())
         }
     }
 }

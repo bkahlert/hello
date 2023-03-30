@@ -13,11 +13,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldBeUUID
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.add
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import org.junit.jupiter.params.ParameterizedTest
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
@@ -61,8 +56,7 @@ class CreateOneHandlerTest {
                 mapOf(
                     "userId" to S("alice"),
                     "propId" to S(response.headers["Location"].shouldNotBeNull().substringAfterLast('/')),
-                    "foo" to JsonPrimitive("bar").toAttribute(),
-                    "baz" to JsonPrimitive(null).toAttribute(),
+                    "value" to S("""{ "foo": "bar", "baz": null }"""),
                 )
             )
         }
@@ -81,10 +75,7 @@ class CreateOneHandlerTest {
                 mapOf(
                     "userId" to S("alice"),
                     "propId" to S(response.headers["Location"].shouldNotBeNull().substringAfterLast('/')),
-                    "foo" to buildJsonObject {
-                        put("bar", 42)
-                        put("baz", null)
-                    }.toAttribute(),
+                    "value" to S("""{ "foo": { "bar": 42, "baz": null } }"""),
                 )
             )
         }
@@ -103,10 +94,7 @@ class CreateOneHandlerTest {
                 mapOf(
                     "userId" to S("alice"),
                     "propId" to S(response.headers["Location"].shouldNotBeNull().substringAfterLast('/')),
-                    "foo" to buildJsonArray {
-                        add(true)
-                        add(false)
-                    }.toAttribute(),
+                    "value" to S("""{ "foo": [ true, false ] }"""),
                 )
             )
         }
@@ -143,8 +131,7 @@ class CreateOneHandlerTest {
                 mapOf(
                     "userId" to S("alice"),
                     "propId" to S("my-id"),
-                    "foo" to JsonPrimitive("bar").toAttribute(),
-                    "baz" to JsonPrimitive(null).toAttribute(),
+                    "value" to S("""{ "foo": "bar", "baz": null }"""),
                 )
             )
         }

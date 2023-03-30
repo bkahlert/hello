@@ -1,0 +1,14 @@
+{
+  "CDK_BOOTSTRAP-HNB659FDS-_FILE_ASSET_KEY_ARN": "AWS_MANAGED_KEY",
+  "CLICK_UP_API_ENDPOINT": "https://ftl6hyygyf.execute-api.us-east-1.amazonaws.com/prod/",
+  "DISTRIBUTION_ID": "E1CIV70BNC36XJ",
+  "DISTRIBUTION_URL": "https://d2oxc532udqy4m.cloudfront.net",
+  "SITE_BUCKET_NAME": "hello.aws-dev.choam.de",
+  "SITE_CERTIFICATE_ARN": "arn:aws:acm:us-east-1:382728805609:certificate/3df59a04-4769-4e14-9c23-1e75bbe16b07",
+  "SITE_ENVIRONMENT_API_ENDPOINT": "https://gsinszokbh.execute-api.us-east-1.amazonaws.com/prod/",
+  "SITE_URL": "https://hello.aws-dev.choam.de",
+  "USER_INFO_API_ENDPOINT": "https://unrzt0veze.execute-api.us-east-1.amazonaws.com/prod/",
+  "USER_POOL_CLIENT_ID": "2lm7lqp39nsrjrjr70l9f9lkp",
+  "USER_POOL_PROVIDER_URL": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_LxACOQifD",
+  "USER_PROPS_API_ENDPOINT": "https://qua2gxwvuc.execute-api.us-east-1.amazonaws.com/prod/"
+}

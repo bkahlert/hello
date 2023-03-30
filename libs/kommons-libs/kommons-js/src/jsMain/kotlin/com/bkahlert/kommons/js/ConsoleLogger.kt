@@ -45,6 +45,7 @@ public class ConsoleLogger(
             "border-radius: 4px;" +
             "padding: 0.1em;" +
             "margin-right: 0.15em;" +
+            "text-shadow: 0 0 0.5px #ffffff99;" +
             ""
         public const val NAME_STYLES: String = BASE +
             "background-color: $HELLO_BLUE_FILL;" +

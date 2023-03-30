@@ -4,28 +4,29 @@ package playground.components.app
 
 import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
 import com.bkahlert.hello.fritz2.ContentBuilder
+import com.bkahlert.hello.fritz2.app.AppState
+import com.bkahlert.hello.fritz2.app.AppStore
+import com.bkahlert.hello.fritz2.app.props.propsView
+import com.bkahlert.hello.fritz2.app.user.userDropdown
+import com.bkahlert.hello.fritz2.components.icon
 import dev.fritz2.core.RenderContext
-import dev.fritz2.core.alt
 import dev.fritz2.core.classes
-import dev.fritz2.core.src
-import playground.components.loader
-import playground.components.props.propsView
-import playground.components.user.userDropdown
 
 public fun RenderContext.app(
     store: AppStore,
     content: ContentBuilder? = null,
 ) {
-    appBar("mb-4") { userDropdown(store.userStore) }
-    store.props.render {
-        if (it == null) {
-            loader()
-        } else {
-            if (content != null) {
-                content.invoke(this)
-                hr { }
+    store.data.render { state ->
+        when (state) {
+            is AppState.Loading -> landingScreen()
+            is AppState.Loaded -> {
+                appBar("mb-4") { userDropdown(state.session) }
+                if (content != null) {
+                    content.invoke(this)
+                    hr { }
+                }
+                state.props.render { if (it != null) propsView(it) }
             }
-            propsView(it)
         }
     }
 }
@@ -45,10 +46,7 @@ fun RenderContext.appBar(
             div("relative flex h-16 items-center justify-between") {
                 div("flex flex-1 items-center justify-center sm:items-stretch sm:justify-start") {
                     div("flex flex-shrink-0 items-center") {
-                        img("shrink-0 block h-8 w-auto") {
-                            src(ImageFixtures.HelloFavicon.toString())
-                            alt("Hello!")
-                        }
+                        icon("shrink-0 block h-8 w-auto", ImageFixtures.HelloFavicon)
                     }
                 }
 

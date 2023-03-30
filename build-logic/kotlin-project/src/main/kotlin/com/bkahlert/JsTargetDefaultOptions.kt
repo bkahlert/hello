@@ -1,7 +1,9 @@
 package com.bkahlert
 
+import org.gradle.api.Action
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBrowserDsl
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 
@@ -30,7 +32,7 @@ fun KotlinJsTest.applyDefaultLoggingOptions() {
 
 
 fun KotlinJsBrowserDsl.defaultWebpackConfig() {
-    commonWebpackConfig {
+    commonWebpackConfig(Action<KotlinWebpackConfig> {
         cssSupport { enabled.set(true) }
         scssSupport { enabled.set(true) }
         devServer = devServer?.copy(
@@ -38,5 +40,5 @@ fun KotlinJsBrowserDsl.defaultWebpackConfig() {
         )
         progressReporter = true
         showProgress = true
-    }
+    })
 }

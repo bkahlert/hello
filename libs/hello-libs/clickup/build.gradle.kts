@@ -1,5 +1,6 @@
 plugins {
     id("com.bkahlert.kotlin-js-browser-project")
+    id("com.bkahlert.fritz2-project")
     id("com.bkahlert.compose-for-web-project")
 }
 
@@ -10,11 +11,9 @@ kotlin {
     sourceSets {
         jsMain {
             dependencies {
-                api("com.bkahlert.semantic-ui:semantic-ui")
+                api(project(":hello-fritz2"))
                 api(project(":clickup-model"))
-                api(project(":clickup-view"))
-                api(project(":clickup-viewmodel"))
-                api(project(":clickup-http-client"))
+                implementation(project(":clickup-ui-compose"))
             }
         }
     }

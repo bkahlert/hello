@@ -117,6 +117,28 @@ public external interface Console {
 public external val console: Console
 
 
+/* TRACE */
+public inline val <T> T.trace: T get() = this.trace()
+
+@Suppress("NOTHING_TO_INLINE")
+public inline fun <T> T.trace(caption: String? = null): T {
+    repeat(100) { console.groupEnd() }
+    val meta = this?.let { it::class.simpleName + "@" + hashCode() } ?: "null"
+    console.info(
+        "%cTRACE${caption?.let { ": $it" } ?: ""}\n$meta%o",
+        listOf(
+            ConsoleLogger.TRACE_NAME_STYLES,
+            "margin-left:-10rem",
+            "padding-left:10rem",
+            "background-color: cyan",
+            "color: black",
+            "font-weight: 700",
+        ).joinToString(";"),
+        this,
+    )
+    return this
+}
+
 /* EXTENSIONS */
 
 /**
@@ -168,9 +190,9 @@ public inline fun <R> Console.grouping(
         timeEnd(timeLabel)
         if (CONSOLE_DEBUGGING) console.info("GROUP RESULT($label)", result)
         else when (result) {
-            Unit -> {}
+            is Unit -> {}
             is Map<*, Any?> -> console.table(data = result.mapKeys { it.toString() })
-            else -> console.debug("⏎ ", result)
+            else -> console.info("⏎ ", result)
         }
         return result
     } catch (ex: Throwable) {

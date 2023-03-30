@@ -1,44 +1,25 @@
+@import 'sp-split-view.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --sat: env(safe-area-inset-top);
-  --sar: env(safe-area-inset-right);
-  --sab: env(safe-area-inset-bottom);
-  --sal: env(safe-area-inset-left);
-
-  --tax: env(titlebar-area-x);
-  --tay: env(titlebar-area-y);
-  --taw: env(titlebar-area-width);
-  --tah: env(titlebar-area-height);
-
-  --kit: env(keyboard-inset-top);
-  --kir: env(keyboard-inset-right);
-  --kib: env(keyboard-inset-bottom);
-  --kil: env(keyboard-inset-left);
-  --kiw: env(keyboard-inset-width);
-  --kih: env(keyboard-inset-height);
-}
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --bg-color-light: 248 250 252; /* slate-50 */
-  --bg-color-dark: 30 41 59; /* slate-800 */
-  --text-color-light: 15 23 42; /* slate-900 */
-  --text-color-dark: 241 245 249; /* slate-100 */
+  --sat: env(safe-area-inset-top); --sar: env(safe-area-inset-right); --sab: env(safe-area-inset-bottom); --sal: env(safe-area-inset-left);
+  --tax: env(titlebar-area-x); --tay: env(titlebar-area-y); --taw: env(titlebar-area-width); --tah: env(titlebar-area-height);
+  --kit: env(keyboard-inset-top); --kir: env(keyboard-inset-right); --kib: env(keyboard-inset-bottom);
+  --kil: env(keyboard-inset-left); --kiw: env(keyboard-inset-width); --kih: env(keyboard-inset-height);
 }
 
 @layer base {
-  .bg-light { background-color: rgb(var(--bg-color-light)); }
-  .bg-dark { background-color: rgb(var(--bg-color-dark)); }
+  .bg-light { @apply bg-bg-light; }
+  .bg-dark { @apply bg-bg-dark; }
   .bg { @apply bg-light dark:bg-dark; }
-  .text-light { color: rgb(var(--text-color-light)); }
-  .text-dark { color: rgb(var(--text-color-dark)); }
+
+  .text-light { @apply text-text-light; }
+  .text-dark { @apply text-text-dark; }
   .text { @apply text-light dark:text-dark; }
+
+  html { @apply scroll-smooth; }
 
   h1 { @apply text text-2xl; }
   h2 { @apply text text-xl; }
@@ -54,73 +35,184 @@
     @apply rounded;
     @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75;
   }
+
+  [aria-expanded="true"] { @apply ring ring-white ring-opacity-75; }
 }
 
-:root {
-  --glass-opacity-light-from: 25%;
-  --glass-opacity-light-to: 20%;
-  --glass-opacity-dark-from: 45%;
-  --glass-opacity-dark-to: 40%;
-  --glass-bg-color-light: var(--bg-color-light);
-  --glass-bg-color-dark: var(--bg-color-dark);
-  --glass-text-color-light: var(--text-color-light);
-  --glass-text-color-dark: var(--text-color-dark);
+
+@layer utilities {
+  /* noinspection CssUnknownProperty,CssInvalidAtRule */
+  @property --sync-ring-width {
+    syntax: '<length>';
+    initial-value: 0;
+    inherits: false;
+  }
+  @keyframes syncing {
+    100% { --sync-ring-width: 2px; }
+  }
+  [data-sync] {
+    --sync-color: theme('colors.emerald.500 / 75%');
+    box-shadow: 0 0 0 2px var(--sync-color), 0 0 0 calc(2px + var(--sync-ring-width)) var(--sync-color), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+    transition: box-shadow 0.4s ease-in-out;
+    animation: 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate none syncing;
+  }
+  [data-sync=cached] { --sync-color: theme('colors.sky.500 / 75%'); }
+  [data-sync=synced] { animation: none; }
 }
+
+
+@layer components {
+  [data-shortcut] { @apply relative; }
+  [data-shortcut]::after {
+    margin-left: 0.8em;
+    @apply float-right inline-flex items-center justify-center;
+    @apply text-xs font-bold text-current;
+    @apply opacity-50 [&:not(:disabled):hover]:opacity-100;
+    @apply pointer-events-none;
+    content: attr(data-shortcut);
+  }
+}
+
+
+@layer components {
+  :root {
+    --nav-height: theme('spacing.16');
+    --applet-spacing: 0rem;
+  }
+  @media (min-width: theme('screens.sm')) {
+    :root { --applet-spacing: theme('spacing.4'); }
+  }
+  @media (min-width: theme('screens.md')) {
+    :root { --applet-spacing: theme('spacing.8'); }
+  }
+  @media (min-width: theme('screens.lg')) {
+    :root { --applet-spacing: theme('spacing.16'); }
+  }
+
+  .applets {
+    @apply h-full snap-y overflow-y-auto snap-mandatory;
+    height: clamp(100svh, 100vh, 100dvh);
+    margin-top: calc(var(--nav-height) * -1);
+    scroll-padding-top: var(--nav-height);
+  }
+  .applets::before, .applets::after {
+    @apply block content-[''] h-32;
+  }
+  .applets > .applet {
+    padding: calc(var(--applet-spacing) / 2) var(--applet-spacing);
+    scroll-margin: var(--applet-spacing);
+    height: calc(100% - calc(var(--applet-spacing) * 2) - var(--nav-height));
+    @apply snap-start relative;
+  }
+
+  .applet__handle {
+    @apply absolute inset-x-0 flex items-center justify-center text-sm;
+    top: calc(var(--applet-spacing) / 2);
+  }
+
+
+  .window {
+    @apply h-full flex flex-col bg-hero-diagonal-lines sm:rounded-xl sm:gap-y-2;
+  }
+  .window > .window-title {
+    @apply flex justify-between items-center gap-x-8 sm:rounded-t-xl sm:last:rounded-b-xl px-4 py-2;
+    @apply text-lg font-semibold;
+  }
+  .window > .window-panel {
+    @apply flex-grow relative flex flex-col justify-center max-h-full;
+  }
+  .window > .window-panel > .window-content {
+    @apply sm:rounded-xl sm:ring-8 sm:ring-gray-500/40 overflow-hidden;
+  }
+}
+
 
 @layer components {
 
+  /* horizontal area taking the full width and each child element scroll-snapped to the center */
+  .snap-panels-h {
+    @apply relative;
+    @apply w-full [&>.snap-panel]:max-w-full;
+    @apply h-full [&>.snap-panel]:max-h-full;
+    @apply flex flex-row items-center;
+    @apply snap-mandatory snap-x overflow-x-auto;
+  }
+
+  /* horizontal area taking the full width and each full-height child element scroll-snapped to the center */
+  .snap-panels-h-full {
+    @apply relative;
+    @apply w-full [&>.snap-panel]:w-full;
+    @apply h-full [&>.snap-panel]:h-full;
+    @apply flex flex-row items-center;
+    @apply snap-mandatory snap-x overflow-x-auto;
+  }
+
+  /* vertical area taking the full height and each child element scroll-snapped to the center */
+  .snap-panels-v {
+    @apply relative;
+    @apply w-full [&>.snap-panel]:max-w-full;
+    @apply h-full [&>.snap-panel]:max-h-full;
+    @apply flex flex-col items-center;
+    @apply snap-mandatory snap-y overflow-y-auto;
+  }
+
+  /* vertical area taking the full height and each full-width child element scroll-snapped to the center */
+  .snap-panels-v-full {
+    @apply h-full;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-auto-rows: 60%;
+    @apply snap-mandatory snap-y overflow-y-auto;
+  }
+
+  .snap-panel { @apply snap-center shrink-0 overflow-auto relative; }
+}
+
+
+@layer components {
   /* vertical area taking the full height and each child element scroll-snapped to the center */
   .snap-v {
     @apply relative h-full flex flex-col;
     /* without snapping might only be applied if scrolled close enough to snap point */
-    @apply snap-mandatory;
-    @apply snap-y overflow-y-auto;
+    @apply snap-mandatory snap-y overflow-y-auto;
     @apply [&>*]:snap-center [&>*]:shrink-0;
-  }
-
-  /* snap-v with each child element taking the full width and height */
-  .snap-v-full {
-    @apply snap-v;
-    @apply [&>*]:w-full [&>*]:h-full;
   }
 
   /* horizontal area taking the full width and each child element scroll-snapped to the center */
   .snap-h {
     @apply relative w-full flex;
     /* without snapping might only be applied if scrolled close enough to snap point */
-    @apply snap-mandatory;
-    @apply snap-x overflow-x-auto;
+    @apply snap-mandatory snap-x overflow-x-auto;
     @apply [&>*]:snap-center [&>*]:shrink-0;
   }
 
+  /* snap-v with each child element taking the full width and height */
+  .snap-v-full {@apply snap-v [&>*]:w-full [&>*]:h-full; }
+
   /* snap-h with each child element taking the full width and height */
-  .snap-h-full {
-    @apply snap-h;
-    @apply [&>*]:w-full [&>*]:h-full;
-  }
+  .snap-h-full { @apply snap-h [&>*]:w-full [&>*]:h-full; }
 
-  .snap-v, .snap-h { @apply scroll-smooth; }
-  .snap-v > *, .snap-h > * { @apply snap-normal; }
+  .snap-v > *, .snap-h > *, .snap-v-full > *, .snap-h-full > * { @apply snap-normal; }
+}
 
 
+@layer components {
   /* default shadow of a box */
-  .box-shadow {
-    @apply shadow-lg;
-    @apply dark:shadow-xl;
-  }
+  .box-shadow { @apply shadow-lg dark:shadow-xl; }
 
   /* default light-variant color of a box */
   .box-color-light { @apply bg-light text-light; }
+
   /* default dark-variant color of a box */
   .box-color-dark { @apply bg-dark text-dark; }
+
   /* default color of a box */
   .box-color { @apply box-color-light dark:box-color-dark; }
 
   /* default light-variant background and text color of a glass box */
   .box-glass-light {
     @apply backdrop-blur-md;
-    @apply bg-gradient-290;
-    --tw-gradient-stops: rgb(var(--glass-bg-color-light) / var(--glass-opacity-light-from)), rgb(var(--glass-bg-color-light) / var(--glass-opacity-light-to));
+    @apply bg-glass-light;
     @apply text-slate-900;
     @apply ring-1 ring-slate-900/5;
   }
@@ -128,16 +220,13 @@
   /* default dark-variant background and text color of a glass box */
   .box-glass-dark {
     @apply backdrop-blur-md;
-    @apply bg-gradient-290;
-    --tw-gradient-stops: rgb(var(--glass-bg-color-dark) / var(--glass-opacity-dark-from)), rgb(var(--glass-bg-color-dark) / var(--glass-opacity-dark-to));
+    @apply bg-glass-dark;
     @apply text-slate-100;
     @apply ring-1 ring-slate-50/5;
   }
 
   /* default background and text color of a glass box */
-  .box-glass {
-    @apply box-glass-light dark:box-glass-dark;
-  }
+  .box-glass { @apply box-glass-light dark:box-glass-dark; }
 
   /* default styling for random content in a box */
   .box-prose {
@@ -155,7 +244,41 @@
     @apply xl:prose-xl;
     @apply dark:prose-invert;
   }
+}
 
+
+@layer components {
+  label {
+    @apply block;
+    @apply text-sm font-medium text-black/75;
+    @apply dark:text-white/75;
+    @apply [&>*]:mt-1;
+  }
+  input[type="text"], input[type="password"] { @apply form-input; }
+  select { @apply form-select; }
+  option:checked {
+    @apply rounded;
+    /*background: linear-gradient(currentColor, currentColor) transparent !important; */
+  }
+  textarea { @apply form-textarea; }
+
+  input[type="text"],
+  input[type="password"],
+  select,
+  textarea {
+    @apply block;
+    @apply w-full;
+    @apply rounded-md bg-gray-100;
+    @apply border-transparent;
+    @apply text-gray-700;
+    @apply focus:text-gray-900;
+    @apply focus:border-gray-500 focus:bg-white focus:ring-0;
+    @apply invalid:border-pink-500 invalid:text-pink-600;
+    @apply focus:invalid:border-pink-500 focus:invalid:ring-pink-500;
+  }
+}
+
+@layer components {
   /* default styling for a button */
   .btn {
     @apply inline-flex items-center gap-x-2;
@@ -167,8 +290,11 @@
     @apply text;
     @apply transition;
     @apply shadow-inner;
-    @apply hover:shadow-slate-600/50;
-    @apply dark:hover:shadow-slate-800;
+    @apply disabled:shadow-none;
+    @apply disabled:opacity-70;
+    @apply [&:not(:disabled)]:cursor-pointer;
+    @apply [&:not(:disabled)]:hover:shadow-slate-600/50;
+    @apply [&:not(:disabled)]:dark:hover:shadow-slate-800;
     @apply ring ring-offset-1;
     @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75;
   }
@@ -177,15 +303,40 @@
   .btn > :last-child { @apply shrink-0; }
 }
 
-@layer utilities {
-  .flex-center {
-    @apply items-center justify-center;
-  }
 
-  .debug {
-    @apply ring-8 ring-fuchsia-500/50 ring-inset ring-offset-0;
-  }
-  .debug > * {
-    @apply ring-1 ring-fuchsia-700/50 ring-inset ring-offset-0;
-  }
+@layer utilities {
+  .debug { @apply ring-8 ring-fuchsia-500/50 ring-inset ring-offset-0; }
+  .debug > * { @apply ring-1 ring-fuchsia-700/50 ring-inset ring-offset-0; }
+}
+
+
+@keyframes background-movement {
+  0% { background-position: 75% 0%; }
+  40% { background-position: 0% 75%; }
+  50% { background-position: 25% 100%; }
+  90% { background-position: 100% 25%; }
+  100% { background-position: 75% 0%; }
+}
+.todo {
+  --todo-opacity: 0.2;
+  background: rgb(41, 171, 226, var(--todo-opacity));
+  background: radial-gradient(circle at 50% 50%,
+  rgb(41, 171, 226, var(--todo-opacity)),
+  rgb(100, 139, 224, var(--todo-opacity)),
+  rgb(163, 94, 187, var(--todo-opacity)),
+  rgb(194, 30, 115, var(--todo-opacity)),
+  rgb(247, 79, 87, var(--todo-opacity)),
+  rgb(255, 146, 52, var(--todo-opacity)),
+  rgb(235, 178, 29, var(--todo-opacity)),
+  rgb(203, 207, 40, var(--todo-opacity)),
+  rgb(153, 196, 53, var(--todo-opacity)),
+  rgb(105, 183, 69, var(--todo-opacity)),
+  rgb(4, 169, 113, var(--todo-opacity)),
+  rgb(0, 151, 139, var(--todo-opacity)),
+  rgb(1, 129, 143, var(--todo-opacity)),
+  rgb(0, 144, 170, var(--todo-opacity)),
+  rgb(0, 158, 198, var(--todo-opacity)),
+  rgb(41, 171, 226, var(--todo-opacity)));
+  background-size: 1500% 1500%;
+  animation: background-movement 60s ease infinite;
 }

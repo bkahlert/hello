@@ -1,7 +1,6 @@
 includeBuild("platforms")
 includeBuild("build-logic")
 includeBuild("libs/kommons-libs")
-includeBuild("libs/semantic-ui-libs")
 includeBuild("libs/hello-libs")
 includeBuild("apps/playground-app")
 includeBuild("apps/test-app")

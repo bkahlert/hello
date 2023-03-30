@@ -9,9 +9,7 @@ import com.bkahlert.aws.lambda.APIGatewayProxyRequestEventHandler
 import com.bkahlert.aws.lambda.requiredUserId
 import com.bkahlert.aws.lambda.response
 import com.bkahlert.aws.lambda.userId
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.JsonElement
 import java.util.UUID
 
 class CreateOneHandler(
@@ -37,21 +35,16 @@ class CreateOneHandler(
         userId: String,
         id: String,
         body: String,
-    ): JsonObject? = ddbTable.use { ddb ->
+    ): JsonElement? = ddbTable.use { ddb ->
         ddb.putItem(PutItemRequest {
             tableName = ddbTable.tableName
             item = buildMap {
                 put(ddbTable.partitionKey, S(userId))
                 put(ddbTable.sortKey, requireValidSortKey(id))
-                Json.parseToJsonElement(body).jsonObject
-                    .filterKeys(ddbTable)
-                    .forEach {
-                        put(it.key, it.value.toAttribute())
-                    }
+                put(ddbTable.valueKey, S(body))
             }
-        })
-            .attributes
-            ?.filterKeys(ddbTable)
-            ?.toJsonObject()
+        }).attributes
+            ?.get(ddbTable.valueKey)
+            ?.toJsonElement()
     }
 }

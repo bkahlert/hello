@@ -1,0 +1,15 @@
+@layer components {
+  sp-split-view {
+    --spectrum-global-dimension-static-size-125: 10px;
+    --spectrum-dragbar-gripper-border-radius: 20px;
+    --spectrum-dragbar-handle-background-color: theme('colors.slate.900 / 0%');
+    --spectrum-dragbar-handle-background-color-hover: theme('colors.white / 75%');
+    --spectrum-dragbar-handle-background-color-down: theme('colors.white / 100%');
+    --spectrum-dragbar-handle-width: 0.2rem;
+    --spectrum-dragbar-gripper-height: 2.6rem;
+    --spectrum-dragbar-gripper-width: 0.12rem;
+  }
+  sp-split-view:hover {
+    --spectrum-dragbar-handle-background-color: theme('colors.slate.900 / 25%');
+  }
+}

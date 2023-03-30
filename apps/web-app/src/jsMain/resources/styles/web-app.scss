@@ -1,5 +1,28 @@
 @import url("./base.css");
-@import url("./app.css");
-@import url("./overscroll-blend.css");
-@import url("./iframe.css");
-@import url("./dev-mode.css");
+
+html { @apply h-full bg-swatch-blue-yellow-100; }
+body { @apply min-h-full bg-swatch-blue-yellow; }
+
+/* Background-mask to transition nicely to the background-image on over-scrolling */
+@media only screen and (pointer: coarse) {
+  html { @apply bg-swatch-blue-yellow-0; }
+  body { mask: linear-gradient(white, white calc(100vh - 7rem), transparent) no-repeat; }
+}
+
+body::after {
+  @apply block content-[""] absolute top-full inset-x-0 pointer-events-none z-[1000];
+  margin-top: -5rem;
+  height: 5rem;
+  padding: 1rem calc(env(safe-area-inset-right) + 1rem) 1rem calc(env(safe-area-inset-left) + 1rem);
+  background: url("../hello-logo-solid.svg") 0 100% / auto 1.5rem content-box no-repeat;
+}
+
+@layer components {
+  .app {
+    @apply h-full flex flex-col;
+  }
+}
+
+.safe {
+  padding: calc(env(safe-area-inset-top) + 1rem) calc(env(safe-area-inset-right) + 1rem) 1rem calc(env(safe-area-inset-left) + 1rem);
+}

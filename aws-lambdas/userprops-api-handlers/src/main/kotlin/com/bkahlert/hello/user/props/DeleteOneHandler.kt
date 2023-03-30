@@ -11,7 +11,7 @@ import com.bkahlert.aws.lambda.jsonResponse
 import com.bkahlert.aws.lambda.requiredUserId
 import com.bkahlert.aws.lambda.response
 import com.bkahlert.aws.lambda.userId
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonElement
 
 class DeleteOneHandler(
     val ddbTable: DynamoDbTable = DynamoDbTable(),
@@ -32,7 +32,7 @@ class DeleteOneHandler(
     private suspend fun deleteItem(
         userId: String,
         id: String,
-    ): JsonObject? = ddbTable.use { ddb ->
+    ): JsonElement? = ddbTable.use { ddb ->
         ddb.deleteItem(DeleteItemRequest {
             key = buildMap {
                 put(ddbTable.partitionKey, S(userId))
@@ -42,7 +42,7 @@ class DeleteOneHandler(
             returnValues = AllOld
         })
             .attributes
-            ?.filterKeys(ddbTable)
-            ?.toJsonObject()
+            ?.get(ddbTable.valueKey)
+            ?.toJsonElement()
     }
 }

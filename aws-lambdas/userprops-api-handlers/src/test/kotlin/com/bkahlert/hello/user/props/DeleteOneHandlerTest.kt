@@ -16,7 +16,6 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonPrimitive
 import org.junit.jupiter.params.ParameterizedTest
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
@@ -54,7 +53,7 @@ class DeleteOneHandlerTest {
                 item = mapOf<String, AttributeValue>(
                     it.partitionKey to S("alice"),
                     it.sortKey to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 )
             })
         }
@@ -80,7 +79,7 @@ class DeleteOneHandlerTest {
                 item = mapOf<String, AttributeValue>(
                     it.partitionKey to S("bob"),
                     it.sortKey to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 )
             })
         }
@@ -97,7 +96,7 @@ class DeleteOneHandlerTest {
                 mapOf(
                     "userId" to S("bob"),
                     "propId" to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 )
             )
         }
@@ -112,7 +111,7 @@ class DeleteOneHandlerTest {
                 item = mapOf<String, AttributeValue>(
                     it.partitionKey to S("alice"),
                     it.sortKey to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 )
             })
         }
@@ -126,7 +125,7 @@ class DeleteOneHandlerTest {
                 mapOf(
                     "userId" to S("alice"),
                     "propId" to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 )
             )
         }

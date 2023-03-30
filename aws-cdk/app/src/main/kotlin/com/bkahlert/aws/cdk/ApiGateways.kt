@@ -50,7 +50,7 @@ fun CorsOptions.toResponseHeaders() = buildMap {
     allowMethods?.also {
         put("Access-Control-Allow-Methods", "'${it.joinToString(",")}'")
     }
-    allowOrigins?.also {
+    allowOrigins.also {
         put("Access-Control-Allow-Origin", if (it.contains("*")) "method.request.header.origin" else "'${it.joinToString(",")}'")
     }
 }

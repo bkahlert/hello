@@ -1,3 +1,4 @@
+@import 'sp-split-view.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -21,24 +22,16 @@
   --kih: env(keyboard-inset-height);
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-:root {
-  --bg-color-light: 248 250 252; /* slate-50 */
-  --bg-color-dark: 30 41 59; /* slate-800 */
-  --text-color-light: 15 23 42; /* slate-900 */
-  --text-color-dark: 241 245 249; /* slate-100 */
-}
-
 @layer base {
-  .bg-light { background-color: rgb(var(--bg-color-light)); }
-  .bg-dark { background-color: rgb(var(--bg-color-dark)); }
+  .bg-light { @apply bg-bg-light; }
+  .bg-dark { @apply bg-bg-dark; }
   .bg { @apply bg-light dark:bg-dark; }
-  .text-light { color: rgb(var(--text-color-light)); }
-  .text-dark { color: rgb(var(--text-color-dark)); }
+
+  .text-light { @apply text-text-light; }
+  .text-dark { @apply text-text-dark; }
   .text { @apply text-light dark:text-dark; }
+
+  html { @apply scroll-smooth; }
 
   h1 { @apply text text-2xl; }
   h2 { @apply text text-xl; }
@@ -56,71 +49,129 @@
   }
 }
 
-:root {
-  --glass-opacity-light-from: 25%;
-  --glass-opacity-light-to: 20%;
-  --glass-opacity-dark-from: 45%;
-  --glass-opacity-dark-to: 40%;
-  --glass-bg-color-light: var(--bg-color-light);
-  --glass-bg-color-dark: var(--bg-color-dark);
-  --glass-text-color-light: var(--text-color-light);
-  --glass-text-color-dark: var(--text-color-dark);
+
+@layer components {
+  :root {
+    --nav-height: 4rem;
+  }
+  .applets {
+    @apply h-full snap-y overflow-y-auto snap-mandatory;
+    height: clamp(100svh, 100vh, 100dvh);
+    margin-top: calc(var(--nav-height) * -1);
+    scroll-padding-top: var(--nav-height);
+  }
+  .applets::before, .applets::after {
+    @apply block content-[''] h-32;
+  }
+  .applets > .applet {
+    @apply h-[calc(100%-0rem-var(--nav-height))];
+    @apply sm:px-4 sm:py-2 sm:scroll-m-4 sm:h-[calc(100%-2rem-var(--nav-height))];
+    @apply md:px-8 md:py-4 md:scroll-m-8 md:h-[calc(100%-4rem-var(--nav-height))];
+    @apply lg:px-16 lg:py-8 lg:scroll-m-16 lg:h-[calc(100%-8rem-var(--nav-height))];
+    @apply snap-start relative;
+  }
+  .window {
+    @apply h-full flex flex-col bg-hero-diagonal-lines sm:rounded-xl sm:gap-y-2;
+  }
+  .window > .window-title {
+    @apply flex justify-between items-center gap-x-8 sm:rounded-t-xl sm:last:rounded-b-xl px-4 py-2;
+    @apply text-lg font-semibold;
+  }
+  .window > .window-panel {
+    @apply flex-grow relative flex flex-col justify-center max-h-full;
+  }
+  .window > .window-panel > .window-content {
+    @apply sm:rounded-xl sm:ring-8 sm:ring-gray-500/40 overflow-hidden;
+  }
 }
+
 
 @layer components {
 
+  /* horizontal area taking the full width and each child element scroll-snapped to the center */
+  .snap-panels-h {
+    @apply relative;
+    @apply w-full [&>.snap-panel]:max-w-full;
+    @apply h-full [&>.snap-panel]:max-h-full;
+    @apply flex flex-row items-center;
+    @apply snap-mandatory snap-x overflow-x-auto;
+  }
+
+  /* horizontal area taking the full width and each full-height child element scroll-snapped to the center */
+  .snap-panels-h-full {
+    @apply relative;
+    @apply w-full [&>.snap-panel]:w-full;
+    @apply h-full [&>.snap-panel]:h-full;
+    @apply flex flex-row items-center;
+    @apply snap-mandatory snap-x overflow-x-auto;
+  }
+
+  /* vertical area taking the full height and each child element scroll-snapped to the center */
+  .snap-panels-v {
+    @apply relative;
+    @apply w-full [&>.snap-panel]:max-w-full;
+    @apply h-full [&>.snap-panel]:max-h-full;
+    @apply flex flex-col items-center;
+    @apply snap-mandatory snap-y overflow-y-auto;
+  }
+
+  /* vertical area taking the full height and each full-width child element scroll-snapped to the center */
+  .snap-panels-v-full {
+    @apply h-full;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-auto-rows: 60%;
+    @apply snap-mandatory snap-y overflow-y-auto;
+  }
+
+  .snap-panel { @apply snap-center shrink-0 overflow-auto relative; }
+}
+
+
+@layer components {
   /* vertical area taking the full height and each child element scroll-snapped to the center */
   .snap-v {
     @apply relative h-full flex flex-col;
     /* without snapping might only be applied if scrolled close enough to snap point */
-    @apply snap-mandatory;
-    @apply snap-y overflow-y-auto;
+    @apply snap-mandatory snap-y overflow-y-auto;
     @apply [&>*]:snap-center [&>*]:shrink-0;
-  }
-
-  /* snap-v with each child element taking the full width and height */
-  .snap-v-full {
-    @apply snap-v;
-    @apply [&>*]:w-full [&>*]:h-full;
   }
 
   /* horizontal area taking the full width and each child element scroll-snapped to the center */
   .snap-h {
     @apply relative w-full flex;
     /* without snapping might only be applied if scrolled close enough to snap point */
-    @apply snap-mandatory;
-    @apply snap-x overflow-x-auto;
+    @apply snap-mandatory snap-x overflow-x-auto;
     @apply [&>*]:snap-center [&>*]:shrink-0;
   }
 
+  /* snap-v with each child element taking the full width and height */
+  .snap-v-full {@apply snap-v [&>*]:w-full [&>*]:h-full; }
+
   /* snap-h with each child element taking the full width and height */
-  .snap-h-full {
-    @apply snap-h;
-    @apply [&>*]:w-full [&>*]:h-full;
-  }
+  .snap-h-full { @apply snap-h [&>*]:w-full [&>*]:h-full; }
 
-  .snap-v, .snap-h { @apply scroll-smooth; }
-  .snap-v > *, .snap-h > * { @apply snap-normal; }
+  .snap-v > *, .snap-h > *, .snap-v-full > *, .snap-h-full > * { @apply snap-normal; }
+}
 
 
+@layer components {
   /* default shadow of a box */
-  .box-shadow {
-    @apply shadow-lg;
-    @apply dark:shadow-xl;
-  }
+  .box-shadow { @apply shadow-lg dark:shadow-xl; }
 
   /* default light-variant color of a box */
   .box-color-light { @apply bg-light text-light; }
+
   /* default dark-variant color of a box */
   .box-color-dark { @apply bg-dark text-dark; }
+
   /* default color of a box */
   .box-color { @apply box-color-light dark:box-color-dark; }
 
   /* default light-variant background and text color of a glass box */
   .box-glass-light {
     @apply backdrop-blur-md;
-    @apply bg-gradient-290;
-    --tw-gradient-stops: rgb(var(--glass-bg-color-light) / var(--glass-opacity-light-from)), rgb(var(--glass-bg-color-light) / var(--glass-opacity-light-to));
+    @apply bg-glass-light;
     @apply text-slate-900;
     @apply ring-1 ring-slate-900/5;
   }
@@ -128,16 +179,13 @@
   /* default dark-variant background and text color of a glass box */
   .box-glass-dark {
     @apply backdrop-blur-md;
-    @apply bg-gradient-290;
-    --tw-gradient-stops: rgb(var(--glass-bg-color-dark) / var(--glass-opacity-dark-from)), rgb(var(--glass-bg-color-dark) / var(--glass-opacity-dark-to));
+    @apply bg-glass-dark;
     @apply text-slate-100;
     @apply ring-1 ring-slate-50/5;
   }
 
   /* default background and text color of a glass box */
-  .box-glass {
-    @apply box-glass-light dark:box-glass-dark;
-  }
+  .box-glass { @apply box-glass-light dark:box-glass-dark; }
 
   /* default styling for random content in a box */
   .box-prose {
@@ -155,7 +203,33 @@
     @apply xl:prose-xl;
     @apply dark:prose-invert;
   }
+}
 
+
+@layer components {
+  label {
+    @apply block;
+    @apply text-sm font-medium text-gray-700;
+    @apply dark:text-gray-300;
+    @apply [&>*]:mt-1;
+  }
+  input[type="text"] { @apply form-input; }
+  textarea { @apply form-textarea; }
+  input[type="text"],
+  textarea {
+    @apply block;
+    @apply w-full;
+    @apply rounded-md bg-gray-100;
+    @apply border-transparent;
+    @apply text-gray-700;
+    @apply focus:text-gray-900;
+    @apply focus:border-gray-500 focus:bg-white focus:ring-0;
+    @apply invalid:border-pink-500 invalid:text-pink-600;
+    @apply focus:invalid:border-pink-500 focus:invalid:ring-pink-500;
+  }
+}
+
+@layer components {
   /* default styling for a button */
   .btn {
     @apply inline-flex items-center gap-x-2;
@@ -167,8 +241,11 @@
     @apply text;
     @apply transition;
     @apply shadow-inner;
-    @apply hover:shadow-slate-600/50;
-    @apply dark:hover:shadow-slate-800;
+    @apply disabled:shadow-none;
+    @apply disabled:opacity-70;
+    @apply [&:not(:disabled)]:cursor-pointer;
+    @apply [&:not(:disabled)]:hover:shadow-slate-600/50;
+    @apply [&:not(:disabled)]:dark:hover:shadow-slate-800;
     @apply ring ring-offset-1;
     @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75;
   }
@@ -177,15 +254,41 @@
   .btn > :last-child { @apply shrink-0; }
 }
 
+
 @layer utilities {
-  .flex-center {
-    @apply items-center justify-center;
+  @property --tw-ring-color {
+    syntax: '<color>';
+    initial-value: #fff;
+    inherits: false;
+  }
+  @property --tw-ring-offset-color {
+    syntax: '<color>';
+    initial-value: #fff;
+    inherits: false;
+  }
+  @property --tw-ring-offset-width {
+    syntax: '<length>';
+    initial-value: 0px;
+    inherits: false;
   }
 
-  .debug {
-    @apply ring-8 ring-fuchsia-500/50 ring-inset ring-offset-0;
+  @keyframes syncing {
+    0%, 100% {
+      --tw-ring-offset-color: var(--tw-ring-color);
+    }
+    50% {
+      --tw-ring-offset-width: 1px;
+    }
   }
-  .debug > * {
-    @apply ring-1 ring-fuchsia-700/50 ring-inset ring-offset-0;
-  }
+
+  [data-sync] { @apply transition; }
+  [data-sync=cached] { @apply ring-2 ring-sky-500/75; }
+  [data-sync=syncing], [data-sync=synced] { @apply ring-2 ring-emerald-500/75; }
+  [data-sync=cached], [data-sync=syncing] { animation: syncing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+}
+
+
+@layer utilities {
+  .debug { @apply ring-8 ring-fuchsia-500/50 ring-inset ring-offset-0; }
+  .debug > * { @apply ring-1 ring-fuchsia-700/50 ring-inset ring-offset-0; }
 }

@@ -20,7 +20,6 @@ dependencyResolutionManagement {
 }
 includeBuild("../../platforms")
 includeBuild("../../libs/kommons-libs")
-includeBuild("../../libs/semantic-ui-libs")
 includeBuild("../../libs/hello-libs")
 
 // == Define the inner structure of this component ==

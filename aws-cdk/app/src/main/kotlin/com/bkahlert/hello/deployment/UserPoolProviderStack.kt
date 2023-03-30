@@ -5,10 +5,12 @@ import software.amazon.awscdk.Duration
 import software.amazon.awscdk.RemovalPolicy
 import software.amazon.awscdk.Stack
 import software.amazon.awscdk.StackProps
+import software.amazon.awscdk.services.cognito.AttributeMapping
 import software.amazon.awscdk.services.cognito.CognitoDomainOptions
 import software.amazon.awscdk.services.cognito.OAuthFlows
 import software.amazon.awscdk.services.cognito.OAuthScope
 import software.amazon.awscdk.services.cognito.OAuthSettings
+import software.amazon.awscdk.services.cognito.ProviderAttribute
 import software.amazon.awscdk.services.cognito.SignInAliases
 import software.amazon.awscdk.services.cognito.StandardAttribute
 import software.amazon.awscdk.services.cognito.StandardAttributes
@@ -76,6 +78,11 @@ class UserPoolProviderStack(
             UserPoolIdentityProviderApple.Builder.create(this, "SignInWithAppleIdentityProvider")
                 .userPool(userPool)
                 .scopes(listOf("name", "email"))
+                .attributeMapping(
+                    AttributeMapping.builder()
+                        .email(ProviderAttribute.APPLE_EMAIL)
+                        .build()
+                )
                 .teamId(secret.secretValueFromJson("team_id").unsafeUnwrap())
                 .clientId(secret.secretValueFromJson("client_id").unsafeUnwrap())
                 .keyId(secret.secretValueFromJson("key_id").unsafeUnwrap())

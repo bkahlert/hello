@@ -14,7 +14,6 @@ import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
@@ -56,7 +55,7 @@ class GetAllHandlerTest {
                 item = mapOf<String, AttributeValue>(
                     it.partitionKey to S("alice"),
                     it.sortKey to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 )
             })
             putItem(PutItemRequest {
@@ -64,7 +63,7 @@ class GetAllHandlerTest {
                 item = mapOf<String, AttributeValue>(
                     it.partitionKey to S("alice"),
                     it.sortKey to S("bar"),
-                    "baz" to buildJsonArray { add(true); add(false) }.toAttribute(),
+                    it.valueKey to S("""{"baz":[true,false]}"""),
                 )
             })
         }
@@ -84,12 +83,12 @@ class GetAllHandlerTest {
                 mapOf(
                     "userId" to S("alice"),
                     "propId" to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 ),
                 mapOf(
                     "userId" to S("alice"),
                     "propId" to S("bar"),
-                    "baz" to buildJsonArray { add(true); add(false) }.toAttribute(),
+                    "value" to S("""{"baz":[true,false]}"""),
                 ),
             )
         }
@@ -104,7 +103,7 @@ class GetAllHandlerTest {
                 item = mapOf<String, AttributeValue>(
                     it.partitionKey to S("bob"),
                     it.sortKey to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 )
             })
         }
@@ -121,7 +120,7 @@ class GetAllHandlerTest {
                 mapOf(
                     "userId" to S("bob"),
                     "propId" to S("foo"),
-                    "bar" to JsonPrimitive(42).toAttribute(),
+                    "value" to S("""{"bar":42}"""),
                 )
             )
         }

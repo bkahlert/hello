@@ -11,7 +11,6 @@ import com.bkahlert.aws.lambda.jsonResponse
 import com.bkahlert.aws.lambda.requiredUserId
 import com.bkahlert.aws.lambda.response
 import com.bkahlert.aws.lambda.userId
-import com.bkahlert.hello.user.props.SimpleSelector.Companion.parseSelector
 import kotlinx.serialization.json.JsonElement
 
 class GetOneHandler(
@@ -21,26 +20,26 @@ class GetOneHandler(
     override suspend fun handleEvent(event: APIGatewayProxyRequestEvent, context: Context): APIGatewayProxyResponseEvent {
         logger.debug("User: ${event.userId}")
 
-        val selector = checkNotNull(event.pathParameters?.get("id")) { "ID missing" }.parseSelector()
-        logger.info("Getting one item: $selector")
+        val id = checkNotNull(event.pathParameters?.get("id")) { "ID missing" }
+        logger.info("Getting one item: $id")
 
-        return when (val output = getData(event.requiredUserId, selector)) {
+        return when (val output = getData(event.requiredUserId, id)) {
             null -> response(204)
             else -> jsonResponse(output)
         }
     }
 
-    private suspend fun getData(userId: String, selector: SimpleSelector): JsonElement? = ddbTable.use { ddb ->
-        ddb.getItem(GetItemRequest {
-            key = mapOf<String, AttributeValue>(
-                ddbTable.partitionKey to S(userId),
-                ddbTable.sortKey to requireValidSortKey(selector.id),
-            )
-            tableName = ddbTable.tableName
-            projectionExpression
-        }).item
-            ?.filterKeys(ddbTable)
-            ?.toJsonObject()
-            ?.let { selector.resolve(it) }
-    }
+    private suspend fun getData(userId: String, id: String): JsonElement? =
+        ddbTable.use { ddb ->
+            ddb.getItem(GetItemRequest {
+                key = mapOf<String, AttributeValue>(
+                    ddbTable.partitionKey to S(userId),
+                    ddbTable.sortKey to requireValidSortKey(id),
+                )
+                tableName = ddbTable.tableName
+                projectionExpression
+            }).item
+                ?.get(ddbTable.valueKey)
+                ?.toJsonElement()
+        }
 }

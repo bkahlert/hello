@@ -3,7 +3,6 @@ package playground.fritz2
 import com.bkahlert.hello.fritz2.components.Page
 import com.bkahlert.hello.fritz2.components.showcase.showcase
 import com.bkahlert.hello.fritz2.register
-import com.bkahlert.kommons.text.withPrefix
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.ScopeContext
@@ -43,7 +42,7 @@ fun Fritz2HeadlessUiDemoAdapter(
                     label = name,
                     description = page.description,
                     icon = page.icon,
-                    content = {
+                    pageContent = {
                         showcase(name, simple = true, classes = "m-16") {
                             div("rounded-xl block overflow-hidden h-full mt-2 ring-8 ring-gray-500/40") {
                                 fritz2HeadlessUiDemo(demo = key, fragment = fragment)
@@ -56,7 +55,7 @@ fun Fritz2HeadlessUiDemoAdapter(
             else -> null
         }
     }),
-    content = {
+    pageContent = {
         div("rounded-xl block overflow-hidden") {
             fritz2HeadlessUiDemo(demo = "", fragment = fragment)
         }
@@ -79,6 +78,8 @@ private fun RenderContext.fritz2HeadlessUiDemo(
 }
 
 object Fritz2HeadlessUiDemo : WebComponent<HTMLDivElement>() {
+    private fun String.withPrefix(prefix: String) = if (startsWith(prefix)) this else "$prefix$this"
+
     private val demo: Flow<String> = attributeChanges("demo")
     private val store: Flow<Store<String>> = attributeChanges("fragment").map {
         routerOf(mapOf(it to "overview")).mapByKey(it).map(

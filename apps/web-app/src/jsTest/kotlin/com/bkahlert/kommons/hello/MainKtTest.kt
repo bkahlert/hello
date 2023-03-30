@@ -1,9 +1,6 @@
 package com.bkahlert.kommons.hello
 
-import com.bkahlert.hello.WebApp
 import com.bkahlert.kommons.json.LenientJson
-import androidx.compose.runtime.Composable
-import org.jetbrains.compose.web.testutils.TestScope
 import io.kotest.assertions.asClue
 import io.kotest.assertions.json.shouldEqualJson
 import io.kotest.matchers.shouldBe
@@ -25,7 +22,7 @@ class MainKtTest {
     @Test
     fun compose() = runTest {
         composition {
-            WebApp()
+            Toolbar()
         }
         waitForRecompositionComplete()
 

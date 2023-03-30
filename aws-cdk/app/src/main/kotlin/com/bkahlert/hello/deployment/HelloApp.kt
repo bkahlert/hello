@@ -2,14 +2,10 @@ package com.bkahlert.hello.deployment
 
 import com.bkahlert.aws.cdk.requiredEnv
 import software.amazon.awscdk.App
-import software.amazon.awscdk.Aspects
 import software.amazon.awscdk.Environment
-import software.amazon.awscdk.IAspect
 import software.amazon.awscdk.StackProps
-import software.amazon.awscdk.services.lambda.CfnFunction
 import software.amazon.awscdk.services.lambda.Code
 import software.amazon.awscdk.services.s3.deployment.Source
-import software.constructs.IConstruct
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.div
@@ -148,6 +144,7 @@ class HelloApp : App() {
         )
 
         // Directory where app was started
+        @Suppress("UNUSED_VARIABLE")
         val distributionStack = DistributionStack(
             parent = this,
             id = "Distribution",
@@ -166,20 +163,5 @@ class HelloApp : App() {
             ),
             distributionsPaths = stage.webClientDistribution.listDirectoryEntries().map { "/${it.fileName}" }
         )
-
-        Aspects.of(distributionStack).add(LambdaLogGroupConfig())
-    }
-}
-
-class LambdaLogGroupConfig() : IAspect {
-
-    override fun visit(node: IConstruct) {
-        if (node is CfnFunction) {
-            createLambdaLogGroup(node);
-        }
-    }
-
-    private fun createLambdaLogGroup(lambda: CfnFunction) {
-        // TODO check retention
     }
 }

@@ -5,16 +5,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngineConfig
 import io.ktor.client.plugins.HttpClientPlugin
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 public sealed interface Session {
-
-    public object Undetermined : UnauthorizedSession {
-        override suspend fun authorize(): Session {
-            error("Cannot authorize undetermined session.")
-        }
-
-        override fun toString(): String = "Undetermined"
-    }
 
     public interface UnauthorizedSession : Session {
         public suspend fun authorize(): Session
@@ -46,3 +40,8 @@ public sealed interface Session {
         )
     }
 }
+
+public suspend fun Session.AuthorizedSession.reauthorizeIfNecessary(
+    reauthorizationThreshold: Duration = 10.minutes,
+    httpClient: HttpClient? = null,
+): Session = if (userInfo.expiresIn > reauthorizationThreshold) this else reauthorize(httpClient)

@@ -18,6 +18,7 @@ import com.bkahlert.kommons.ktor.JsonHttpClient
 import com.bkahlert.kommons.ktor.interceptOnce
 import com.bkahlert.kommons.onRight
 import com.bkahlert.kommons.sha256
+import com.bkahlert.kommons.uri.Uri
 import com.bkahlert.kommons.uri.toUri
 import com.bkahlert.kommons.uri.toUrl
 import io.ktor.client.HttpClient
@@ -308,7 +309,17 @@ public sealed class AuthorizationCodeFlowState(
 
         /**
          * Resolves the current [Session] using
-         * the specified [authorizationServer]
+         * the specified [openIDProviderUrl]
+         * and [clientId].
+         */
+        public suspend fun resolve(
+            openIDProviderUrl: Uri,
+            clientId: String,
+        ): Session = resolve(OpenIDProvider(openIDProviderUrl), clientId)
+
+        /**
+         * Resolves the current [Session] using
+         * the specified [openIDProvider]
          * and [clientId].
          */
         public suspend fun resolve(
