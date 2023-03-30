@@ -2,6 +2,11 @@
 
 package playground.components
 
+import com.bkahlert.hello.fritz2.ContentBuilder
+import com.bkahlert.hello.fritz2.components.heroicons.MiniHeroIcons
+import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
+import com.bkahlert.hello.fritz2.components.heroicons.SolidHeroIcons
+import com.bkahlert.hello.fritz2.components.icon
 import dev.fritz2.core.Lens
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.Store
@@ -19,11 +24,6 @@ import dev.fritz2.headless.foundation.SortDirection.NONE
 import dev.fritz2.headless.foundation.utils.scrollintoview.ScrollPosition.center
 import kotlinx.coroutines.flow.map
 import org.w3c.dom.HTMLInputElement
-import playground.fritz2.ContentBuilder
-import com.bkahlert.hello.fritz2.icon
-import playground.tailwind.heroicons.MiniHeroIcons
-import playground.tailwind.heroicons.OutlineHeroIcons
-import playground.tailwind.heroicons.SolidHeroIcons
 
 private typealias Property = Pair<String, String?>
 

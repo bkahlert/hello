@@ -5,7 +5,9 @@
     test: /\.(less)$/,
     use: [{
       loader: 'style-loader',
-      options: {}
+      options: {
+        injectType: 'lazyStyleTag',
+      }
     }, {
       loader: 'css-loader',
       options: {}

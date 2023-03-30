@@ -1,5 +1,6 @@
 package playground.components
 
+import com.bkahlert.hello.fritz2.components.screenReaderOnly
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.Tag
 import dev.fritz2.headless.foundation.Aria

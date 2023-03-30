@@ -2,15 +2,15 @@
 
 package playground.components.props
 
+import com.bkahlert.hello.fritz2.components.Page
+import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
+import com.bkahlert.hello.fritz2.components.showcase.showcase
+import com.bkahlert.hello.fritz2.components.showcase.showcases
 import com.bkahlert.hello.props.demo.InMemoryPropsDataSource
 import com.bkahlert.hello.props.domain.Props
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
-import playground.components.Page
-import playground.components.showcase.showcase
-import playground.components.showcase.showcases
-import playground.tailwind.heroicons.HeroIcons
 
 public val PropsShowcases = Page(
     "props",

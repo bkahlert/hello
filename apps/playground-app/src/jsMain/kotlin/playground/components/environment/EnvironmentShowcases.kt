@@ -4,10 +4,10 @@ package playground.components.environment
 
 import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
 import com.bkahlert.hello.environment.domain.Environment
-import playground.components.Page
-import playground.components.showcase.showcase
-import playground.components.showcase.showcases
-import playground.tailwind.heroicons.HeroIcons
+import com.bkahlert.hello.fritz2.components.Page
+import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
+import com.bkahlert.hello.fritz2.components.showcase.showcase
+import com.bkahlert.hello.fritz2.components.showcase.showcases
 
 object EnvironmentShowcases : Page(
     "environment",

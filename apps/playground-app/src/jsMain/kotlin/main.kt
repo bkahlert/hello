@@ -1,4 +1,3 @@
-import ScreensType.Vertical
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,6 +13,19 @@ import com.bkahlert.hello.demo.HelloDemoProviders
 import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
 import com.bkahlert.hello.environment.data.EnvironmentRepository
 import com.bkahlert.hello.environment.ui.EnvironmentView
+import com.bkahlert.hello.fritz2.components.Page
+import com.bkahlert.hello.fritz2.components.ScreensType
+import com.bkahlert.hello.fritz2.components.diagnostics
+import com.bkahlert.hello.fritz2.components.headlessui.HeadlessUiShowcases
+import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
+import com.bkahlert.hello.fritz2.components.horizontalScreens
+import com.bkahlert.hello.fritz2.components.icon
+import com.bkahlert.hello.fritz2.components.navigationbar.navigationBar
+import com.bkahlert.hello.fritz2.components.pages
+import com.bkahlert.hello.fritz2.components.proseBox
+import com.bkahlert.hello.fritz2.components.screens
+import com.bkahlert.hello.fritz2.components.verticalScreens
+import com.bkahlert.hello.fritz2.compose.compose
 import com.bkahlert.hello.props.data.SessionPropsDataSource
 import com.bkahlert.hello.session.data.OpenIDConnectSessionDataSource
 import com.bkahlert.hello.session.data.SessionRepository
@@ -35,22 +47,14 @@ import com.bkahlert.semanticui.devmode.ComposeDevSession
 import com.bkahlert.semanticui.element.Header
 import com.bkahlert.semanticui.element.Loader
 import com.bkahlert.semanticui.module.updateDebugSettings
-import dev.fritz2.core.RenderContext
 import dev.fritz2.core.RootStore
 import dev.fritz2.core.Store
-import dev.fritz2.core.Window
 import dev.fritz2.core.classes
 import dev.fritz2.core.id
 import dev.fritz2.core.lensOf
 import dev.fritz2.core.render
 import dev.fritz2.core.storeOf
 import dev.fritz2.core.type
-import dev.fritz2.headless.components.dataCollection
-import dev.fritz2.headless.foundation.Aria
-import dev.fritz2.headless.foundation.attrIfNotSet
-import dev.fritz2.headless.foundation.utils.scrollintoview.ScrollBehavior
-import dev.fritz2.headless.foundation.utils.scrollintoview.ScrollMode
-import dev.fritz2.headless.foundation.utils.scrollintoview.ScrollPosition
 import dev.fritz2.routing.MapRouter
 import io.ktor.util.StringValues
 import kotlinx.browser.document
@@ -58,14 +62,12 @@ import kotlinx.browser.window
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.mapNotNull
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.css.maxHeight
 import org.jetbrains.compose.web.css.overflowX
@@ -76,41 +78,26 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Pre
 import org.jetbrains.compose.web.dom.Text
-import org.w3c.dom.CENTER
 import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.SMOOTH
-import org.w3c.dom.ScrollIntoViewOptions
-import org.w3c.dom.ScrollLogicalPosition
 import playground.PlaygroundContainer
 import playground.architecture.ArchitectureDemoProvider
 import playground.clickupapp.ClickUpAppDemoProvider
-import playground.components.Page
 import playground.components.app.AppShowcases
 import playground.components.environment.EnvironmentShowcases
 import playground.components.environment.EnvironmentStore
 import playground.components.environment.environmentView
-import playground.components.horizontalScreens
 import playground.components.loader
-import playground.components.navigationBar
-import playground.components.pages
 import playground.components.props.PropsShowcases
 import playground.components.props.PropsStore
 import playground.components.props.propsView
-import playground.components.proseBox
 import playground.components.session.SessionShowcases
 import playground.components.session.SessionStore
 import playground.components.session.sessionView
-import playground.components.slideOver
 import playground.components.user.UserShowcases
 import playground.components.user.UserStore
 import playground.components.user.userDropdown
-import playground.components.verticalScreens
 import playground.fritz2.Fritz2HeadlessUiDemoAdapter
-import playground.fritz2.HeadlessUiShowcases
-import playground.fritz2.compose
-import com.bkahlert.hello.fritz2.icon
-import playground.tailwind.heroicons.OutlineHeroIcons
-import org.w3c.dom.ScrollBehavior as ScrollBehaviorW3C
+import playground.fritz2.headlessdemo.pages
 
 @JsModule("./semantic/semantic.less")
 private external val SemanticStyles: dynamic
@@ -272,7 +259,7 @@ fun main() {
                 }
             }
         ),
-        Fritz2HeadlessUiDemoAdapter(playground.headlessdemo.pages, "page"),
+        Fritz2HeadlessUiDemoAdapter(pages, "page"),
         DemoPageContainer,
     )
 
@@ -341,7 +328,7 @@ fun main() {
                         "w-screen h-screen pt-16 -mt-16",
                         pages = pages,
                         selectedPage = storeOf(pages.selectedPage.current.also { console.warn("SELECTED PAGE", it) }),
-                        type = Vertical,
+                        type = ScreensType.Vertical,
                     )
                 } else {
                     div("w-full h-screen pt-16 -mt-16") {
@@ -351,16 +338,7 @@ fun main() {
             }
         }
 
-        val diag = storeOf(false)
-
-        Window.keydowns
-            .filter { it.key.equals("f4", ignoreCase = true) }
-            .map { !diag.current } handledBy diag.update
-
-        slideOver(
-            diag,
-            name = "Diagnostics",
-        ) {
+        diagnostics {
             div("relative z-10 flex justify-end -mt-6") {
                 userStore.render {
                     if (it != null) userDropdown("-translate-y-8", it)
@@ -414,110 +392,5 @@ val DemoPageContainer = Page(
         listOf(ArchitectureDemoProvider),
         SemanticUiDemoProviders.asList(),
     ).map { it.map { it.toPage() } },
-    content = { proseBox { span { +"TODO" } } },
+    content = { proseBox() },
 )
-
-enum class ScreensType(
-    val classes: String,
-) {
-    Vertical("snap-v"),
-    VerticalFull("snap-v-full"),
-    Horizontal("snap-h"),
-    HorizontalFull("snap-h-full"),
-}
-
-
-fun RenderContext.screens(
-    pages: Store<List<Page>>,
-    selectedPage: Store<Page?> = storeOf(null),
-    type: ScreensType = Vertical,
-) = screens(null, pages, selectedPage, type)
-
-// selected: the element worked with
-// active: the focussed element that can be selected
-fun RenderContext.screens(
-    classes: String?,
-    pages: Store<List<Page>>,
-    selectedPage: Store<Page?> = storeOf(null),
-    type: ScreensType = Vertical,
-) {
-
-    dataCollection<Page>(classes) {
-        data(pages.data, Page::id)
-        selection.single(selectedPage)
-
-        dataCollectionItems(type.classes) {
-            scrollIntoView(
-                behavior = ScrollBehavior.smooth,
-                mode = ScrollMode.always,
-                vertical = ScrollPosition.center,
-                horizontal = ScrollPosition.center,
-            )
-            attrIfNotSet("role", Aria.Role.navigation)
-            items.renderEach(Page::id, into = this) { item ->
-                dataCollectionItem(
-                    item = item,
-                    id = item.id,
-                    classes = classes("overflow-y-auto"),
-                ) {
-                    attrIfNotSet("role", Aria.Role.main)
-                    attr("data-screen-selected", selected.asString())
-                    attr("data-screen-active", active.asString())
-
-                    className(selected.combine(active) { s, a ->
-                        classes(
-                            if (s) "ring-4 ring-slate-500/25 ring-inset ring-offset-0"
-                            else if (a) "ring-8 ring-slate-500/33 ring-inset ring-offset-0"
-                            else "ring-none",
-//                            if (s) "opacity-100"
-//                            else if (a) "opacity-75" else "opacity-50"
-//                            if (s) "opacity-100"
-//                            else if (a) "opacity-75" else "opacity-50"
-                        )
-                    })
-
-                    // Screen container
-                    div(
-                        classes(
-                            "space-y-5 py-4 sm:px-4",
-                        )
-                    ) {
-                        // Screen header
-                        div(
-                            classes(
-//                                "z-10",
-//                                "sticky top-0 left-0",
-                                "flex items-center justify-center sm:justify-start gap-x-2",
-                            )
-                        ) {
-                            icon("shrink-0 w-6 h-6", item.icon)
-                            div("text-xl font-bold") { +item.label }
-                        }
-
-                        // Screen content
-                        div {
-                            className(selected.combine(active) { sel, act ->
-                                classes(
-//                                    "transition duration-300 ease-in",
-//                                    if (act) "" else "",
-//                                    if (sel) "scale-100" else "scale-75"
-                                )
-                            })
-                            item.content?.invoke(this)
-                        }
-                    }
-
-                    selected.mapNotNull { if (it) domNode else null } handledBy {
-                        it.scrollIntoView(
-                            ScrollIntoViewOptions(
-                                behavior = ScrollBehaviorW3C.SMOOTH,
-                                inline = ScrollLogicalPosition.CENTER,
-                                block = ScrollLogicalPosition.CENTER,
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    }
-}

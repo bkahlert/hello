@@ -3,8 +3,8 @@
 package playground.components.app
 
 import com.bkahlert.hello.app.ui.HelloImageFixtures
+import com.bkahlert.hello.fritz2.components.icon
 import dev.fritz2.core.RenderContext
-import com.bkahlert.hello.fritz2.icon
 
 public fun RenderContext.landingScreen() {
     div("w-full h-full flex items-center justify-center") {

@@ -2,6 +2,10 @@
 
 package playground.components.user
 
+import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
+import com.bkahlert.hello.fritz2.components.heroicons.SolidHeroIcons
+import com.bkahlert.hello.fritz2.components.icon
+import com.bkahlert.hello.fritz2.components.screenReaderOnly
 import com.bkahlert.kommons.auth.diagnostics
 import com.bkahlert.kommons.text.takeUnlessBlank
 import com.bkahlert.kommons.uri.GravatarImageUri
@@ -13,9 +17,6 @@ import dev.fritz2.headless.components.menu
 import dev.fritz2.headless.foundation.utils.popper.Placement
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import com.bkahlert.hello.fritz2.icon
-import playground.tailwind.heroicons.OutlineHeroIcons
-import playground.tailwind.heroicons.SolidHeroIcons
 
 public fun RenderContext.userDropdown(
     classes: String?,
@@ -58,7 +59,7 @@ public fun RenderContext.userDropdown(
 
                     icon("shrink-0 h-8 w-8 rounded-full", picture) { attr("title", nickname) }
 
-                    span("sr-only") { opened.map { if (it) "Close Menu" else "Open Menu" }.renderText() }
+                    screenReaderOnly { opened.map { if (it) "Close Menu" else "Open Menu" }.renderText() }
                 }
             }
 

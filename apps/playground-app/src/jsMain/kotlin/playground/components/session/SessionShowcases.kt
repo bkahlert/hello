@@ -2,13 +2,13 @@
 
 package playground.components.session
 
+import com.bkahlert.hello.fritz2.components.Page
+import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
+import com.bkahlert.hello.fritz2.components.showcase.showcase
+import com.bkahlert.hello.fritz2.components.showcase.showcases
 import com.bkahlert.hello.session.demo.FakeSessionDataSource
 import com.bkahlert.hello.session.demo.FakeSessionDataSource.Companion.FakeAuthorizedSession
 import com.bkahlert.hello.session.demo.FakeSessionDataSource.Companion.FakeUnauthorizedSession
-import playground.components.Page
-import playground.components.showcase.showcase
-import playground.components.showcase.showcases
-import playground.tailwind.heroicons.HeroIcons
 
 public object SessionShowcases : Page(
     "session",

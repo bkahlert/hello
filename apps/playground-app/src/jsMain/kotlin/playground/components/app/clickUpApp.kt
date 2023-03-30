@@ -5,10 +5,10 @@ import com.bkahlert.hello.clickup.client.http.ClickUpHttpClientConfigurer
 import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenu
 import com.bkahlert.hello.clickup.viewmodel.rememberClickUpMenuViewModel
+import com.bkahlert.hello.fritz2.compose.compose
 import com.bkahlert.kommons.dom.InMemoryStorage
 import dev.fritz2.core.RenderContext
 import playground.components.app.ClickUpProps.Companion.mapClickUpProps
-import playground.fritz2.compose
 
 fun RenderContext.clickUpApp(
     store: AppStore,

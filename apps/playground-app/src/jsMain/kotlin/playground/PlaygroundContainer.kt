@@ -1,8 +1,8 @@
 package playground
 
-import playground.components.Page
-import playground.components.proseBox
-import playground.tailwind.heroicons.HeroIcons
+import com.bkahlert.hello.fritz2.components.Page
+import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
+import com.bkahlert.hello.fritz2.components.proseBox
 
 val PlaygroundContainer = Page(
     id = "playground",

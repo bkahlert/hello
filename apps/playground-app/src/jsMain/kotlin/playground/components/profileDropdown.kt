@@ -1,5 +1,9 @@
 package playground.components
 
+import com.bkahlert.hello.fritz2.components.icon
+import com.bkahlert.hello.fritz2.components.navigationbar.NavItem
+import com.bkahlert.hello.fritz2.components.navigationbar.NavItemGroup
+import com.bkahlert.hello.fritz2.components.screenReaderOnly
 import com.bkahlert.kommons.js.ConsoleLogger
 import dev.fritz2.core.Handler
 import dev.fritz2.core.RenderContext
@@ -12,7 +16,6 @@ import dev.fritz2.headless.foundation.utils.popper.Placement
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.w3c.dom.HTMLButtonElement
-import com.bkahlert.hello.fritz2.icon
 
 fun RenderContext.profileDropdown(
     classes: String? = null,
@@ -38,7 +41,7 @@ fun RenderContext.profileDropdown(
             ) {
                 className(opened.map { if (it) "ring ring-white ring-opacity-75" else "" })
                 button(this, "shrink-0 h-8 w-8 rounded-full")
-                span("sr-only") { opened.map { if (it) "Close Menu" else "Open Menu" }.renderText() }
+                screenReaderOnly { opened.map { if (it) "Close Menu" else "Open Menu" }.renderText() }
             }
         }
 

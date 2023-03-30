@@ -3,6 +3,7 @@
 package playground.components.app
 
 import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
+import com.bkahlert.hello.fritz2.ContentBuilder
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.alt
 import dev.fritz2.core.classes
@@ -10,7 +11,6 @@ import dev.fritz2.core.src
 import playground.components.loader
 import playground.components.props.propsView
 import playground.components.user.userDropdown
-import playground.fritz2.ContentBuilder
 
 public fun RenderContext.app(
     store: AppStore,

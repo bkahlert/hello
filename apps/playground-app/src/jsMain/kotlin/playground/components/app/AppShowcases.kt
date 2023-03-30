@@ -4,18 +4,18 @@ package playground.components.app
 
 import com.bkahlert.hello.environment.data.DynamicEnvironmentDataSource
 import com.bkahlert.hello.environment.domain.Environment
+import com.bkahlert.hello.fritz2.components.Page
+import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
+import com.bkahlert.hello.fritz2.components.showcase.showcase
+import com.bkahlert.hello.fritz2.components.showcase.showcases
 import com.bkahlert.hello.props.demo.InMemoryPropsDataSource
 import com.bkahlert.hello.props.domain.Props
 import com.bkahlert.hello.session.demo.FakeSessionDataSource
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
-import playground.components.Page
 import playground.components.environment.EnvironmentStore
 import playground.components.props.PropsStore
 import playground.components.session.SessionStore
-import playground.components.showcase.showcase
-import playground.components.showcase.showcases
-import playground.tailwind.heroicons.HeroIcons
 
 public val AppShowcases: Page = Page(
     "app",

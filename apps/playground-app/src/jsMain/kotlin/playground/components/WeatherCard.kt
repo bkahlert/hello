@@ -1,5 +1,6 @@
 package playground.components
 
+import com.bkahlert.hello.fritz2.inheritStylesheets
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
 import dev.fritz2.webcomponents.WebComponent
@@ -7,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.ShadowRoot
-import playground.fritz2.inheritStylesheets
 
 object WeatherCard : WebComponent<HTMLDivElement>() {
 

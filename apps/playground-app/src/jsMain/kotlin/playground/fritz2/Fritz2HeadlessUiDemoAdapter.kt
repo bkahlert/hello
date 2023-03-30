@@ -1,5 +1,8 @@
 package playground.fritz2
 
+import com.bkahlert.hello.fritz2.components.Page
+import com.bkahlert.hello.fritz2.components.showcase.showcase
+import com.bkahlert.hello.fritz2.register
 import com.bkahlert.kommons.text.withPrefix
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
@@ -18,15 +21,13 @@ import kotlinx.coroutines.flow.map
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.ShadowRoot
-import playground.components.Page
-import playground.components.showcase.showcase
-import playground.headlessdemo.DemoPage
-import playground.headlessdemo.components.fritz2
-import playground.headlessdemo.overview
-import playground.headlessdemo.pages
+import playground.fritz2.headlessdemo.DemoPage
+import playground.fritz2.headlessdemo.components.fritz2
+import playground.fritz2.headlessdemo.overview
+import playground.fritz2.headlessdemo.pages
 
 fun Fritz2HeadlessUiDemoAdapter(
-    pages: Map<String, playground.headlessdemo.Page>,
+    pages: Map<String, playground.fritz2.headlessdemo.Page>,
     fragment: String,
 ) = Page(
     id = "fritz-headless-ui",

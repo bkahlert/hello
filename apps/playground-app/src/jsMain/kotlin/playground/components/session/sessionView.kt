@@ -2,14 +2,14 @@
 
 package playground.components.session
 
+import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
+import com.bkahlert.hello.fritz2.components.icon
 import com.bkahlert.kommons.auth.Session
 import com.bkahlert.kommons.auth.Session.AuthorizedSession
 import com.bkahlert.kommons.auth.Session.UnauthorizedSession
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.storeOf
 import playground.components.dataView
-import com.bkahlert.hello.fritz2.icon
-import playground.tailwind.heroicons.OutlineHeroIcons
 
 public fun RenderContext.sessionView(
     session: Session?,

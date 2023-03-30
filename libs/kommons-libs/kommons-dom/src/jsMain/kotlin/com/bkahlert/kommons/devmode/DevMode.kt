@@ -98,7 +98,7 @@ public class DevMode<out T : DevSession>(
 
 
     init {
-        keyboardEventTarget
+        if (false) keyboardEventTarget
             ?.asEventFlow<KeyboardEvent>("keydown")
             ?.filter { it.target == keyboardEventTarget }
             ?.onEach {
