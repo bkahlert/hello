@@ -62,7 +62,7 @@ public fun RenderContext.userDropdown(
                     "absolute right-0 origin-top-right",
                     "w-48",
                     "rounded-md",
-                    "box-shadow box-glass",
+                    "shadow-lg dark:shadow-xl bg-glass text-default dark:text-invert",
                     "focus:outline-none"
                 )
             ) {
@@ -91,7 +91,7 @@ public fun RenderContext.userDropdown(
                         )
                     ) {
                         className(active.combine(disabled) { a, d ->
-                            if (a && !d) "box-glass"
+                            if (a && !d) "bg-glass text-default dark:text-invert"
                             else if (d) "opacity-50 cursor-default" else ""
                         })
                         active.render { a ->
@@ -113,7 +113,7 @@ public fun RenderContext.userDropdown(
                             )
                         ) {
                             className(active.combine(disabled) { a, d ->
-                                if (a && !d) "box-glass"
+                                if (a && !d) "bg-glass text-default dark:text-invert"
                                 else if (d) "opacity-50 cursor-default" else ""
                             })
                             active.render { a ->
@@ -135,7 +135,7 @@ public fun RenderContext.userDropdown(
                         )
                     ) {
                         className(active.combine(disabled) { a, d ->
-                            if (a && !d) "box-glass"
+                            if (a && !d) "bg-glass text-default dark:text-invert"
                             else if (d) "opacity-50 cursor-default" else ""
                         })
                         active.render { a ->
@@ -167,7 +167,7 @@ public fun RenderContext.userDropdown(
                         ) {
                             val disabled = onDiagnostics == null
                             className(active.map { a ->
-                                if (a && !disabled) "box-glass"
+                                if (a && !disabled) "bg-glass text-default dark:text-invert"
                                 else if (disabled) "opacity-50 cursor-default" else ""
                             })
                             selected handledBy { onDiagnostics?.invoke() }

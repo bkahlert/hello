@@ -11,12 +11,14 @@ import com.bkahlert.hello.fritz2.app.user.userDropdown
 import com.bkahlert.hello.fritz2.components.icon
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.classes
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLDivElement
 
 public fun RenderContext.app(
-    store: AppStore,
-    content: ContentBuilder? = null,
+    appStore: AppStore,
+    content: ContentBuilder<Element>? = null,
 ) {
-    store.data.render { state ->
+    appStore.data.render { state ->
         when (state) {
             is AppState.Loading -> landingScreen()
             is AppState.Loaded -> {
@@ -25,7 +27,7 @@ public fun RenderContext.app(
                     content.invoke(this)
                     hr { }
                 }
-                state.props.render { if (it != null) propsView(it) }
+                propsView(state.props)
             }
         }
     }
@@ -33,7 +35,7 @@ public fun RenderContext.app(
 
 fun RenderContext.appBar(
     classes: String? = null,
-    endContent: ContentBuilder? = null,
+    endContent: ContentBuilder<HTMLDivElement>? = null,
 ) {
     nav(classes) {
         div(

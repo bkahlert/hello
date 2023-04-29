@@ -5,6 +5,7 @@ import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.rememberCoroutineScope
 import com.bkahlert.kommons.dom.appendDivElement
 import com.bkahlert.kommons.dom.body
+import com.bkahlert.kommons.errorMessage
 import com.bkahlert.kommons.js.ConsoleLogger
 import com.bkahlert.kommons.js.toString
 import com.bkahlert.semanticui.module.Modal

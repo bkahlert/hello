@@ -2,7 +2,7 @@
 
 package com.bkahlert.hello.fritz2.app.props
 
-import com.bkahlert.hello.fritz2.components.Page
+import com.bkahlert.hello.fritz2.components.SimplePage
 import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
 import com.bkahlert.hello.fritz2.components.showcase.showcase
 import com.bkahlert.hello.fritz2.components.showcase.showcases
@@ -10,7 +10,7 @@ import kotlinx.browser.localStorage
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 
-public val PropsShowcases: Page = Page(
+public val PropsShowcases: SimplePage = SimplePage(
     "props",
     "Props",
     "Props showcases",

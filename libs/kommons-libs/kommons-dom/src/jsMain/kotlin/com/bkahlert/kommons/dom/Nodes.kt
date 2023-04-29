@@ -1,11 +1,18 @@
 package com.bkahlert.kommons.dom
 
 import kotlinx.dom.appendText
+import org.w3c.dom.Document
 import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.HTMLStyleElement
 import org.w3c.dom.Node
 import org.w3c.dom.ParentNode
 import org.w3c.dom.asList
+
+/** Returns the [Document] this node belongs to, or throws an [IllegalStateException] otherwise. */
+public val Node.checkedOwnerDocument: Document get() = checkNotNull(ownerDocument) { "ownerDocument expected but missing for $this" }
+
+/** Returns the [Document] this node belongs to, or throws an [IllegalStateException] otherwise. */
+public val Node.requiredOwnerDocument: Document get() = requireNotNull(ownerDocument) { "ownerDocument required but missing for $this" }
 
 /**
  * Returns the node [E] returned by the specified [get], or—if absent—
@@ -45,7 +52,7 @@ public fun <T> T.removeChildren(selectors: String): List<Node>
 public fun Node.appendStyle(
     css: String,
     customInit: HTMLStyleElement.() -> Unit = {},
-): HTMLStyleElement = checkNotNull(ownerDocument) { "ShadowRoot has no ownerDocument" }
+): HTMLStyleElement = requiredOwnerDocument
     .createElement("style")
     .unsafeCast<HTMLStyleElement>()
     .apply { appendText(css) }
@@ -58,7 +65,7 @@ public fun Node.appendStyle(
 public fun Node.appendScript(
     src: String?,
     customInit: HTMLScriptElement.() -> Unit = {},
-): HTMLScriptElement = checkNotNull(ownerDocument) { "ShadowRoot has no ownerDocument" }
+): HTMLScriptElement = requiredOwnerDocument
     .createElement("script")
     .unsafeCast<HTMLScriptElement>()
     .apply { if (src != null) this.src = src }

@@ -1,7 +1,7 @@
 package playground.fritz2
 
-import com.bkahlert.hello.fritz2.components.Page
-import com.bkahlert.hello.fritz2.components.showcase.showcase
+import com.bkahlert.hello.fritz2.components.SimplePage
+import com.bkahlert.hello.fritz2.components.icon
 import com.bkahlert.hello.fritz2.register
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
@@ -25,26 +25,30 @@ import playground.fritz2.headlessdemo.components.fritz2
 import playground.fritz2.headlessdemo.overview
 import playground.fritz2.headlessdemo.pages
 
-fun Fritz2HeadlessUiDemoAdapter(
+fun Fritz2DemoPage(
     pages: Map<String, playground.fritz2.headlessdemo.Page>,
     fragment: String,
-) = Page(
+) = SimplePage(
     id = "fritz-headless-ui",
-    label = "Headless UI",
+    name = "Headless UI",
     description = "Headless UI showcases by Fritz2",
     icon = fritz2,
-    groups = listOf(pages.mapNotNull { (key, page) ->
+    pages = pages.mapNotNull { (key, page) ->
         when (page) {
             is DemoPage -> {
                 val name = page.title.removePrefix("Headless ")
-                Page(
-                    id = "fritz2-headless-ui-$key",
-                    label = name,
+                SimplePage(
+                    id = key,
+                    name = name,
                     description = page.description,
                     icon = page.icon,
-                    pageContent = {
-                        showcase(name, simple = true, classes = "m-16") {
-                            div("rounded-xl block overflow-hidden h-full mt-2 ring-8 ring-gray-500/40") {
+                    content = {
+                        div("min-h-[50vh] container mx-auto flex flex-col gap-4") {
+                            div("flex items-center gap-2") {
+                                icon("shrink-0 w-6 h-6", page.icon)
+                                h1("flex-1") { +name }
+                            }
+                            div("flex-1 grid items-stretch content-stretch") {
                                 fritz2HeadlessUiDemo(demo = key, fragment = fragment)
                             }
                         }
@@ -54,8 +58,8 @@ fun Fritz2HeadlessUiDemoAdapter(
 
             else -> null
         }
-    }),
-    pageContent = {
+    },
+    content = {
         div("rounded-xl block overflow-hidden") {
             fritz2HeadlessUiDemo(demo = "", fragment = fragment)
         }

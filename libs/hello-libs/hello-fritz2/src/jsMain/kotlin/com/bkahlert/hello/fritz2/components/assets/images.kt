@@ -78,22 +78,9 @@ private const val CLICKUP_MARK: String = "" +
     "dyYWRpZW50PjxwYXRoIGQ9Ik0yMi4xIDEzLjJsLTkuOSA4LjUtNC42LTUuM0wyMi4xIDRsMT" +
     "QuMyAxMi41LTQuNiA1LjMtOS43LTguNnoiIGZpbGw9InVybCgjQikiLz48L3N2Zz4K"
 
-private const val HELLO_FAVICON = "" +
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
-    "9zdmciIGFyaWEtbGFiZWw9IkhlbGxvISIgcm9sZT0iaW1nIiBjdXJzb3I9ImRlZmF1bHQiIH" +
-    "ZpZXdCb3g9IjAgMCAxMjggMTI4Ij4KICAgIDxwYXRoIGZpbGw9IiNjMjFmNzMiCiAgICAgIC" +
-    "AgICBkPSJtMTEsMTE1VjEzYzAtMi4yMSwxLjc5LTQsNC00aDE4YzIuMjEsMCw0LDEuNzksNC" +
-    "w0djM0YzAsMi4yMSwxLjc5LDQsNCw0aDM0YzIuMjEsMCw0LTEuNzksNC00VjEzYzAtMi4yMS" +
-    "wxLjc5LTQsNC00aDE4YzIuMjEsMCw0LDEuNzksNCw0djEwMmMwLDIuMjEtMS43OSw0LTQsNG" +
-    "gtMThjLTIuMjEsMC00LTEuNzktNC00di0zOWMwLTIuMjEtMS43OS00LTQtNGgtMzRjLTIuMi" +
-    "wwLTQsMS44LTQsNHYzOWMwLDIuMjEtMS43OSw0LTQsNEgxNWMtMi4yMSwwLTQtMS43OS00LT" +
-    "RaIi8+CiAgICA8ZyBmaWxsPSIjMjlhYWUyIj4KICAgICAgICA8cmVjdCB4PSI5MiIgeT0iOT" +
-    "MiIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgcng9IjQiIHJ5PSI0Ii8+CiAgICAgICAgPHBhdG" +
-    "ggZD0ibTkxLjUsMTNjLS4yLTIuMzUsMi4xNi00LDQuNTItNGgtLjAyczE3LjQ5LDAsMTcuND" +
-    "ksMGMyLjM0LDAsNC4xOCwxLjk5LDMuOTksNC4zMi0xLjM0LDE2LjQtNC42Niw2NC4wNi00Lj" +
-    "Y2LDY0LjA2LS4xOSwyLjA1LTEuOTEsMy42Mi0zLjk3LDMuNjJoLTguNTJjLTIuMDUsMC0zLj" +
-    "c2LTEuNTUtMy45Ni0zLjU5LDAsMC0zLjQ3LTQ4LjMyLTQuODctNjQuNDEiLz4KICAgIDwvZz" +
-    "4KPC9zdmc+Cg=="
+@Suppress("LongLine", "SpellCheckingInspection")
+private const val HELLO_FAVICON =
+    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48cGF0aCBmaWxsPSIjYzIxZjczIiBkPSJtMTEsMTE1VjEzYzAtMi4yMSwxLjc5LTQsNC00aDE4YzIuMjEsMCw0LDEuNzksNCw0djM0YzAsMi4yMSwxLjc5LDQsNCw0aDM0YzIuMjEsMCw0LTEuNzksNC00VjEzYzAtMi4yMSwxLjc5LTQsNC00aDE4YzIuMjEsMCw0LDEuNzksNCw0djEwMmMwLDIuMjEtMS43OSw0LTQsNGgtMThjLTIuMjEsMC00LTEuNzktNC00di0zOWMwLTIuMjEtMS43OS00LTQtNGgtMzRjLTIuMiwwLTQsMS44LTQsNHYzOWMwLDIuMjEtMS43OSw0LTQsNEgxNWMtMi4yMSwwLTQtMS43OS00LTRaIi8+PGcgZmlsbD0iIzI5YWFlMiI+PHJlY3QgeD0iOTIiIHk9IjkzIiB3aWR0aD0iMjYiIGhlaWdodD0iMjYiIHJ4PSI0IiByeT0iNCIvPjxwYXRoIGQ9Im05MS41LDEzYy0uMi0yLjM1LDIuMTYtNCw0LjUyLTRoLS4wMnMxNy40OSwwLDE3LjQ5LDBjMi4zNCwwLDQuMTgsMS45OSwzLjk5LDQuMzItMS4zNCwxNi40LTQuNjYsNjQuMDYtNC42Niw2NC4wNi0uMTksMi4wNS0xLjkxLDMuNjItMy45NywzLjYyaC04LjUyYy0yLjA1LDAtMy43Ni0xLjU1LTMuOTYtMy41OSwwLDAtMy40Ny00OC4zMi00Ljg3LTY0LjQxIi8+PC9nPjwvc3ZnPg=="
 
 /**
  * Created with
@@ -1083,7 +1070,7 @@ private const val JOHN100BG: String = "" +
 
 // language=svg
 private const val KOMMONS_LOGO: String = """<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" aria-label="Kommons" role="img" cursor="default" viewBox="0 0 60 60">
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="Kommons" viewBox="0 0 60 60">
     <defs>
         <linearGradient id="upper-k" x1="-720" y1="780" x2="0" y2="60">
             <stop offset="0" stop-color="#29abe2"/>
@@ -1141,7 +1128,7 @@ private const val KOMMONS_LOGO: String = """<?xml version="1.0" encoding="utf-8"
 
 // language=svg
 private const val PEAR_LOGO = """<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" aria-label="Pear company" role="img" cursor="default" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="Pear company" viewBox="0 0 512 512">
 <g>
     <path fill="#953F97" d="M337.3,367.85c14.58,30.64,37.79,49.62,72.21,53.42c2.71,0.3,4.44,1.09,2.19,4.12
         c-2.22,2.98-4.31,6.04-6.46,9.06c-2.79,1.87-5.92,2.15-9.17,2.15c-85.7,0-171.41,0-257.11-0.01c-3.23,0-6.4-0.15-9.14-2.19

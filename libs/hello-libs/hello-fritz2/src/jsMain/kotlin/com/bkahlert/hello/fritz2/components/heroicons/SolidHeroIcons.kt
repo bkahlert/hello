@@ -2,7 +2,6 @@ package com.bkahlert.hello.fritz2.components.heroicons
 
 import com.bkahlert.kommons.uri.DataUri
 import io.ktor.http.ContentType.Image
-import kotlin.reflect.KProperty
 
 /**
  * Solid icon definitions from the fantastic [heroicons](https://heroicons.com),
@@ -15,11 +14,9 @@ import kotlin.reflect.KProperty
  * @see <a href="https://github.com/tailwindlabs/heroicons/blob/master/LICENSE">License</a>
  */
 @Suppress("LongLine")
-public object SolidHeroIcons : HeroIcons {
-
-    private operator fun String.provideDelegate(thisRef: Any?, property: KProperty<*>): Lazy<DataUri> = lazy {
-        DataUri(Image.SVG, """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">$this</svg>""")
-    }
+public object SolidHeroIcons : HeroIcons, LazyNamedEntriesList<String, DataUri>({ _, _, content ->
+    DataUri(Image.SVG, """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">$content</svg>""")
+}) {
 
     // @formatter:off
     /** [Academic Cap](https://raw.githubusercontent.com/tailwindlabs/heroicons/v2.0.16/src/24/solid/academic-cap.svg) */

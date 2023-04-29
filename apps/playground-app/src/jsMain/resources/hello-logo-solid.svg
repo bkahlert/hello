@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" aria-label="Hello!" role="img" cursor="default" viewBox="0 0 374 113">
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="Hello!" viewBox="0 0 374 113">
     <defs>
         <path id="letter-h"
               d="m0,109V7C0,4.79,1.79,3,4,3h18c2.21,0,4,1.79,4,4v34c0,2.21,1.79,4,4,4h34c2.21,0,4-1.79,4-4V7c0-2.21,1.79-4,4-4h18c2.21,0,4,1.79,4,4v102c0,2.21-1.79,4-4,4h-18c-2.21,0-4-1.79-4-4v-39c0-2.21-1.79-4-4-4H30c-2.2,0-4,1.8-4,4v39c0,2.21-1.79,4-4,4H4c-2.21,0-4-1.79-4-4Z"/>

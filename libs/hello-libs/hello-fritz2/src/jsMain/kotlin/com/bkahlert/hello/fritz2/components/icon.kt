@@ -14,6 +14,7 @@ import org.w3c.dom.svg.SVGElement
 public fun RenderContext.icon(
     classes: String?,
     uri: Uri,
+    ignoredAttributes: List<String> = listOf("role", "cursor"),
     content: (SvgTag.() -> Unit)? = null,
 ): SvgTag = if (uri is DataUri && uri.mediaType?.match(Image.SVG) == true) {
     val svgElement = document.createElement("div").run {
@@ -21,9 +22,9 @@ public fun RenderContext.icon(
         firstElementChild as SVGElement
     }
     svg(classes) {
-        svgElement.attributes.asList().forEach {
-            attr(it.name, it.value)
-        }
+        svgElement.attributes.asList()
+            .filterNot { it.name.lowercase() in ignoredAttributes }
+            .forEach { attr(it.name, it.value) }
         content(svgElement.innerHTML)
         content?.invoke(this)
     }
@@ -39,5 +40,6 @@ public fun RenderContext.icon(
 
 public fun RenderContext.icon(
     uri: Uri,
+    ignoredAttributes: List<String> = listOf("role", "cursor"),
     content: (SvgTag.() -> Unit)? = null,
-): SvgTag = icon(null, uri, content)
+): SvgTag = icon(null, uri, ignoredAttributes, content)

@@ -23,34 +23,33 @@ import dev.fritz2.headless.components.disclosure
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 @JsModule("@spectrum-web-components/split-view/sp-split-view.js")
 private external val SplitView: dynamic
-private val splitView by lazy {
-    SplitView
-    custom<HTMLElement>("sp-split-view")
-}
 
 private fun RenderContext.splitView(
     baseClass: String? = null,
     id: String? = null,
     scope: (ScopeContext.() -> Unit) = {},
-    content: (Tag<HTMLElement>.() -> Unit)? = null,
-): Tag<HTMLElement> = splitView(this, baseClass, id, scope, content ?: {})
+    content: ContentBuilder<HTMLElement>? = null,
+): Tag<HTMLElement> {
+    SplitView
+    return custom("sp-split-view", baseClass, id, scope, content ?: {})
+}
 
 private val logger by ConsoleLogging("Showcase")
 
 public fun RenderContext.showcase(
     name: String,
-    simple: Boolean = false,
     resizable: Boolean = true,
     warning: String? = null,
     classes: String? = null,
     resetDuration: Duration = .5.seconds,
-    content: ContentBuilder? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     val resetStore = object : RootStore<Boolean>(false) {
         init {
@@ -68,7 +67,7 @@ public fun RenderContext.showcase(
     disclosure(
         classes(
             "sm:rounded-xl",
-            if (simple) "bg-hero-diagonal-lines" else "box-shadow box-color",
+            "bg-white/10 border border-white/20",
             classes,
         )
     ) {
@@ -77,7 +76,6 @@ public fun RenderContext.showcase(
             classes(
                 "flex justify-between items-center gap-x-8",
                 "sm:rounded-t-xl sm:last:rounded-b-xl",
-                if (simple) "" else "dark:shadow-slate-900 shadow-md",
                 "px-4 py-2",
             )
         ) {
@@ -88,7 +86,7 @@ public fun RenderContext.showcase(
                     span { +warning }
                 }
             }
-            disclosureButton("flex items-center gap-x-2 group") {
+            disclosureButton("flex items-center gap-x-2 group aria-expanded:ring-0") {
                 className(opened.map { if (it) "" else "cursor-not-allowed opacity-75" })
                 type("button")
                 disabled(!opened)
@@ -101,11 +99,7 @@ public fun RenderContext.showcase(
             }
         }
 
-        disclosurePanel(
-            classes(
-                if (simple) "" else "p-4 relative",
-            )
-        ) {
+        disclosurePanel {
             transition(
                 opened,
                 "transition duration-100 ease-out",
@@ -116,18 +110,20 @@ public fun RenderContext.showcase(
                 "opacity-0 scale-y-95",
             )
 
-            if (resizable) splitView(
-                classes(
-                    "hover:rounded-lg hover:ring-1 hover:ring-slate-900/10",
-                    "-mr-[--spectrum-dragbar-handle-width]"
-                )
-            ) {
-                attr("resizable", true)
-                attr("primary-size", "100%")
-                opened.render(into = this) {
-                    if (it) {
-                        div { content?.invoke(this) }
-                        div {}
+            if (resizable) {
+                splitView(
+                    classes(
+                        "hover:rounded-lg hover:ring-1 hover:ring-slate-900/10",
+                        "-mr-[--spectrum-dragbar-handle-width]"
+                    )
+                ) {
+                    attr("resizable", true)
+                    attr("primary-size", "100%")
+                    opened.render(into = this) {
+                        if (it) {
+                            div { content?.invoke(this) }
+                            div {}
+                        }
                     }
                 }
             } else {
@@ -145,13 +141,13 @@ public fun RenderContext.showcases(
     classes: String? = null,
     name: String,
     icon: Uri? = null,
-    simple: Boolean = false,
-    content: ContentBuilder? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     div(
         classes(
             "space-y-5 py-4 sm:px-4 sm:rounded-xl",
-            if (simple) "" else "box-shadow box-glass", classes
+            "bg-white/10 border border-white/20",
+            classes,
         )
     ) {
         div("flex items-center justify-center sm:justify-start gap-x-2") {
@@ -159,7 +155,7 @@ public fun RenderContext.showcases(
             div("text-xl font-bold") { +name }
         }
 
-        div("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4") {
+        div("grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4") {
             content?.invoke(this)
         }
     }
@@ -168,8 +164,7 @@ public fun RenderContext.showcases(
 public fun RenderContext.showcases(
     name: String,
     icon: Uri? = null,
-    simple: Boolean = false,
-    content: ContentBuilder? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
 ) {
-    showcases(null, name, icon, simple, content)
+    showcases(null, name, icon, content)
 }

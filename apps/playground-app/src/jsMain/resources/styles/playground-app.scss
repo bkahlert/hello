@@ -1,17 +1,10 @@
 @import url("./base.css");
-@import url("./overscroll-blend.css");
 
-html { @apply h-full bg-swatch-yellow-blue-100; }
-body { @apply min-h-full bg-hero-graph-paper; }
-
-/* Background-mask to transition nicely to the background-image on over-scrolling */
-@media only screen and (pointer: coarse) {
-  html { @apply bg-swatch-yellow-blue-0; }
-  body { mask: linear-gradient(white, white calc(100vh - 7rem), transparent) no-repeat; }
-}
+html { @apply h-full bg-swatch-blue dark:bg-swatch-blue-700; }
+body { @apply min-h-full bg-hero-graph-paper dark:bg-hero-graph-paper-gray-700; }
 
 body::after {
-  @apply block content-[""] absolute top-full inset-x-0 pointer-events-none z-[1000];
+  @apply block content-[""] fixed top-full inset-x-0 pointer-events-none z-[1000];
   margin-top: -5rem;
   height: 5rem;
   padding: 1rem calc(env(safe-area-inset-right) + 1rem) 1rem calc(env(safe-area-inset-left) + 1rem);

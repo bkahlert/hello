@@ -1,95 +1,102 @@
-package com.bkahlert.hello.applets
+package com.bkahlert.hello.components.applet.preview
 
+import com.bkahlert.hello.components.applet.Applet
+import com.bkahlert.hello.components.applet.AppletEditor
+import com.bkahlert.hello.components.applet.AspectRatio
+import com.bkahlert.hello.components.applet.panel
+import com.bkahlert.hello.components.applet.ssh.FitAddon
+import com.bkahlert.hello.components.applet.ssh.ITerminalOptions
+import com.bkahlert.hello.components.applet.ssh.Terminal
+import com.bkahlert.hello.components.applet.ssh.XTermCss
+import com.bkahlert.hello.components.applet.ssh.data
 import com.bkahlert.hello.fritz2.ContentBuilder
+import com.bkahlert.hello.fritz2.components.FontFamilies
+import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
 import com.bkahlert.hello.fritz2.components.heroicons.SolidHeroIcons
 import com.bkahlert.hello.fritz2.components.icon
-import com.bkahlert.hello.fritz2.selectEditor
-import com.bkahlert.kommons.randomString
+import com.bkahlert.hello.fritz2.lens
+import com.bkahlert.hello.fritz2.observedResizes
+import com.bkahlert.hello.fritz2.selectField
+import com.bkahlert.kommons.uri.DataUri
 import com.bkahlert.kommons.uri.Uri
 import com.bkahlert.kommons.uri.pathSegments
 import com.bkahlert.kommons.uri.toUri
+import dev.fritz2.core.HtmlTag
+import dev.fritz2.core.Lens
 import dev.fritz2.core.RenderContext
+import dev.fritz2.core.Tag
 import dev.fritz2.core.classes
 import dev.fritz2.core.colSpan
 import dev.fritz2.core.d
 import dev.fritz2.core.fill
 import dev.fritz2.core.href
-import dev.fritz2.core.lensOf
 import dev.fritz2.core.scope
-import dev.fritz2.core.storeOf
 import dev.fritz2.core.type
 import dev.fritz2.core.viewBox
 import dev.fritz2.headless.foundation.Aria
-import dev.fritz2.validation.ValidationMessage
+import io.ktor.http.ContentType.Image
 import io.ktor.http.decodeURLPart
-import kotlinx.coroutines.flow.Flow
+import js.core.jso
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLDivElement
 
 @Serializable
-@SerialName("feature-preview")
 data class FeaturePreviewApplet(
-    override val id: String = randomString(),
-    @SerialName("feature") val feature: FeaturePreview,
-    @SerialName("aspect-ratio") val aspectRatio: AspectRatio = AspectRatio.video,
+    override val id: String,
+    @SerialName("feature") val feature: FeaturePreview? = null,
+    @SerialName("aspect-ratio") val aspectRatio: AspectRatio? = AspectRatio.video,
 ) : Applet {
-    override val name: String get() = feature.initialName
+    override val title: String? get() = feature?.title
+    override val icon: Uri? get() = feature?.icon
 
-    override val icon: Uri get() = feature.icon
+    override fun editor(isNew: Boolean): AppletEditor<*> = FeaturePreviewAppletEditor(isNew, this)
 
-    override fun duplicate(): Applet = copy(id = randomString())
-
-    override fun render(renderContext: RenderContext) {
-        renderContext.window(name, aspectRatio) {
-            feature.render.invoke(this)
+    override fun render(renderContext: Tag<Element>): HtmlTag<HTMLDivElement> = renderContext.panel(aspectRatio) {
+        val missing = listOf(::feature).filter { it.get() == null }
+        if (missing.isNotEmpty()) {
+            renderConfigurationMissing(missing)
+        } else {
+            feature?.render?.invoke(this)
         }
     }
 
-    override fun renderEditor(renderContext: RenderContext, contributeMessages: (Flow<List<ValidationMessage>>) -> Unit): Flow<Applet> {
-        val store = storeOf(this)
-        renderContext.div("flex flex-col sm:flex-row gap-8 justify-center") {
-            div("flex-grow flex flex-col gap-2") {
-                label {
-                    +"Feature"
-                    selectEditor(
-                        null, store.map(
-                            lensOf(
-                                "feature",
-                                { it.feature },
-                                { p, v -> p.copy(feature = v) })
-                        )
-                    )
-                }
-                label {
-                    +"Aspect ratio"
-                    selectEditor(
-                        null, store.map(
-                            lensOf(
-                                "aspect-ratio",
-                                { it.aspectRatio },
-                                { p, v -> p.copy(aspectRatio = v) })
-                        )
-                    )
-                }
-            }
-        }
-        return store.data
-    }
+    companion object {
+        public fun feature(): Lens<FeaturePreviewApplet, FeaturePreview?> =
+            FeaturePreviewApplet::feature.lens({ it.feature }, { p, v -> p.copy(feature = v) })
 
-    companion object : AppletType<FeaturePreviewApplet> {
-        override val name: String = "Feature Preview"
-        override val description: String = "Demo of a future feature"
-        override val icon: Uri = SolidHeroIcons.star
-        override val default = FeaturePreviewApplet(feature = FeaturePreview.webshell)
+        public fun aspectRatio(): Lens<FeaturePreviewApplet, AspectRatio?> =
+            FeaturePreviewApplet::aspectRatio.lens({ it.aspectRatio }, { p, v -> p.copy(aspectRatio = v) })
+    }
+}
+
+class FeaturePreviewAppletEditor(isNew: Boolean, applet: FeaturePreviewApplet) : AppletEditor<FeaturePreviewApplet>(isNew, applet) {
+    override fun RenderContext.renderFields() {
+        selectField(
+            store = map(FeaturePreviewApplet.feature()),
+            label = "Feature",
+            itemTitle = FeaturePreview::title,
+            itemIcon = FeaturePreview::icon,
+        )
+        selectField(
+            store = map(FeaturePreviewApplet.aspectRatio()),
+            label = "Aspect ratio",
+            itemTitle = AspectRatio::title,
+            itemIcon = AspectRatio::icon,
+        )
     }
 }
 
 enum class FeaturePreview(
-    val initialName: String,
+    val title: String,
     val icon: Uri,
-    val render: ContentBuilder,
+    val render: ContentBuilder<Element>,
 ) {
-    dropbox("Dropbox", SolidHeroIcons.folder, {
+    dropbox("Dropbox", DataUri(
+        Image.SVG,
+        """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 528 512" fill="currentColor"><path d="M264.4 116.3l-132 84.3 132 84.3-132 84.3L0 284.1l132.3-84.3L0 116.3 132.3 32l132.1 84.3zM131.6 395.7l132-84.3 132 84.3-132 84.3-132-84.3zm132.8-111.6l132-84.3-132-83.6L395.7 32 528 116.3l-132.3 84.3L528 284.8l-132.3 84.3-131.3-85z"/></svg>"""
+    ), {
         div("dropbox flex flex-col justify-between bg-white bg-hero-texture-blue") {
             ul("flex [&>:not(:last-child)]:after:content-['_/'] space-x-2 m-2 p-2 text-xl text-slate-600 [&>:last-child]:text-slate-800") {
                 li("cursor-pointer") { +"Dropbox" }
@@ -218,26 +225,49 @@ enum class FeaturePreview(
             }
         }
     }),
-    webshell("WebShell", SolidHeroIcons.command_line, {
+    webshell("WebShell", OutlineHeroIcons.command_line, {
+
+        XTermCss
+        val terminal = Terminal(jso<ITerminalOptions> {
+            cursorBlink = true
+            fontFamily = FontFamilies.MONOSPACE
+        })
+        val terminalFitAddon = FitAddon().also { terminal.loadAddon(it) }
+
         val user = "tatu"
         val host = "ylonen"
-        div("terminal flex flex-col justify-between") {
-            div("terminal__viewport flex-grow bg-black text-white font-mono p-2") {
-                div("terminal__line") { +"Last failed login: Thu Apr 27 19:40:45 UTC 2023 from 93.184.216.34 on ssh:notty" }
-                div("terminal__line") { +"There was 1 failed login attempt since the last successful login." }
-                div("terminal__line") { +"Last login: Thu Apr 27 19:40:42 2023 from 34.216.184.93" }
-                div("terminal__line") {
-                    +"[$user@$host ~]# "
-                    span("animate-pulse duration-700") {
-                        inlineStyle("animation-direction: alternate; animation-timing-function: steps(1);")
-                        +"▏"
+
+        div("flex flex-col overflow-hidden") {
+            div("flex-1 overflow-hidden [&>.xterm]:w-full [&>.xterm]:h-full") {
+                terminal.open(domNode)
+                observedResizes handledBy { terminalFitAddon.fit() }
+            }
+            div("terminal__footer flex items-center gap-1 bg-slate-800 font-bold text-sm p-1") {
+                div("terminal__connection flex-1") {
+                    className("text-white/60")
+                    +"ssh://$user@$host"
+                }
+                div("terminal__status flex-1") {
+                    className("text-emerald-500")
+                    +"SSH CONNECTION FAKED"
+                }
+            }
+        }
+
+        terminal.write("Last failed login: Thu Apr 27 19:40:45 UTC 2023 from 93.184.216.34 on ssh:notty\r\n")
+        terminal.write("There was 1 failed login attempt since the last successful login.\r\n")
+        terminal.write("Last login: Thu Apr 27 19:40:42 2023 from 34.216.184.93\r\n")
+        terminal.write("[$user@$host ~]# ")
+        terminal.data handledBy {
+            it.lines().let { lines ->
+                lines.forEachIndexed { index, line ->
+                    terminal.write(line)
+                    if (index < lines.size - 1) {
+                        terminal.write("\r\n")
                     }
                 }
             }
-            div("terminal__footer flex bg-slate-800 font-bold text-sm text-emerald-500 p-1") {
-                div("flex-1 terminal__connection") { +"ssh://$user@$host.example.com" }
-                div("flex-1 terminal__status") { +"SSH CONNECTION ESTABLISHED" }
-            }
+            terminal.write(it)
         }
     }),
 }

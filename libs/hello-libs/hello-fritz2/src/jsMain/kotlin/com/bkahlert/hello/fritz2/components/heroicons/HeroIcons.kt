@@ -7,881 +7,882 @@ import com.bkahlert.kommons.uri.DataUri
  *
  * @see <a href="https://github.com/tailwindlabs/heroicons/blob/master/LICENSE">License</a>
  */
-public interface HeroIcons {
+@Suppress("PropertyName")
+public interface HeroIcons : List<DataUri> {
 
-    /** [Academic Cap */
+    /** Academic Cap */
     public val academic_cap: DataUri
 
-    /** [Adjustments Horizontal */
+    /** Adjustments Horizontal */
     public val adjustments_horizontal: DataUri
 
-    /** [Adjustments Vertical */
+    /** Adjustments Vertical */
     public val adjustments_vertical: DataUri
 
-    /** [Archive Box Arrow Down */
+    /** Archive Box Arrow Down */
     public val archive_box_arrow_down: DataUri
 
-    /** [Archive Box Xmark */
+    /** Archive Box Xmark */
     public val archive_box_x_mark: DataUri
 
-    /** [Archive Box */
+    /** Archive Box */
     public val archive_box: DataUri
 
-    /** [Arrow Down Circle */
+    /** Arrow Down Circle */
     public val arrow_down_circle: DataUri
 
-    /** [Arrow Down Left */
+    /** Arrow Down Left */
     public val arrow_down_left: DataUri
 
-    /** [Arrow Down On Square Stack */
+    /** Arrow Down On Square Stack */
     public val arrow_down_on_square_stack: DataUri
 
-    /** [Arrow Down On Square */
+    /** Arrow Down On Square */
     public val arrow_down_on_square: DataUri
 
-    /** [Arrow Down Right */
+    /** Arrow Down Right */
     public val arrow_down_right: DataUri
 
-    /** [Arrow Down Tray */
+    /** Arrow Down Tray */
     public val arrow_down_tray: DataUri
 
-    /** [Arrow Down */
+    /** Arrow Down */
     public val arrow_down: DataUri
 
-    /** [Arrow Left Circle */
+    /** Arrow Left Circle */
     public val arrow_left_circle: DataUri
 
-    /** [Arrow Left On Rectangle */
+    /** Arrow Left On Rectangle */
     public val arrow_left_on_rectangle: DataUri
 
-    /** [Arrow Left */
+    /** Arrow Left */
     public val arrow_left: DataUri
 
-    /** [Arrow Long Down */
+    /** Arrow Long Down */
     public val arrow_long_down: DataUri
 
-    /** [Arrow Long Left */
+    /** Arrow Long Left */
     public val arrow_long_left: DataUri
 
-    /** [Arrow Long Right */
+    /** Arrow Long Right */
     public val arrow_long_right: DataUri
 
-    /** [Arrow Long Up */
+    /** Arrow Long Up */
     public val arrow_long_up: DataUri
 
-    /** [Arrow Path Rounded Square */
+    /** Arrow Path Rounded Square */
     public val arrow_path_rounded_square: DataUri
 
-    /** [Arrow Path */
+    /** Arrow Path */
     public val arrow_path: DataUri
 
-    /** [Arrow Right Circle */
+    /** Arrow Right Circle */
     public val arrow_right_circle: DataUri
 
-    /** [Arrow Right On Rectangle */
+    /** Arrow Right On Rectangle */
     public val arrow_right_on_rectangle: DataUri
 
-    /** [Arrow Right */
+    /** Arrow Right */
     public val arrow_right: DataUri
 
-    /** [Arrow Small Down */
+    /** Arrow Small Down */
     public val arrow_small_down: DataUri
 
-    /** [Arrow Small Left */
+    /** Arrow Small Left */
     public val arrow_small_left: DataUri
 
-    /** [Arrow Small Right */
+    /** Arrow Small Right */
     public val arrow_small_right: DataUri
 
-    /** [Arrow Small Up */
+    /** Arrow Small Up */
     public val arrow_small_up: DataUri
 
-    /** [Arrow Top Right On Square */
+    /** Arrow Top Right On Square */
     public val arrow_top_right_on_square: DataUri
 
-    /** [Arrow Trending Down */
+    /** Arrow Trending Down */
     public val arrow_trending_down: DataUri
 
-    /** [Arrow Trending Up */
+    /** Arrow Trending Up */
     public val arrow_trending_up: DataUri
 
-    /** [Arrow Up Circle */
+    /** Arrow Up Circle */
     public val arrow_up_circle: DataUri
 
-    /** [Arrow Up Left */
+    /** Arrow Up Left */
     public val arrow_up_left: DataUri
 
-    /** [Arrow Up On Square Stack */
+    /** Arrow Up On Square Stack */
     public val arrow_up_on_square_stack: DataUri
 
-    /** [Arrow Up On Square */
+    /** Arrow Up On Square */
     public val arrow_up_on_square: DataUri
 
-    /** [Arrow Up Right */
+    /** Arrow Up Right */
     public val arrow_up_right: DataUri
 
-    /** [Arrow Up Tray */
+    /** Arrow Up Tray */
     public val arrow_up_tray: DataUri
 
-    /** [Arrow Up */
+    /** Arrow Up */
     public val arrow_up: DataUri
 
-    /** [Arrow Uturn Down */
+    /** Arrow Uturn Down */
     public val arrow_uturn_down: DataUri
 
-    /** [Arrow Uturn Left */
+    /** Arrow Uturn Left */
     public val arrow_uturn_left: DataUri
 
-    /** [Arrow Uturn Right */
+    /** Arrow Uturn Right */
     public val arrow_uturn_right: DataUri
 
-    /** [Arrow Uturn Up */
+    /** Arrow Uturn Up */
     public val arrow_uturn_up: DataUri
 
-    /** [Arrows Pointing In */
+    /** Arrows Pointing In */
     public val arrows_pointing_in: DataUri
 
-    /** [Arrows Pointing Out */
+    /** Arrows Pointing Out */
     public val arrows_pointing_out: DataUri
 
-    /** [Arrows Right Left */
+    /** Arrows Right Left */
     public val arrows_right_left: DataUri
 
-    /** [Arrows Up Down */
+    /** Arrows Up Down */
     public val arrows_up_down: DataUri
 
-    /** [At Symbol */
+    /** At Symbol */
     public val at_symbol: DataUri
 
-    /** [Backspace */
+    /** Backspace */
     public val backspace: DataUri
 
-    /** [Backward */
+    /** Backward */
     public val backward: DataUri
 
-    /** [Banknotes */
+    /** Banknotes */
     public val banknotes: DataUri
 
-    /** [Bars_2 */
+    /** Bars_2 */
     public val bars_2: DataUri
 
-    /** [Bars_3 Bottom Left */
+    /** Bars_3 Bottom Left */
     public val bars_3_bottom_left: DataUri
 
-    /** [Bars_3 Bottom Right */
+    /** Bars_3 Bottom Right */
     public val bars_3_bottom_right: DataUri
 
-    /** [Bars_3 Center Left */
+    /** Bars_3 Center Left */
     public val bars_3_center_left: DataUri
 
-    /** [Bars_3 */
+    /** Bars_3 */
     public val bars_3: DataUri
 
-    /** [Bars_4 */
+    /** Bars_4 */
     public val bars_4: DataUri
 
-    /** [Bars Arrow Down */
+    /** Bars Arrow Down */
     public val bars_arrow_down: DataUri
 
-    /** [Bars Arrow Up */
+    /** Bars Arrow Up */
     public val bars_arrow_up: DataUri
 
-    /** [Battery_0 */
+    /** Battery_0 */
     public val battery_0: DataUri
 
-    /** [Battery_100 */
+    /** Battery_100 */
     public val battery_100: DataUri
 
-    /** [Battery_50 */
+    /** Battery_50 */
     public val battery_50: DataUri
 
-    /** [Beaker */
+    /** Beaker */
     public val beaker: DataUri
 
-    /** [Bell Alert */
+    /** Bell Alert */
     public val bell_alert: DataUri
 
-    /** [Bell Slash */
+    /** Bell Slash */
     public val bell_slash: DataUri
 
-    /** [Bell Snooze */
+    /** Bell Snooze */
     public val bell_snooze: DataUri
 
-    /** [Bell */
+    /** Bell */
     public val bell: DataUri
 
-    /** [Bolt Slash */
+    /** Bolt Slash */
     public val bolt_slash: DataUri
 
-    /** [Bolt */
+    /** Bolt */
     public val bolt: DataUri
 
-    /** [Book Open */
+    /** Book Open */
     public val book_open: DataUri
 
-    /** [Bookmark Slash */
+    /** Bookmark Slash */
     public val bookmark_slash: DataUri
 
-    /** [Bookmark Square */
+    /** Bookmark Square */
     public val bookmark_square: DataUri
 
-    /** [Bookmark */
+    /** Bookmark */
     public val bookmark: DataUri
 
-    /** [Briefcase */
+    /** Briefcase */
     public val briefcase: DataUri
 
-    /** [Bug Ant */
+    /** Bug Ant */
     public val bug_ant: DataUri
 
-    /** [Building Library */
+    /** Building Library */
     public val building_library: DataUri
 
-    /** [Building Office_2 */
+    /** Building Office_2 */
     public val building_office_2: DataUri
 
-    /** [Building Office */
+    /** Building Office */
     public val building_office: DataUri
 
-    /** [Building Storefront */
+    /** Building Storefront */
     public val building_storefront: DataUri
 
-    /** [Cake */
+    /** Cake */
     public val cake: DataUri
 
-    /** [Calculator */
+    /** Calculator */
     public val calculator: DataUri
 
-    /** [Calendar Days */
+    /** Calendar Days */
     public val calendar_days: DataUri
 
-    /** [Calendar */
+    /** Calendar */
     public val calendar: DataUri
 
-    /** [Camera */
+    /** Camera */
     public val camera: DataUri
 
-    /** [Chart Bar Square */
+    /** Chart Bar Square */
     public val chart_bar_square: DataUri
 
-    /** [Chart Bar */
+    /** Chart Bar */
     public val chart_bar: DataUri
 
-    /** [Chart Pie */
+    /** Chart Pie */
     public val chart_pie: DataUri
 
-    /** [Chat Bubble Bottom Center Text */
+    /** Chat Bubble Bottom Center Text */
     public val chat_bubble_bottom_center_text: DataUri
 
-    /** [Chat Bubble Bottom Center */
+    /** Chat Bubble Bottom Center */
     public val chat_bubble_bottom_center: DataUri
 
-    /** [Chat Bubble Left Ellipsis */
+    /** Chat Bubble Left Ellipsis */
     public val chat_bubble_left_ellipsis: DataUri
 
-    /** [Chat Bubble Left Right */
+    /** Chat Bubble Left Right */
     public val chat_bubble_left_right: DataUri
 
-    /** [Chat Bubble Left */
+    /** Chat Bubble Left */
     public val chat_bubble_left: DataUri
 
-    /** [Chat Bubble Opublic val Left Ellipsis */
+    /** Chat Bubble Opublic val Left Ellipsis */
     public val chat_bubble_oval_left_ellipsis: DataUri
 
-    /** [Chat Bubble Opublic val Left */
+    /** Chat Bubble Opublic val Left */
     public val chat_bubble_oval_left: DataUri
 
-    /** [Check Badge */
+    /** Check Badge */
     public val check_badge: DataUri
 
-    /** [Check Circle */
+    /** Check Circle */
     public val check_circle: DataUri
 
-    /** [Check */
+    /** Check */
     public val check: DataUri
 
-    /** [Chevron Double Down */
+    /** Chevron Double Down */
     public val chevron_double_down: DataUri
 
-    /** [Chevron Double Left */
+    /** Chevron Double Left */
     public val chevron_double_left: DataUri
 
-    /** [Chevron Double Right */
+    /** Chevron Double Right */
     public val chevron_double_right: DataUri
 
-    /** [Chevron Double Up */
+    /** Chevron Double Up */
     public val chevron_double_up: DataUri
 
-    /** [Chevron Down */
+    /** Chevron Down */
     public val chevron_down: DataUri
 
-    /** [Chevron Left */
+    /** Chevron Left */
     public val chevron_left: DataUri
 
-    /** [Chevron Right */
+    /** Chevron Right */
     public val chevron_right: DataUri
 
-    /** [Chevron Up Down */
+    /** Chevron Up Down */
     public val chevron_up_down: DataUri
 
-    /** [Chevron Up */
+    /** Chevron Up */
     public val chevron_up: DataUri
 
-    /** [Circle Stack */
+    /** Circle Stack */
     public val circle_stack: DataUri
 
-    /** [Clipboard Document Check */
+    /** Clipboard Document Check */
     public val clipboard_document_check: DataUri
 
-    /** [Clipboard Document List */
+    /** Clipboard Document List */
     public val clipboard_document_list: DataUri
 
-    /** [Clipboard Document */
+    /** Clipboard Document */
     public val clipboard_document: DataUri
 
-    /** [Clipboard */
+    /** Clipboard */
     public val clipboard: DataUri
 
-    /** [Clock */
+    /** Clock */
     public val clock: DataUri
 
-    /** [Cloud Arrow Down */
+    /** Cloud Arrow Down */
     public val cloud_arrow_down: DataUri
 
-    /** [Cloud Arrow Up */
+    /** Cloud Arrow Up */
     public val cloud_arrow_up: DataUri
 
-    /** [Cloud */
+    /** Cloud */
     public val cloud: DataUri
 
-    /** [Code Bracket Square */
+    /** Code Bracket Square */
     public val code_bracket_square: DataUri
 
-    /** [Code Bracket */
+    /** Code Bracket */
     public val code_bracket: DataUri
 
-    /** [Cog_6 Tooth */
+    /** Cog_6 Tooth */
     public val cog_6_tooth: DataUri
 
-    /** [Cog_8 Tooth */
+    /** Cog_8 Tooth */
     public val cog_8_tooth: DataUri
 
-    /** [Cog */
+    /** Cog */
     public val cog: DataUri
 
-    /** [Command Line */
+    /** Command Line */
     public val command_line: DataUri
 
-    /** [Computer Desktop */
+    /** Computer Desktop */
     public val computer_desktop: DataUri
 
-    /** [Cpu Chip */
+    /** Cpu Chip */
     public val cpu_chip: DataUri
 
-    /** [Credit Card */
+    /** Credit Card */
     public val credit_card: DataUri
 
-    /** [Cube Transparent */
+    /** Cube Transparent */
     public val cube_transparent: DataUri
 
-    /** [Cube */
+    /** Cube */
     public val cube: DataUri
 
-    /** [Currency Bangladeshi */
+    /** Currency Bangladeshi */
     public val currency_bangladeshi: DataUri
 
-    /** [Currency Dollar */
+    /** Currency Dollar */
     public val currency_dollar: DataUri
 
-    /** [Currency Euro */
+    /** Currency Euro */
     public val currency_euro: DataUri
 
-    /** [Currency Pound */
+    /** Currency Pound */
     public val currency_pound: DataUri
 
-    /** [Currency Rupee */
+    /** Currency Rupee */
     public val currency_rupee: DataUri
 
-    /** [Currency Yen */
+    /** Currency Yen */
     public val currency_yen: DataUri
 
-    /** [Cursor Arrow Rays */
+    /** Cursor Arrow Rays */
     public val cursor_arrow_rays: DataUri
 
-    /** [Cursor Arrow Ripple */
+    /** Cursor Arrow Ripple */
     public val cursor_arrow_ripple: DataUri
 
-    /** [Device Phone Mobile */
+    /** Device Phone Mobile */
     public val device_phone_mobile: DataUri
 
-    /** [Device Tablet */
+    /** Device Tablet */
     public val device_tablet: DataUri
 
-    /** [Document Arrow Down */
+    /** Document Arrow Down */
     public val document_arrow_down: DataUri
 
-    /** [Document Arrow Up */
+    /** Document Arrow Up */
     public val document_arrow_up: DataUri
 
-    /** [Document Chart Bar */
+    /** Document Chart Bar */
     public val document_chart_bar: DataUri
 
-    /** [Document Check */
+    /** Document Check */
     public val document_check: DataUri
 
-    /** [Document Duplicate */
+    /** Document Duplicate */
     public val document_duplicate: DataUri
 
-    /** [Document Magnifying Glass */
+    /** Document Magnifying Glass */
     public val document_magnifying_glass: DataUri
 
-    /** [Document Minus */
+    /** Document Minus */
     public val document_minus: DataUri
 
-    /** [Document Plus */
+    /** Document Plus */
     public val document_plus: DataUri
 
-    /** [Document Text */
+    /** Document Text */
     public val document_text: DataUri
 
-    /** [Document */
+    /** Document */
     public val document: DataUri
 
-    /** [Ellipsis Horizontal Circle */
+    /** Ellipsis Horizontal Circle */
     public val ellipsis_horizontal_circle: DataUri
 
-    /** [Ellipsis Horizontal */
+    /** Ellipsis Horizontal */
     public val ellipsis_horizontal: DataUri
 
-    /** [Ellipsis Vertical */
+    /** Ellipsis Vertical */
     public val ellipsis_vertical: DataUri
 
-    /** [Envelope Open */
+    /** Envelope Open */
     public val envelope_open: DataUri
 
-    /** [Envelope */
+    /** Envelope */
     public val envelope: DataUri
 
-    /** [Exclamation Circle */
+    /** Exclamation Circle */
     public val exclamation_circle: DataUri
 
-    /** [Exclamation Triangle */
+    /** Exclamation Triangle */
     public val exclamation_triangle: DataUri
 
-    /** [Eye Dropper */
+    /** Eye Dropper */
     public val eye_dropper: DataUri
 
-    /** [Eye Slash */
+    /** Eye Slash */
     public val eye_slash: DataUri
 
-    /** [Eye */
+    /** Eye */
     public val eye: DataUri
 
-    /** [Face Frown */
+    /** Face Frown */
     public val face_frown: DataUri
 
-    /** [Face Smile */
+    /** Face Smile */
     public val face_smile: DataUri
 
-    /** [Film */
+    /** Film */
     public val film: DataUri
 
-    /** [Finger Print */
+    /** Finger Print */
     public val finger_print: DataUri
 
-    /** [Fire */
+    /** Fire */
     public val fire: DataUri
 
-    /** [Flag */
+    /** Flag */
     public val flag: DataUri
 
-    /** [Folder Arrow Down */
+    /** Folder Arrow Down */
     public val folder_arrow_down: DataUri
 
-    /** [Folder Minus */
+    /** Folder Minus */
     public val folder_minus: DataUri
 
-    /** [Folder Open */
+    /** Folder Open */
     public val folder_open: DataUri
 
-    /** [Folder Plus */
+    /** Folder Plus */
     public val folder_plus: DataUri
 
-    /** [Folder */
+    /** Folder */
     public val folder: DataUri
 
-    /** [Forward */
+    /** Forward */
     public val forward: DataUri
 
-    /** [Funnel */
+    /** Funnel */
     public val funnel: DataUri
 
-    /** [Gif */
+    /** Gif */
     public val gif: DataUri
 
-    /** [Gift Top */
+    /** Gift Top */
     public val gift_top: DataUri
 
-    /** [Gift */
+    /** Gift */
     public val gift: DataUri
 
-    /** [Globe Alt */
+    /** Globe Alt */
     public val globe_alt: DataUri
 
-    /** [Globe Americas */
+    /** Globe Americas */
     public val globe_americas: DataUri
 
-    /** [Globe Asia Australia */
+    /** Globe Asia Australia */
     public val globe_asia_australia: DataUri
 
-    /** [Globe Europe Africa */
+    /** Globe Europe Africa */
     public val globe_europe_africa: DataUri
 
-    /** [Hand Raised */
+    /** Hand Raised */
     public val hand_raised: DataUri
 
-    /** [Hand Thumb Down */
+    /** Hand Thumb Down */
     public val hand_thumb_down: DataUri
 
-    /** [Hand Thumb Up */
+    /** Hand Thumb Up */
     public val hand_thumb_up: DataUri
 
-    /** [Hashtag */
+    /** Hashtag */
     public val hashtag: DataUri
 
-    /** [Heart */
+    /** Heart */
     public val heart: DataUri
 
-    /** [Home Modern */
+    /** Home Modern */
     public val home_modern: DataUri
 
-    /** [Home */
+    /** Home */
     public val home: DataUri
 
-    /** [Identification */
+    /** Identification */
     public val identification: DataUri
 
-    /** [Inbox Arrow Down */
+    /** Inbox Arrow Down */
     public val inbox_arrow_down: DataUri
 
-    /** [Inbox Stack */
+    /** Inbox Stack */
     public val inbox_stack: DataUri
 
-    /** [Inbox */
+    /** Inbox */
     public val inbox: DataUri
 
-    /** [Information Circle */
+    /** Information Circle */
     public val information_circle: DataUri
 
-    /** [Key */
+    /** Key */
     public val key: DataUri
 
-    /** [Language */
+    /** Language */
     public val language: DataUri
 
-    /** [Lifebuoy */
+    /** Lifebuoy */
     public val lifebuoy: DataUri
 
-    /** [Light Bulb */
+    /** Light Bulb */
     public val light_bulb: DataUri
 
-    /** [Link */
+    /** Link */
     public val link: DataUri
 
-    /** [List Bullet */
+    /** List Bullet */
     public val list_bullet: DataUri
 
-    /** [Lock Closed */
+    /** Lock Closed */
     public val lock_closed: DataUri
 
-    /** [Lock Open */
+    /** Lock Open */
     public val lock_open: DataUri
 
-    /** [Magnifying Glass Circle */
+    /** Magnifying Glass Circle */
     public val magnifying_glass_circle: DataUri
 
-    /** [Magnifying Glass Minus */
+    /** Magnifying Glass Minus */
     public val magnifying_glass_minus: DataUri
 
-    /** [Magnifying Glass Plus */
+    /** Magnifying Glass Plus */
     public val magnifying_glass_plus: DataUri
 
-    /** [Magnifying Glass */
+    /** Magnifying Glass */
     public val magnifying_glass: DataUri
 
-    /** [Map Pin */
+    /** Map Pin */
     public val map_pin: DataUri
 
-    /** [Map */
+    /** Map */
     public val map: DataUri
 
-    /** [Megaphone */
+    /** Megaphone */
     public val megaphone: DataUri
 
-    /** [Microphone */
+    /** Microphone */
     public val microphone: DataUri
 
-    /** [Minus Circle */
+    /** Minus Circle */
     public val minus_circle: DataUri
 
-    /** [Minus Small */
+    /** Minus Small */
     public val minus_small: DataUri
 
-    /** [Minus */
+    /** Minus */
     public val minus: DataUri
 
-    /** [Moon */
+    /** Moon */
     public val moon: DataUri
 
-    /** [Musical Note */
+    /** Musical Note */
     public val musical_note: DataUri
 
-    /** [Newspaper */
+    /** Newspaper */
     public val newspaper: DataUri
 
-    /** [No Symbol */
+    /** No Symbol */
     public val no_symbol: DataUri
 
-    /** [Paint Brush */
+    /** Paint Brush */
     public val paint_brush: DataUri
 
-    /** [Paper Airplane */
+    /** Paper Airplane */
     public val paper_airplane: DataUri
 
-    /** [Paper Clip */
+    /** Paper Clip */
     public val paper_clip: DataUri
 
-    /** [Pause Circle */
+    /** Pause Circle */
     public val pause_circle: DataUri
 
-    /** [Pause */
+    /** Pause */
     public val pause: DataUri
 
-    /** [Pencil Square */
+    /** Pencil Square */
     public val pencil_square: DataUri
 
-    /** [Pencil */
+    /** Pencil */
     public val pencil: DataUri
 
-    /** [Phone Arrow Down Left */
+    /** Phone Arrow Down Left */
     public val phone_arrow_down_left: DataUri
 
-    /** [Phone Arrow Up Right */
+    /** Phone Arrow Up Right */
     public val phone_arrow_up_right: DataUri
 
-    /** [Phone Xmark */
+    /** Phone Xmark */
     public val phone_x_mark: DataUri
 
-    /** [Phone */
+    /** Phone */
     public val phone: DataUri
 
-    /** [Photo */
+    /** Photo */
     public val photo: DataUri
 
-    /** [Play Circle */
+    /** Play Circle */
     public val play_circle: DataUri
 
-    /** [Play Pause */
+    /** Play Pause */
     public val play_pause: DataUri
 
-    /** [Play */
+    /** Play */
     public val play: DataUri
 
-    /** [Plus Circle */
+    /** Plus Circle */
     public val plus_circle: DataUri
 
-    /** [Plus Small */
+    /** Plus Small */
     public val plus_small: DataUri
 
-    /** [Plus */
+    /** Plus */
     public val plus: DataUri
 
-    /** [Power */
+    /** Power */
     public val power: DataUri
 
-    /** [Presentation Chart Bar */
+    /** Presentation Chart Bar */
     public val presentation_chart_bar: DataUri
 
-    /** [Presentation Chart Line */
+    /** Presentation Chart Line */
     public val presentation_chart_line: DataUri
 
-    /** [Printer */
+    /** Printer */
     public val printer: DataUri
 
-    /** [Puzzle Piece */
+    /** Puzzle Piece */
     public val puzzle_piece: DataUri
 
-    /** [Qr Code */
+    /** Qr Code */
     public val qr_code: DataUri
 
-    /** [Question Mark Circle */
+    /** Question Mark Circle */
     public val question_mark_circle: DataUri
 
-    /** [Queue List */
+    /** Queue List */
     public val queue_list: DataUri
 
-    /** [Radio */
+    /** Radio */
     public val radio: DataUri
 
-    /** [Receipt Percent */
+    /** Receipt Percent */
     public val receipt_percent: DataUri
 
-    /** [Receipt Refund */
+    /** Receipt Refund */
     public val receipt_refund: DataUri
 
-    /** [Rectangle Group */
+    /** Rectangle Group */
     public val rectangle_group: DataUri
 
-    /** [Rectangle Stack */
+    /** Rectangle Stack */
     public val rectangle_stack: DataUri
 
-    /** [Rocket Launch */
+    /** Rocket Launch */
     public val rocket_launch: DataUri
 
-    /** [Rss */
+    /** Rss */
     public val rss: DataUri
 
-    /** [Scale */
+    /** Scale */
     public val scale: DataUri
 
-    /** [Scissors */
+    /** Scissors */
     public val scissors: DataUri
 
-    /** [Server Stack */
+    /** Server Stack */
     public val server_stack: DataUri
 
-    /** [Server */
+    /** Server */
     public val server: DataUri
 
-    /** [Share */
+    /** Share */
     public val share: DataUri
 
-    /** [Shield Check */
+    /** Shield Check */
     public val shield_check: DataUri
 
-    /** [Shield Exclamation */
+    /** Shield Exclamation */
     public val shield_exclamation: DataUri
 
-    /** [Shopping Bag */
+    /** Shopping Bag */
     public val shopping_bag: DataUri
 
-    /** [Shopping Cart */
+    /** Shopping Cart */
     public val shopping_cart: DataUri
 
-    /** [Signal Slash */
+    /** Signal Slash */
     public val signal_slash: DataUri
 
-    /** [Signal */
+    /** Signal */
     public val signal: DataUri
 
-    /** [Sparkles */
+    /** Sparkles */
     public val sparkles: DataUri
 
-    /** [Speaker Wave */
+    /** Speaker Wave */
     public val speaker_wave: DataUri
 
-    /** [Speaker Xmark */
+    /** Speaker Xmark */
     public val speaker_x_mark: DataUri
 
-    /** [Square_2 Stack */
+    /** Square_2 Stack */
     public val square_2_stack: DataUri
 
-    /** [Square_3 Stack_3 D */
+    /** Square_3 Stack_3 D */
     public val square_3_stack_3_d: DataUri
 
-    /** [Squares_2 X_2 */
+    /** Squares_2 X_2 */
     public val squares_2_x_2: DataUri
 
-    /** [Squares Plus */
+    /** Squares Plus */
     public val squares_plus: DataUri
 
-    /** [Star */
+    /** Star */
     public val star: DataUri
 
-    /** [Stop Circle */
+    /** Stop Circle */
     public val stop_circle: DataUri
 
-    /** [Stop */
+    /** Stop */
     public val stop: DataUri
 
-    /** [Sun */
+    /** Sun */
     public val sun: DataUri
 
-    /** [Swatch */
+    /** Swatch */
     public val swatch: DataUri
 
-    /** [Table Cells */
+    /** Table Cells */
     public val table_cells: DataUri
 
-    /** [Tag */
+    /** Tag */
     public val tag: DataUri
 
-    /** [Ticket */
+    /** Ticket */
     public val ticket: DataUri
 
-    /** [Trash */
+    /** Trash */
     public val trash: DataUri
 
-    /** [Trophy */
+    /** Trophy */
     public val trophy: DataUri
 
-    /** [Truck */
+    /** Truck */
     public val truck: DataUri
 
-    /** [Tv */
+    /** Tv */
     public val tv: DataUri
 
-    /** [User Circle */
+    /** User Circle */
     public val user_circle: DataUri
 
-    /** [User Group */
+    /** User Group */
     public val user_group: DataUri
 
-    /** [User Minus */
+    /** User Minus */
     public val user_minus: DataUri
 
-    /** [User Plus */
+    /** User Plus */
     public val user_plus: DataUri
 
-    /** [User */
+    /** User */
     public val user: DataUri
 
-    /** [Users */
+    /** Users */
     public val users: DataUri
 
-    /** [Variable */
+    /** Variable */
     public val variable: DataUri
 
-    /** [Video Camera Slash */
+    /** Video Camera Slash */
     public val video_camera_slash: DataUri
 
-    /** [Video Camera */
+    /** Video Camera */
     public val video_camera: DataUri
 
-    /** [View Columns */
+    /** View Columns */
     public val view_columns: DataUri
 
-    /** [Viewfinder Circle */
+    /** Viewfinder Circle */
     public val viewfinder_circle: DataUri
 
-    /** [Wallet */
+    /** Wallet */
     public val wallet: DataUri
 
-    /** [Wifi */
+    /** Wifi */
     public val wifi: DataUri
 
-    /** [Window */
+    /** Window */
     public val window: DataUri
 
-    /** [Wrench Screwdriver */
+    /** Wrench Screwdriver */
     public val wrench_screwdriver: DataUri
 
-    /** [Wrench */
+    /** Wrench */
     public val wrench: DataUri
 
-    /** [Xcircle */
+    /** Xcircle */
     public val x_circle: DataUri
 
-    /** [Xmark */
+    /** Xmark */
     public val x_mark: DataUri
 }

@@ -22,7 +22,7 @@ public fun ObjectUri(mediaType: ContentType, data: String): Uri {
 }
 
 public fun Uri.download(filename: String, context: HTMLElement = window.document.body()) {
-    val anchor = checkNotNull(context.ownerDocument).createElement("a") as HTMLAnchorElement
+    val anchor = context.requiredOwnerDocument.createElement("a") as HTMLAnchorElement
     anchor.href = toString()
     anchor.download = filename
     context.appendChild(anchor);

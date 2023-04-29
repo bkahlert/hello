@@ -120,21 +120,25 @@ public external val console: Console
 /* TRACE */
 public inline val <T> T.trace: T get() = this.trace()
 
-@Suppress("NOTHING_TO_INLINE")
-public inline fun <T> T.trace(caption: String? = null): T {
+public inline fun <T> T.trace(caption: String? = null, transform: (T) -> Any? = { it }): T {
     repeat(100) { console.groupEnd() }
     val meta = this?.let { it::class.simpleName + "@" + hashCode() } ?: "null"
     console.info(
         "%cTRACE${caption?.let { ": $it" } ?: ""}\n$meta%o",
         listOf(
-            ConsoleLogger.TRACE_NAME_STYLES,
+            "display:inline-block",
+            "border-radius:4px",
+            "padding:0.1em",
+            "margin-right:0.15em",
+            "text-shadow:0 0 0.5px #ffffff99",
+            "border:1px solid #29aae2",
             "margin-left:-10rem",
             "padding-left:10rem",
-            "background-color: cyan",
-            "color: black",
-            "font-weight: 700",
+            "background-color:cyan",
+            "color:black",
+            "font-weight:700",
         ).joinToString(";"),
-        this,
+        transform(this).let { if (it is Iterable<*>) it.toList().toTypedArray() else it },
     )
     return this
 }

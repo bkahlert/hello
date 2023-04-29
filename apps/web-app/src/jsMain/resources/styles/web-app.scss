@@ -1,13 +1,7 @@
 @import url("./base.css");
 
-html { @apply h-full bg-swatch-blue-yellow-100; }
-body { @apply min-h-full bg-swatch-blue-yellow; }
-
-/* Background-mask to transition nicely to the background-image on over-scrolling */
-@media only screen and (pointer: coarse) {
-  html { @apply bg-swatch-blue-yellow-0; }
-  body { mask: linear-gradient(white, white calc(100vh - 7rem), transparent) no-repeat; }
-}
+html { @apply h-full bg-swatch-blue; }
+body { @apply min-h-full; }
 
 body::after {
   @apply block content-[""] absolute top-full inset-x-0 pointer-events-none z-[1000];
@@ -19,10 +13,11 @@ body::after {
 
 @layer components {
   .app {
-    @apply h-full flex flex-col;
+    @apply h-full;
+    height: clamp(100svh, 100vh, 100dvh);
   }
-}
-
-.safe {
-  padding: calc(env(safe-area-inset-top) + 1rem) calc(env(safe-area-inset-right) + 1rem) 1rem calc(env(safe-area-inset-left) + 1rem);
+  .app-scroll-container {
+    @apply bg-gradient-to-b p3:bg-gradient-to-b-in-oklch from-swatch-blue-600 to-swatch-yellow-300 dark:from-swatch-blue-800 dark:to-swatch-yellow-500 bg-local;
+    background-size: 100% 200%;
+  }
 }

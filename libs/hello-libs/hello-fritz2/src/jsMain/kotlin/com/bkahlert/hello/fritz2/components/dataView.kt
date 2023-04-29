@@ -6,7 +6,6 @@ import com.bkahlert.hello.fritz2.ContentBuilder
 import com.bkahlert.hello.fritz2.SyncState
 import com.bkahlert.hello.fritz2.components.heroicons.MiniHeroIcons
 import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
-import com.bkahlert.hello.fritz2.components.heroicons.SolidHeroIcons
 import com.bkahlert.hello.fritz2.syncState
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.IdProvider
@@ -21,29 +20,23 @@ import dev.fritz2.core.title
 import dev.fritz2.core.type
 import dev.fritz2.headless.components.dataCollection
 import dev.fritz2.headless.components.inputField
-import dev.fritz2.headless.foundation.InitialFocus
 import dev.fritz2.headless.foundation.SortDirection.ASC
 import dev.fritz2.headless.foundation.SortDirection.DESC
 import dev.fritz2.headless.foundation.SortDirection.NONE
-import dev.fritz2.headless.foundation.trapFocusInMountpoint
 import dev.fritz2.headless.foundation.utils.scrollintoview.ScrollPosition.center
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLSpanElement
-
-public typealias EditorBuilder = RenderContext.(EditorCallback) -> Unit
-public typealias EditorCallback = () -> Unit
 
 public fun <T> RenderContext.dataView(
     name: String,
     store: Store<List<T>>,
     lenses: List<Lens<T, String>> = listOf(lensOf("Value", { it.toString() }, { p, _ -> p })),
-    editor: ((T, Lens<T, String>) -> EditorBuilder?)? = null,
-    creator: (() -> T)? = null,
-    controls: ContentBuilder? = null,
+    controls: ContentBuilder<HTMLDivElement>? = null,
 ) {
 
     val idProvider: IdProvider<T, String> = { lenses.first().get(it) }
@@ -146,53 +139,14 @@ public fun <T> RenderContext.dataView(
                                     else dd(columnClasses[1], "$id-${lens.id}", {}, it)
                                 }
                                 tag {
-                                    val currentEditor = storeOf<EditorBuilder?>(null)
-                                    currentEditor.data.render { itemEditor ->
-                                        if (itemEditor != null) {
-                                            title("")
-                                            div {
-                                                itemEditor(this) {
-                                                    currentEditor.update(null)
-                                                }
-                                                trapFocusInMountpoint(setInitialFocus = InitialFocus.InsistToSet)
-                                            }
-                                        } else {
-                                            val value = lens.get(item)
-                                            +value
-                                            editor?.invoke(item, lens)?.also { e ->
-                                                title("Edit: $value")
-                                                className("hover:cursor-pointer")
-                                                clicks.map { e } handledBy currentEditor.update
-                                            } ?: run {
-                                                title(value)
-                                                className("select-all")
-                                            }
-                                        }
-                                    }
+                                    val value = lens.get(item)
+                                    +value
+                                    title(value)
+                                    className("select-all")
                                 }
                             }
                         }
                     }
-                }
-            }
-
-            if (creator != null) {
-                button(
-                    classes(
-                        "group flex items-center justify-center px-4 py-5",
-                        "w-full mx-auto",
-                        "flex items-center",
-                        "text-green-500 disabled:text-gray-500/75",
-                        "focus-visible:underline focus-visible:decoration-2 focus-visible:underline-offset-2",
-                    )
-                ) {
-                    type("button")
-                    icon("group-hover:hidden shrink-0 mr-1 h-4 w-4", OutlineHeroIcons.plus)
-                    icon("hidden group-hover:block shrink-0 mr-1 h-4 w-4", SolidHeroIcons.plus_circle)
-                    span("font-medium sm:text-sm") {
-                        +"New "
-                    }
-                    clicks.map { store.current + creator() } handledBy store.update
                 }
             }
         }

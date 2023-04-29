@@ -73,5 +73,3 @@ public fun ErrorMessage(
         attrs?.invoke(this)
     }, content)
 }
-
-public val Throwable.errorMessage: String get() = message ?: toString()

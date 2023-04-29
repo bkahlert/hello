@@ -2,9 +2,9 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpException
+import com.bkahlert.kommons.errorMessage
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.custom.data
-import com.bkahlert.semanticui.custom.errorMessage
 import com.bkahlert.semanticui.element.BasicButton
 import com.bkahlert.semanticui.element.Button
 import com.bkahlert.semanticui.element.Icon

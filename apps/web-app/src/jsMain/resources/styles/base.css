@@ -11,24 +11,16 @@
 }
 
 @layer base {
-  .bg-light { @apply bg-bg-light; }
-  .bg-dark { @apply bg-bg-dark; }
-  .bg { @apply bg-light dark:bg-dark; }
-
-  .text-light { @apply text-text-light; }
-  .text-dark { @apply text-text-dark; }
-  .text { @apply text-light dark:text-dark; }
-
   html { @apply scroll-smooth; }
 
-  h1 { @apply text text-2xl; }
-  h2 { @apply text text-xl; }
-  h3 { @apply text text-lg; }
+  h1 { @apply text-2xl; }
+  h2 { @apply text-xl; }
+  h3 { @apply text-lg; }
 
   hr {
     @apply w-48 h-1 mx-auto rounded border-0;
     @apply my-4 md:my-10;
-    @apply bg;
+    @apply bg-default dark:bg-invert;
   }
 
   button {
@@ -37,6 +29,30 @@
   }
 
   [aria-expanded="true"] { @apply ring ring-white ring-opacity-75; }
+}
+
+@layer components {
+  .btn {
+    @apply px-3 py-2 rounded text-left font-medium transition enabled:cursor-pointer enabled:shadow disabled:opacity-60;
+    @apply active:pt-2.5 active:pb-1.5 active:shadow-inner active:shadow-slate-950/30 active:dark:shadow-slate-800/30;
+    @apply bg-glass enabled:hover:[--glass-opacity:0.35];
+    @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75;
+  }
+
+  .btn:has(>:where(svg,img)):has(>:where(small)) { @apply grid gap-x-2 gap-y-1 items-center justify-items-start grid-cols-[min-content,1fr]; }
+  .btn:has(>:where(svg,img)):not(:has(>:where(small))) { @apply flex gap-2; }
+  .btn > :where(svg,img) { @apply w-5 h-5; }
+  .btn > small { @apply block prose-invert dark:prose text-sm font-medium row-start-2 col-start-2; }
+
+  .btn-invert { @apply btn text-invert bg-glass-invert enabled:hover:[--glass-opacity:0.35]; }
+  .btn-invert > small { @apply prose dark:prose-invert text-sm font-medium; }
+
+  .btn-simple {
+    @apply btn border border-black/40 bg-none;
+    @apply mt-0.5 enabled:hover:-translate-y-0.5 enabled:hover:shadow-lg active:hover:shadow-sm active:translate-y-0 active:py-2;
+  }
+  .btn-invert-simple { @apply btn-simple border-white/40 text-invert; }
+  .btn-invert-simple > small { @apply prose dark:prose-invert text-sm font-medium; }
 }
 
 
@@ -62,251 +78,139 @@
 
 
 @layer components {
-  [data-shortcut] { @apply relative; }
-  [data-shortcut]::after {
-    margin-left: 0.8em;
-    @apply float-right inline-flex items-center justify-center;
-    @apply text-xs font-bold text-current;
-    @apply opacity-50 [&:not(:disabled):hover]:opacity-100;
-    @apply pointer-events-none;
-    content: attr(data-shortcut);
-  }
-}
-
-
-@layer components {
-  :root {
+  .app {
     --nav-height: theme('spacing.16');
-    --applet-spacing: 0rem;
-  }
-  @media (min-width: theme('screens.sm')) {
-    :root { --applet-spacing: theme('spacing.4'); }
-  }
-  @media (min-width: theme('screens.md')) {
-    :root { --applet-spacing: theme('spacing.8'); }
-  }
-  @media (min-width: theme('screens.lg')) {
-    :root { --applet-spacing: theme('spacing.16'); }
+    --app-item-spacing: theme('spacing.16');
+    --app-item-height: clamp(70svh, calc(100svh + theme('screens.sm') - 100vw), calc(100svh - var(--nav-height)));
+    --app-item-padding: clamp(1rem, calc(100vw - theme('screens.sm')), var(--app-item-spacing));
+    /* Ranges from --nav-height for small screens to 0 for large screens so element is below the navigation on small screens */
+    --app-item-gap: clamp(0px, calc(var(--nav-height) + theme('screens.sm') - 100vw), var(--nav-height));
   }
 
-  .applets {
-    @apply h-full snap-y overflow-y-auto snap-mandatory;
-    height: clamp(100svh, 100vh, 100dvh);
-    margin-top: calc(var(--nav-height) * -1);
+  .app-header {
+    @apply top-0 inset-x-0;
+    position: fixed !important;
+    height: var(--nav-height);
+    z-index: 20;
+  }
+
+  .app-scroll-container {
+    @apply h-full snap-y snap-mandatory overflow-y-auto;
+    padding-top: var(--nav-height);
     scroll-padding-top: var(--nav-height);
-  }
-  .applets::before, .applets::after {
-    @apply block content-[''] h-32;
-  }
-  .applets > .applet {
-    padding: calc(var(--applet-spacing) / 2) var(--applet-spacing);
-    scroll-margin: var(--applet-spacing);
-    height: calc(100% - calc(var(--applet-spacing) * 2) - var(--nav-height));
-    @apply snap-start relative;
-  }
-
-  .applet__handle {
-    @apply absolute inset-x-0 flex items-center justify-center text-sm;
-    top: calc(var(--applet-spacing) / 2);
-  }
-
-
-  .window {
-    @apply h-full flex flex-col bg-hero-diagonal-lines sm:rounded-xl sm:gap-y-2;
-  }
-  .window > .window-title {
-    @apply flex justify-between items-center gap-x-8 sm:rounded-t-xl sm:last:rounded-b-xl px-4 py-2;
-    @apply text-lg font-semibold;
-  }
-  .window > .window-panel {
-    @apply flex-grow relative flex flex-col justify-center max-h-full;
-  }
-  .window > .window-panel > .window-content {
-    @apply sm:rounded-xl sm:ring-8 sm:ring-gray-500/40 overflow-hidden;
-  }
-}
-
-
-@layer components {
-
-  /* horizontal area taking the full width and each child element scroll-snapped to the center */
-  .snap-panels-h {
-    @apply relative;
-    @apply w-full [&>.snap-panel]:max-w-full;
-    @apply h-full [&>.snap-panel]:max-h-full;
-    @apply flex flex-row items-center;
-    @apply snap-mandatory snap-x overflow-x-auto;
-  }
-
-  /* horizontal area taking the full width and each full-height child element scroll-snapped to the center */
-  .snap-panels-h-full {
-    @apply relative;
-    @apply w-full [&>.snap-panel]:w-full;
-    @apply h-full [&>.snap-panel]:h-full;
-    @apply flex flex-row items-center;
-    @apply snap-mandatory snap-x overflow-x-auto;
-  }
-
-  /* vertical area taking the full height and each child element scroll-snapped to the center */
-  .snap-panels-v {
-    @apply relative;
-    @apply w-full [&>.snap-panel]:max-w-full;
-    @apply h-full [&>.snap-panel]:max-h-full;
-    @apply flex flex-col items-center;
-    @apply snap-mandatory snap-y overflow-y-auto;
-  }
-
-  /* vertical area taking the full height and each full-width child element scroll-snapped to the center */
-  .snap-panels-v-full {
-    @apply h-full;
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    grid-auto-rows: 60%;
-    @apply snap-mandatory snap-y overflow-y-auto;
+    grid-template-columns: 1fr;
+    gap: var(--app-item-gap);
   }
 
-  .snap-panel { @apply snap-center shrink-0 overflow-auto relative; }
+  .app-item { @apply snap-center relative p-[--app-item-padding]; }
+
+  .applet { @apply snap-center relative p-[--app-item-padding] h-[--app-item-height] flex flex-col min-w-0; }
+  .applet .applet-controls { @apply flex items-center justify-between m-3 text-default dark:text-invert font-medium; }
+  .applet .applet-content { @apply flex-grow max-h-full; }
+
+  @media (max-width: theme('screens.lg')) and (orientation: landscape) {
+    .app {
+      --nav-height: 0px;
+      --app-item-min-padding: 1rem;
+      --app-item-height: 100svh;
+      /* @formatter:off */
+      --app-item-padding:
+        max(var(--sat), var(--app-item-min-padding))
+        max(var(--sar), var(--app-item-min-padding))
+        max(var(--sab), var(--app-item-min-padding))
+        max(var(--sal), var(--app-item-min-padding));
+      /* @formatter:on */
+    }
+    .app-header { display: none; }
+  }
+
+  .panel { @apply h-full max-h-full flex flex-col justify-center border border-gray-500/40 bg-hero-diagonal-lines-gray-500-40 rounded-xl; }
+  .panel > .panel-content { @apply rounded-xl bg-gray-500/40 ring-8 ring-gray-500/40 overflow-hidden; }
+  .panel > .panel-content > * { @apply border-0; }
+}
+
+/* Larger default shadow */
+@layer components {
+  .shadow { @apply shadow-lg dark:shadow-xl; }
+}
+
+/* Glass-like background (gradient), can be tinted with background color */
+@layer components {
+  .bg-glass {
+    --glass-opacity: 0.25;
+    --glass-opacity-end: max(var(--glass-opacity) - 0.125, 0.0);
+    --glass-gradient-stops: theme('backgroundColor.default / var(--glass-opacity)'), theme('backgroundColor.default / var(--glass-opacity-end)');
+    @apply bg-gradient-to-br p3:bg-gradient-to-br-in-hwb [--tw-gradient-stops:--glass-gradient-stops];
+    @apply backdrop-blur-md;
+  }
+
+  .bg-glass-invert {
+    @apply bg-glass;
+    --glass-gradient-stops: theme('backgroundColor.invert / var(--glass-opacity)'), theme('backgroundColor.invert / var(--glass-opacity-end)');
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .bg-glass {
+      --glass-gradient-stops: theme('backgroundColor.invert / var(--glass-opacity)'), theme('backgroundColor.invert / var(--glass-opacity-end)');
+    }
+    .bg-glass-invert {
+      --glass-gradient-stops: theme('backgroundColor.default / var(--glass-opacity)'), theme('backgroundColor.default / var(--glass-opacity-end)');
+    }
+  }
 }
 
 
 @layer components {
-  /* vertical area taking the full height and each child element scroll-snapped to the center */
-  .snap-v {
-    @apply relative h-full flex flex-col;
-    /* without snapping might only be applied if scrolled close enough to snap point */
-    @apply snap-mandatory snap-y overflow-y-auto;
-    @apply [&>*]:snap-center [&>*]:shrink-0;
-  }
-
-  /* horizontal area taking the full width and each child element scroll-snapped to the center */
-  .snap-h {
-    @apply relative w-full flex;
-    /* without snapping might only be applied if scrolled close enough to snap point */
-    @apply snap-mandatory snap-x overflow-x-auto;
-    @apply [&>*]:snap-center [&>*]:shrink-0;
-  }
-
-  /* snap-v with each child element taking the full width and height */
-  .snap-v-full {@apply snap-v [&>*]:w-full [&>*]:h-full; }
-
-  /* snap-h with each child element taking the full width and height */
-  .snap-h-full { @apply snap-h [&>*]:w-full [&>*]:h-full; }
-
-  .snap-v > *, .snap-h > *, .snap-v-full > *, .snap-h-full > * { @apply snap-normal; }
-}
-
-
-@layer components {
-  /* default shadow of a box */
-  .box-shadow { @apply shadow-lg dark:shadow-xl; }
-
-  /* default light-variant color of a box */
-  .box-color-light { @apply bg-light text-light; }
-
-  /* default dark-variant color of a box */
-  .box-color-dark { @apply bg-dark text-dark; }
-
-  /* default color of a box */
-  .box-color { @apply box-color-light dark:box-color-dark; }
-
-  /* default light-variant background and text color of a glass box */
-  .box-glass-light {
-    @apply backdrop-blur-md;
-    @apply bg-glass-light;
-    @apply text-slate-900;
-    @apply ring-1 ring-slate-900/5;
-  }
-
-  /* default dark-variant background and text color of a glass box */
-  .box-glass-dark {
-    @apply backdrop-blur-md;
-    @apply bg-glass-dark;
-    @apply text-slate-100;
-    @apply ring-1 ring-slate-50/5;
-  }
-
-  /* default background and text color of a glass box */
-  .box-glass { @apply box-glass-light dark:box-glass-dark; }
-
   /* default styling for random content in a box */
   .box-prose {
-    @apply mx-auto;
-    @apply first:mt-0 sm:first:mt-4 mb-4;
-    @apply px-6;
-    @apply py-2;
-    @apply sm:rounded-lg;
-    @apply box-shadow;
-    @apply box-color;
-    @apply prose;
-    @apply prose-slate;
-    @apply sm:prose-sm;
-    @apply lg:prose-lg;
-    @apply xl:prose-xl;
-    @apply dark:prose-invert;
+    @apply mx-auto first:mt-0 sm:first:mt-4 mb-4;
+    @apply px-6 py-2;
+    @apply sm:rounded-lg shadow-lg dark:shadow-xl;
+    @apply bg-default dark:bg-invert;
+    @apply prose dark:prose-invert sm:prose-sm lg:prose-lg xl:prose-xl;
   }
 }
 
 
 @layer components {
-  label {
-    @apply block;
-    @apply text-sm font-medium text-black/75;
-    @apply dark:text-white/75;
-    @apply [&>*]:mt-1;
-  }
-  input[type="text"], input[type="password"] { @apply form-input; }
-  select { @apply form-select; }
-  option:checked {
-    @apply rounded;
-    /*background: linear-gradient(currentColor, currentColor) transparent !important; */
-  }
-  textarea { @apply form-textarea; }
+  label { @apply block font-medium text-black/75 dark:text-white/75 [&>*]:mt-1; }
+  ::placeholder { @apply opacity-50 font-light; }
+  [type="color"] { @apply block rounded-md p-1 w-36 h-10; }
 
-  input[type="text"],
-  input[type="password"],
-  select,
-  textarea {
-    @apply block;
-    @apply w-full;
-    @apply rounded-md bg-gray-100;
-    @apply border-transparent;
+  [type="date"], [type="datetime-local"], [type="month"], [type="time"], [type="week"],
+  [type="email"], [type="tel"],
+  [type="number"], [type="text"], [type="password"],
+  [type="search"], [type="url"],
+  select, textarea, .form-field {
+    @apply w-full rounded-md bg-gray-200 shadow-inner;
     @apply text-gray-700;
-    @apply focus:text-gray-900;
-    @apply focus:border-gray-500 focus:bg-white focus:ring-0;
-    @apply invalid:border-pink-500 invalid:text-pink-600;
-    @apply focus:invalid:border-pink-500 focus:invalid:ring-pink-500;
+    @apply disabled:text-opacity-60 disabled:opacity-60 disabled:cursor-not-allowed;
+    @apply focus:text-gray-900 focus:bg-white focus:ring-2 focus:ring-white focus:ring-offset-0;
+    @apply invalid:text-pink-600 invalid:ring-2 invalid:ring-pink-500;
+    @apply focus:invalid:ring-pink-500 focus:invalid:ring-2 focus:invalid:border-pink-400;
   }
-}
-
-@layer components {
-  /* default styling for a button */
-  .btn {
-    @apply inline-flex items-center gap-x-2;
-    @apply m-1;
-    @apply py-2 px-3;
-    @apply rounded;
-    @apply shadow;
-    @apply box-glass;
-    @apply text;
-    @apply transition;
-    @apply shadow-inner;
-    @apply disabled:shadow-none;
-    @apply disabled:opacity-70;
-    @apply [&:not(:disabled)]:cursor-pointer;
-    @apply [&:not(:disabled)]:hover:shadow-slate-600/50;
-    @apply [&:not(:disabled)]:dark:hover:shadow-slate-800;
-    @apply ring ring-offset-1;
-    @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75;
-  }
-
-  .btn > :first-child { @apply shrink-0; }
-  .btn > :last-child { @apply shrink-0; }
 }
 
 
 @layer utilities {
+  @keyframes bg-x-1\/2 {
+    0% {background-position: 0 50%;}
+    50% {background-position: 50% 50%;}
+    100% {background-position: 0 50%;}
+  }
+
+  .animate-bg-x-1\/2 {
+    background-size: 200% 100%;
+    animation: bg-x-1\/2 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
   .debug { @apply ring-8 ring-fuchsia-500/50 ring-inset ring-offset-0; }
-  .debug > * { @apply ring-1 ring-fuchsia-700/50 ring-inset ring-offset-0; }
+  .debug > * { @apply ring ring-fuchsia-700/50; }
+  .debug > * { @apply ring-1 ring-fuchsia-900/75; }
+  .debug ~ .debug { @apply ring-pink-500/50; }
+  .debug ~ .debug > * { @apply ring-pink-700/50; }
+  .debug ~ .debug > * > * { @apply ring-pink-900/75; }
 }
 
 

@@ -1,17 +1,16 @@
 package com.bkahlert.hello.fritz2.components.navigationbar
 
 import com.bkahlert.hello.fritz2.ContentBuilder
+import com.bkahlert.hello.fritz2.ContentBuilder2
 import com.bkahlert.hello.fritz2.components.assets.Images
-import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
 import com.bkahlert.hello.fritz2.components.heroicons.MiniHeroIcons
 import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
-import com.bkahlert.hello.fritz2.components.heroicons.SolidHeroIcons
 import com.bkahlert.hello.fritz2.components.icon
 import com.bkahlert.hello.fritz2.components.screenReaderOnly
-import com.bkahlert.kommons.uri.DataUri
 import com.bkahlert.kommons.uri.Uri
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.Store
+import dev.fritz2.core.Tag
 import dev.fritz2.core.alt
 import dev.fritz2.core.classes
 import dev.fritz2.core.disabled
@@ -29,81 +28,60 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
-import kotlin.reflect.KProperty1
 
-public interface NavItem {
-    public val content: (RenderContext.(selection: Store<NavItem?>, placement: Placement) -> Unit)?
-    public val collapsedContent: (Menu<HTMLElement>.MenuItems<HTMLDivElement>.(RenderContext, selection: Store<NavItem?>) -> Unit)?
+public interface NavItem<T> {
+    public val content: ContentBuilder2<Element, Store<T?>, Placement>?
+    public val collapsedContent: (Menu<HTMLElement>.MenuItems<HTMLDivElement>.(RenderContext, selection: Store<T?>) -> Unit)?
 }
 
-public fun Flow<NavItem>.asNavItem(): NavItem = object : NavItem {
-    override val content: (RenderContext.(selection: Store<NavItem?>, placement: Placement) -> Unit) = { selection, placement ->
+public fun <T> Flow<NavItem<T>>.asNavItem(): NavItem<T> = object : NavItem<T> {
+    override val content: ContentBuilder2<Element, Store<T?>, Placement> = { selection, placement ->
         render { it.content?.invoke(this, selection, placement) }
     }
-    override val collapsedContent: (Menu<HTMLElement>.MenuItems<HTMLDivElement>.(RenderContext, selection: Store<NavItem?>) -> Unit) =
+    override val collapsedContent: (Menu<HTMLElement>.MenuItems<HTMLDivElement>.(RenderContext, selection: Store<T?>) -> Unit) =
         { renderContext, selection ->
             val menu: Menu<HTMLElement>.MenuItems<HTMLDivElement> = this
             render { it.collapsedContent?.invoke(menu, renderContext, selection) }
         }
 }
 
-public fun Flow<NavItem?>.asNavItem(renderNull: ContentBuilder = {}): NavItem = object : NavItem {
-    override val content: (RenderContext.(selection: Store<NavItem?>, placement: Placement) -> Unit) = { selection, placement ->
+public fun <T> Flow<NavItem<T>?>.asNavItem(renderNull: RenderContext.() -> Unit = {}): NavItem<T> = object : NavItem<T> {
+    override val content: ContentBuilder2<Element, Store<T?>, Placement> = { selection, placement ->
         render { if (it != null) it.content?.invoke(this, selection, placement) else renderNull(this) }
     }
-    override val collapsedContent: (Menu<HTMLElement>.MenuItems<HTMLDivElement>.(RenderContext, selection: Store<NavItem?>) -> Unit) =
+
+    // TODO does not update when items added
+    override val collapsedContent: (Menu<HTMLElement>.MenuItems<HTMLDivElement>.(RenderContext, selection: Store<T?>) -> Unit) =
         { renderContext, selection ->
             val menu: Menu<HTMLElement>.MenuItems<HTMLDivElement> = this
             render { if (it != null) it.collapsedContent?.invoke(menu, renderContext, selection) else renderNull(renderContext) }
         }
 }
 
-public typealias SimpleNavItemGroup = List<SimpleNavItem>
+public typealias SimpleNavItemGroup<T> = List<SimpleNavItem<T>>
 
-public val SimpleNavItem.items: List<NavItem> get() = groups.flatten()
-
-
-public data class SimpleNavItem(
-    val label: String,
-    val description: String? = null,
-    val icon: Uri,
-    val activeIcon: Uri,
-    val disabled: Boolean = false,
-    val groups: List<SimpleNavItemGroup> = emptyList(),
-) : NavItem {
-    public constructor(
-        label: String,
-        description: String?,
-        heroIcon: KProperty1<HeroIcons, DataUri>,
-        vararg groups: SimpleNavItemGroup,
-        disabled: Boolean = false,
-    ) : this(
-        label = label,
-        description = description,
-        icon = heroIcon.get(OutlineHeroIcons),
-        activeIcon = heroIcon.get(SolidHeroIcons),
-        disabled = disabled,
-        groups = groups.asList()
-    )
-
-    public constructor(
-        label: String,
-        heroIcon: KProperty1<HeroIcons, DataUri>,
-        vararg groups: SimpleNavItemGroup,
-        disabled: Boolean = false,
-    ) : this(label, null, heroIcon, *groups, disabled = disabled)
+public abstract class SimpleNavItem<T>(
+    public val value: T,
+) : NavItem<T> {
+    public abstract val label: String
+    public open val description: String? get() = null
+    public abstract val icon: Uri
+    public open val activeIcon: Uri get() = icon
+    public open val disabled: Boolean = false
+    public open val groups: List<SimpleNavItemGroup<T>> get() = emptyList()
 
     private fun selected(
-        selection: Store<NavItem?>,
+        selection: Store<T?>,
         includeChildren: Boolean = true,
     ): Flow<Boolean> = selection.data.map {
         it == this || (includeChildren && groups.any { g -> g.any { i -> it == i } })
     }
 
-    override val content: RenderContext.(selection: Store<NavItem?>, placement: Placement) -> Unit = { selection, placement ->
-        if (items.isEmpty()) div("relative inline-block text-left") {
+    override val content: ContentBuilder2<Element, Store<T?>, Placement> = { selection, placement ->
+        if (groups.flatten().isEmpty()) div("relative inline-block text-left") {
             val opened = flowOf(false)
             button(
                 classes(
@@ -112,7 +90,7 @@ public data class SimpleNavItem(
                     "px-4 py-2",
                     "text-left",
                     "font-medium text-white",
-                    "hover:box-glass",
+                    "hover:bg-glass hover:text-default dark:hover:text-invert",
                     "focus:outline-none focus-visible:ring focus-visible:ring-white focus-visible:ring-opacity-75"
                 )
             ) {
@@ -120,7 +98,7 @@ public data class SimpleNavItem(
                 val d = disabled
                 className(opened.combine(selected(selection)) { o, s ->
                     if (s) "bg-slate-800/75 ring ring-1 ring-inset ring-slate-800 text-white cursor-default"
-                    else if (o && !d) "box-glass"
+                    else if (o && !d) "bg-glass text-default dark:text-invert"
                     else if (d) "opacity-50 cursor-default" else ""
                 })
                 opened.render { a ->
@@ -128,7 +106,7 @@ public data class SimpleNavItem(
                 }
                 +label
                 if (disabled) disabled(true)
-                clicks.map { this@SimpleNavItem } handledBy selection.update
+                clicks.map { this@SimpleNavItem.value } handledBy selection.update
             }
         } else menu("relative inline-block text-left") {
             div {
@@ -139,14 +117,14 @@ public data class SimpleNavItem(
                         "px-4 py-2",
                         "text-left",
                         "font-medium text-white",
-                        "hover:box-glass",
+                        "hover:bg-glass hover:text-default dark:hover:text-invert",
                         "focus:outline-none focus-visible:ring focus-visible:ring-white focus-visible:ring-opacity-75"
                     )
                 ) {
                     val d = disabled
                     className(opened.combine(selected(selection)) { o, s ->
                         if (s) "bg-slate-800/75 ring ring-1 ring-inset ring-slate-800 text-white cursor-default"
-                        else if (o && !d) "box-glass"
+                        else if (o && !d) "bg-glass text-default dark:text-invert"
                         else if (d) "opacity-50 cursor-default" else ""
                     })
                     opened.render { a ->
@@ -177,7 +155,7 @@ public data class SimpleNavItem(
                     "w-56",
                     "divide-y divide-slate-500/50 dark:divide-slate-400/50",
                     "rounded-md",
-                    "box-shadow box-glass",
+                    "shadow-lg dark:shadow-xl bg-glass text-default dark:text-invert",
                     "focus:outline-none",
                 )
             ) {
@@ -211,7 +189,7 @@ public data class SimpleNavItem(
                                 val s = item.selected(selection)
                                 className(active.combine(disabled.combine(s, Boolean::to)) { a, (d, s) ->
                                     if (s) "bg-slate-800/75 ring ring-1 ring-inset ring-slate-800 text-white cursor-default"
-                                    else if (a && !d) "box-glass"
+                                    else if (a && !d) "bg-glass text-default dark:text-invert"
                                     else if (d) "opacity-50 cursor-default" else ""
                                 })
                                 active.combine(s, Boolean::or).render { a ->
@@ -219,7 +197,7 @@ public data class SimpleNavItem(
                                 }
                                 +item.label
                                 if (item.disabled) disable(true)
-                                selected.map { item } handledBy selection.update
+                                selected.map { item.value } handledBy selection.update
                             }
                         }
                     }
@@ -228,7 +206,7 @@ public data class SimpleNavItem(
         }
     }
 
-    override val collapsedContent: Menu<HTMLElement>.MenuItems<HTMLDivElement>.(RenderContext, Store<NavItem?>) -> Unit = { renderContext, selection ->
+    override val collapsedContent: Menu<HTMLElement>.MenuItems<HTMLDivElement>.(RenderContext, Store<T?>) -> Unit = { renderContext, selection ->
         renderContext.menuItem(
             classes(
                 "group",
@@ -242,7 +220,7 @@ public data class SimpleNavItem(
             val s = selected(selection, false)
             className(active.combine(disabled.combine(s, Boolean::to)) { a, (d, s) ->
                 if (s) "bg-slate-800/75 ring ring-1 ring-inset ring-slate-800 text-white cursor-default"
-                else if (a && !d) "box-glass"
+                else if (a && !d) "bg-glass text-default dark:text-invert"
                 else if (d) "opacity-50 cursor-default" else ""
             })
             active.combine(s, Boolean::or).render { a ->
@@ -250,11 +228,11 @@ public data class SimpleNavItem(
             }
             +label
             if (this@SimpleNavItem.disabled) disable(true)
-            selected.map { this@SimpleNavItem } handledBy selection.update
+            selected.map { this@SimpleNavItem.value } handledBy selection.update
         }
 
         div("ml-2 px-1 py-1") {
-            items.forEach { item ->
+            groups.flatten().forEach { item ->
                 menuItem(
                     classes(
                         "group",
@@ -268,7 +246,7 @@ public data class SimpleNavItem(
                     val s = selected(selection, false)
                     className(active.combine(disabled.combine(s, Boolean::to)) { a, (d, s) ->
                         if (s) "bg-slate-800/75 ring ring-1 ring-inset ring-slate-800 text-white cursor-default"
-                        else if (a && !d) "box-glass"
+                        else if (a && !d) "bg-glass text-default dark:text-invert"
                         else if (d) "opacity-50 cursor-default" else ""
                     })
                     active.combine(s, Boolean::or).render { a ->
@@ -276,32 +254,26 @@ public data class SimpleNavItem(
                     }
                     +label
                     if (this@SimpleNavItem.disabled) disable(true)
-                    selected.map { item } handledBy selection.update
+                    selected.map { item.value } handledBy selection.update
                 }
             }
         }
     }
 }
 
-public fun RenderContext.navigationBar(
+public fun <T> RenderContext.navigationBar(
     classes: String?,
-    navItems: List<NavItem?>,
-    selection: Store<NavItem?>,
-    startContent: ContentBuilder? = {
+    navItems: List<NavItem<T>?>,
+    selection: Store<T?>,
+    startContent: ContentBuilder<HTMLDivElement>? = {
         div("flex flex-shrink-0 items-center") {
-            // < lg: logo
-            img("shrink-0 block h-8 w-auto lg:hidden") {
-                src(Images.HelloFavicon.toString())
-                alt("Hello!")
-            }
-            // >= lg: logo
-            img("shrink-0 hidden h-8 w-auto lg:block") {
+            img("shrink-0 h-8 w-auto") {
                 src(Images.HelloFavicon.toString())
                 alt("Hello!")
             }
         }
     },
-    endContent: ContentBuilder? = null,
+    endContent: ContentBuilder<HTMLDivElement>? = null,
 ) {
 
     menu(classes, tag = RenderContext::nav) {
@@ -312,7 +284,7 @@ public fun RenderContext.navigationBar(
             )
         ) {
             // backdrop next to content to avoid cascaded effects (that don't work in all browsers)
-            div(classes("absolute inset-0", "box-shadow box-glass")) {}
+            div(classes("absolute inset-0", "shadow-lg dark:shadow-xl bg-glass text-default dark:text-invert")) {}
 
             div("relative flex h-16 items-center justify-between") {
                 // < sm: mobile menu button / hamburger menu
@@ -320,7 +292,7 @@ public fun RenderContext.navigationBar(
                     menuButton(
                         classes(
                             "inline-flex items-center justify-center rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white",
-                            "hover:box-glass",
+                            "hover:bg-glass hover:text-default dark:hover:text-invert",
                         )
                     ) {
                         screenReaderOnly { +"Open main menu" }
@@ -352,7 +324,7 @@ public fun RenderContext.navigationBar(
         menuItems(
             classes(
                 "sm:hidden",
-                "box-shadow box-glass",
+                "shadow-lg dark:shadow-xl bg-glass text-default dark:text-invert",
                 "max-h-[calc(100vh-4rem)] overflow-y-auto",
                 "focus:outline-none",
             )
@@ -380,16 +352,25 @@ public fun RenderContext.navigationBar(
     }
 }
 
-public fun RenderContext.navigationBar(
-    navItems: List<NavItem?>,
-    selection: Store<NavItem?>,
-    endContent: ContentBuilder? = null,
+public fun <T> RenderContext.navigationBar(
+    navItems: List<NavItem<T>?>,
+    selection: Store<T?>,
+    endContent: ContentBuilder<HTMLDivElement>? = null,
 ): Unit = navigationBar(null, navItems, selection, endContent)
 
-public fun RenderContext.navItem(
-    navItem: NavItem,
-    selection: Store<NavItem?>,
+public fun <T> Tag<Element>.navItem(
+    navItem: NavItem<T>,
+    selection: Store<T?>,
     placement: Placement = auto,
 ) {
     navItem.content?.invoke(this, selection, placement)
+}
+
+public fun <T> Tag<Element>.navItem(
+    item: T,
+    selection: Store<T?>,
+    placement: Placement = auto,
+    transform: (T) -> NavItem<T>,
+) {
+    navItem(transform(item), selection, placement)
 }

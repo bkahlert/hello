@@ -21,4 +21,8 @@ dependencies {
         api("dev.fritz2:core:$fritz2Version")
         api("dev.fritz2:headless:$fritz2Version")
     }
+
+    constraints {
+        api("net.pearx.kasechange:kasechange:1.4.1")
+    }
 }

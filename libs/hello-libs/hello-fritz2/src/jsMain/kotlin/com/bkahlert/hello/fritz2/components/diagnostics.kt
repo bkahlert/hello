@@ -7,10 +7,11 @@ import dev.fritz2.core.Window
 import dev.fritz2.core.storeOf
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import org.w3c.dom.HTMLDivElement
 
 public fun RenderContext.diagnostics(
     enabled: Store<Boolean> = storeOf(false),
-    content: ContentBuilder? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
 ) {
 
     Window.keydowns

@@ -42,7 +42,7 @@ import org.w3c.dom.events.EventListener
 private val clickUpMenu by lazy {
     document.head().appendStyle(FontStyles)
     ClickUpComponent.register("clickup-menu-v2", "props", "css")
-    custom<HTMLDivElement>("clickup-menu-v2")
+    custom<Tag<HTMLDivElement>>("clickup-menu-v2")
 }
 
 public fun RenderContext.clickUpMenu(

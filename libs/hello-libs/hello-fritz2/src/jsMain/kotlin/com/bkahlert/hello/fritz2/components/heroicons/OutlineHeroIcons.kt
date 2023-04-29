@@ -2,7 +2,6 @@ package com.bkahlert.hello.fritz2.components.heroicons
 
 import com.bkahlert.kommons.uri.DataUri
 import io.ktor.http.ContentType.Image
-import kotlin.reflect.KProperty
 
 /**
  * Outline icon definitions from the fantastic [heroicons](https://heroicons.com),
@@ -15,11 +14,9 @@ import kotlin.reflect.KProperty
  * @see <a href="https://github.com/tailwindlabs/heroicons/blob/master/LICENSE">License</a>
  */
 @Suppress("LongLine")
-public object OutlineHeroIcons : HeroIcons {
-
-    private operator fun String.provideDelegate(thisRef: Any?, property: KProperty<*>): Lazy<DataUri> = lazy {
-        DataUri(Image.SVG, """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">$this</svg>""")
-    }
+public object OutlineHeroIcons : HeroIcons, LazyNamedEntriesList<String, DataUri>({ _, _, content ->
+    DataUri(Image.SVG, """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">$content</svg>""")
+}) {
 
     // @formatter:off
     /** [Academic Cap](https://raw.githubusercontent.com/tailwindlabs/heroicons/v2.0.16/src/24/outline/academic-cap.svg) */

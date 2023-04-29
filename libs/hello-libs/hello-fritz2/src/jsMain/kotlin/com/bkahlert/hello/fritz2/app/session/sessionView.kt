@@ -2,9 +2,9 @@
 
 package com.bkahlert.hello.fritz2.app.session
 
+import com.bkahlert.hello.fritz2.components.button
 import com.bkahlert.hello.fritz2.components.dataView
 import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
-import com.bkahlert.hello.fritz2.components.icon
 import com.bkahlert.kommons.auth.Session.AuthorizedSession
 import com.bkahlert.kommons.auth.Session.UnauthorizedSession
 import dev.fritz2.core.RenderContext
@@ -31,29 +31,17 @@ public fun RenderContext.sessionView(
             store.data.render { session ->
                 when (session) {
                     is UnauthorizedSession -> {
-                        button("btn contrast-150 hue-rotate-90") {
-                            icon("w-4 h-4", OutlineHeroIcons.arrow_path)
-                            +"Re-authorize"
-                            clicks.map { false } handledBy store.reauthorize
-                        }
-                        button("btn contrast-150 hue-rotate-90") {
-                            icon("w-4 h-4", OutlineHeroIcons.arrow_right_on_rectangle)
-                            +"Authorize"
-                            clicks handledBy store.authorize
-                        }
+                        button(OutlineHeroIcons.arrow_path, "Re-authorize", simple = true)
+                            .clicks.map { false } handledBy store.reauthorize
+                        button(OutlineHeroIcons.arrow_right_on_rectangle, "Authorize", simple = true)
+                            .clicks handledBy store.authorize
                     }
 
                     is AuthorizedSession -> {
-                        button("btn contrast-150 hue-rotate-90") {
-                            icon("w-4 h-4", OutlineHeroIcons.arrow_path)
-                            +"Refresh"
-                            clicks.map { false } handledBy store.reauthorize
-                        }
-                        button("btn contrast-150 hue-rotate-90") {
-                            icon("w-4 h-4", OutlineHeroIcons.arrow_left_on_rectangle)
-                            +"Un-authorize"
-                            clicks handledBy store.unauthorize
-                        }
+                        button(OutlineHeroIcons.arrow_path, "Refresh", simple = true)
+                            .clicks.map { false } handledBy store.reauthorize
+                        button(OutlineHeroIcons.arrow_left_on_rectangle, "Un-authorize", simple = true)
+                            .clicks handledBy store.unauthorize
                     }
                 }
             }

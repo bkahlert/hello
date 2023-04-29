@@ -7,9 +7,10 @@ import dev.fritz2.core.RenderContext
 import dev.fritz2.core.href
 import dev.fritz2.core.transition
 import dev.fritz2.headless.components.disclosure
+import org.w3c.dom.HTMLDivElement
 
 fun RenderContext.disclosureDemo() {
-    val faqs = listOf<Pair<String, ContentBuilder>>(
+    val faqs = listOf<Pair<String, ContentBuilder<HTMLDivElement>>>(
         "What's the best thing about fritz2?" to {
             p {
                 +"""We are strongly biased - there are so many things you can name. One outstanding aspect for us is

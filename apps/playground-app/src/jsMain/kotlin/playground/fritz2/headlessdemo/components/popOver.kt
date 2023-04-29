@@ -10,24 +10,22 @@ import dev.fritz2.core.transition
 import dev.fritz2.headless.components.popOver
 import dev.fritz2.headless.foundation.utils.popper.Placement
 import kotlinx.coroutines.flow.map
+import org.w3c.dom.HTMLDivElement
 
 
 fun RenderContext.popOverDemo() {
-    data class Solution(val name: String, val description: String, val icon: ContentBuilder)
+    data class Solution(val name: String, val description: String, val icon: ContentBuilder<HTMLDivElement>)
 
     val solutions = listOf(
         Solution(
-            "fritz2", "Cool web framework for building modern SPAs",
-            { icon("w-10 h-10 text-primary-800", fritz2) }
-        ),
+            "fritz2", "Cool web framework for building modern SPAs"
+        ) { icon("w-10 h-10 text-primary-800", fritz2) },
         Solution(
-            "Headless", "Create fully functional and customized components",
-            { icon("w-10 h-10 text-primary-800", SolidHeroIcons.academic_cap) }
-        ),
+            "Headless", "Create fully functional and customized components"
+        ) { icon("w-10 h-10 text-primary-800", SolidHeroIcons.academic_cap) },
         Solution(
-            "Tailwind", "Nice CSS framework for styling your application",
-            { icon("w-10 h-10 text-primary-800", SolidHeroIcons.swatch) }
-        )
+            "Tailwind", "Nice CSS framework for styling your application"
+        ) { icon("w-10 h-10 text-primary-800", SolidHeroIcons.swatch) }
     )
 
     popOver(id = "popOver") {
@@ -72,7 +70,7 @@ fun RenderContext.popOverDemo() {
                         | hover:bg-primary-200
                         | focus:outline-none focus:ring-4 focus:ring-primary-600""".trimMargin()
                     ) {
-                        attr("key", "{$item.name}")
+                        attr("key", item.name)
                         attr("tabindex", "0")
                         div(
                             """flex items-center justify-center flex-shrink-0 w-10 h-10 sm:h-12 sm:w-12 p-1

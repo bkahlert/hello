@@ -28,7 +28,7 @@ public fun RenderContext.loremIpsumParagraph(
 }
 
 public fun RenderContext.placeholder(baseClass: String? = null) {
-    div(classes("bg-hero-diagonal-stripes-magenta w-full h-24 lg:32", baseClass)) {}
+    div(classes("bg-hero-diagonal-stripes-swatch-magenta w-full h-24 lg:32", baseClass)) {}
 }
 
 public fun RenderContext.placeholderImageAndLines(baseClass: String? = null) {

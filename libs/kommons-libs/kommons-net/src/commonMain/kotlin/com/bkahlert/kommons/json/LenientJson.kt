@@ -12,7 +12,6 @@ public val LenientJson: Json by lazy {
 }
 
 /** Pretty-printing [Json] instance with [lenientBuilderAction] applied to it. */
-@Suppress("UnusedReceiverParameter")
 public val LenientAndPrettyJson: Json by lazy {
     Json {
         lenientBuilderAction()

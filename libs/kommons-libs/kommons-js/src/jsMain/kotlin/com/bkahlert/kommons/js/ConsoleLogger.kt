@@ -1,5 +1,6 @@
 package com.bkahlert.kommons.js
 
+import kotlinx.browser.localStorage
 import kotlin.reflect.KCallable
 import kotlin.reflect.KProperty
 
@@ -7,56 +8,65 @@ import kotlin.reflect.KProperty
  * Browser optimized logger that is completely implemented with inline functions.
  * This lets browsers correctly display the use-site.
  */
-@Suppress("NOTHING_TO_INLINE")
 public class ConsoleLogger(
     /** The name of this logger. */
     public val name: String,
 ) {
+    init {
+        if (localStorage.getItem("debug") == null) {
+            localStorage.setItem("debug", "hello:*")
+        }
+    }
+
+    private val namespace = name.replace('.', ':')
+
+    private inner class DebuggerDelegate(outputStream: dynamic) {
+        val debug = com.bkahlert.kommons.js.debug(namespace)
+
+        init {
+            debug.log = outputStream
+        }
+
+        operator fun invoke(vararg args: Any?) {
+            debug.apply(this@ConsoleLogger, args)
+        }
+    }
+
+    private val consoleErrorUsingDebug = DebuggerDelegate(consoleErrorFn)
+    private val consoleWarnUsingDebug = DebuggerDelegate(consoleWarnFn)
+    private val consoleInfoUsingDebug = DebuggerDelegate(consoleInfo)
+    private val consoleDebugUsingDebug = DebuggerDelegate(consoleDebug)
 
     /** Logs an error with the specified [args]. */
-    public inline fun error(vararg args: Any?) {
-        console.error("%c$name", NAME_STYLES, *args)
+    public fun error(vararg args: Any?) {
+        consoleErrorUsingDebug(*args)
     }
 
     /** Logs a warning with the specified [args]. */
-    public inline fun warn(vararg args: Any?) {
-        console.warn("%c$name", NAME_STYLES, *args)
+    public fun warn(vararg args: Any?) {
+        consoleWarnUsingDebug(*args)
     }
 
     /** Logs the specified info [args]. */
-    public inline fun info(vararg args: Any?) {
-        console.info("%c$name", NAME_STYLES, *args)
+    public fun info(vararg args: Any?) {
+        consoleInfoUsingDebug(*args)
     }
 
     /** Logs the specified debug [args]. */
-    public inline fun debug(vararg args: Any?) {
-        console.debug("%c$name", DEBUG_NAME_STYLES, *args)
+    public fun debug(vararg args: Any?) {
+        consoleDebugUsingDebug(*args)
     }
 
     /** Logs the specified trace [args]. */
-    public inline fun trace(vararg args: Any?) {
-        console.debug("%c$name", TRACE_NAME_STYLES, *args) // console.trace has a different meaning
+    public fun trace(vararg args: Any?) {
+        consoleDebugUsingDebug(*args) // console.trace has a different meaning
     }
 
     public companion object {
-        private const val HELLO_BLUE_FILL: String = "#29aae2"
-        private const val BASE: String = "" +
-            "display: inline-block;" +
-            "border-radius: 4px;" +
-            "padding: 0.1em;" +
-            "margin-right: 0.15em;" +
-            "text-shadow: 0 0 0.5px #ffffff99;" +
-            ""
-        public const val NAME_STYLES: String = BASE +
-            "background-color: $HELLO_BLUE_FILL;" +
-            "color: black;" +
-            ""
-        public const val DEBUG_NAME_STYLES: String = BASE +
-            "background-color: ${HELLO_BLUE_FILL}99;" +
-            ""
-        public const val TRACE_NAME_STYLES: String = BASE +
-            "border: 1px solid $HELLO_BLUE_FILL;" +
-            ""
+        private val consoleErrorFn: dynamic = js("console.error.bind(console)")
+        private val consoleWarnFn: dynamic = js("console.warn.bind(console)")
+        private val consoleInfo: dynamic = js("console.info.bind(console)")
+        private val consoleDebug: dynamic = js("console.debug.bind(console)")
     }
 }
 
@@ -88,19 +98,6 @@ public inline fun <R> ConsoleLogger.grouping(
     collapsed = collapsed,
     block = block
 )
-
-// @formatter:off
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, R> ConsoleLogger.grouping(operation: KCallable<P1, R>, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type = P1::class, operation=operation.name, args = emptyArray(), collapsed = collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, R> ConsoleLogger.grouping(operation: KCallable<P1, P2, R>, p2: P2, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2), collapsed=collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, R> ConsoleLogger.grouping(operation: KCallable<P1, P2, P3, R>, p2: P2, p3: P3, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3), collapsed=collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, R> ConsoleLogger.grouping(operation: KCallable<P1, P2, P3, P4, R>, p2: P2, p3: P3, p4: P4, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4), collapsed=collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, P5, R> ConsoleLogger.grouping(operation: KCallable<P1, P2, P3, P4, P5, R>, p2: P2, p3: P3, p4: P4, p5: P5, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4, p5), collapsed=collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, R> ConsoleLogger.grouping(operation: KCallable<P1, R>, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = emptyArray(), collapsed=collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, R> ConsoleLogger.grouping(operation: KCallable<P1, P2, R>, p2: P2, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2), collapsed=collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, R> ConsoleLogger.grouping(operation: KCallable<P1, P2, P3, R>, p2: P2, p3: P3, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3), collapsed=collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, R> ConsoleLogger.grouping(operation: KCallable<P1, P2, P3, P4, R>, p2: P2, p3: P3, p4: P4, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4), collapsed=collapsed, block=block)
-///** Runs the specified [block] wrapped by an optionally [collapsed] group with the specified [operation] as its label. */ @Suppress("LongLine") public inline fun <reified P1, P2, P3, P4, P5, R> ConsoleLogger.grouping(operation: KCallable<P1, P2, P3, P4, P5, R>, p2: P2, p3: P3, p4: P4, p5: P5, collapsed: Boolean = DEFAULT_COLLAPSED, block: () -> R): R = grouping(type=P1::class, operation=operation.name, args = arrayOf(p2, p3, p4, p5), collapsed=collapsed, block=block)
-// @formatter:on
 
 /**
  * Displays the specified [data] as a table

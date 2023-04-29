@@ -9,6 +9,18 @@ import org.w3c.dom.ElementCreationOptions
 import org.w3c.dom.HTMLDivElement
 
 /**
+ * A number in the range [0..1], that describes what percentage of the element's scroll height can be displayed.
+ * A value of `1` signifies that no vertical scrolling is needed.
+ */
+public val Element.verticalScrollCoverageRatio: Double
+    get() = (clientHeight / scrollHeight.toDouble()).coerceIn(0.0, 1.0)
+
+/** A number in the range [0..1], that describes to what percentage the element is scrolled to the bottom. */
+public val Element.verticalScrollProgress: Double
+    get() = (scrollTop / (scrollHeight - clientHeight).toDouble()).coerceIn(0.0, 1.0)
+
+
+/**
  * [data] gets arbitrary `data` attribute of the Element.
  */
 public fun Element.data(dataAttr: String): String? = getAttribute("data-$dataAttr")
@@ -47,7 +59,7 @@ public inline fun <reified T : Element> Element.appendTypedElement(
     options: ElementCreationOptions? = null,
     block: T.() -> Unit = {},
 ): T {
-    val document: Document = requireNotNull(ownerDocument) { "Missing owner document of $this" }
+    val document: Document = requiredOwnerDocument
     val createdElement: T = if (options != null) {
         document.createElement(localName, options) as T
     } else {

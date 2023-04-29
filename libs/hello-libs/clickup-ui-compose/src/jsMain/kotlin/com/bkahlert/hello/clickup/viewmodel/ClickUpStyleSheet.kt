@@ -28,7 +28,7 @@ public object ClickUpStyleSheet : StyleSheet() {
         Image.SVG,
         //language=SVG
         """
-            <svg xmlns="http://www.w3.org/2000/svg" role="img" cursor="default" width="$size" height="$size">
+            <svg xmlns="http://www.w3.org/2000/svg" width="$size" height="$size">
                 <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#ffffff"/>
             </svg>
         """.trimIndent()

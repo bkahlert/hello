@@ -13,11 +13,12 @@ import dev.fritz2.core.type
 import dev.fritz2.headless.components.modal
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import org.w3c.dom.HTMLDivElement
 
 public fun RenderContext.slideOver(
     store: Store<Boolean>,
     name: String? = null,
-    content: ContentBuilder? = null,
+    content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     modal {
         openState(store)

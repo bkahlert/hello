@@ -9,6 +9,7 @@ import dev.fritz2.core.RenderContext
 import dev.fritz2.core.Store
 import dev.fritz2.core.type
 import kotlinx.coroutines.flow.map
+import org.w3c.dom.HTMLDivElement
 import playground.fritz2.headlessdemo.components.checkboxGroupDemo
 import playground.fritz2.headlessdemo.components.collectionDemo
 import playground.fritz2.headlessdemo.components.disclosureDemo
@@ -26,13 +27,13 @@ import playground.fritz2.headlessdemo.components.tooltipDemo
 import playground.fritz2.headlessdemo.foundation.testTrapFocus
 
 sealed interface Page {
-    val content: ContentBuilder
+    val content: ContentBuilder<HTMLDivElement>
 }
 
-data class DemoPage(val title: String, val description: String, val icon: Uri, override val content: ContentBuilder) :
+data class DemoPage(val title: String, val description: String, val icon: Uri, override val content: ContentBuilder<HTMLDivElement>) :
     Page
 
-data class TestDrive(override val content: ContentBuilder) : Page
+data class TestDrive(override val content: ContentBuilder<HTMLDivElement>) : Page
 
 val pages: Map<String, Page> = mapOf(
     "checkboxGroup" to DemoPage(

@@ -13,6 +13,7 @@ kotlin {
             dependencies {
                 implementation(kotlinWrapper("extensions"))
                 implementation(kotlinWrapper("js"))
+                implementation(npm("debug", "^4.3.4"))
             }
         }
     }
