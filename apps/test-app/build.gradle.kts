@@ -1,6 +1,6 @@
 plugins {
     id("com.bkahlert.kotlin-js-browser-application")
-    id("com.bkahlert.compose-for-web-project")
+    id("com.bkahlert.fritz2-project")
 }
 
 group = "$group.test-app"

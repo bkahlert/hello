@@ -11,10 +11,10 @@ kotlin {
     sourceSets {
         jsMain {
             dependencies {
+                implementation("com.bkahlert.kommons:kommons-color")
                 implementation("com.bkahlert.kommons:kommons-net")
                 implementation("com.bkahlert.hello:hello-fritz2")
                 implementation(npm("encrypt-storage", "^2.12")) { because("localStorage encryption for offline props copy") }
-                implementation("com.bkahlert.hello:clickup")
 
                 implementation(npm("socket.io-client", "^4.6.1")) { because("ws-ssh") }
                 implementation(npm("xterm", "^5.1.0")) { because("ws-ssh") }

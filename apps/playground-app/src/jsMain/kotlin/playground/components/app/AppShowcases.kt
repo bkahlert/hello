@@ -17,26 +17,16 @@ public val AppShowcases: SimplePage = SimplePage(
     heroIcon = HeroIcons::window,
 ) {
     showcases("App") {
-        showcase("Without ClickUp API Token") {
-            clickUpApp(
+        showcase("Fake Session") {
+            app(
                 AppStore(
                     sessionResolver = { _ -> { FakeSession.Authorized() } },
                     propsProvider = { _, _ -> StoragePropsDataSource.InMemoryPropsDataSource() }
                 )
             )
         }
-//        showcase("With ClickUp API Token") {
-//            clickUpApp(
-//                AppStore(
-//                    sessionResolver = { _ -> { FakeSession.Authorized() } },
-//                    propsProvider = { _, _ ->
-//                        InMemoryPropsDataSource("clickup" to buildJsonObject { put("api-token", JsonPrimitive("pk_123_abc")) })
-//                    }
-//                )
-//            )
-//        }
         showcase("Actual") {
-            clickUpApp(AppStore())
+            app(AppStore())
         }
     }
 }

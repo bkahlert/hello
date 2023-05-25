@@ -10,18 +10,17 @@ javaPlatform.allowDependencies()
 dependencies {
 
     // AWS CDK
-    api(platform("software.amazon.awssdk:bom:2.19.4"))
     constraints {
-        api("software.amazon.awscdk:aws-cdk-lib:2.56.1")
-        api("software.constructs:constructs:10.1.200")
+        api("software.amazon.awscdk:aws-cdk-lib:2.80.0")
+        api("software.constructs:constructs:10.2.31")
     }
 
     // AWS SDK for Java (BOM)
-    api(platform("software.amazon.awssdk:bom:2.19.4"))
+    api(platform("software.amazon.awssdk:bom:2.20.69"))
 
     // AWS SDK for Kotlin (BOM version does not exist)
     constraints {
-        val awsSdkKotlinVersion = "0.19.2-beta"
+        val awsSdkKotlinVersion = "0.25.0-beta"
         api("aws.sdk.kotlin:dynamodb:$awsSdkKotlinVersion")
         api("aws.sdk.kotlin:lambda:$awsSdkKotlinVersion")
         api("aws.sdk.kotlin:s3:$awsSdkKotlinVersion")

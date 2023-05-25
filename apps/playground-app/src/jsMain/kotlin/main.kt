@@ -1,4 +1,3 @@
-import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
 import com.bkahlert.hello.fritz2.app.AppStore
 import com.bkahlert.hello.fritz2.app.env.EnvironmentShowcases
 import com.bkahlert.hello.fritz2.app.env.environmentView
@@ -16,6 +15,7 @@ import com.bkahlert.hello.fritz2.app.user.userDropdown
 import com.bkahlert.hello.fritz2.components.PageRouter
 import com.bkahlert.hello.fritz2.components.ParentPage
 import com.bkahlert.hello.fritz2.components.SimplePage
+import com.bkahlert.hello.fritz2.components.assets.Images
 import com.bkahlert.hello.fritz2.components.button
 import com.bkahlert.hello.fritz2.components.diagnostics
 import com.bkahlert.hello.fritz2.components.headlessui.HeadlessUiShowcases
@@ -56,7 +56,7 @@ fun main() {
             id = "hello",
             name = "Hello!",
             description = "Hello! app showcases",
-            icon = ImageFixtures.HelloFavicon,
+            icon = Images.HelloFavicon,
             pages = listOf(
                 HeadlessUiShowcases,
                 EnvironmentShowcases,

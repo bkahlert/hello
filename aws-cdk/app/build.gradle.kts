@@ -32,7 +32,6 @@ val cdkTasks = listOf(
 
 val stacks = mapOf(
     "All" to "--all",
-    "ClickUp" to "ClickUp",
     "UserInfo" to "UserInfo",
     "UserProps" to "UserProps",
     "SiteEnvironment" to "SiteEnvironment",

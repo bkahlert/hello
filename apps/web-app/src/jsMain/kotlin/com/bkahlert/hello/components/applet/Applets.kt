@@ -22,16 +22,17 @@ import com.bkahlert.hello.scrollSmoothlyIntoView
 import com.bkahlert.hello.scrollSmoothlyTo
 import com.bkahlert.kommons.dom.checkedOwnerDocument
 import com.bkahlert.kommons.js.ConsoleLogger
-import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.uri.Uri
 import com.bkahlert.kommons.uri.toUri
 import dev.fritz2.core.Handler
 import dev.fritz2.core.HtmlTag
+import dev.fritz2.core.RenderContext
 import dev.fritz2.core.Tag
 import dev.fritz2.core.classes
 import dev.fritz2.core.disabled
 import dev.fritz2.core.lensForElement
 import dev.fritz2.core.lensOf
+import dev.fritz2.core.storeOf
 import dev.fritz2.core.title
 import dev.fritz2.core.type
 import dev.fritz2.headless.components.dataCollection
@@ -51,11 +52,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.put
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
@@ -130,18 +126,18 @@ class Applets(
     }
 
     val duplicate: Handler<Applet> = handle { applets, applet ->
-        val jsonElement = LenientJson.encodeToJsonElement(applet)
-        val jsonObject: JsonObject = jsonElement as? JsonObject ?: error("Applet unexpectedly not encoded to JsonObject but to $jsonElement")
-        val duplicate: Applet = LenientJson.decodeFromJsonElement(buildJsonObject {
-            put(Applet::id.name, randomId())
-            put(Applet::title.name, "Copy of ${applet.title}")
-            jsonObject
-                .filterKeys { it != Applet::id.name && it != Applet::title.name }
-                .forEach { (key, value) -> put(key, value) }
-        })
-        applets.flatMap { if (it.id == applet.id) listOf(applet, duplicate) else listOf(it) }.also {
-            router.navTo(AppletRoute.Current(duplicate, true))
-        }
+        val duplicate: Applet = registration.require(applet).duplicate(randomId(), applet)
+        applets.flatMap { if (it.id == applet.id) listOf(applet, duplicate) else listOf(it) }
+            .also { router.navTo(AppletRoute.Current(duplicate, true)) }
+            .also { logger.info("${applet.title()} duplicated") }
+    }
+
+    val reloading = storeOf<Set<Applet>>(emptySet())
+    val reload: Handler<Applet> = handle { applets, applet ->
+        reloading.update(reloading.current + applet)
+        delay(.5.seconds)
+        reloading.update(reloading.current - applet)
+        applets
     }
 
     val replace: Handler<Applet> = handle { applets, applet ->
@@ -160,15 +156,17 @@ class Applets(
             if (index + 1 in applets.indices) applets[index + 1]
             else applets.getOrNull(index - 1)
         }
-        applets.filter { it.id != applet.id }.also { scrollTo?.also { selected.update(applet) } }
+        applets.filter { it.id != applet.id }
+            .also { scrollTo?.also { selected.update(applet) } }
+            .also { logger.info("${applet.title()} deleted") }
     }
 
     private fun Applet.title() = title.takeUnless { it.isNullOrBlank() }
-        ?: registration.findByInstance(this)?.title?.let { "$it: $id" }
+        ?: registration.find(this)?.title?.let { "$it: $id" }
         ?: id
 
     private fun Applet.icon() = icon
-        ?: registration.findByInstance(this)?.icon
+        ?: registration.find(this)?.icon
         ?: SolidHeroIcons.question_mark_circle
 
     fun render(renderContext: Tag<Element>) {
@@ -194,6 +192,7 @@ class Applets(
                     ) {
                         // Conflated so that not edited applets don't re-render when an applet is edited.
                         val editing = editedApplet.map { it?.id == applet.id }.distinctUntilChanged()
+                        val reloading = reloading.data.map { it.any { it.id == applet.id } }.distinctUntilChanged()
 
                         // Flow that—when editing—emits all updates of the applet, otherwise the applet itself once.
                         val liveApplet: Flow<Applet> = editing.flatMapLatest {
@@ -203,7 +202,7 @@ class Applets(
 
                         div("applet-controls") {
                             div("flex items-center min-w-0") {
-                                div("flex items-center justify-center gap-2 opacity-60 overflow-hidden") {
+                                div("flex items-center justify-center gap-2 overflow-hidden") {
                                     liveApplet.render(this) {
                                         icon("shrink-0 w-4 h-4", it.icon())
                                         div("truncate") { +it.title() }
@@ -212,36 +211,25 @@ class Applets(
                             }
 
                             div("ml-8 flex items-center justify-center gap-3") {
-                                button("disabled:pointer-events-none disabled:opacity-60") {
-                                    type("button")
+                                controlButton(OutlineHeroIcons.square_2_stack, "Duplicate") {
                                     disabled(editing)
-                                    icon("w-4 h-4", OutlineHeroIcons.squares_plus)
-                                    title("Add")
-                                    clicks handledBy { domNode.checkedOwnerDocument.getElementById(appletAdditionControlsId)?.scrollSmoothlyIntoView() }
-                                }
-
-                                button("disabled:pointer-events-none disabled:opacity-60") {
-                                    type("button")
-                                    disabled(editing)
-                                    icon("w-4 h-4", OutlineHeroIcons.square_2_stack)
-                                    title("Duplicate")
                                     clicks.map { applet } handledBy duplicate
                                 }
 
-                                button("disabled:pointer-events-none disabled:opacity-60") {
-                                    type("button")
+                                controlButton(OutlineHeroIcons.pencil_square, "Edit") {
                                     disabled(editing)
-                                    icon("w-4 h-4", OutlineHeroIcons.pencil_square)
-                                    title("Edit")
                                     clicks.map { applet } handledBy { router.navTo(AppletRoute.Current(it, true)) }
                                 }
 
+                                controlButton(OutlineHeroIcons.arrow_path, "Reload") {
+                                    className(reloading.map { if (it) "transition animate-spin" else "transition hover:rotate-90" })
+                                    disabled(editing)
+                                    clicks.map { applet } handledBy reload
+                                }
+
                                 div("flex items-center justify-center gap-2") {
-                                    button("disabled:pointer-events-none disabled:opacity-60") {
-                                        type("button")
+                                    controlButton(OutlineHeroIcons.arrow_small_up, "Move up") {
                                         disabled(items.map { it.firstOrNull() == applet })
-                                        icon("w-4 h-4", OutlineHeroIcons.arrow_small_up)
-                                        title("Move up")
                                         clicks.mapNotNull { applet } handledBy rankUp
                                     }
                                     div("flex items-center justify-end space-x-1 opacity-60") {
@@ -253,11 +241,8 @@ class Applets(
                                         div("font-extralight text-xs") { +"/" }
                                         div("font-extralight") { items.map { it.size }.render { +"$it" } }
                                     }
-                                    button("disabled:pointer-events-none disabled:opacity-60") {
-                                        type("button")
+                                    controlButton(OutlineHeroIcons.arrow_small_down, "Move down") {
                                         disabled(items.map { it.lastOrNull() == applet })
-                                        icon("w-4 h-4", OutlineHeroIcons.arrow_small_down)
-                                        title("Move down")
                                         clicks.mapNotNull { applet } handledBy rankDown
                                     }
                                 }
@@ -266,8 +251,10 @@ class Applets(
 
                         div("applet-content flex flex-row-reverse gap-8") {
                             div("flex-grow") {
-                                liveApplet.render(this) { applet ->
-                                    applet.render(this).apply {
+                                liveApplet.combine(reloading, ::Pair).render(this) { (applet, r) ->
+                                    if (r) div("absolute inset-0 text-default dark:text-invert flex items-center justify-center") {
+                                        icon("w-8 h-8 animate-spin", SolidHeroIcons.arrow_path)
+                                    } else applet.render(this).apply {
                                         syncState(syncState.map { it.map(lensForElement(applet, Applet::id)) })
                                     }
                                 }
@@ -464,4 +451,15 @@ fun Tag<Element>.panel(
     div(classes("panel-content", ar.classes)) {
         ar.wrap(this) { content?.invoke(this) }
     }
+}
+
+private fun RenderContext.controlButton(
+    icon: Uri,
+    title: String,
+    content: ContentBuilder<HTMLButtonElement>? = null,
+): HtmlTag<HTMLButtonElement> = button("disabled:pointer-events-none disabled:opacity-60") {
+    type("button")
+    icon("w-4 h-4", icon)
+    title(title)
+    content?.invoke(this)
 }

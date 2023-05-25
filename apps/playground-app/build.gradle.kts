@@ -12,7 +12,6 @@ kotlin {
             dependencies {
                 implementation("com.bkahlert.kommons:kommons-net")
                 implementation("com.bkahlert.hello:hello-fritz2")
-                implementation("com.bkahlert.hello:clickup")
             }
         }
 

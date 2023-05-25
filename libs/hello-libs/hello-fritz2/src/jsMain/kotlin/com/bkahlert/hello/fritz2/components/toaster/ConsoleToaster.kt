@@ -80,7 +80,8 @@ public fun DebugConsoleMessageParser(
         Regex("^⏎.*$"),
         Regex("^\\[webpack-.*$"),
         Regex("^\\[HMR.*$"),
-    )
+    ),
+    formatLogger: (String?) -> String? = { it },
 ): ConsoleMessageParser = { consoleFn, args ->
     val exception: Throwable? = args.firstNotNullOfOrNull { it as? Throwable }
 
@@ -113,7 +114,7 @@ public fun DebugConsoleMessageParser(
                 }
             ?: (null to null)
         val color = args.firstNotNullOfOrNull { (it as? String).orEmpty().substringAfter("color: ", "").takeUnless { it.isEmpty() } }
-        if (message != null) ConsoleMessage(consoleFn, message, logger, color)
+        if (message != null) ConsoleMessage(consoleFn, message, formatLogger(logger), color)
         else null
     } else {
         null
@@ -150,10 +151,11 @@ public fun DefaultConsoleMessageRenderer(customize: Toast<HTMLLIElement>.(Consol
 
             else -> {
                 val initials = it.logger?.let { universalWordSplitter().splitToWords(it.replace(':', ' ')).take(2) }.orEmpty().let { words ->
+                    log(arrayOf("B"))
                     when (words.size) {
                         0 -> null
                         1 -> words[0].take(2)
-                        else -> words.joinToString("") { it.first().toString() }
+                        else -> words.filterNot(String::isBlank).joinToString("") { it.first().toString() }
                     }
                 }
                 div("flex gap-2 items-start") {

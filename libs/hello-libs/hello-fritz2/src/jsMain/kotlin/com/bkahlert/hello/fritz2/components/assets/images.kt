@@ -8,9 +8,6 @@ public object Images : Iterable<DataUri> {
     /** The [BKAHLERT](https://bkahlert.com) favicon as a [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val BKAHLERTFavicon: DataUri by lazy { DataUri.parse(BKAHLERT_FAVICON) }
 
-    /** The mark of the [ClickUp](https://clickup.com) logo an [SVG](https://en.wikipedia.org/wiki/SVG). */
-    public val ClickUpMark: DataUri by lazy { DataUri.parse(CLICKUP_MARK) }
-
     /** The [Hello!](https://github.com/bkahlert/hello) favicon as an [SVG](https://en.wikipedia.org/wiki/SVG). */
     public val HelloFavicon: DataUri by lazy { DataUri.parse(HELLO_FAVICON) }
 
@@ -30,7 +27,6 @@ public object Images : Iterable<DataUri> {
     public val Spacer: DataUri by lazy { DataUri.parse(SPACER) }
 
     override fun iterator(): Iterator<DataUri> = iterator {
-        yield(ClickUpMark)
         yield(BKAHLERTFavicon)
         yield(HelloFavicon)
         yield(JohnDoe)
@@ -62,21 +58,6 @@ private const val BKAHLERT_FAVICON = "" +
     "YwLDczLDU3LjQ1LDc1LjU3TDQ3LDg4LjMxQTQuMTQsNC4xNCwwLDAsMCw0Niw5MC45NEM0Ni" +
     "w5Nyw0NiwxMTgsNDYsMTE5IiBzdHlsZT0iZmlsbDojMmNhY2UzO21peC1ibGVuZC1tb2RlOm" +
     "11bHRpcGx5Ii8+PC9nPjwvc3ZnPg=="
-
-private const val CLICKUP_MARK: String = "" +
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
-    "9zdmciIHZpZXdCb3g9IjAgMCA0NCA0NCI+PGxpbmVhckdyYWRpZW50IGlkPSJBIiBncmFkaW" +
-    "VudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjYuOTg1IiB5MT0iMzMuNzIxIiB4Mj0iMz" +
-    "cuMDE1IiB5Mj0iMzMuNzIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM4OTMwZm" +
-    "QiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM0OWNjZjkiLz48L2xpbmVhckdyYW" +
-    "RpZW50PjxwYXRoIGQ9Ik03IDMxLjdsNS41LTQuMmMyLjkgMy44IDYuMSA1LjYgOS42IDUuNn" +
-    "M2LjUtMS44IDkuMy01LjZsNS42IDQuMWMtNCA1LjUtOS4xIDguNC0xNC45IDguNFMxMS4yID" +
-    "M3LjEgNyAzMS43eiIgZmlsbD0idXJsKCNBKSIvPjxsaW5lYXJHcmFkaWVudCBpZD0iQiIgZ3" +
-    "JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSI3LjY0IiB5MT0iMTIuODQ5IiB4Mj" +
-    "0iMzYuNDEyIiB5Mj0iMTIuODQ5Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZj" +
-    "AyZjAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmM4MDAiLz48L2xpbmVhck" +
-    "dyYWRpZW50PjxwYXRoIGQ9Ik0yMi4xIDEzLjJsLTkuOSA4LjUtNC42LTUuM0wyMi4xIDRsMT" +
-    "QuMyAxMi41LTQuNiA1LjMtOS43LTguNnoiIGZpbGw9InVybCgjQikiLz48L3N2Zz4K"
 
 @Suppress("LongLine", "SpellCheckingInspection")
 private const val HELLO_FAVICON =

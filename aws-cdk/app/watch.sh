@@ -2,7 +2,6 @@
 
 declare -r debug=0
 declare -a continuous_builds=(
-  #  ':aws-lambdas:clickup-api-handlers:shadowJar'
   #  ':aws-lambdas:userinfo-api-handlers:shadowJar'
   #  ':aws-lambdas:userprops-api-handlers:shadowJar'
 )

@@ -1,6 +1,5 @@
 package com.bkahlert.hello
 
-import com.bkahlert.hello.components.ClickUp
 import com.bkahlert.hello.components.QuickLinks
 import com.bkahlert.hello.components.applet.Applets
 import com.bkahlert.hello.fritz2.app.AppState
@@ -17,6 +16,7 @@ import com.bkahlert.hello.fritz2.components.assets.Images
 import com.bkahlert.hello.fritz2.components.diagnostics
 import com.bkahlert.hello.fritz2.components.loader
 import com.bkahlert.hello.fritz2.components.toaster.ConsoleToaster
+import com.bkahlert.hello.fritz2.components.toaster.DebugConsoleMessageParser
 import com.bkahlert.hello.fritz2.components.toaster.DefaultConsoleMessageRenderer
 import com.bkahlert.hello.fritz2.syncState
 import com.bkahlert.hello.fritz2.verticalScrollProgresses
@@ -44,7 +44,7 @@ import org.w3c.dom.asList
 @JsModule("./styles/web-app.scss")
 private external val AppStyles: dynamic
 
-val PropStoreFactories: List<PropStoreFactory<*>> = listOf(Applets, ClickUp, QuickLinks)
+val PropStoreFactories: List<PropStoreFactory<*>> = listOf(Applets, QuickLinks)
 
 fun main() {
     AppStyles
@@ -52,13 +52,17 @@ fun main() {
     val appStore = AppStore()
 
     render("#root") {
-        ConsoleToaster(render = DefaultConsoleMessageRenderer { _ ->
-            transition(
-                "transition ease-out duration-200",
-                "opacity-0 translate-x-full",
-                "opacity-100 translate-x-0",
-            )
-        }).attach(this).className("top-[--nav-height] right-2 overflow-x-hidden")
+        ConsoleToaster(
+            parse = DebugConsoleMessageParser { logger ->
+                logger?.removePrefix("hello:")?.split(":")?.last()?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            },
+            render = DefaultConsoleMessageRenderer { _ ->
+                transition(
+                    "transition ease-out duration-200",
+                    "opacity-0 translate-x-full",
+                    "opacity-100 translate-x-0",
+                )
+            }).attach(this).className("top-[--nav-height] right-2 overflow-x-hidden")
 
         val diagnosticsOpen = storeOf(false)
         diagnostics(diagnosticsOpen) {
@@ -88,9 +92,6 @@ fun main() {
                 div("flex-1 flex gap-8 items-center justify-center") {
                     div("flex-0") {
                         appStore.props.map { it?.let { QuickLinks(it) } }.render { it?.render(this) }
-                    }
-                    div("hidden flex-1 sm:block") {
-                        appStore.props.map { it?.let { ClickUp(it) } }.render { it?.render(this) }
                     }
                 }
                 div("flex-0") {

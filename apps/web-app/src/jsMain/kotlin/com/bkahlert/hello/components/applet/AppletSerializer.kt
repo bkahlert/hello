@@ -45,7 +45,7 @@ class AppletSerializer(val registration: AppletRegistration) : KSerializer<Apple
 
     fun selectSerializer(value: Applet): SerializationStrategy<Applet> = when (value) {
         is UnknownApplet -> UnknownAppletSerializer.unsafeCast<SerializationStrategy<Applet>>()
-        else -> requireNotNull(registration.findByInstance(value)) { "The specified value is not handled by any registration." }.let { registration ->
+        else -> requireNotNull(registration.find(value)) { "The specified value is not handled by any registration." }.let { registration ->
             object : JsonTransformingSerializer<Applet>(registration.serializer.unsafeCast<KSerializer<Applet>>()) {
                 override fun transformSerialize(element: JsonElement): JsonElement = buildJsonObject {
                     element.jsonObject.entries.forEach { (key, value) -> put(key, value) }
@@ -56,7 +56,7 @@ class AppletSerializer(val registration: AppletRegistration) : KSerializer<Apple
     }
 
     fun selectDeserializer(element: JsonElement): DeserializationStrategy<Applet> =
-        element.jsonObject["type"]?.jsonPrimitive?.contentOrNull?.let { registration.findByType(it) }?.serializer ?: UnknownAppletSerializer
+        element.jsonObject["type"]?.jsonPrimitive?.contentOrNull?.let { registration.get(it) }?.serializer ?: UnknownAppletSerializer
 
     override fun serialize(encoder: Encoder, value: Applet) {
         selectSerializer(value).serialize(encoder, value)

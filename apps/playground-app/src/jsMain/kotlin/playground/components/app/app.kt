@@ -2,12 +2,12 @@
 
 package playground.components.app
 
-import com.bkahlert.hello.clickup.model.fixtures.ImageFixtures
 import com.bkahlert.hello.fritz2.ContentBuilder
 import com.bkahlert.hello.fritz2.app.AppState
 import com.bkahlert.hello.fritz2.app.AppStore
 import com.bkahlert.hello.fritz2.app.props.propsView
 import com.bkahlert.hello.fritz2.app.user.userDropdown
+import com.bkahlert.hello.fritz2.components.assets.Images
 import com.bkahlert.hello.fritz2.components.icon
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.classes
@@ -48,7 +48,7 @@ fun RenderContext.appBar(
             div("relative flex h-16 items-center justify-between") {
                 div("flex flex-1 items-center justify-center sm:items-stretch sm:justify-start") {
                     div("flex flex-shrink-0 items-center") {
-                        icon("shrink-0 block h-8 w-auto", ImageFixtures.HelloFavicon)
+                        icon("shrink-0 block h-8 w-auto", Images.HelloFavicon)
                     }
                 }
 
