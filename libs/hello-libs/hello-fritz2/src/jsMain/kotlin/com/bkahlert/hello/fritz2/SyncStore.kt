@@ -97,22 +97,25 @@ public class SubSyncStore<P, D>(
 ) : SyncStore<D>, Store<D> by SubStore(parent, lens) {
     override val syncState: Flow<SyncState<D>> get() = parent.syncState.map { it.map(lens) }
     override fun <X> map(lens: Lens<D, X>): SyncStore<X> = SubSyncStore(this, lens)
+    override fun equals(other: Any?): Boolean = other is Store<*> && other.current == current
+    override fun hashCode(): Int = current.hashCode()
 }
 
 /**
  * A [SyncStore] that syncs its [data] with some source,
  * and provides a [synced] flow with the already synced data.
  *
- * The synchronization is performed by apply the specified [sync] function
+ * The synchronization is performed by applying [sync]
  * to the last known synced data and the new data.
  * For the first synchronization [load] is used to obtain the initial data.
  */
-public open class RootSyncStore<D>(
-    override val id: String = Id.next(),
+public abstract class RootSyncStore<D>(
     cached: D,
-    private val load: suspend () -> D,
-    private val sync: suspend (oldData: D, newData: D) -> D,
+    override val id: String = Id.next(),
 ) : RootStore<D>(cached, id), SyncStore<D> {
+
+    protected abstract suspend fun load(): D
+    protected abstract suspend fun sync(oldData: D, newData: D): D
 
     protected val logger: ConsoleLogger by lazy { ConsoleLogger("${this::class.simpleName}@$id") }
 

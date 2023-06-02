@@ -1,32 +1,31 @@
-import com.bkahlert.hello.fritz2.app.AppStore
-import com.bkahlert.hello.fritz2.app.env.EnvironmentShowcases
-import com.bkahlert.hello.fritz2.app.env.environmentView
-import com.bkahlert.hello.fritz2.app.environment
-import com.bkahlert.hello.fritz2.app.props
-import com.bkahlert.hello.fritz2.app.props.PropStoreFactory
-import com.bkahlert.hello.fritz2.app.props.PropsShowcases
-import com.bkahlert.hello.fritz2.app.props.propsView
-import com.bkahlert.hello.fritz2.app.session
-import com.bkahlert.hello.fritz2.app.session.FakeSession
-import com.bkahlert.hello.fritz2.app.session.SessionShowcases
-import com.bkahlert.hello.fritz2.app.session.sessionView
-import com.bkahlert.hello.fritz2.app.user.UserShowcases
-import com.bkahlert.hello.fritz2.app.user.userDropdown
-import com.bkahlert.hello.fritz2.components.PageRouter
-import com.bkahlert.hello.fritz2.components.ParentPage
-import com.bkahlert.hello.fritz2.components.SimplePage
-import com.bkahlert.hello.fritz2.components.assets.Images
-import com.bkahlert.hello.fritz2.components.button
-import com.bkahlert.hello.fritz2.components.diagnostics
-import com.bkahlert.hello.fritz2.components.headlessui.HeadlessUiShowcases
-import com.bkahlert.hello.fritz2.components.heroicons.SolidHeroIcons
-import com.bkahlert.hello.fritz2.components.icon
-import com.bkahlert.hello.fritz2.components.loader
-import com.bkahlert.hello.fritz2.components.navigationbar.navigationBar
-import com.bkahlert.hello.fritz2.components.toNavItems
-import com.bkahlert.hello.fritz2.components.toaster.ConsoleToaster
-import com.bkahlert.hello.fritz2.components.toaster.DefaultConsoleMessageRenderer
+import com.bkahlert.hello.app.AppStore
+import com.bkahlert.hello.app.env.EnvironmentShowcases
+import com.bkahlert.hello.app.env.environmentView
+import com.bkahlert.hello.app.environment
+import com.bkahlert.hello.app.props
+import com.bkahlert.hello.app.props.PropsShowcases
+import com.bkahlert.hello.app.props.propsView
+import com.bkahlert.hello.app.session
+import com.bkahlert.hello.app.session.FakeSession
+import com.bkahlert.hello.app.session.SessionShowcases
+import com.bkahlert.hello.app.session.sessionView
+import com.bkahlert.hello.app.showcase.HeadlessUiShowcases
+import com.bkahlert.hello.app.user.UserShowcases
+import com.bkahlert.hello.app.user.userDropdown
+import com.bkahlert.hello.button.button
+import com.bkahlert.hello.components.PageRouter
+import com.bkahlert.hello.components.ParentPage
+import com.bkahlert.hello.components.SimplePage
+import com.bkahlert.hello.components.diagnostics
+import com.bkahlert.hello.components.loader
+import com.bkahlert.hello.components.navigationbar.navigationBar
+import com.bkahlert.hello.components.toNavItems
+import com.bkahlert.hello.components.toaster.ConsoleToaster
+import com.bkahlert.hello.components.toaster.DefaultConsoleMessageRenderer
 import com.bkahlert.hello.fritz2.syncState
+import com.bkahlert.hello.icon.assets.Images
+import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
+import com.bkahlert.hello.icon.icon
 import dev.fritz2.core.render
 import dev.fritz2.core.storeOf
 import dev.fritz2.core.transition
@@ -40,8 +39,6 @@ import playground.fritz2.headlessdemo.pages
 
 @JsModule("./styles/playground-app.scss")
 private external val PlaygroundStyles: dynamic
-
-val PropStoreFactories: List<PropStoreFactory<*>> = emptyList()
 
 fun main() {
     PlaygroundStyles
@@ -83,7 +80,7 @@ fun main() {
             div("relative z-10 flex justify-end -mt-6") {
                 appStore.session.render { if (it != null) userDropdown("-translate-y-8", it) else div("-translate-y-6") { loader() } }
             }
-            appStore.props.render { if (it != null) propsView(it, PropStoreFactories.map(PropStoreFactory<*>::DEFAULT_KEY)) }
+            appStore.props.render { if (it != null) propsView(it) }
             hr {}
             appStore.session.render { if (it != null) sessionView(it) }
             hr {}

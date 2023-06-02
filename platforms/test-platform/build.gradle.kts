@@ -8,6 +8,6 @@ group = "com.bkahlert.platform"
 javaPlatform.allowDependencies()
 
 dependencies {
-    api(platform("io.kotest:kotest-bom:5.5.4"))
-    api(platform("org.testcontainers:testcontainers-bom:1.17.6"))
+    api(platform("io.kotest:kotest-bom:${libs.versions.kotest.get()}"))
+    api(platform("org.testcontainers:testcontainers-bom:${libs.versions.testcontainers.get()}"))
 }

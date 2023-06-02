@@ -1,31 +1,118 @@
 package com.bkahlert.hello
 
-import com.bkahlert.hello.components.applet.Applets
-import com.bkahlert.hello.fritz2.app.props.PropStoreFactory
-import com.bkahlert.hello.fritz2.app.props.PropsStore
-import com.bkahlert.hello.fritz2.app.session.SessionStore
-import com.bkahlert.hello.fritz2.app.user.User
-import com.bkahlert.hello.fritz2.components.button
-import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
-import com.bkahlert.hello.fritz2.components.heroicons.SolidHeroIcons
-import com.bkahlert.hello.fritz2.components.icon
-import com.bkahlert.hello.fritz2.components.loader
+import com.bkahlert.hello.app.props.PropsStore
+import com.bkahlert.hello.app.session.SessionStore
+import com.bkahlert.hello.app.user.User
+import com.bkahlert.hello.applet.AppletRegistration
+import com.bkahlert.hello.applet.AppletSerializer
+import com.bkahlert.hello.applet.Applets
+import com.bkahlert.hello.applet.AspectRatio
+import com.bkahlert.hello.applet.image.ImageApplet
+import com.bkahlert.hello.applet.preview.FeaturePreview
+import com.bkahlert.hello.applet.preview.FeaturePreviewApplet
+import com.bkahlert.hello.applet.ssh.WsSshApplet
+import com.bkahlert.hello.applet.video.VideoApplet
+import com.bkahlert.hello.applet.website.WebsiteApplet
+import com.bkahlert.hello.button.button
+import com.bkahlert.hello.components.loader
+import com.bkahlert.hello.fritz2.scrollTo
+import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
+import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
+import com.bkahlert.hello.icon.icon
 import com.bkahlert.kommons.dom.ObjectUri
 import com.bkahlert.kommons.dom.download
 import com.bkahlert.kommons.dom.mapTarget
 import com.bkahlert.kommons.json.LenientAndPrettyJson
+import com.bkahlert.kommons.uri.Uri
+import com.bkahlert.kommons.uri.toUri
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.Tag
 import dev.fritz2.core.accept
 import dev.fritz2.core.type
-import io.ktor.http.*
-import kotlinx.coroutines.flow.map
+import io.ktor.http.ContentType
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.files.get
+
+@JsModule("./nyancat.svg")
+private external val NyanCatSrc: String
+
+private val appletRegistration by lazy {
+    AppletRegistration().apply {
+        register<FeaturePreviewApplet>(
+            "feature-preview",
+            title = "Feature Preview",
+            description = "Demo of a future feature",
+            icon = SolidHeroIcons.star
+        )
+        register<ImageApplet>(
+            "image",
+            title = "Image",
+            description = "Displays an image",
+            icon = SolidHeroIcons.photo
+        )
+        register<VideoApplet>(
+            "video",
+            title = "Video",
+            description = "Embeds a video",
+            icon = SolidHeroIcons.video_camera
+        )
+        register<WebsiteApplet>(
+            "website", "embed",
+            title = "Website",
+            description = "Embeds an external website",
+            icon = SolidHeroIcons.window
+        )
+        register<WsSshApplet>(
+            "ws-ssh",
+            title = "SSH",
+            description = """Connect to a SSH server via a <a href="https://github.com/bkahlert/ws-ssh">WS-SSH proxy</a>.""",
+            icon = SolidHeroIcons.command_line,
+        )
+    }
+}
+
+private val appletListSerializer by lazy {
+    ListSerializer(AppletSerializer(appletRegistration))
+}
+
+private val defaultApplets by lazy {
+    buildList {
+        add(
+            ImageApplet(
+                id = "nyan-cat",
+                title = "Nyan Cat",
+                src = NyanCatSrc.toUri(),
+                aspectRatio = AspectRatio.video
+            )
+        )
+        add(
+            VideoApplet(
+                id = "rick-astley",
+                title = "Rick Astley",
+                src = Uri("https://www.youtube.com/embed/dQw4w9WgXcQ"),
+            )
+        )
+        add(
+            WebsiteApplet(
+                id = "impossible-color",
+                title = "Impossible color",
+                src = Uri("https://en.wikipedia.org/wiki/Impossible_color"),
+                aspectRatio = AspectRatio.stretch,
+            )
+        )
+        FeaturePreview.values().mapTo(this) {
+            FeaturePreviewApplet(
+                id = "feature-preview-${it.name}",
+                feature = it,
+            )
+        }
+    }
+}
 
 fun Tag<Element>.app(
 ) {
@@ -38,10 +125,11 @@ fun Tag<Element>.app(
     sessionStore: SessionStore,
     propsStore: PropsStore,
 ) {
-    Applets(propsStore).render(this)
-    propsControls(propsStore, PropStoreFactories.map(PropStoreFactory<*>::DEFAULT_KEY)).apply {
-        className("app-item")
-    }
+    propsStore
+        .mapByKeyOrDefault("applets", defaultApplets, appletListSerializer)
+        .let { Applets(it, appletRegistration) }
+        .render(this)
+    propsControls(propsStore).className("app-item")
 }
 
 fun Tag<Element>.app(
@@ -49,15 +137,15 @@ fun Tag<Element>.app(
     user: User,
     propsStore: PropsStore,
 ) {
-    Applets(propsStore).render(this)
-    propsControls(propsStore, PropStoreFactories.map(PropStoreFactory<*>::DEFAULT_KEY)).apply {
-        className("app-item")
-    }
+    propsStore
+        .mapByKeyOrDefault("applets", defaultApplets, appletListSerializer)
+        .let { Applets(it, appletRegistration) }
+        .render(this)
+    propsControls(propsStore).className("app-item")
 }
 
 fun Tag<Element>.propsControls(
     props: PropsStore,
-    knownKeys: List<String>,
 ): HtmlTag<HTMLDivElement> = div {
 
     div { icon("mx-auto w-12 h-12 text-default dark:text-invert opacity-60", SolidHeroIcons.wrench_screwdriver) }
@@ -94,7 +182,7 @@ fun Tag<Element>.propsControls(
                 dragovers.mapTarget<HTMLInputElement>() handledBy { it.parentElement?.querySelector("svg")?.classList?.add("animate-bounce") }
                 dragleaves.mapTarget<HTMLInputElement>() handledBy { it.parentElement?.querySelector("svg")?.classList?.remove("animate-bounce") }
                 dragends.mapTarget<HTMLInputElement>() handledBy { it.parentElement?.querySelector("svg")?.classList?.remove("animate-bounce") }
-                changes.mapTarget<HTMLInputElement>().mapNotNull { it.files?.get(0) }.map { it to knownKeys } handledBy props.import
+                changes.mapTarget<HTMLInputElement>().mapNotNull { it.files?.get(0) } handledBy props.import
             }
         }
 
@@ -109,7 +197,7 @@ fun Tag<Element>.propsControls(
             clicks handledBy {
                 downloadProps(props)
                 props.update(emptyMap())
-                domNode.scrollSmoothlyTo(top = 0)
+                domNode.scrollTo(top = 0)
             }
         }
     }

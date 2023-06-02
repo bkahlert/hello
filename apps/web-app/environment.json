@@ -1,14 +1,13 @@
 {
   "CDK_BOOTSTRAP-HNB659FDS-_FILE_ASSET_KEY_ARN": "AWS_MANAGED_KEY",
-  "CLICK_UP_API_ENDPOINT": "https://ftl6hyygyf.execute-api.us-east-1.amazonaws.com/prod/",
-  "DISTRIBUTION_ID": "E1CIV70BNC36XJ",
-  "DISTRIBUTION_URL": "https://d2oxc532udqy4m.cloudfront.net",
-  "SITE_BUCKET_NAME": "hello.aws-dev.choam.de",
-  "SITE_CERTIFICATE_ARN": "arn:aws:acm:us-east-1:382728805609:certificate/3df59a04-4769-4e14-9c23-1e75bbe16b07",
-  "SITE_ENVIRONMENT_API_ENDPOINT": "https://gsinszokbh.execute-api.us-east-1.amazonaws.com/prod/",
-  "SITE_URL": "https://hello.aws-dev.choam.de",
-  "USER_INFO_API_ENDPOINT": "https://unrzt0veze.execute-api.us-east-1.amazonaws.com/prod/",
-  "USER_POOL_CLIENT_ID": "2lm7lqp39nsrjrjr70l9f9lkp",
-  "USER_POOL_PROVIDER_URL": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_LxACOQifD",
-  "USER_PROPS_API_ENDPOINT": "https://qua2gxwvuc.execute-api.us-east-1.amazonaws.com/prod/"
+  "CLICK_UP_API_ENDPOINT": "https://h24q901bp8.execute-api.eu-central-1.amazonaws.com/prod/",
+  "DISTRIBUTION_ID": "E209RFTUXWYKKB",
+  "DISTRIBUTION_URL": "https://d1ei6epts2wbc1.cloudfront.net",
+  "SITE_BUCKET_NAME": "hello.bkahlert.com",
+  "SITE_ENVIRONMENT_API_ENDPOINT": "https://a0z1cps8pj.execute-api.eu-central-1.amazonaws.com/prod/",
+  "SITE_URL": "https://hello.bkahlert.com",
+  "USER_INFO_API_ENDPOINT": "https://a6zk577f6k.execute-api.eu-central-1.amazonaws.com/prod/",
+  "USER_POOL_CLIENT_ID": "6udfloqbvcq3tefqg2b3fo3o66",
+  "USER_POOL_PROVIDER_URL": "https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_DXuoe0tXs",
+  "USER_PROPS_API_ENDPOINT": "https://gbwagf6bdd.execute-api.eu-central-1.amazonaws.com/prod/"
 }

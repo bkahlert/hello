@@ -1,25 +1,24 @@
 package com.bkahlert.hello
 
-import com.bkahlert.hello.components.QuickLinks
-import com.bkahlert.hello.components.applet.Applets
-import com.bkahlert.hello.fritz2.app.AppState
-import com.bkahlert.hello.fritz2.app.AppStore
-import com.bkahlert.hello.fritz2.app.env.environmentView
-import com.bkahlert.hello.fritz2.app.environment
-import com.bkahlert.hello.fritz2.app.props
-import com.bkahlert.hello.fritz2.app.props.PropStoreFactory
-import com.bkahlert.hello.fritz2.app.props.propsView
-import com.bkahlert.hello.fritz2.app.session
-import com.bkahlert.hello.fritz2.app.session.sessionView
-import com.bkahlert.hello.fritz2.app.user.userDropdown
-import com.bkahlert.hello.fritz2.components.assets.Images
-import com.bkahlert.hello.fritz2.components.diagnostics
-import com.bkahlert.hello.fritz2.components.loader
-import com.bkahlert.hello.fritz2.components.toaster.ConsoleToaster
-import com.bkahlert.hello.fritz2.components.toaster.DebugConsoleMessageParser
-import com.bkahlert.hello.fritz2.components.toaster.DefaultConsoleMessageRenderer
+import com.bkahlert.hello.app.AppStore
+import com.bkahlert.hello.app.env.environmentView
+import com.bkahlert.hello.app.environment
+import com.bkahlert.hello.app.props
+import com.bkahlert.hello.app.props.mapByKeyOrDefault
+import com.bkahlert.hello.app.props.propsView
+import com.bkahlert.hello.app.session
+import com.bkahlert.hello.app.session.sessionView
+import com.bkahlert.hello.app.user.userDropdown
+import com.bkahlert.hello.components.diagnostics
+import com.bkahlert.hello.components.loader
+import com.bkahlert.hello.components.toaster.ConsoleToaster
+import com.bkahlert.hello.components.toaster.DebugConsoleMessageParser
+import com.bkahlert.hello.components.toaster.DefaultConsoleMessageRenderer
+import com.bkahlert.hello.fritz2.scrollTo
 import com.bkahlert.hello.fritz2.syncState
 import com.bkahlert.hello.fritz2.verticalScrollProgresses
+import com.bkahlert.hello.icon.assets.Images
+import com.bkahlert.hello.quicklink.QuickLinks
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.verticalScrollProgress
 import dev.fritz2.core.alt
@@ -29,22 +28,15 @@ import dev.fritz2.core.src
 import dev.fritz2.core.storeOf
 import dev.fritz2.core.transition
 import dev.fritz2.headless.foundation.Aria
-import dev.fritz2.headless.foundation.utils.scrollintoview.*
 import kotlinx.browser.document
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.Node
-import org.w3c.dom.SMOOTH
-import org.w3c.dom.ScrollToOptions
 import org.w3c.dom.asList
 
 @JsModule("./styles/web-app.scss")
 private external val AppStyles: dynamic
-
-val PropStoreFactories: List<PropStoreFactory<*>> = listOf(Applets, QuickLinks)
 
 fun main() {
     AppStyles
@@ -69,7 +61,7 @@ fun main() {
             div("relative z-10 flex justify-end -mt-6") {
                 appStore.session.render { if (it != null) userDropdown("-translate-y-8", it) else div("-translate-y-6") { loader() } }
             }
-            appStore.props.render { if (it != null) propsView(it, PropStoreFactories.map(PropStoreFactory<*>::DEFAULT_KEY)) }
+            appStore.props.render { if (it != null) propsView(it) }
             hr {}
             appStore.session.render { if (it != null) sessionView(it) }
             hr {}
@@ -91,7 +83,10 @@ fun main() {
                 }
                 div("flex-1 flex gap-8 items-center justify-center") {
                     div("flex-0") {
-                        appStore.props.map { it?.let { QuickLinks(it) } }.render { it?.render(this) }
+                        appStore.props
+                            .map { it?.mapByKeyOrDefault("quick-links", QuickLinks.DefaultLinks) }
+                            .map { it?.let(::QuickLinks) }
+                            .render { it?.render(this) }
                     }
                 }
                 div("flex-0") {
@@ -112,43 +107,14 @@ fun main() {
             verticalScrollProgresses handledBy { updateBackgroundColor(it) }
             appStore.data.render(into = this) { state ->
                 when (state) {
-                    is AppState.Loading -> app()
-                    is AppState.Unauthorized -> app(state.session, state.props)
-                    is AppState.Authorized -> app(state.session, state.user, state.props)
+                    is com.bkahlert.hello.app.AppState.Loading -> app()
+                    is com.bkahlert.hello.app.AppState.Unauthorized -> app(state.session, state.props)
+                    is com.bkahlert.hello.app.AppState.Authorized -> app(state.session, state.user, state.props)
                 }
-                domNode.scrollSmoothlyTo(top = scrollTop)
+                scrollTo(top = scrollTop)
             }
         }
     }
-}
-
-fun Node.scrollSmoothlyIntoView(
-    mode: ScrollMode? = ScrollMode.always,
-    block: ScrollPosition? = ScrollPosition.center,
-    inline: ScrollPosition? = ScrollPosition.center,
-) {
-    scrollIntoView(
-        this,
-        ScrollIntoViewOptionsInit(
-            behavior = ScrollBehavior.smooth,
-            mode = mode,
-            block = block,
-            inline = inline,
-        )
-    )
-}
-
-fun Element.scrollSmoothlyTo(
-    left: Number? = undefined,
-    top: Number? = undefined,
-) {
-    scrollTo(
-        ScrollToOptions(
-            left = left?.toDouble(),
-            top = top?.toDouble(),
-            behavior = org.w3c.dom.ScrollBehavior.SMOOTH,
-        )
-    )
 }
 
 

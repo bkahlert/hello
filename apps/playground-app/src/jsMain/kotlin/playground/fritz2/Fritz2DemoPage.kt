@@ -1,8 +1,8 @@
 package playground.fritz2
 
-import com.bkahlert.hello.fritz2.components.SimplePage
-import com.bkahlert.hello.fritz2.components.icon
-import com.bkahlert.hello.fritz2.register
+import com.bkahlert.hello.components.SimplePage
+import com.bkahlert.hello.fritz2.custom
+import com.bkahlert.hello.icon.icon
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.ScopeContext
@@ -13,6 +13,7 @@ import dev.fritz2.headless.foundation.SHOW_COMPONENT_STRUCTURE
 import dev.fritz2.headless.foundation.addComponentStructureInfo
 import dev.fritz2.routing.routerOf
 import dev.fritz2.webcomponents.WebComponent
+import dev.fritz2.webcomponents.registerWebComponent
 import io.ktor.util.decodeBase64String
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -66,7 +67,11 @@ fun Fritz2DemoPage(
     }
 )
 
-private val fritz2HeadlessUiDemo by lazy { Fritz2HeadlessUiDemo.register("fritz2-showcase", "demo", "fragment") }
+private val fritz2HeadlessUiDemo by lazy {
+    registerWebComponent<HTMLDivElement, WebComponent<HTMLDivElement>>("fritz2-showcase", Fritz2HeadlessUiDemo, "demo", "fragment")
+    custom<Tag<HTMLDivElement>>("fritz2-showcase")
+}
+
 private fun RenderContext.fritz2HeadlessUiDemo(
     demo: String,
     fragment: String,

@@ -80,9 +80,9 @@
 @layer components {
   .app {
     --nav-height: theme('spacing.16');
-    --app-item-spacing: theme('spacing.16');
-    --app-item-height: clamp(70svh, calc(100svh + theme('screens.sm') - 100vw), calc(100svh - var(--nav-height)));
-    --app-item-padding: clamp(1rem, calc(100vw - theme('screens.sm')), var(--app-item-spacing));
+    --app-item-height: clamp(82svh, calc(100svh + theme('screens.sm') - 100vw), calc(100svh - var(--nav-height)));
+    --app-item-padding-x: clamp(theme('spacing.4'), calc(100vw - theme('screens.sm')), theme('spacing.16'));
+    --app-item-padding-y: clamp(theme('spacing.4'), calc(100vw - theme('screens.sm')), theme('spacing.8'));
     /* Ranges from --nav-height for small screens to 0 for large screens so element is below the navigation on small screens */
     --app-item-gap: clamp(0px, calc(var(--nav-height) + theme('screens.sm') - 100vw), var(--nav-height));
   }
@@ -96,35 +96,25 @@
 
   .app-scroll-container {
     @apply h-full snap-y snap-mandatory overflow-y-auto;
+    --padding-top: clamp(calc(var(--nav-height) / 4), calc(var(--nav-height) + theme('screens.sm') - 100vw), var(--nav-height));
     padding-top: var(--nav-height);
-    scroll-padding-top: var(--nav-height);
+    scroll-padding-top: var(--padding-top);
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--app-item-gap);
   }
 
-  .app-item { @apply snap-center relative p-[--app-item-padding]; }
+  .app-item { @apply snap-center relative px-[--app-item-padding-x] py-[--app-item-padding-y]; }
 
-  .applet { @apply snap-center relative p-[--app-item-padding] h-[--app-item-height] flex flex-col min-w-0; }
+  .applet { @apply snap-center relative px-[--app-item-padding-x] py-[--app-item-padding-y] h-[--app-item-height] grid;
+    grid-template-rows: 1fr minmax(1px, 100%); }
   .applet .applet-controls { @apply flex items-center justify-between m-3 text-default dark:text-invert font-medium; }
-  .applet .applet-content { @apply flex-grow max-h-full; }
 
   @media (max-width: theme('screens.lg')) and (orientation: landscape) {
-    .app {
-      --nav-height: 0px;
-      --app-item-min-padding: 1rem;
-      --app-item-height: 100svh;
-      /* @formatter:off */
-      --app-item-padding:
-        max(var(--sat), var(--app-item-min-padding))
-        max(var(--sar), var(--app-item-min-padding))
-        max(var(--sab), var(--app-item-min-padding))
-        max(var(--sal), var(--app-item-min-padding));
-      /* @formatter:on */
-    }
+    .app { --nav-height: 0px; --app-item-height: 100svh; }
     .app-header { display: none; }
+    .app-item, .applet { padding: max(var(--sat), 1rem) max(var(--sar), 1rem) max(var(--sab), 1rem) max(var(--sal), 1rem); }
   }
-
   .panel { @apply h-full max-h-full flex flex-col justify-center border border-gray-500/40 bg-hero-diagonal-lines-gray-500-40 rounded-xl; }
   .panel > .panel-content { @apply rounded-xl bg-gray-500/40 ring-8 ring-gray-500/40 overflow-hidden; }
   .panel > .panel-content > * { @apply border-0; }

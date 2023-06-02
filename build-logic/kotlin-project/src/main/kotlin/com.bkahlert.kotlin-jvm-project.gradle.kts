@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
@@ -6,6 +5,7 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(11)
     targets {
         jvm()
     }
@@ -13,7 +13,6 @@ kotlin {
 
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
         freeCompilerArgs.set(freeCompilerArgs.get() + "-Xjsr305=strict")
     }
 }

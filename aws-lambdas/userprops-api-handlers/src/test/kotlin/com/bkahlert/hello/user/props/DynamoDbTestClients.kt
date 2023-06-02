@@ -10,9 +10,9 @@ import aws.sdk.kotlin.services.dynamodb.model.KeyType.Range
 import aws.sdk.kotlin.services.dynamodb.model.ProvisionedThroughput
 import aws.sdk.kotlin.services.dynamodb.model.ScalarAttributeType.S
 import aws.sdk.kotlin.services.dynamodb.model.ScanRequest
-import aws.smithy.kotlin.runtime.http.Protocol
-import aws.smithy.kotlin.runtime.http.Url
-import aws.smithy.kotlin.runtime.util.net.Host
+import aws.smithy.kotlin.runtime.net.Host
+import aws.smithy.kotlin.runtime.net.Scheme
+import aws.smithy.kotlin.runtime.net.Url
 import kotlinx.coroutines.runBlocking
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.utility.DockerImageName
@@ -26,7 +26,7 @@ fun dynamoDbContainer(port: Int = 8000): GenericContainer<Nothing> =
  * Returns a [DynamoDbClientProvider] that connects to this [GenericContainer].
  */
 fun GenericContainer<*>.asDynamoDbClientProvider(): DynamoDbClientProvider {
-    val url = Url(Protocol.HTTP, Host.parse(host), firstMappedPort)
+    val url = Url(Scheme.HTTP, Host.parse(host), firstMappedPort)
     return { DynamoDbClient.fromEnvironment { endpointUrl = url } }
 }
 

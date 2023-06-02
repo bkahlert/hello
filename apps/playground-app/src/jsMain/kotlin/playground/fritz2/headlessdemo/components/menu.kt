@@ -1,8 +1,8 @@
 package playground.fritz2.headlessdemo.components
 
-import com.bkahlert.hello.fritz2.components.heroicons.MiniHeroIcons
-import com.bkahlert.hello.fritz2.components.heroicons.SolidHeroIcons
-import com.bkahlert.hello.fritz2.components.icon
+import com.bkahlert.hello.icon.heroicons.MiniHeroIcons
+import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
+import com.bkahlert.hello.icon.icon
 import com.bkahlert.kommons.uri.Uri
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.storeOf

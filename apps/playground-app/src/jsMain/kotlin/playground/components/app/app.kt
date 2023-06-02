@@ -2,13 +2,13 @@
 
 package playground.components.app
 
+import com.bkahlert.hello.app.AppState
+import com.bkahlert.hello.app.AppStore
+import com.bkahlert.hello.app.props.propsView
+import com.bkahlert.hello.app.user.userDropdown
 import com.bkahlert.hello.fritz2.ContentBuilder
-import com.bkahlert.hello.fritz2.app.AppState
-import com.bkahlert.hello.fritz2.app.AppStore
-import com.bkahlert.hello.fritz2.app.props.propsView
-import com.bkahlert.hello.fritz2.app.user.userDropdown
-import com.bkahlert.hello.fritz2.components.assets.Images
-import com.bkahlert.hello.fritz2.components.icon
+import com.bkahlert.hello.icon.assets.Images
+import com.bkahlert.hello.icon.icon
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.classes
 import org.w3c.dom.Element

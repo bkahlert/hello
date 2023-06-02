@@ -2,13 +2,13 @@
 
 package playground.components.app
 
-import com.bkahlert.hello.fritz2.app.AppStore
-import com.bkahlert.hello.fritz2.app.props.StoragePropsDataSource
-import com.bkahlert.hello.fritz2.app.session.FakeSession
-import com.bkahlert.hello.fritz2.components.SimplePage
-import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
-import com.bkahlert.hello.fritz2.components.showcase.showcase
-import com.bkahlert.hello.fritz2.components.showcase.showcases
+import com.bkahlert.hello.app.AppStore
+import com.bkahlert.hello.app.props.StoragePropsDataSource
+import com.bkahlert.hello.app.session.FakeSession
+import com.bkahlert.hello.components.SimplePage
+import com.bkahlert.hello.icon.heroicons.HeroIcons
+import com.bkahlert.hello.showcase.showcase
+import com.bkahlert.hello.showcase.showcases
 
 public val AppShowcases: SimplePage = SimplePage(
     "app",

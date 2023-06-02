@@ -1,23 +1,22 @@
 package playground
 
-import com.bkahlert.hello.fritz2.SyncStore
-import com.bkahlert.hello.fritz2.app.props.PropsStore
-import com.bkahlert.hello.fritz2.app.props.StoragePropsDataSource
-import com.bkahlert.hello.fritz2.app.props.propsView
-import com.bkahlert.hello.fritz2.components.SimplePage
-import com.bkahlert.hello.fritz2.components.bookmarks.Bookmark
-import com.bkahlert.hello.fritz2.components.bookmarks.BookmarkEditor
-import com.bkahlert.hello.fritz2.components.button
-import com.bkahlert.hello.fritz2.components.heroicons.HeroIcons
-import com.bkahlert.hello.fritz2.components.heroicons.OutlineHeroIcons
-import com.bkahlert.hello.fritz2.components.modal
-import com.bkahlert.kommons.uri.Uri
+import com.bkahlert.hello.app.props.PropsStore
+import com.bkahlert.hello.app.props.StoragePropsDataSource
+import com.bkahlert.hello.app.props.mapByKeyOrDefault
+import com.bkahlert.hello.app.props.propsView
+import com.bkahlert.hello.bookmark.Bookmark
+import com.bkahlert.hello.bookmark.BookmarkEditor
+import com.bkahlert.hello.button.button
+import com.bkahlert.hello.components.SimplePage
+import com.bkahlert.hello.icon.heroicons.HeroIcons
+import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
+import com.bkahlert.hello.modal.modal
+import com.bkahlert.hello.quicklink.QuickLinks
 import dev.fritz2.core.Store
 import dev.fritz2.core.storeOf
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.serializer
 
 val PlaygroundContainer = SimplePage(
     id = "playground",
@@ -35,7 +34,7 @@ val PlaygroundContainer = SimplePage(
     )
 
     val activeEditor: Store<BookmarkEditor?> = storeOf(null)
-    val bookmarks = Bookmarks.invoke(propsStore, Bookmarks.DEFAULT_VALUE, Bookmarks.DEFAULT_KEY).apply {
+    val bookmarks = QuickLinks(propsStore.mapByKeyOrDefault("quick-links", QuickLinks.DefaultLinks)).apply {
         edit handledBy { editor ->
             editor.addOrUpdate.map { null } handledBy activeEditor.update
             editor.delete.map { null } handledBy activeEditor.update
@@ -74,47 +73,4 @@ val PlaygroundContainer = SimplePage(
 
     bookmarks.edit(bookmarks.current.first())
     propsView(propsStore)
-}
-
-class Bookmarks(
-    val store: SyncStore<List<Bookmark>>,
-) : SyncStore<List<Bookmark>> by store {
-
-    val addOrUpdate = handle<Bookmark> { bookmarks, bookmark ->
-        val existing = bookmarks.firstOrNull { it.id == bookmark.id }
-        if (existing == null) {
-            bookmarks + bookmark
-        } else {
-            bookmarks.map { if (it.id == bookmark.id) bookmark else it }
-        }
-    }
-
-    val edit = handleAndEmit<Bookmark, BookmarkEditor> { bookmarks, bookmark ->
-        emit(BookmarkEditor(
-            bookmarks.none { it.id == bookmark.id },
-            bookmark,
-        ).also {
-            it.addOrUpdate handledBy addOrUpdate
-            it.delete handledBy delete
-        })
-        bookmarks
-    }
-
-    val delete = handle<Bookmark> { bookmarks, bookmark ->
-        bookmarks.filter { it.id != bookmark.id }
-    }
-
-    companion object {
-        val DEFAULT_KEY: String = "quick-links"
-        val DEFAULT_VALUE: List<Bookmark> = listOf(
-            Bookmark(
-                title = "GitHub",
-                href = Uri("https://github.com/bkahlert"),
-                icon = Uri("https://github.githubassets.com/favicons/favicon.svg"),
-            ),
-        )
-
-        fun invoke(propsStore: PropsStore, defaultValue: List<Bookmark>, id: String): Bookmarks =
-            Bookmarks(propsStore.map(id, defaultValue, serializer()))
-    }
 }

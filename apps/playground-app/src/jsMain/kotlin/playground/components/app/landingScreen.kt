@@ -2,8 +2,8 @@
 
 package playground.components.app
 
-import com.bkahlert.hello.fritz2.components.assets.Images.HelloFavicon
-import com.bkahlert.hello.fritz2.components.icon
+import com.bkahlert.hello.icon.assets.Images.HelloFavicon
+import com.bkahlert.hello.icon.icon
 import dev.fritz2.core.RenderContext
 
 public fun RenderContext.landingScreen() {
