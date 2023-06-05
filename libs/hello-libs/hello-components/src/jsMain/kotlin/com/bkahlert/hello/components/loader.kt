@@ -1,5 +1,6 @@
 package com.bkahlert.hello.components
 
+import com.bkahlert.hello.fritz2.srOnly
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.Tag
 import dev.fritz2.core.classes
@@ -24,6 +25,6 @@ public fun RenderContext.loader(
         div("absolute inset-0 border-current border-opacity-50 border-t-2 animate-spin rounded-full") {
         }
         hook(ariaLabelId)
-        screenReaderOnly(ariaLabelId("title")) { +text }
+        srOnly(ariaLabelId("title")) { +text }
     }
 }

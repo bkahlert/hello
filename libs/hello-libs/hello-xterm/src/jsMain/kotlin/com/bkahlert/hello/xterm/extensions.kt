@@ -17,7 +17,7 @@ public val Terminal.dimensions: ITerminalDimensions
 /** A flow of [Terminal.RenderEvent] instances. */
 public val Terminal.renderings: Flow<Terminal.RenderEvent>
     get() {
-        val logger = ConsoleLogger("hello.ws-ssh.render")
+        val logger = ConsoleLogger("hello.xterm.render")
         return callbackFlow {
             val listener = onRender { event: Terminal.RenderEvent ->
                 trySend(event).onFailure { logger.error("Failed to send RenverEvent", event, it) }
@@ -29,7 +29,7 @@ public val Terminal.renderings: Flow<Terminal.RenderEvent>
 /** A flow of title changes. */
 public val Terminal.titleChanges: Flow<String>
     get() {
-        val logger = ConsoleLogger("hello.ws-ssh.title")
+        val logger = ConsoleLogger("hello.xterm.title")
         return callbackFlow {
             val listener = onTitleChange { title: String ->
                 trySend(title).onFailure { logger.error("Failed to send title", title, it) }

@@ -1,14 +1,12 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.app.user
 
 import com.bkahlert.hello.app.session.FakeSession
 import com.bkahlert.hello.app.session.SessionStore
 import com.bkahlert.hello.app.session.TestUserInfo
-import com.bkahlert.hello.components.SimplePage
 import com.bkahlert.hello.icon.assets.Images.JohnDoeWithBackground
 import com.bkahlert.hello.icon.heroicons.HeroIcons
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
+import com.bkahlert.hello.page.SimplePage
 import com.bkahlert.hello.showcase.showcase
 import com.bkahlert.hello.showcase.showcases
 import com.bkahlert.kommons.auth.OpenIDStandardClaims

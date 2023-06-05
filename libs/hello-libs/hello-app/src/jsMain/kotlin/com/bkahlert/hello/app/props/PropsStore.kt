@@ -1,5 +1,3 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.app.props
 
 import com.bkahlert.hello.app.props.StoragePropsDataSource.Companion.InMemoryPropsDataSource
@@ -38,9 +36,20 @@ public class PropsStore(
     }
 
     public val import: EmittingHandler<File, Throwable> = handleAndEmit { current, file ->
+        logger.info("Importing ${file.name}")
         LenientAndPrettyJson.runCatching {
-            val imported = LenientAndPrettyJson.decodeFromString<Map<String, JsonElement>>(file.readText())
-            require(imported.isEmpty() || imported.keys.any { it in trackedKeys }) { "No valid settings found. Expected at least one of $trackedKeys" }
+            val imported = LenientAndPrettyJson.decodeFromString<Map<String, JsonElement>>(file.readText()).let {
+                val applets = it["applets"]
+                if (applets != null) {
+                    it - "applets" + mapOf("widgets" to applets)
+                } else {
+                    it
+                }
+            }
+            val matchedKeys = imported.keys.intersect(trackedKeys)
+            logger.info("Found settings for ${matchedKeys.joinToString(", ")}")
+
+            require(imported.isEmpty() || matchedKeys.isNotEmpty()) { "No valid settings found. Expected at least one of $trackedKeys" }
             imported
         }.getOrElse {
             logger.error("Failed to import ${file.name}", it)

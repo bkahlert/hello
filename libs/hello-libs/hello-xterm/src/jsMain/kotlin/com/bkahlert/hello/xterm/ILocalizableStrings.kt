@@ -1,10 +1,10 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
  * The set of localizable strings.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface ILocalizableStrings {
     /**
      * The aria label for the underlying input textarea for the terminal.

@@ -1,3 +1,5 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
@@ -5,8 +7,6 @@ package com.bkahlert.hello.xterm
  * @param onDispose event listener and
  * @param isDisposed property.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface IDisposableWithEvent : IDisposable {
     /**
      * Event listener to get notified when this gets disposed.

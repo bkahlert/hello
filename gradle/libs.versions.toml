@@ -11,6 +11,7 @@ kotlin-wrappers = "1.0.0-pre.507"
 kotlinx-coroutines = "1.6.4"
 kotlinx-serialization = "1.5.0"
 ktor = "2.2.3"
+openai-client = "3.2.5"
 testcontainers = "1.17.6"
 
 [libraries]
@@ -21,4 +22,5 @@ kotlin-wrapper-bom = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-b
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-bom = { module = "org.jetbrains.kotlinx:kotlinx-serialization-bom", version.ref = "kotlinx-serialization" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
+openai-client-bom = { module = "com.aallam.openai:openai-client-bom", version.ref = "openai-client" }
 testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }

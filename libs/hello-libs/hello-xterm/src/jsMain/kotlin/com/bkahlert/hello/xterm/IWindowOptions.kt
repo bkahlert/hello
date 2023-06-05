@@ -1,3 +1,5 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
@@ -26,8 +28,6 @@ package com.bkahlert.hello.xterm
  * (even those without a default implementation) are guarded by the boolean flag
  * and disabled by default.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface IWindowOptions {
     /**
      * Ps=1    De-iconify window.

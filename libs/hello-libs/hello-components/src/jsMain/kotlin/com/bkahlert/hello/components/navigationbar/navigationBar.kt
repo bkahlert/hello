@@ -1,8 +1,8 @@
 package com.bkahlert.hello.components.navigationbar
 
-import com.bkahlert.hello.components.screenReaderOnly
 import com.bkahlert.hello.fritz2.ContentBuilder
 import com.bkahlert.hello.fritz2.ContentBuilder2
+import com.bkahlert.hello.fritz2.srOnly
 import com.bkahlert.hello.icon.assets.Images
 import com.bkahlert.hello.icon.heroicons.MiniHeroIcons
 import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
@@ -296,7 +296,7 @@ public fun <T> RenderContext.navigationBar(
                             "hover:bg-glass hover:text-default dark:hover:text-invert",
                         )
                     ) {
-                        screenReaderOnly { +"Open main menu" }
+                        srOnly { +"Open main menu" }
                         opened.render {
                             icon("shrink-0 block h-6 w-6", if (it) OutlineHeroIcons.x_mark else OutlineHeroIcons.bars_3)
                         }

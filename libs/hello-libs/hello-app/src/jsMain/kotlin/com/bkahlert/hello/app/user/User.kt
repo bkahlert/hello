@@ -1,10 +1,12 @@
 package com.bkahlert.hello.app.user
 
+import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
 import com.bkahlert.kommons.auth.OpenIDStandardClaims
 import com.bkahlert.kommons.auth.Session.AuthorizedSession
 import com.bkahlert.kommons.auth.UserInfo
 import com.bkahlert.kommons.json.LenientJson
 import com.bkahlert.kommons.ktor.JsonHttpClient
+import com.bkahlert.kommons.uri.GravatarImageUri
 import com.bkahlert.kommons.uri.Uri
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -26,3 +28,6 @@ public data class User(
         public const val USERNAME_CLAIM_NAME: String = "username"
     }
 }
+
+public val User.icon: Uri
+    get() = picture ?: email?.let { GravatarImageUri(it, size = 256) } ?: SolidHeroIcons.user_circle

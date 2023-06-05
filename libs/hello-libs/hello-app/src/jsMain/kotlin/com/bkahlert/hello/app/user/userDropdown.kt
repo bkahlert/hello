@@ -1,15 +1,12 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.app.user
 
 import com.bkahlert.hello.app.session.SessionStore
-import com.bkahlert.hello.components.screenReaderOnly
+import com.bkahlert.hello.fritz2.srOnly
 import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
 import com.bkahlert.hello.icon.icon
 import com.bkahlert.kommons.auth.Session
 import com.bkahlert.kommons.auth.diagnostics
-import com.bkahlert.kommons.uri.GravatarImageUri
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.Tag
 import dev.fritz2.core.classes
@@ -45,14 +42,13 @@ public fun RenderContext.userDropdown(
 
                     if (user != null) {
                         val nickname = user.nickname
-                        val picture = user.picture ?: user.email?.let { GravatarImageUri(it, size = 256) } ?: SolidHeroIcons.user_circle
-                        icon("shrink-0 h-8 w-8 rounded-full", picture) { attr("title", nickname) }
+                        icon("shrink-0 h-8 w-8 rounded-full", user.icon) { attr("title", nickname) }
                     } else {
                         icon("shrink-0 h-8 w-8 hidden group-hover:block", SolidHeroIcons.user_circle)
                         icon("shrink-0 h-8 w-8 group-hover:hidden", OutlineHeroIcons.user_circle)
                     }
 
-                    screenReaderOnly { opened.map { if (it) "Close Menu" else "Open Menu" }.renderText() }
+                    srOnly { opened.map { if (it) "Close Menu" else "Open Menu" }.renderText() }
                     customize?.invoke(this)
                 }
             }

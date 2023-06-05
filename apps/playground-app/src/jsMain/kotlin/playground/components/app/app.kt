@@ -1,5 +1,3 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package playground.components.app
 
 import com.bkahlert.hello.app.AppState
@@ -14,7 +12,7 @@ import dev.fritz2.core.classes
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 
-public fun RenderContext.app(
+fun RenderContext.app(
     appStore: AppStore,
     content: ContentBuilder<Element>? = null,
 ) {

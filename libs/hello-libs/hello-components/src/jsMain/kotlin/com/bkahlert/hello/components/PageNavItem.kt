@@ -2,6 +2,8 @@ package com.bkahlert.hello.components
 
 import com.bkahlert.hello.components.navigationbar.SimpleNavItem
 import com.bkahlert.hello.components.navigationbar.SimpleNavItemGroup
+import com.bkahlert.hello.page.Page
+import com.bkahlert.hello.page.ParentPage
 import com.bkahlert.kommons.uri.Uri
 
 public class PageNavItem(page: Page) : SimpleNavItem<Page>(page) {

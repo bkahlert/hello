@@ -12,7 +12,7 @@ import org.w3c.dom.events.EventListener
 import org.w3c.dom.events.EventTarget
 import org.w3c.dom.events.KeyboardEvent
 
-private val logger = ConsoleLogger("EventFlow")
+private val logger = ConsoleLogger("hello.events")
 
 /**
  * Returns a cold [Flow] that starts emitting events registered

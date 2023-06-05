@@ -1,10 +1,10 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
  * An object containing options for the terminal.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface ITerminalOptions {
     /**
      * Whether to allow the use of proposed API. When false, any usage of APIs

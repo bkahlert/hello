@@ -65,7 +65,7 @@ public sealed class AuthorizationCodeFlowState(
         override val authorizationServer: OAuth2AuthorizationServer,
         override val clientId: String,
     ) : AuthorizationCodeFlowState(authorizationServer, clientId), Session.UnauthorizedSession {
-        private val logger by ConsoleLogging
+        private val logger by ConsoleLogging(namespace = "auth")
 
         public override suspend fun authorize(): Session {
             logger.info("Preparing authorization with ${authorizationServer.authorizationEndpoint}")
@@ -102,7 +102,7 @@ public sealed class AuthorizationCodeFlowState(
         val authorizationCode: String,
         val state: String?,
     ) : AuthorizationCodeFlowState(authorizationServer, clientId) {
-        private val logger by ConsoleLogging
+        private val logger by ConsoleLogging(namespace = "auth")
 
         suspend fun getTokens(): Authorized {
             logger.info("Authorization code received: $authorizationCode")
@@ -136,7 +136,7 @@ public sealed class AuthorizationCodeFlowState(
         override val clientId: String,
         private val tokensStorage: TokenInfoStorage,
     ) : AuthorizationCodeFlowState(authorizationServer, clientId), Session.AuthorizedSession {
-        private val logger by ConsoleLogging
+        private val logger by ConsoleLogging(namespace = "auth")
         private val tokenInfo get() = tokensStorage.get(authorizationServer.issuer, clientId) ?: error("Failed to load tokens")
 
         /** User information contained in the cached [IdToken] */

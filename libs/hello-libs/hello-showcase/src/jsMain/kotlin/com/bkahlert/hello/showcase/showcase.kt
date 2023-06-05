@@ -1,5 +1,3 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.showcase
 
 import com.bkahlert.hello.fritz2.ContentBuilder
@@ -41,7 +39,7 @@ private fun RenderContext.splitView(
     return custom("sp-split-view", baseClass, id, scope, content ?: {})
 }
 
-private val logger by ConsoleLogging("Showcase")
+private val logger by ConsoleLogging("hello.showcase")
 
 public fun RenderContext.showcase(
     name: String,

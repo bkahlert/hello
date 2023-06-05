@@ -1,7 +1,7 @@
 package com.bkahlert.hello.modal
 
 import com.bkahlert.hello.fritz2.ContentBuilder1
-import com.bkahlert.kommons.randomString
+import com.bkahlert.kommons.string
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.animationDone
@@ -10,6 +10,7 @@ import dev.fritz2.core.transition
 import dev.fritz2.headless.foundation.Aria
 import kotlinx.dom.removeClass
 import org.w3c.dom.HTMLDialogElement
+import kotlin.random.Random
 
 /**
  * Renders a modal dialog with the specified [classes] and [content].
@@ -37,7 +38,7 @@ public fun RenderContext.modal(
         "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
     )
 
-    val labelledbyId = randomString()
+    val labelledbyId = Random.string()
     attr("role", Aria.Role.dialog)
     attr("aria-labelledby", labelledbyId)
     attr("aria-modal", true)

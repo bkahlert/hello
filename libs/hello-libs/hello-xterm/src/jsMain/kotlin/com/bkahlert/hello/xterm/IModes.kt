@@ -1,10 +1,10 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
  * Terminal modes as set by SM/DECSET.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface IModes {
     /**
      * Application Cursor Keys (DECCKM): `CSI ? 1 h`

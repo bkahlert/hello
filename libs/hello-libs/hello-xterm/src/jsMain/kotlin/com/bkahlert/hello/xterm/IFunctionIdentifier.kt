@@ -1,3 +1,5 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
@@ -26,8 +28,6 @@ package com.bkahlert.hello.xterm
  * Notes: OSC command registration is handled differently (see addOscHandler)
  *        APC, PM or SOS is currently not supported.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface IFunctionIdentifier {
     /**
      * Optional prefix byte, must be in range \x3c .. \x3f.

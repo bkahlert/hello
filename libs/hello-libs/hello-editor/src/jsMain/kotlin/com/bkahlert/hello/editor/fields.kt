@@ -79,7 +79,7 @@ public fun <D> RenderContext.selectField(
             }
         }.also(::mergeValidationMessages)
     }
-    listboxItems("form-field flex flex-col", tag = RenderContext::ul) {
+    listboxItems("form-field flex flex-col max-h-[80vh] overflow-y-auto", tag = RenderContext::ul) {
         placement = Placement.bottom
         transition(
             opened,

@@ -25,7 +25,7 @@ public class RemotePropsDataSource(
     private val endpoint: Uri,
     private val client: HttpClient,
 ) : PropsDataSource {
-    private val logger by ConsoleLogging
+    private val logger by ConsoleLogging("hello.props.remote")
 
     override suspend fun get(): Map<String, JsonElement> = logger.grouping(::get) {
         client.get("$endpoint").body()

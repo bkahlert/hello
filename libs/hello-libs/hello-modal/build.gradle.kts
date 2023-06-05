@@ -11,7 +11,7 @@ kotlin {
         jsMain {
             dependencies {
                 api(project(":hello-fritz2"))
-                implementation("com.bkahlert.kommons:kommons-core") { because("randomString") }
+                implementation("com.bkahlert.kommons:kommons-random")
             }
         }
     }

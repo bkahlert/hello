@@ -1,3 +1,5 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 import js.typedarrays.Uint8Array
@@ -6,10 +8,8 @@ import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.events.KeyboardEvent
 
 /**
- * The class that represents an xterm.js terminal.
+ * The class that represents a xterm.js terminal.
  */
-@JsModule("xterm")
-@JsNonModule
 public external class Terminal : IDisposable {
     /**
      * The element containing the terminal.
@@ -26,41 +26,41 @@ public external class Terminal : IDisposable {
      * `ITerminalOptions.rows` to set this in the constructor and
      * `Terminal.resize` for when the terminal exists.
      */
-    public val rows: Number;
+    public val rows: Number
 
     /**
      * The number of columns in the terminal's viewport. Use
      * `ITerminalOptions.cols` to set this in the constructor and
      * `Terminal.resize` for when the terminal exists.
      */
-    public val cols: Number;
+    public val cols: Number
 
     /**
      * Access to the terminal's normal and alt buffer.
      */
-    public val buffer: dynamic;
+    public val buffer: dynamic
 
     /**
      * (EXPERIMENTAL) Get all markers registered against the buffer. If the alt
      * buffer is active this will always return [].
      */
-    public val markers: Array<IMarker>;
+    public val markers: Array<IMarker>
 
     /**
      * Get the parser interface to register custom escape sequence handlers.
      */
-    public val parser: IParser;
+    public val parser: IParser
 
     /**
      * (EXPERIMENTAL) Get the Unicode handling interface
      * to register and switch Unicode version.
      */
-    public val unicode: IUnicodeHandling;
+    public val unicode: IUnicodeHandling
 
     /**
      * Gets the terminal modes as set by SM/DECSET.
      */
-    public val modes: IModes;
+    public val modes: IModes
 
     /**
      * Gets or sets the terminal options. This supports setting multiple
@@ -96,20 +96,14 @@ public external class Terminal : IDisposable {
      * };
      * ```
      */
-    public var options: ITerminalOptions;
+    public var options: ITerminalOptions
 
     /**
      * Creates a new `Terminal` object.
      *
      * @param options An object containing a set of options.
      */
-    public constructor(options: ITerminalOptions? = definedExternally);
-    /**
-     * Creates a new `Terminal` object.
-     *
-     * @param options An object containing a set of options.
-     */
-    public constructor(options: ITerminalInitOnlyOptions);
+    public constructor(options: com.bkahlert.hello.xterm.ITerminalOptions? = definedExternally)
 
     public interface KeyEvent {
         public val key: String
@@ -235,7 +229,7 @@ public external class Terminal : IDisposable {
      * @param x The number of columns to resize to.
      * @param y The number of rows to resize to.
      */
-    public fun resize(columns: Number, rows: Number): Unit;
+    public fun resize(columns: Number, rows: Number): Unit
 
     /**
      * Opens the terminal within an element.
@@ -306,14 +300,14 @@ public external class Terminal : IDisposable {
     /**
      * Selects all text within the terminal.
      */
-    public fun selectAll(): Unit;
+    public fun selectAll(): Unit
 
     /**
      * Selects text in the buffer between 2 lines.
      * @param start The 0-based line index to select from (inclusive).
      * @param end The 0-based line index to select to (inclusive).
      */
-    public fun selectLines(start: Number, end: Number): Unit;
+    public fun selectLines(start: Number, end: Number): Unit
 
     /*
      * Disposes of the terminal, detaching it from the DOM and removing any
@@ -326,34 +320,34 @@ public external class Terminal : IDisposable {
      * Scroll the display of the terminal
      * @param amount The number of lines to scroll down (negative scroll up).
      */
-    public fun scrollLines(amount: Number): Unit;
+    public fun scrollLines(amount: Number): Unit
 
     /**
      * Scroll the display of the terminal by a number of pages.
      * @param pageCount The number of pages to scroll (negative scrolls up).
      */
-    public fun scrollPages(pageCount: Number): Unit;
+    public fun scrollPages(pageCount: Number): Unit
 
     /**
      * Scrolls the display of the terminal to the top.
      */
-    public fun scrollToTop(): Unit;
+    public fun scrollToTop(): Unit
 
     /**
      * Scrolls the display of the terminal to the bottom.
      */
-    public fun scrollToBottom(): Unit;
+    public fun scrollToBottom(): Unit
 
     /**
      * Scrolls to a line within the buffer.
      * @param line The 0-based line index to scroll to.
      */
-    public fun scrollToLine(line: Number): Unit;
+    public fun scrollToLine(line: Number): Unit
 
     /**
      * Clear the entire buffer, making the prompt line the new first line.
      */
-    public fun clear(): Unit;
+    public fun clear(): Unit
 
     /**
      * Write data to the terminal.
@@ -363,7 +357,7 @@ public external class Terminal : IDisposable {
      * @param callback Optional callback that fires when the data was processed
      * by the parser.
      */
-    public fun write(data: String, callback: (() -> Unit)? = definedExternally): Unit;
+    public fun write(data: String, callback: (() -> Unit)? = definedExternally): Unit
 
     /**
      * Write data to the terminal.
@@ -373,7 +367,7 @@ public external class Terminal : IDisposable {
      * @param callback Optional callback that fires when the data was processed
      * by the parser.
      */
-    public fun write(data: Uint8Array, callback: (() -> Unit)? = definedExternally): Unit;
+    public fun write(data: Uint8Array, callback: (() -> Unit)? = definedExternally): Unit
 
     /**
      * Writes data to the terminal, followed by a break line character (\n).
@@ -383,7 +377,7 @@ public external class Terminal : IDisposable {
      * @param callback Optional callback that fires when the data was processed
      * by the parser.
      */
-    public fun writeln(data: String, callback: (() -> Unit)? = definedExternally): Unit;
+    public fun writeln(data: String, callback: (() -> Unit)? = definedExternally): Unit
 
     /**
      * Writes data to the terminal, followed by a break line character (\n).
@@ -393,13 +387,13 @@ public external class Terminal : IDisposable {
      * @param callback Optional callback that fires when the data was processed
      * by the parser.
      */
-    public fun writeln(data: Uint8Array, callback: (() -> Unit)? = definedExternally): Unit;
+    public fun writeln(data: Uint8Array, callback: (() -> Unit)? = definedExternally): Unit
 
     /**
      * Writes text to the terminal, performing the necessary transformations for pasted text.
      * @param data The text to write to the terminal.
      */
-    public fun paste(data: String): Unit;
+    public fun paste(data: String): Unit
 
     /**
      * Tells the renderer to refresh terminal content between two rows
@@ -407,7 +401,7 @@ public external class Terminal : IDisposable {
      * @param start The row to start from (between 0 and this.rows - 1).
      * @param end The row to end at (between start and this.rows - 1).
      */
-    public fun refresh(start: Number, end: Number): Unit;
+    public fun refresh(start: Number, end: Number): Unit
 
     /**
      * Clears the texture atlas of the canvas renderer if it's active. Doing this will force a
@@ -415,16 +409,16 @@ public external class Terminal : IDisposable {
      * example Chromium/Nvidia has an issue where the texture gets messed up when resuming the OS
      * from sleep.
      */
-    public fun clearTextureAtlas(): Unit;
+    public fun clearTextureAtlas(): Unit
 
     /**
      * Perform a full reset (RIS, aka '\x1bc').
      */
-    public fun reset(): Unit;
+    public fun reset(): Unit
 
     /**
      * Loads an addon into this instance of xterm.js.
      * @param addon The addon to load.
      */
-    public fun loadAddon(addon: ITerminalAddon): Unit;
+    public fun loadAddon(addon: ITerminalAddon): Unit
 }

@@ -1,10 +1,10 @@
+@file:JsModule("xterm-addon-fit")
+
 package com.bkahlert.hello.xterm
 
 /**
- * Reprepresents the dimensions of a terminal.
+ * Represents the dimensions of a terminal.
  */
-@JsModule("xterm-addon-fit")
-@JsNonModule
 public external interface ITerminalDimensions {
     /**
      * The number of rows in the terminal.

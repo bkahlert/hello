@@ -36,7 +36,6 @@ public object Images : Iterable<DataUri> {
     }
 }
 
-@Suppress("LongLine")
 private const val BKAHLERT_FAVICON = "" +
     "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC" +
     "9zdmciIHZpZXdCb3g9IjcgMTAgMTE1IDEwOSI+PGcgc3R5bGU9Imlzb2xhdGlvbjppc29sYX" +

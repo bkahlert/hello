@@ -1,11 +1,11 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
  * (EXPERIMENTAL) Unicode version provider.
  * Used to register custom Unicode versions with `Terminal.unicode.register`.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface IUnicodeVersionProvider {
     /**
      * String indicating the Unicode version provided.

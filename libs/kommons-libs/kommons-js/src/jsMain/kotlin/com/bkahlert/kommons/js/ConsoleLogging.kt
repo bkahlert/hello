@@ -9,7 +9,10 @@ import kotlin.reflect.KProperty
  */
 public object ConsoleLogging {
 
-    public fun logger(name: String): ConsoleLogger = ConsoleLogger(name)
+    public fun logger(
+        name: String,
+        namespace: String? = null,
+    ): ConsoleLogger = ConsoleLogger(namespace?.let { "$it.$name" } ?: name)
 
     /**
      * Returns a logger property of which the name is derived from
@@ -23,10 +26,15 @@ public object ConsoleLogging {
     /**
      * Provides [ConsoleLogger] instances with the specified [name].
      */
-    public operator fun invoke(name: String? = null, init: (ConsoleLogger) -> Unit = {}): PropertyDelegateProvider<Any?, Lazy<ConsoleLogger>> =
+    public operator fun invoke(
+        name: String? = null,
+        namespace: String? = null,
+        init: (ConsoleLogger) -> Unit = {}
+    ): PropertyDelegateProvider<Any?, Lazy<ConsoleLogger>> =
         LazyLoggerPropertyDelegateProvider { thisRef ->
-            ConsoleLogger(
-                name ?: thisRef.loggerName(::provideDelegate)
+            logger(
+                name = name ?: thisRef.loggerName(::provideDelegate),
+                namespace = namespace,
             ).apply(init)
         }
 

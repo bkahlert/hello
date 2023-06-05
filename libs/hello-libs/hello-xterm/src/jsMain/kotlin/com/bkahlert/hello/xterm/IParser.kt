@@ -1,3 +1,5 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
@@ -20,8 +22,6 @@ package com.bkahlert.hello.xterm
  * thus use async handlers only as a last resort or for actions that have
  * to rely on async interfaces itself.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface IParser {
     /**
      * Adds a handler for CSI escape sequences.

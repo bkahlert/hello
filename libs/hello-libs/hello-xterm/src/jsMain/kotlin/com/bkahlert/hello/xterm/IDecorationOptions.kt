@@ -1,10 +1,10 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
  * Options that define the presentation of the decoration.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface IDecorationOptions {
     /**
      * The line in the terminal where

@@ -1,17 +1,19 @@
 package com.bkahlert.hello.app.showcase
 
 import com.bkahlert.hello.button.button
-import com.bkahlert.hello.components.SimplePage
+import com.bkahlert.hello.chat.chatMessage
 import com.bkahlert.hello.components.headlessui.Item
 import com.bkahlert.hello.components.headlessui.ItemNavItem
 import com.bkahlert.hello.components.navigationbar.navItem
 import com.bkahlert.hello.components.navigationbar.navigationBar
 import com.bkahlert.hello.components.proseBox
+import com.bkahlert.hello.fritz2.ContentBuilder
 import com.bkahlert.hello.icon.headlessui.HeadlessUiIcons
 import com.bkahlert.hello.icon.heroicons.HeroIcons
 import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
 import com.bkahlert.hello.icon.icon
+import com.bkahlert.hello.page.SimplePage
 import com.bkahlert.hello.showcase.LoremIpsum
 import com.bkahlert.hello.showcase.loremIpsumHeader
 import com.bkahlert.hello.showcase.loremIpsumParagraph
@@ -19,11 +21,14 @@ import com.bkahlert.hello.showcase.placeholder
 import com.bkahlert.hello.showcase.showcase
 import com.bkahlert.hello.showcase.showcases
 import com.bkahlert.kommons.js.ConsoleLogger
+import com.bkahlert.kommons.time.Now
 import dev.fritz2.core.Handler
+import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.RootStore
 import dev.fritz2.core.classes
 import dev.fritz2.headless.foundation.utils.popper.Placement
+import org.w3c.dom.HTMLDivElement
 
 public object HeadlessUiShowcases : SimplePage(
     "headless-ui",
@@ -50,6 +55,38 @@ public object HeadlessUiShowcases : SimplePage(
 
         hr { }
 
+        showcases("Chat", SolidHeroIcons.chat_bubble_left) {
+
+            fun RenderContext.chat(content: ContentBuilder<HTMLDivElement>): HtmlTag<HTMLDivElement> = div(
+                classes(
+                    "w-full p-2",
+                    "rounded-xl overflow-hidden shadow-xl",
+                    "bg-default/60 text-default dark:bg-invert/60 dark:text-invert",
+                )
+            ) {
+                content()
+            }
+
+            showcase("Name only") { chat { chatMessage(name = "Name") } }
+            showcase("Image only") { chat { chatMessage(image = { icon("w-8", SolidHeroIcons.user) }) } }
+            showcase("Timestamp only") { chat { chatMessage(timestamp = Now) } }
+            showcase("Status only") { chat { chatMessage(status = "Status") } }
+            showcase("Content only") { chat { chatMessage { +"Content" } } }
+            showcase("All fields") {
+                chat {
+                    chatMessage(
+                        name = "Name",
+                        image = { icon("w-8", SolidHeroIcons.user) },
+                        timestamp = Now,
+                        status = "Status",
+                        end = true,
+                    ) { +"Content" }
+                }
+            }
+        }
+
+        hr { }
+
         showcases("Glass", OutlineHeroIcons.stop) {
             fun RenderContext.glassShowcase(classes: String) {
                 showcase(classes) {
@@ -68,6 +105,25 @@ public object HeadlessUiShowcases : SimplePage(
             glassShowcase("bg-glass bg-glass-invert")
             glassShowcase("bg-glass bg-amber-500/25")
             glassShowcase("bg-glass bg-glass-invert bg-amber-500/25")
+        }
+
+        hr { }
+
+        showcases("Magic", OutlineHeroIcons.sparkles) {
+
+            showcase("text-magic") {
+                div("text-3xl") {
+                    +"(つ◕౪◕)つ─"
+                    +" "
+                    span("text-magic-fast") { +"⋆" }
+                    span("text-magic-fast [animation-delay:-1s]") { +"․" }
+                    span("text-magic-fast [animation-delay:-2s]") { +"*" }
+                    span("text-magic-fast [animation-delay:-3s]") { +"･" }
+                    span("text-magic-fast [animation-delay:-4s]") { +"｡" }
+                    span("text-magic-fast [animation-delay:-5s]") { +"ﾟ" }
+                    span("text-magic font-serif italic") { +"magic" }
+                }
+            }
         }
 
         hr { }

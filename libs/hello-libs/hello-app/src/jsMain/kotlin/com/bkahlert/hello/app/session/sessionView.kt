@@ -1,9 +1,7 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.app.session
 
 import com.bkahlert.hello.button.button
-import com.bkahlert.hello.components.dataView
+import com.bkahlert.hello.dataview.dataView
 import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
 import com.bkahlert.kommons.auth.Session.AuthorizedSession
 import com.bkahlert.kommons.auth.Session.UnauthorizedSession

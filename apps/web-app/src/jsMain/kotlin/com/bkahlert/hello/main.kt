@@ -11,14 +11,14 @@ import com.bkahlert.hello.app.session.sessionView
 import com.bkahlert.hello.app.user.userDropdown
 import com.bkahlert.hello.components.diagnostics
 import com.bkahlert.hello.components.loader
-import com.bkahlert.hello.components.toaster.ConsoleToaster
-import com.bkahlert.hello.components.toaster.DebugConsoleMessageParser
-import com.bkahlert.hello.components.toaster.DefaultConsoleMessageRenderer
 import com.bkahlert.hello.fritz2.scrollTo
 import com.bkahlert.hello.fritz2.syncState
 import com.bkahlert.hello.fritz2.verticalScrollProgresses
 import com.bkahlert.hello.icon.assets.Images
 import com.bkahlert.hello.quicklink.QuickLinks
+import com.bkahlert.hello.toaster.ConsoleToaster
+import com.bkahlert.hello.toaster.DebugConsoleMessageParser
+import com.bkahlert.hello.toaster.DefaultConsoleMessageRenderer
 import com.bkahlert.kommons.color.Color
 import com.bkahlert.kommons.dom.verticalScrollProgress
 import dev.fritz2.core.alt

@@ -1,10 +1,10 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 /**
  * Contains colors to theme the terminal with.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface ITheme {
     /** The default foreground color */
     public var foreground: String?;

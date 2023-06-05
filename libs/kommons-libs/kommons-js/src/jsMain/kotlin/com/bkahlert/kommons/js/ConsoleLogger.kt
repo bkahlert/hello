@@ -21,14 +21,14 @@ public class ConsoleLogger(
     private val namespace = name.replace('.', ':')
 
     private inner class DebuggerDelegate(outputStream: dynamic) {
-        val debug = com.bkahlert.kommons.js.debug(namespace)
+        private val debug = com.bkahlert.kommons.js.debug(namespace)
 
         init {
-            debug.log = outputStream
+            this.debug.log = outputStream
         }
 
         operator fun invoke(vararg args: Any?) {
-            debug.apply(this@ConsoleLogger, args)
+            this.debug.apply(this@ConsoleLogger, args)
         }
     }
 

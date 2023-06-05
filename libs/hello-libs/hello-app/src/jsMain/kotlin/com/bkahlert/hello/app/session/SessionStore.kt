@@ -1,5 +1,3 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.app.session
 
 import com.bkahlert.kommons.auth.Session

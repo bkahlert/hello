@@ -3,7 +3,7 @@ package com.bkahlert.kommons.uri
 import com.bkahlert.kommons.md5
 
 /**
- * Returns the specified [email] converted to
+ * Returns the specified [email] (as is or already MD5 hashed) converted to
  * a [Gravatar profile request URL](https://en.gravatar.com/site/implement/profiles/).
  */
 public fun GravatarProfileUri(
@@ -12,7 +12,7 @@ public fun GravatarProfileUri(
 ): Uri = Uri(
     scheme = "https",
     authority = Authority(null, "www.gravatar.com", null),
-    path = "/${md5(email)}${format?.suffix ?: ""}",
+    path = "/${hash(email)}${format?.suffix ?: ""}",
     query = null,
     fragment = null
 )
@@ -40,7 +40,7 @@ public enum class GravatarProfileDataFormat(
 }
 
 /**
- * Returns the specified [email] converted to
+ * Returns the specified [email] (as is or already MD5 hashed) converted to
  * a [Gravatar image request URL](https://en.gravatar.com/site/implement/images/)
  * with the optional [size].
  */
@@ -50,7 +50,9 @@ public fun GravatarImageUri(
 ): Uri = Uri(
     scheme = "https",
     authority = Authority(null, "www.gravatar.com", null),
-    path = "/avatar/${md5(email)}",
+    path = "/avatar/${hash(email)}",
     query = size?.let { "s=$it" },
     fragment = null
 )
+
+private fun hash(email: String) = if (email.length == 32 && !email.contains('@')) email else md5(email)

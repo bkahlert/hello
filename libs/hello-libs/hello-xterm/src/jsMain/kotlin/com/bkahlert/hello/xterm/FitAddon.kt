@@ -1,11 +1,11 @@
+@file:JsModule("xterm-addon-fit")
+
 package com.bkahlert.hello.xterm
 
 /**
- * An xterm.js addon that enables resizing the terminal to the dimensions of
+ * A xterm.js addon that enables resizing the terminal to the dimensions of
  * its containing element.
  */
-@JsModule("xterm-addon-fit")
-@JsNonModule
 public external class FitAddon : ITerminalAddon {
 
     /**

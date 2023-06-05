@@ -17,7 +17,7 @@ public class StoragePropsDataSource(
 ) : PropsDataSource {
     public constructor(storage: org.w3c.dom.Storage = localStorage) : this(storage.scoped("props"))
 
-    private val logger by ConsoleLogging
+    private val logger by ConsoleLogging("hello.props.${storage::class.js.name}")
 
     private fun serialize(value: JsonElement): String = jsonFormat.encodeToString(value)
     private fun deserialize(value: String): JsonElement = jsonFormat

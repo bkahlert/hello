@@ -1,9 +1,7 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.app.props
 
-import com.bkahlert.hello.components.SimplePage
 import com.bkahlert.hello.icon.heroicons.HeroIcons
+import com.bkahlert.hello.page.SimplePage
 import com.bkahlert.hello.showcase.showcase
 import com.bkahlert.hello.showcase.showcases
 import kotlinx.browser.localStorage

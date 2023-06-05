@@ -1,3 +1,5 @@
+// noinspection JSUnresolvedReference
+
 ;(function (config) {
   const insertAfter = 'css-loader'
   const postcssLoader = {

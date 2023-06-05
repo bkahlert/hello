@@ -1,5 +1,3 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.fritz2
 
 import dev.fritz2.core.HtmlTag
@@ -11,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLSpanElement
 
 /** Returns a [TagFactory] that handles [E] typed elements instead of the generic [Element] as vanilla [RenderContext.custom] does. */
 public fun <T : Tag<*>> custom(localName: String): TagFactory<T> = { renderContext, baseClass, customId, customScope, content ->
@@ -32,5 +31,14 @@ public fun RenderContext.small(
     scope: (ScopeContext.() -> Unit) = {},
     content: HtmlTag<HTMLElement>.() -> Unit
 ): HtmlTag<HTMLElement> = custom("small", baseClass, id, scope, content)
+
+/**
+ * Component only visible to screen readers.
+ */
+public fun RenderContext.srOnly(
+    id: String? = null,
+    scope: (ScopeContext.() -> Unit) = {},
+    content: HtmlTag<HTMLSpanElement>.() -> Unit,
+): HtmlTag<HTMLSpanElement> = span("sr-only", id, scope, content)
 
 public operator fun Flow<Boolean>.not(): Flow<Boolean> = map { !it }

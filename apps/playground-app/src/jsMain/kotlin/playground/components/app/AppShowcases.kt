@@ -1,16 +1,14 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package playground.components.app
 
 import com.bkahlert.hello.app.AppStore
 import com.bkahlert.hello.app.props.StoragePropsDataSource
 import com.bkahlert.hello.app.session.FakeSession
-import com.bkahlert.hello.components.SimplePage
 import com.bkahlert.hello.icon.heroicons.HeroIcons
+import com.bkahlert.hello.page.SimplePage
 import com.bkahlert.hello.showcase.showcase
 import com.bkahlert.hello.showcase.showcases
 
-public val AppShowcases: SimplePage = SimplePage(
+val AppShowcases: SimplePage = SimplePage(
     "app",
     "App",
     "App showcases",

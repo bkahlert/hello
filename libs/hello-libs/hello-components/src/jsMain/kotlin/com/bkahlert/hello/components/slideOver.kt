@@ -1,6 +1,7 @@
 package com.bkahlert.hello.components
 
 import com.bkahlert.hello.fritz2.ContentBuilder
+import com.bkahlert.hello.fritz2.srOnly
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
 import com.bkahlert.hello.icon.icon
 import dev.fritz2.core.Keys
@@ -68,7 +69,7 @@ public fun RenderContext.slideOver(
                         )
                         button("rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white") {
                             type("button")
-                            screenReaderOnly { +"Close" }
+                            srOnly { +"Close" }
                             icon("h-6 w-6", SolidHeroIcons.x_mark)
                             clicks handledBy close
                         }

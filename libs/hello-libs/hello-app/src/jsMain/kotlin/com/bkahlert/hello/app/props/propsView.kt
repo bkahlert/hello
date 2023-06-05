@@ -1,8 +1,6 @@
-@file:Suppress("RedundantVisibilityModifier")
-
 package com.bkahlert.hello.app.props
 
-import com.bkahlert.hello.components.dataView
+import com.bkahlert.hello.dataview.dataView
 import com.bkahlert.hello.fritz2.SyncState
 import com.bkahlert.hello.fritz2.lensForElementOrNull
 import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons

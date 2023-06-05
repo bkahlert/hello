@@ -1,6 +1,6 @@
 package com.bkahlert.hello.app.env
 
-import com.bkahlert.hello.components.dataView
+import com.bkahlert.hello.dataview.dataView
 import com.bkahlert.hello.fritz2.lensForFirst
 import com.bkahlert.hello.fritz2.lensForSecond
 import dev.fritz2.core.RenderContext

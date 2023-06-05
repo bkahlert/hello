@@ -10,22 +10,24 @@ import com.bkahlert.hello.app.session.FakeSession
 import com.bkahlert.hello.app.session.SessionShowcases
 import com.bkahlert.hello.app.session.sessionView
 import com.bkahlert.hello.app.showcase.HeadlessUiShowcases
+import com.bkahlert.hello.app.showcase.WidgetShowcases
 import com.bkahlert.hello.app.user.UserShowcases
 import com.bkahlert.hello.app.user.userDropdown
 import com.bkahlert.hello.button.button
-import com.bkahlert.hello.components.PageRouter
-import com.bkahlert.hello.components.ParentPage
-import com.bkahlert.hello.components.SimplePage
+import com.bkahlert.hello.chatbot.ChatbotWidgetShowcases
 import com.bkahlert.hello.components.diagnostics
 import com.bkahlert.hello.components.loader
 import com.bkahlert.hello.components.navigationbar.navigationBar
 import com.bkahlert.hello.components.toNavItems
-import com.bkahlert.hello.components.toaster.ConsoleToaster
-import com.bkahlert.hello.components.toaster.DefaultConsoleMessageRenderer
 import com.bkahlert.hello.fritz2.syncState
 import com.bkahlert.hello.icon.assets.Images
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
 import com.bkahlert.hello.icon.icon
+import com.bkahlert.hello.page.PageRouter
+import com.bkahlert.hello.page.ParentPage
+import com.bkahlert.hello.page.SimplePage
+import com.bkahlert.hello.toaster.ConsoleToaster
+import com.bkahlert.hello.toaster.DefaultConsoleMessageRenderer
 import dev.fritz2.core.render
 import dev.fritz2.core.storeOf
 import dev.fritz2.core.transition
@@ -34,8 +36,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import playground.PlaygroundContainer
 import playground.components.app.AppShowcases
-import playground.fritz2.Fritz2DemoPage
-import playground.fritz2.headlessdemo.pages
+import playground.components.fritz2.Fritz2DemoPage
+import playground.components.fritz2.pages
 
 @JsModule("./styles/playground-app.scss")
 private external val PlaygroundStyles: dynamic
@@ -61,6 +63,16 @@ fun main() {
                 UserShowcases,
                 PropsShowcases,
                 AppShowcases,
+            ),
+        ),
+        SimplePage(
+            id = "widgets",
+            name = "Widgets!",
+            description = "Hello! widgets",
+            icon = SolidHeroIcons.squares_plus,
+            pages = listOf(
+                WidgetShowcases,
+                ChatbotWidgetShowcases,
             ),
         ),
         Fritz2DemoPage(pages, "page"),

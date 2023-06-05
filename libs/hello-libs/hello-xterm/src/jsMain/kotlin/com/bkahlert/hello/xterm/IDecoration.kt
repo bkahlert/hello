@@ -1,3 +1,5 @@
+@file:JsModule("xterm")
+
 package com.bkahlert.hello.xterm
 
 import org.w3c.dom.HTMLElement
@@ -5,8 +7,6 @@ import org.w3c.dom.HTMLElement
 /**
  * Represents a decoration in the terminal that is associated with a particular marker and DOM element.
  */
-@JsModule("xterm")
-@JsNonModule
 public external interface IDecoration : IDisposableWithEvent {
     /*
      * The marker for the decoration in the terminal.

@@ -144,7 +144,7 @@ public class LocationFragmentParameters(
     /** Window of which the [Location]'s [Uri.fragmentParameters] belong to. */
     private val window: Window,
 ) : FragmentParameters {
-    private val logger by ConsoleLogging
+    private val logger by ConsoleLogging("hello.location")
 
     override val caseInsensitiveName: Boolean get() = window.location.fragmentParameters.caseInsensitiveName
     override fun isEmpty(): Boolean = window.location.fragmentParameters.isEmpty()

@@ -117,7 +117,7 @@ public abstract class RootSyncStore<D>(
     protected abstract suspend fun load(): D
     protected abstract suspend fun sync(oldData: D, newData: D): D
 
-    protected val logger: ConsoleLogger by lazy { ConsoleLogger("${this::class.simpleName}@$id") }
+    protected val logger: ConsoleLogger by lazy { ConsoleLogger("hello.${this::class.simpleName}@$id") }
 
     private val _syncState: MutableStateFlow<SyncState<D>> = MutableStateFlow(SyncState.Cached(cached))
     override val syncState: Flow<SyncState<D>> = _syncState.asStateFlow()
@@ -157,6 +157,11 @@ public abstract class RootSyncStore<D>(
     init {
         init()
     }
+}
+
+public fun <D> syncStoreOf(parent: Store<D>): SyncStore<D> = object : RootSyncStore<D>(parent.current) {
+    override suspend fun load(): D = parent.current
+    override suspend fun sync(oldData: D, newData: D): D = newData.also { parent.update(it) }
 }
 
 

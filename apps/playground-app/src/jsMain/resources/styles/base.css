@@ -106,14 +106,14 @@
 
   .app-item { @apply snap-center relative px-[--app-item-padding-x] py-[--app-item-padding-y]; }
 
-  .applet { @apply snap-center relative px-[--app-item-padding-x] py-[--app-item-padding-y] h-[--app-item-height] grid;
+  .widget { @apply snap-center relative px-[--app-item-padding-x] py-[--app-item-padding-y] h-[--app-item-height] grid;
     grid-template-rows: 1fr minmax(1px, 100%); }
-  .applet .applet-controls { @apply flex items-center justify-between m-3 text-default dark:text-invert font-medium; }
+  .widget .widget-controls { @apply flex items-center justify-between m-3 text-default dark:text-invert font-medium; }
 
   @media (max-width: theme('screens.lg')) and (orientation: landscape) {
     .app { --nav-height: 0px; --app-item-height: 100svh; }
     .app-header { display: none; }
-    .app-item, .applet { padding: max(var(--sat), 1rem) max(var(--sar), 1rem) max(var(--sab), 1rem) max(var(--sal), 1rem); }
+    .app-item, .widget { padding: max(var(--sat), 1rem) max(var(--sar), 1rem) max(var(--sab), 1rem) max(var(--sal), 1rem); }
   }
   .panel { @apply h-full max-h-full flex flex-col justify-center border border-gray-500/40 bg-hero-diagonal-lines-gray-500-40 rounded-xl; }
   .panel > .panel-content { @apply rounded-xl bg-gray-500/40 ring-8 ring-gray-500/40 overflow-hidden; }
@@ -183,6 +183,28 @@
 }
 
 
+@layer components {
+  .bg-magic {
+    --magic-gradient-stops: rgb(41 171 226), rgb(100 139 224), rgb(163 94 187), rgb(194 30 115), rgb(247 79 87), rgb(255 146 52), rgb(235 178 29),
+    rgb(203 207 40), rgb(153 196 53), rgb(105 183 69), rgb(4 169 113), rgb(0 151 139), rgb(1 129 143), rgb(0 144 170), rgb(0 158 198), rgb(41 171 226);
+    background-image: radial-gradient(circle at 50% 50%, var(--magic-gradient-stops)), radial-gradient(in oklch circle at 0 0, var(--magic-gradient-stops));
+  }
+
+  .animate-magic { @apply bg-[length:1500%_1500%] animate-[magic_60s_ease_infinite] motion-reduce:[animation-duration:180s]; }
+  .animate-magic-fast { @apply bg-[length:800%_800%] animate-[magic_11s_ease_infinite] motion-reduce:[animation-duration:120s]; }
+  @keyframes magic {
+    0% { background-position: 75% 0; }
+    40% { background-position: 0 75%; }
+    50% { background-position: 25% 100%; }
+    90% { background-position: 100% 25%; }
+    100% { background-position: 75% 0; }
+  }
+
+  .text-magic { @apply [text-shadow:0_1px_1px_rgb(255_255_255_/_0.5)] bg-magic bg-clip-text text-transparent animate-magic; }
+  .text-magic-fast { @apply [text-shadow:0_1px_1px_rgb(255_255_255_/_0.5)] bg-magic bg-clip-text text-transparent animate-magic-fast; }
+}
+
+
 @layer utilities {
   @keyframes bg-x-1\/2 {
     0% {background-position: 0 50%;}
@@ -201,36 +223,4 @@
   .debug ~ .debug { @apply ring-pink-500/50; }
   .debug ~ .debug > * { @apply ring-pink-700/50; }
   .debug ~ .debug > * > * { @apply ring-pink-900/75; }
-}
-
-
-@keyframes background-movement {
-  0% { background-position: 75% 0%; }
-  40% { background-position: 0% 75%; }
-  50% { background-position: 25% 100%; }
-  90% { background-position: 100% 25%; }
-  100% { background-position: 75% 0%; }
-}
-.todo {
-  --todo-opacity: 0.2;
-  background: rgb(41, 171, 226, var(--todo-opacity));
-  background: radial-gradient(circle at 50% 50%,
-  rgb(41, 171, 226, var(--todo-opacity)),
-  rgb(100, 139, 224, var(--todo-opacity)),
-  rgb(163, 94, 187, var(--todo-opacity)),
-  rgb(194, 30, 115, var(--todo-opacity)),
-  rgb(247, 79, 87, var(--todo-opacity)),
-  rgb(255, 146, 52, var(--todo-opacity)),
-  rgb(235, 178, 29, var(--todo-opacity)),
-  rgb(203, 207, 40, var(--todo-opacity)),
-  rgb(153, 196, 53, var(--todo-opacity)),
-  rgb(105, 183, 69, var(--todo-opacity)),
-  rgb(4, 169, 113, var(--todo-opacity)),
-  rgb(0, 151, 139, var(--todo-opacity)),
-  rgb(1, 129, 143, var(--todo-opacity)),
-  rgb(0, 144, 170, var(--todo-opacity)),
-  rgb(0, 158, 198, var(--todo-opacity)),
-  rgb(41, 171, 226, var(--todo-opacity)));
-  background-size: 1500% 1500%;
-  animation: background-movement 60s ease infinite;
 }

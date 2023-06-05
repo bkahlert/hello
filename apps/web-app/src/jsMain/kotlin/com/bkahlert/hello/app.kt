@@ -3,116 +3,37 @@ package com.bkahlert.hello
 import com.bkahlert.hello.app.props.PropsStore
 import com.bkahlert.hello.app.session.SessionStore
 import com.bkahlert.hello.app.user.User
-import com.bkahlert.hello.applet.AppletRegistration
-import com.bkahlert.hello.applet.AppletSerializer
-import com.bkahlert.hello.applet.Applets
-import com.bkahlert.hello.applet.AspectRatio
-import com.bkahlert.hello.applet.image.ImageApplet
-import com.bkahlert.hello.applet.preview.FeaturePreview
-import com.bkahlert.hello.applet.preview.FeaturePreviewApplet
-import com.bkahlert.hello.applet.ssh.WsSshApplet
-import com.bkahlert.hello.applet.video.VideoApplet
-import com.bkahlert.hello.applet.website.WebsiteApplet
+import com.bkahlert.hello.app.widgets.DefaultWidgetRegistration
+import com.bkahlert.hello.app.widgets.DefaultWidgets
 import com.bkahlert.hello.button.button
 import com.bkahlert.hello.components.loader
+import com.bkahlert.hello.fritz2.SyncStore
 import com.bkahlert.hello.fritz2.scrollTo
 import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
 import com.bkahlert.hello.icon.icon
+import com.bkahlert.hello.widget.Widget
+import com.bkahlert.hello.widget.WidgetRoute
+import com.bkahlert.hello.widget.WidgetRouter
+import com.bkahlert.hello.widget.Widgets
+import com.bkahlert.hello.widget.serializer
 import com.bkahlert.kommons.dom.ObjectUri
 import com.bkahlert.kommons.dom.download
 import com.bkahlert.kommons.dom.mapTarget
 import com.bkahlert.kommons.json.LenientAndPrettyJson
-import com.bkahlert.kommons.uri.Uri
-import com.bkahlert.kommons.uri.toUri
 import dev.fritz2.core.HtmlTag
+import dev.fritz2.core.Store
 import dev.fritz2.core.Tag
 import dev.fritz2.core.accept
+import dev.fritz2.core.lensOf
 import dev.fritz2.core.type
 import io.ktor.http.ContentType
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encodeToString
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.files.get
-
-@JsModule("./nyancat.svg")
-private external val NyanCatSrc: String
-
-private val appletRegistration by lazy {
-    AppletRegistration().apply {
-        register<FeaturePreviewApplet>(
-            "feature-preview",
-            title = "Feature Preview",
-            description = "Demo of a future feature",
-            icon = SolidHeroIcons.star
-        )
-        register<ImageApplet>(
-            "image",
-            title = "Image",
-            description = "Displays an image",
-            icon = SolidHeroIcons.photo
-        )
-        register<VideoApplet>(
-            "video",
-            title = "Video",
-            description = "Embeds a video",
-            icon = SolidHeroIcons.video_camera
-        )
-        register<WebsiteApplet>(
-            "website", "embed",
-            title = "Website",
-            description = "Embeds an external website",
-            icon = SolidHeroIcons.window
-        )
-        register<WsSshApplet>(
-            "ws-ssh",
-            title = "SSH",
-            description = """Connect to a SSH server via a <a href="https://github.com/bkahlert/ws-ssh">WS-SSH proxy</a>.""",
-            icon = SolidHeroIcons.command_line,
-        )
-    }
-}
-
-private val appletListSerializer by lazy {
-    ListSerializer(AppletSerializer(appletRegistration))
-}
-
-private val defaultApplets by lazy {
-    buildList {
-        add(
-            ImageApplet(
-                id = "nyan-cat",
-                title = "Nyan Cat",
-                src = NyanCatSrc.toUri(),
-                aspectRatio = AspectRatio.video
-            )
-        )
-        add(
-            VideoApplet(
-                id = "rick-astley",
-                title = "Rick Astley",
-                src = Uri("https://www.youtube.com/embed/dQw4w9WgXcQ"),
-            )
-        )
-        add(
-            WebsiteApplet(
-                id = "impossible-color",
-                title = "Impossible color",
-                src = Uri("https://en.wikipedia.org/wiki/Impossible_color"),
-                aspectRatio = AspectRatio.stretch,
-            )
-        )
-        FeaturePreview.values().mapTo(this) {
-            FeaturePreviewApplet(
-                id = "feature-preview-${it.name}",
-                feature = it,
-            )
-        }
-    }
-}
 
 fun Tag<Element>.app(
 ) {
@@ -121,13 +42,36 @@ fun Tag<Element>.app(
     }
 }
 
+private fun widgets(store: SyncStore<List<Widget>>): Widgets {
+
+    val router = WidgetRouter(store)
+
+    val selectionState: Store<Widget?> = router.map(
+        lensOf(
+            id = "",
+            getter = { it?.widget },
+            setter = { p, v -> v?.let { WidgetRoute.Current(v, p?.edit ?: false) } },
+        )
+    )
+
+    val editState: Store<Boolean> = router.map(
+        lensOf(
+            id = "",
+            getter = { it?.edit == true },
+            setter = { p, v -> p?.let { WidgetRoute.Current(it.widget, v) } },
+        )
+    )
+
+    return Widgets(store, DefaultWidgetRegistration, selectionState, editState)
+}
+
 fun Tag<Element>.app(
     sessionStore: SessionStore,
     propsStore: PropsStore,
 ) {
     propsStore
-        .mapByKeyOrDefault("applets", defaultApplets, appletListSerializer)
-        .let { Applets(it, appletRegistration) }
+        .mapByKeyOrDefault("widgets", DefaultWidgets, DefaultWidgetRegistration.serializer())
+        .let { widgets(it) }
         .render(this)
     propsControls(propsStore).className("app-item")
 }
@@ -138,8 +82,8 @@ fun Tag<Element>.app(
     propsStore: PropsStore,
 ) {
     propsStore
-        .mapByKeyOrDefault("applets", defaultApplets, appletListSerializer)
-        .let { Applets(it, appletRegistration) }
+        .mapByKeyOrDefault("widgets", DefaultWidgets, DefaultWidgetRegistration.serializer())
+        .let { widgets(it) }
         .render(this)
     propsControls(propsStore).className("app-item")
 }
@@ -160,7 +104,7 @@ fun Tag<Element>.propsControls(
     div("grid grid-cols-[repeat(auto-fit,_minmax(min(20rem,_100%),_1fr))] gap-8 m-8 items-start") {
         button(
             OutlineHeroIcons.cloud_arrow_down,
-            "Save settings",
+            "Export settings",
             "Make a backup of your current settings by downloading a copy.",
             simple = true,
             inverted = true
@@ -170,7 +114,7 @@ fun Tag<Element>.propsControls(
 
         button(
             OutlineHeroIcons.cloud_arrow_up,
-            "Restore settings",
+            "Import settings",
             "Restore your settings by uploading a previously made copy.",
             simple = true,
             inverted = true

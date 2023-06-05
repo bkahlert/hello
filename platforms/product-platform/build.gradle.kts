@@ -14,6 +14,7 @@ dependencies {
     api(platform(libs.kotlinx.coroutines.bom))
     api(platform(libs.kotlinx.serialization.bom))
     api(platform(libs.ktor.bom))
+    api(platform(libs.openai.client.bom))
 
     // Reactive web apps library, similar to Compose but simpler, https://github.com/jwstegemann/fritz2
     constraints {
