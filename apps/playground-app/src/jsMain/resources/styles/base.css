@@ -28,7 +28,7 @@
     @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75;
   }
 
-  [aria-expanded="true"] { @apply ring ring-white ring-opacity-75; }
+  [aria-haspopup][aria-expanded="true"] { @apply ring ring-white ring-opacity-75; }
 }
 
 @layer components {

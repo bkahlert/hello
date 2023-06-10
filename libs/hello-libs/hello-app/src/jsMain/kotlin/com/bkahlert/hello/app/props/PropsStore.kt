@@ -38,7 +38,7 @@ public class PropsStore(
     public val import: EmittingHandler<File, Throwable> = handleAndEmit { current, file ->
         logger.info("Importing ${file.name}")
         LenientAndPrettyJson.runCatching {
-            val imported = LenientAndPrettyJson.decodeFromString<Map<String, JsonElement>>(file.readText()).let {
+            val imported = decodeFromString<Map<String, JsonElement>>(file.readText()).let {
                 val applets = it["applets"]
                 if (applets != null) {
                     it - "applets" + mapOf("widgets" to applets)

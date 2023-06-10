@@ -101,17 +101,7 @@ fun Tag<Element>.propsControls(
         ObjectUri(ContentType.Application.Json, jsonFormat.encodeToString(props.current)).download("props.json")
     }
 
-    div("grid grid-cols-[repeat(auto-fit,_minmax(min(20rem,_100%),_1fr))] gap-8 m-8 items-start") {
-        button(
-            OutlineHeroIcons.cloud_arrow_down,
-            "Export settings",
-            "Make a backup of your current settings by downloading a copy.",
-            simple = true,
-            inverted = true
-        ).apply {
-            clicks handledBy { downloadProps(props) }
-        }
-
+    div("grid grid-cols-[repeat(auto-fit,_minmax(min(20rem,_100%),1fr))] gap-8 m-8 items-start") {
         button(
             OutlineHeroIcons.cloud_arrow_up,
             "Import settings",
@@ -128,6 +118,16 @@ fun Tag<Element>.propsControls(
                 dragends.mapTarget<HTMLInputElement>() handledBy { it.parentElement?.querySelector("svg")?.classList?.remove("animate-bounce") }
                 changes.mapTarget<HTMLInputElement>().mapNotNull { it.files?.get(0) } handledBy props.import
             }
+        }
+
+        button(
+            OutlineHeroIcons.cloud_arrow_down,
+            "Export settings",
+            "Make a backup of your current settings by downloading a copy.",
+            simple = true,
+            inverted = true
+        ).apply {
+            clicks handledBy { downloadProps(props) }
         }
 
         button(

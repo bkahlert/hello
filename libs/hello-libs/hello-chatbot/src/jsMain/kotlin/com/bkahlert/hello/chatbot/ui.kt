@@ -31,7 +31,7 @@ public fun RenderContext.chat(chatbotSession: ChatbotSession): HtmlTag<HTMLDivEl
     },
 )
 
-private fun RenderContext.chatMeta(chatbotSession: ChatbotSession) = div("w-full h-full debug grid place-items-center") {
+private fun RenderContext.chatMeta(chatbotSession: ChatbotSession) = div("w-full h-full grid place-items-center") {
     className(chatbotSession.data.map { if (it.isEmpty()) "min-h-[10rem]" else "hidden" })
     chatbotSession.data.render(this) {
         div("flex gap-2 items-center") {

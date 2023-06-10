@@ -21,5 +21,16 @@ public suspend fun Uri.fetchMetadata(): Metadata? {
     val domain = toString().encodeURLQueryComponent()
     logger.info("Fetching metadata for $domain")
     val uri = endpoint.replace(Regex(":domain"), domain).toUriOrNull() ?: return null
-    return uri.fetch().takeIf { it.ok }?.json()?.await()?.unsafeCast<Metadata>()
+    val response = uri.fetch().takeIf { it.ok }
+    return when (response?.status?.toInt()) {
+        200 -> response.json().await().unsafeCast<Metadata>()
+        else -> null
+    }
 }
+
+// TODO debug 403 errors
+public suspend fun Uri.fetchFavicon(): Uri? = kotlin.runCatching {
+    fetchMetadata()?.favicon?.toUriOrNull()
+}
+    .onFailure { logger.error("Failed to fetch metadata for $this", it) }
+    .getOrNull()
