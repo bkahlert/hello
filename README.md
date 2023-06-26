@@ -4,7 +4,7 @@
 
 ## About
 
-**Hello!** is the personalized homepage for [hello.bkahlert.com][hello-web] consisting of the following subprojects:
+**Hello!** is the personalized homepage for [hello.bkahlert.com][hello-web] consisting of the following subcomponents:
 
 ### Infrastructure
 
@@ -28,6 +28,16 @@
 
 The Gradle project at the root of this repository is an umbrella project
 that includes all other projects as [included builds][gradle-include-build].
+
+## Screenshots
+
+![Chatbot](docs/screenshots/chatbot.png)
+![Bookmarks](docs/screenshots/bookmarks.png)
+![SSH](docs/screenshots/ssh.png)
+![Embedded website I](docs/screenshots/embedded-1.png)
+![Embedded website II](docs/screenshots/embedded-2.png)
+![Widgets](docs/screenshots/widgets.png)
+![Edit](docs/screenshots/edit.png)
 
 ## Cheat sheet
 
