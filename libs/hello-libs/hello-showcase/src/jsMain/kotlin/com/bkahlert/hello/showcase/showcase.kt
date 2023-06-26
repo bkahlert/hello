@@ -66,6 +66,7 @@ public fun RenderContext.showcase(
         classes(
             "sm:rounded-xl",
             "bg-white/10 border border-white/20",
+            "grid grid-rows-[1fr_minmax(1px,100%)]",
             classes,
         )
     ) {
@@ -97,7 +98,7 @@ public fun RenderContext.showcase(
             }
         }
 
-        disclosurePanel {
+        disclosurePanel("overflow-y-auto") {
             transition(
                 opened,
                 "transition duration-100 ease-out",
@@ -109,12 +110,7 @@ public fun RenderContext.showcase(
             )
 
             if (resizable) {
-                splitView(
-                    classes(
-                        "hover:rounded-lg hover:ring-1 hover:ring-slate-900/10",
-                        "-mr-[--spectrum-dragbar-handle-width]"
-                    )
-                ) {
+                splitView("hover:rounded-lg hover:ring-1 hover:ring-slate-900/10") {
                     attr("resizable", true)
                     attr("primary-size", "100%")
                     opened.render(into = this) {

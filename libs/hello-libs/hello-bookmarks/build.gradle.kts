@@ -14,8 +14,16 @@ kotlin {
                 api(project(":hello-button"))
                 api(project(":hello-editor"))
                 api(project(":hello-metadata"))
+                api(project(":hello-page"))
+                api(project(":hello-showcase"))
+                api(project(":hello-widgets"))
                 api("com.bkahlert.kommons:kommons-color")
             }
+        }
+
+        all {
+            languageSettings.optIn("kotlin.RequiresOptIn")
+            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
         }
     }
 }

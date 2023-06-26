@@ -1,4 +1,4 @@
-package playground.components.bookmark
+package com.bkahlert.hello.bookmark
 
 import com.bkahlert.hello.button.button
 import com.bkahlert.hello.editor.selectField
@@ -7,10 +7,13 @@ import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
 import com.bkahlert.hello.metadata.fetchFavicon
 import com.bkahlert.hello.widget.AspectRatio
 import com.bkahlert.hello.widget.WidgetEditor
+import com.bkahlert.kommons.dom.ObjectUri
+import com.bkahlert.kommons.dom.download
 import com.bkahlert.kommons.dom.mapTarget
 import com.bkahlert.kommons.dom.readText
 import com.bkahlert.kommons.js.ConsoleLogging
 import com.bkahlert.kommons.json.LenientAndPrettyJson
+import com.bkahlert.kommons.time.Now
 import com.bkahlert.kommons.uri.Uri
 import dev.fritz2.core.EmittingHandler
 import dev.fritz2.core.Handler
@@ -22,7 +25,9 @@ import dev.fritz2.core.type
 import dev.fritz2.core.values
 import dev.fritz2.headless.components.inputField
 import dev.fritz2.headless.components.textArea
+import io.ktor.http.ContentType
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
@@ -37,13 +42,25 @@ public class BookmarksWidgetEditor(isNew: Boolean, widget: BookmarksWidget) : Wi
 
     public val import: EmittingHandler<File, Throwable> = handleAndEmit { current, file ->
         logger.info("Importing ${file.name}")
-        BookmarkFormat.runCatching {
-            current.copy(bookmarks = parse(file.readText()))
+        kotlin.runCatching {
+            current.copy(bookmarks = BookmarksFormat.read(file.readText()))
         }.getOrElse {
             logger.error("Failed to import ${file.name}", it)
             emit(it)
             current
         }
+    }
+
+    public val export: Handler<String?> = handle { current, filename ->
+        logger.info("Exporting ${current.bookmarks.mapBookmarks { it }.size} bookmark(s)")
+        kotlin.runCatching {
+            ObjectUri(ContentType.Text.Html, BookmarksFormat.NetscapeBookmarksFileFormat.write(current.bookmarks)).download(
+                filename ?: "bookmarks_hello_$Now.html",
+            )
+        }.onFailure {
+            logger.error("Failed to export bookmarks", it)
+        }
+        current
     }
 
     public val fixMissingIcons: Handler<Unit> = handle { current, file ->
@@ -57,7 +74,7 @@ public class BookmarksWidgetEditor(isNew: Boolean, widget: BookmarksWidget) : Wi
         coroutineScope {
             x.keys.forEach { bookmark ->
                 launch {
-                    x.put(bookmark, bookmark.uri?.fetchFavicon())
+                    x.put(bookmark, bookmark.url?.fetchFavicon())
                 }
             }
         }
@@ -70,7 +87,7 @@ public class BookmarksWidgetEditor(isNew: Boolean, widget: BookmarksWidget) : Wi
     }
 
     override fun RenderContext.renderFields() {
-        div("grid grid-cols-[repeat(auto-fit,_minmax(min(20rem,_100%),1fr))] gap-4 items-start") {
+        div("grid grid-cols-[repeat(auto-fit,minmax(min(20rem,100%),1fr))] gap-4 items-start") {
             button(
                 OutlineHeroIcons.cloud_arrow_up,
                 "Import bookmarks",
@@ -95,7 +112,7 @@ public class BookmarksWidgetEditor(isNew: Boolean, widget: BookmarksWidget) : Wi
                 simple = true,
                 inverted = true
             ).apply {
-                clicks handledBy { console.warn("export bookmarks") }
+                clicks.map { null } handledBy export
             }
         }
         inputField {
@@ -132,7 +149,7 @@ public class BookmarksWidgetEditor(isNew: Boolean, widget: BookmarksWidget) : Wi
             label = "Style",
             itemTitle = BookmarksStyle::title,
         )
-        div("grid grid-cols-[repeat(auto-fit,_minmax(min(20rem,_100%),1fr))] gap-4 items-start") {
+        div("grid grid-cols-[repeat(auto-fit,minmax(min(20rem,100%),1fr))] gap-4 items-start") {
             button(
                 OutlineHeroIcons.wrench,
                 "Fix missing icons",

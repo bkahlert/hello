@@ -3,13 +3,17 @@ package com.bkahlert.hello.app.props
 import com.bkahlert.hello.app.props.StoragePropsDataSource.Companion.InMemoryPropsDataSource
 import com.bkahlert.hello.fritz2.RootSyncStore
 import com.bkahlert.hello.fritz2.SyncStore
+import com.bkahlert.kommons.dom.ObjectUri
+import com.bkahlert.kommons.dom.download
 import com.bkahlert.kommons.dom.readText
 import com.bkahlert.kommons.json.LenientAndPrettyJson
 import dev.fritz2.core.EmittingHandler
 import dev.fritz2.core.Handler
 import dev.fritz2.core.lensOf
+import io.ktor.http.ContentType
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.serializer
@@ -56,6 +60,16 @@ public class PropsStore(
             emit(it)
             current
         }
+    }
+
+    public val export: Handler<String?> = handle { current, filename ->
+        logger.info("Exporting ${current.size} setting(s)")
+        LenientAndPrettyJson.runCatching {
+            ObjectUri(ContentType.Application.Json, encodeToString(current)).download(filename ?: "props.json")
+        }.onFailure {
+            logger.error("Failed to export settings", it)
+        }
+        current
     }
 
     private val trackedKeys = mutableSetOf<String>()

@@ -1,7 +1,9 @@
 package com.bkahlert.hello.quicklink
 
-import com.bkahlert.hello.bookmark.Bookmark
 import com.bkahlert.hello.bookmark.BookmarkEditor
+import com.bkahlert.hello.bookmark.BookmarkTreeNode
+import com.bkahlert.hello.bookmark.formatTitle
+import com.bkahlert.hello.bookmark.iconOrDefault
 import com.bkahlert.hello.editor.move
 import com.bkahlert.hello.fritz2.SyncStore
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
@@ -12,9 +14,7 @@ import dev.fritz2.core.EmittingHandler
 import dev.fritz2.core.Handler
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
-import dev.fritz2.core.ScopeContext
 import dev.fritz2.core.Store
-import dev.fritz2.core.Tag
 import dev.fritz2.core.classes
 import dev.fritz2.core.disabled
 import dev.fritz2.core.href
@@ -27,15 +27,14 @@ import dev.fritz2.headless.components.menu
 import dev.fritz2.headless.foundation.utils.popper.Placement
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.events.Event
 
 public class QuickLinks(
-    store: SyncStore<List<Bookmark>>,
-) : SyncStore<List<Bookmark>> by store {
+    store: SyncStore<List<BookmarkTreeNode.Bookmark>>,
+) : SyncStore<List<BookmarkTreeNode.Bookmark>> by store {
 
-    public val addOrUpdate: Handler<Bookmark> = handle { bookmarks, bookmark ->
+    public val addOrUpdate: Handler<BookmarkTreeNode.Bookmark> = handle { bookmarks, bookmark ->
         val existing = bookmarks.firstOrNull { it.id == bookmark.id }
         if (existing == null) {
             bookmarks + bookmark
@@ -44,14 +43,14 @@ public class QuickLinks(
         }
     }
 
-    public val rankUp: Handler<Bookmark> = handle { links, link ->
+    public val rankUp: Handler<BookmarkTreeNode.Bookmark> = handle { links, link ->
         links.move(link, -1)
     }
-    public val rankDown: Handler<Bookmark> = handle { links, link ->
+    public val rankDown: Handler<BookmarkTreeNode.Bookmark> = handle { links, link ->
         links.move(link, +1)
     }
 
-    public val edit: EmittingHandler<Bookmark, BookmarkEditor> = handleAndEmit { bookmarks, bookmark ->
+    public val edit: EmittingHandler<BookmarkTreeNode.Bookmark, BookmarkEditor> = handleAndEmit { bookmarks, bookmark ->
         emit(
             BookmarkEditor(
                 isNew = bookmarks.none { it.id == bookmark.id },
@@ -63,11 +62,11 @@ public class QuickLinks(
         bookmarks
     }
 
-    public val delete: Handler<Bookmark> = handle { bookmarks, bookmark ->
+    public val delete: Handler<BookmarkTreeNode.Bookmark> = handle { bookmarks, bookmark ->
         bookmarks.filter { it.id != bookmark.id }
     }
 
-    public val openInSameWindow: Handler<Bookmark> = handle { bookmarks, bookmark ->
+    public val openInSameWindow: Handler<BookmarkTreeNode.Bookmark> = handle { bookmarks, bookmark ->
         bookmark.open()
         bookmarks
     }
@@ -94,23 +93,23 @@ public class QuickLinks(
             }
 
             div("flex items-center justify-center bg-black/10 dark:bg-white/10 rounded") {
-                val openState = storeOf<Bookmark?>(null)
+                val openState = storeOf<BookmarkTreeNode.Bookmark?>(null)
                 data.renderEach { bookmark ->
                     menu {
                         openState(openState.map(lensOf("bookmark", { it == bookmark }, { p, v -> if (v) p else null })))
 
-                        with(bookmark) {
-                            render("rounded shrink-0 w-9 h-9 px-2.5 py-2", tag = fun(
-                                renderContext: RenderContext,
-                                classes: String?,
-                                _: String?,
-                                scope: ScopeContext.() -> Unit,
-                                content: Tag<HTMLButtonElement>.() -> Unit
-                            ): Tag<HTMLButtonElement> = renderContext.menuButton(classes, scope, content)) {
-                                clicks.map { bookmark } handledBy openInSameWindow
-                                contextmenus.preventDefault().map { bookmark } handledBy openState.update
-                                // TODO use https://stackoverflow.com/questions/12304012/preventing-default-context-menu-on-longpress-longclick-in-mobile-safari-ipad
-                            }
+                        menuButton(
+                            classes(
+                                "inline-flex justify-center transition opacity-60 hover:opacity-100",
+                                "focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75",
+                                "rounded shrink-0 w-9 h-9 px-2.5 py-2",
+                            )
+                        ) {
+                            icon("w-full h-full", bookmark.iconOrDefault())
+                            title(bookmark.formatTitle())
+                            clicks.map { bookmark } handledBy openInSameWindow
+                            contextmenus.preventDefault().map { bookmark } handledBy openState.update
+                            // TODO use https://stackoverflow.com/questions/12304012/preventing-default-context-menu-on-longpress-longclick-in-mobile-safari-ipad
                         }
 
                         menuItems(
@@ -140,7 +139,7 @@ public class QuickLinks(
                                     menuItem("flex-1 rounded-md px-2 py-2 text-center font-medium sm:text-sm block", tag = RenderContext::a) {
                                         className(active.combine(disabled) { a, d -> if (a && !d) "bg-glass text-default dark:text-invert" else if (d) "opacity-50 cursor-default" else "" })
                                         +"Open"
-                                        href(bookmark.href.toString())
+                                        href(bookmark.url.toString())
                                     }
                                     menuItem("rounded-md px-2 py-2 text-center text-red-600 dark:text-red-400 font-medium sm:text-sm") {
                                         className(active.combine(disabled) { a, d -> if (a && !d) "bg-glass text-default dark:text-invert" else if (d) "opacity-50 cursor-default" else "" })
@@ -189,7 +188,7 @@ public class QuickLinks(
                     )
                 )
                 type("button")
-                clicks.map { Bookmark() } handledBy edit
+                clicks.map { BookmarkTreeNode.Bookmark() } handledBy edit
                 title("Create bookmark...")
                 icon(classes("w-full h-full"), SolidHeroIcons.plus)
             }
@@ -200,10 +199,10 @@ public class QuickLinks(
     }
 
     public companion object {
-        public val DefaultLinks: List<Bookmark> = listOf(
-            Bookmark(
+        public val DefaultLinks: List<BookmarkTreeNode.Bookmark> = listOf(
+            BookmarkTreeNode.Bookmark(
                 title = "GitHub",
-                href = Uri("https://github.com/bkahlert"),
+                url = Uri("https://github.com/bkahlert"),
                 icon = Uri("https://github.githubassets.com/favicons/favicon.svg"),
             ),
         )

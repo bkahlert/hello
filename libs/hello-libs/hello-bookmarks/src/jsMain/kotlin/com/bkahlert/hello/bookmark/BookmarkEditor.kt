@@ -13,9 +13,11 @@ import dev.fritz2.core.EmittingHandler
 import dev.fritz2.core.Handler
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.RootStore
+import dev.fritz2.core.classes
 import dev.fritz2.core.disabled
 import dev.fritz2.core.placeholder
 import dev.fritz2.core.required
+import dev.fritz2.core.title
 import dev.fritz2.core.type
 import dev.fritz2.core.values
 import dev.fritz2.headless.components.inputField
@@ -32,18 +34,18 @@ import kotlin.time.Duration.Companion.seconds
 
 public class BookmarkEditor(
     public val isNew: Boolean,
-    bookmark: Bookmark,
-) : RootStore<Bookmark>(bookmark) {
-    public val history: History<Bookmark> = history(10, synced = true)
+    bookmark: BookmarkTreeNode.Bookmark,
+) : RootStore<BookmarkTreeNode.Bookmark>(bookmark) {
+    public val history: History<BookmarkTreeNode.Bookmark> = history(10, synced = true)
 
-    public val addOrUpdate: EmittingHandler<Unit, Bookmark> = handleAndEmit { bookmark ->
+    public val addOrUpdate: EmittingHandler<Unit, BookmarkTreeNode.Bookmark> = handleAndEmit { bookmark ->
         emit(bookmark)
         bookmark
     }
 
     public val autocompleting: Tracker = tracker()
     public val autocomplete: EmittingHandler<Unit, Metadata> = handleAndEmit { bookmark ->
-        val uri = bookmark.href?.takeIf { it.host.orEmpty().contains(".") }
+        val uri = bookmark.url?.takeIf { it.host.orEmpty().contains(".") }
         if (uri != null) {
             autocompleting.track {
                 uri.fetchMetadata()?.let { metadata ->
@@ -59,16 +61,16 @@ public class BookmarkEditor(
         }
     }
 
-    public val cancel: EmittingHandler<Unit, Bookmark> = handleAndEmit { _ ->
+    public val cancel: EmittingHandler<Unit, BookmarkTreeNode.Bookmark> = handleAndEmit { _ ->
         history.clear()
         emit(bookmark)
-        Bookmark()
+        BookmarkTreeNode.Bookmark()
     }
 
-    public val delete: EmittingHandler<Unit, Bookmark> = handleAndEmit { bookmark ->
+    public val delete: EmittingHandler<Unit, BookmarkTreeNode.Bookmark> = handleAndEmit { bookmark ->
         history.clear()
         emit(bookmark)
-        Bookmark()
+        BookmarkTreeNode.Bookmark()
     }
 
     public val undo: Handler<Unit> = handle {
@@ -82,7 +84,7 @@ public class BookmarkEditor(
             div("flex flex-col sm:flex-row gap-8 justify-center") {
                 div("flex-grow flex flex-col gap-2") {
                     inputField {
-                        value(map(Bookmark.uri()))
+                        value(map(BookmarkTreeNode.Bookmark.url()))
                         inputLabel {
                             +"Href"
                             inputTextfield {
@@ -101,7 +103,7 @@ public class BookmarkEditor(
                         }
                     }
                     inputField {
-                        value(map(Bookmark.title()))
+                        value(map(BookmarkTreeNode.Bookmark.title()))
                         inputLabel {
                             +"Title"
                             inputTextfield("transition") {
@@ -116,7 +118,7 @@ public class BookmarkEditor(
                         }
                     }
                     inputField {
-                        value(map(Bookmark.icon()))
+                        value(map(BookmarkTreeNode.Bookmark.icon()))
                         inputLabel {
                             +"Icon"
                             div("flex items-center gap-4") {
@@ -134,8 +136,14 @@ public class BookmarkEditor(
                                         .map { UriLens.set(null, it) }
                                         .render(this) { icon ->
                                             current.copy(icon = icon ?: SolidHeroIcons.bookmark).also {
-                                                with(it) {
-                                                    render(null, RenderContext::button)
+                                                button(
+                                                    classes(
+                                                        "inline-flex justify-center transition opacity-60 hover:opacity-100",
+                                                        "focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-opacity-75",
+                                                    )
+                                                ) {
+                                                    icon("w-full h-full", it.iconOrDefault())
+                                                    title(it.formatTitle())
                                                 }
                                             }
                                         }

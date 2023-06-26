@@ -1,39 +1,34 @@
 package com.bkahlert.hello.icon.assets
 
+import com.bkahlert.hello.icon.heroicons.LazyNamedEntriesList
 import com.bkahlert.kommons.uri.DataUri
 import io.ktor.http.ContentType
 
-public object Images : Iterable<DataUri> {
+public object Images : LazyNamedEntriesList<String, DataUri>({ _, _, content ->
+    if (content.startsWith("data:")) DataUri.parse(content)
+    else DataUri(ContentType.Image.SVG, content)
+}) {
 
     /** The [BKAHLERT](https://bkahlert.com) favicon as a [SVG](https://en.wikipedia.org/wiki/SVG). */
-    public val BKAHLERTFavicon: DataUri by lazy { DataUri.parse(BKAHLERT_FAVICON) }
+    public val BKAHLERTFavicon: DataUri by BKAHLERT_FAVICON
 
     /** The [Hello!](https://github.com/bkahlert/hello) favicon as an [SVG](https://en.wikipedia.org/wiki/SVG). */
-    public val HelloFavicon: DataUri by lazy { DataUri.parse(HELLO_FAVICON) }
+    public val HelloFavicon: DataUri by HELLO_FAVICON
 
     /** An [SVG](https://en.wikipedia.org/wiki/SVG) depicting John Doe. */
-    public val JohnDoe: DataUri by lazy { DataUri.parse(JOHN) }
+    public val JohnDoe: DataUri by JOHN
 
     /** An [SVG](https://en.wikipedia.org/wiki/SVG) depicting John Doe with a background image and an intrisic dimension of 100px x 100px. */
-    public val JohnDoeWithBackground: DataUri by lazy { DataUri.parse(JOHN100BG) }
+    public val JohnDoeWithBackground: DataUri by JOHN100BG
 
     /** The [Kommons](https://github.com/bkahlert/kommons) logo as an animated [SVG](https://en.wikipedia.org/wiki/SVG). */
-    public val KommonsLogo: DataUri by lazy { DataUri(ContentType.Image.SVG, KOMMONS_LOGO) }
+    public val KommonsLogo: DataUri by KOMMONS_LOGO
 
     /** The logo of the fictional Pear company as an [SVG](https://en.wikipedia.org/wiki/SVG). */
-    public val PearLogo: DataUri by lazy { DataUri(ContentType.Image.SVG, PEAR_LOGO) }
+    public val PearLogo: DataUri by PEAR_LOGO
 
     /** A transparent 1x1 [GIF](https://en.wikipedia.org/wiki/GIF) pixel. */
-    public val Spacer: DataUri by lazy { DataUri.parse(SPACER) }
-
-    override fun iterator(): Iterator<DataUri> = iterator {
-        yield(BKAHLERTFavicon)
-        yield(HelloFavicon)
-        yield(JohnDoe)
-        yield(JohnDoeWithBackground)
-        yield(KommonsLogo)
-        yield(PearLogo)
-    }
+    public val Spacer: DataUri by SPACER
 }
 
 private const val BKAHLERT_FAVICON = "" +

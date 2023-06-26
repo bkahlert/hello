@@ -1,5 +1,6 @@
 package com.bkahlert.hello.app.widgets
 
+import com.bkahlert.hello.bookmark.BookmarksWidget
 import com.bkahlert.hello.chatbot.ChatbotWidget
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
 import com.bkahlert.hello.widget.WidgetRegistration
@@ -11,6 +12,12 @@ import com.bkahlert.hello.widget.website.WebsiteWidget
 
 public val DefaultWidgetRegistration: WidgetRegistration by lazy {
     WidgetRegistration().apply {
+        register<BookmarksWidget>(
+            "bookmarks",
+            title = "Bookmarks",
+            description = "Manage, import and export bookmarks",
+            icon = SolidHeroIcons.bookmark_square,
+        )
         register<ChatbotWidget>(
             "chatbot",
             title = "Chatbot",

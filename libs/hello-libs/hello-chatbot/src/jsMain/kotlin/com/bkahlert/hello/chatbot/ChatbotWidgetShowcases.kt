@@ -53,88 +53,89 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 
-public val ChatbotWidgetShowcases: SimplePage = SimplePage(
+public object ChatbotWidgetShowcases : SimplePage(
     "chatbot-widget",
     "Chatbot Widget",
     "Chatbot widget showcases",
     heroIcon = HeroIcons::chat_bubble_left_right,
-) {
-    showcases("ChatMessage", SolidHeroIcons.chat_bubble_left) {
-        val roles = listOf(
-            ChatRole.System,
-            ChatRole.User,
-            ChatRole.Assistant,
-            ChatRole("unknown"),
-        )
-        val message = "This is a test message"
+    content = {
+        showcases("ChatMessage", SolidHeroIcons.chat_bubble_left) {
+            val roles = listOf(
+                ChatRole.System,
+                ChatRole.User,
+                ChatRole.Assistant,
+                ChatRole("unknown"),
+            )
+            val message = "This is a test message"
 
-        showcase("With user") {
-            chat(
-                ChatbotSession(
-                    initialMessages = roles.map { ChatMessage(role = it, content = message) },
-                    api = TestOpenAI(),
-                    user = md5("john.doe@example.com"),
+            showcase("With user") {
+                chat(
+                    ChatbotSession(
+                        initialMessages = roles.map { ChatMessage(role = it, content = message) },
+                        api = TestOpenAI(),
+                        user = md5("john.doe@example.com"),
+                    )
                 )
-            )
-        }
-        showcase("Without user") {
-            chat(
-                ChatbotSession(
-                    initialMessages = roles.map { ChatMessage(role = it, content = message) },
-                    api = TestOpenAI(),
+            }
+            showcase("Without user") {
+                chat(
+                    ChatbotSession(
+                        initialMessages = roles.map { ChatMessage(role = it, content = message) },
+                        api = TestOpenAI(),
+                    )
                 )
-            )
+            }
         }
-    }
 
-    hr { }
+        hr { }
 
-    showcases("Chat", SolidHeroIcons.chat_bubble_left_right) {
-        showcase("Initial") {
-            chat(
-                ChatbotSession(
-                    api = TestOpenAI(),
+        showcases("Chat", SolidHeroIcons.chat_bubble_left_right) {
+            showcase("Initial") {
+                chat(
+                    ChatbotSession(
+                        api = TestOpenAI(),
+                    )
                 )
-            )
-        }
-        showcase("Sending") {
-            chat(
-                ChatbotSession(
-                    api = TestOpenAI(),
-                ).apply {
-                    sendMessage("Hi")
-                }
-            )
-        }
-        showcase("Response stream") {
-            chat(
-                ChatbotSession(
-                    api = TestOpenAI(chat = TestChat("Hi,", " how", " can", " I", " assist")),
-                ).apply {
-                    sendMessage("Hi")
-                }
-            )
-        }
-        showcase("Response stream completion") {
-            chat(
-                ChatbotSession(
-                    api = TestOpenAI(chat = TestChat("Hi,", " how", " can", " I", " assist", " you?", null)),
-                ).apply {
-                    sendMessage("Hi")
-                }
-            )
-        }
-        showcase("Idle") {
-            chat(
-                ChatbotSession(
-                    ChatRole.User to "Hi",
-                    ChatRole.Assistant to "Hi, how can I assist you?",
-                    api = TestOpenAI(),
+            }
+            showcase("Sending") {
+                chat(
+                    ChatbotSession(
+                        api = TestOpenAI(),
+                    ).apply {
+                        sendMessage("Hi")
+                    }
                 )
-            )
+            }
+            showcase("Response stream") {
+                chat(
+                    ChatbotSession(
+                        api = TestOpenAI(chat = TestChat("Hi,", " how", " can", " I", " assist")),
+                    ).apply {
+                        sendMessage("Hi")
+                    }
+                )
+            }
+            showcase("Response stream completion") {
+                chat(
+                    ChatbotSession(
+                        api = TestOpenAI(chat = TestChat("Hi,", " how", " can", " I", " assist", " you?", null)),
+                    ).apply {
+                        sendMessage("Hi")
+                    }
+                )
+            }
+            showcase("Idle") {
+                chat(
+                    ChatbotSession(
+                        ChatRole.User to "Hi",
+                        ChatRole.Assistant to "Hi, how can I assist you?",
+                        api = TestOpenAI(),
+                    )
+                )
+            }
         }
-    }
-}
+    },
+)
 
 public class TestOpenAI(
     public val completions: Completions = TestCompletions(),

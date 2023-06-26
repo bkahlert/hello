@@ -17,19 +17,15 @@ import com.bkahlert.hello.widget.WidgetRoute
 import com.bkahlert.hello.widget.WidgetRouter
 import com.bkahlert.hello.widget.Widgets
 import com.bkahlert.hello.widget.serializer
-import com.bkahlert.kommons.dom.ObjectUri
-import com.bkahlert.kommons.dom.download
 import com.bkahlert.kommons.dom.mapTarget
-import com.bkahlert.kommons.json.LenientAndPrettyJson
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.Store
 import dev.fritz2.core.Tag
 import dev.fritz2.core.accept
 import dev.fritz2.core.lensOf
 import dev.fritz2.core.type
-import io.ktor.http.ContentType
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.serialization.encodeToString
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
@@ -94,14 +90,7 @@ fun Tag<Element>.propsControls(
 
     div { icon("mx-auto w-12 h-12 text-default dark:text-invert opacity-60", SolidHeroIcons.wrench_screwdriver) }
 
-    val jsonFormat = LenientAndPrettyJson
-    fun downloadProps(
-        props: PropsStore,
-    ) {
-        ObjectUri(ContentType.Application.Json, jsonFormat.encodeToString(props.current)).download("props.json")
-    }
-
-    div("grid grid-cols-[repeat(auto-fit,_minmax(min(20rem,_100%),1fr))] gap-8 m-8 items-start") {
+    div("grid grid-cols-[repeat(auto-fit,minmax(min(20rem,100%),1fr))] gap-8 m-8 items-start") {
         button(
             OutlineHeroIcons.cloud_arrow_up,
             "Import settings",
@@ -127,7 +116,7 @@ fun Tag<Element>.propsControls(
             simple = true,
             inverted = true
         ).apply {
-            clicks handledBy { downloadProps(props) }
+            clicks.map { null } handledBy props.export
         }
 
         button(
@@ -139,7 +128,7 @@ fun Tag<Element>.propsControls(
         ).apply {
             className("border-red-500 border-2")
             clicks handledBy {
-                downloadProps(props)
+                props.export(null)
                 props.update(emptyMap())
                 domNode.scrollTo(top = 0)
             }

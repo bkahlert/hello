@@ -1,6 +1,6 @@
 @file:Suppress("RedundantVisibilityModifier")
 
-package playground.components.bookmark
+package com.bkahlert.hello.bookmark
 
 import com.bkahlert.hello.fritz2.lens
 import com.bkahlert.hello.fritz2.orEmpty

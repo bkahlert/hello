@@ -1,5 +1,7 @@
 package com.bkahlert.hello.app.widgets
 
+import com.bkahlert.hello.bookmark.BookmarkTreeNode
+import com.bkahlert.hello.bookmark.BookmarksWidget
 import com.bkahlert.hello.widget.AspectRatio
 import com.bkahlert.hello.widget.Widget
 import com.bkahlert.hello.widget.image.ImageWidget
@@ -14,8 +16,8 @@ public val DefaultWidgets: List<Widget> by lazy {
         add(
             ImageWidget(
                 id = "nyan-cat",
-                title = "Nyan Cat",
-                src = Uri("https://raw.githubusercontent.com/bkahlert/-/master/nyancat.svg"),
+                title = Bookmarks.nyanCat.title,
+                src = Bookmarks.nyanCat.url,
                 aspectRatio = AspectRatio.video
             )
         )
@@ -29,9 +31,21 @@ public val DefaultWidgets: List<Widget> by lazy {
         add(
             WebsiteWidget(
                 id = "impossible-color",
-                title = "Impossible color",
-                src = Uri("https://en.wikipedia.org/wiki/Impossible_color"),
+                title = Bookmarks.impossibleColor.title,
+                src = Bookmarks.impossibleColor.url,
                 aspectRatio = AspectRatio.stretch,
+            )
+        )
+        add(
+            BookmarksWidget(
+                id = "bookmarks",
+                bookmarks = listOf(
+                    BookmarkTreeNode.Folder(
+                        title = "Favorites",
+                        children = listOf(Bookmarks.nyanCat, Bookmarks.rickAstley),
+                    ),
+                    Bookmarks.impossibleColor,
+                ),
             )
         )
         FeaturePreview.values().mapTo(this) {
@@ -42,4 +56,19 @@ public val DefaultWidgets: List<Widget> by lazy {
             )
         }
     }
+}
+
+private object Bookmarks {
+    val nyanCat = BookmarkTreeNode.Bookmark(
+        url = Uri("https://raw.githubusercontent.com/bkahlert/-/master/nyancat.svg"),
+    )
+    val rickAstley = BookmarkTreeNode.Bookmark(
+        title = "Rick Astley",
+        url = Uri("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+    )
+    val impossibleColor = BookmarkTreeNode.Bookmark(
+        title = "Impossible color",
+        url = Uri("https://en.wikipedia.org/wiki/Impossible_color"),
+        icon = Uri("https://en.wikipedia.org/favicon.ico"),
+    )
 }

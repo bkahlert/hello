@@ -1,6 +1,6 @@
 package com.bkahlert.hello.quicklink
 
-import com.bkahlert.hello.bookmark.Bookmark
+import com.bkahlert.hello.bookmark.BookmarkTreeNode
 import com.bkahlert.hello.fritz2.TestSyncStore
 import com.bkahlert.hello.fritz2.runTest
 import com.bkahlert.kommons.uri.Uri
@@ -51,8 +51,8 @@ class QuickLinksTest {
 
 fun Bookmarks(index: Int) = (0..index).map { Bookmark(index) }
 
-fun Bookmark(index: Int) = Bookmark(
+fun Bookmark(index: Int) = BookmarkTreeNode.Bookmark(
     id = "quick-link-$index",
     title = "Quick Link $index",
-    href = Uri("https://example.com/quick-link/$index"),
+    url = Uri("https://example.com/quick-link/$index"),
 )
