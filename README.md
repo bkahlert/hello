@@ -4,30 +4,7 @@
 
 ## About
 
-**Hello!** is the personalized homepage for [hello.bkahlert.com][hello-web] consisting of the following subcomponents:
-
-### Infrastructure
-
-- [Platforms](platforms) … dependency management
-- [Build Logic](build-logic) … Gradle plugins for various project types
-
-### Backend
-
-- [AWS CDK](aws-cdk) … to automatically deploy to Amazon Web Services
-- [AWS Lambdas](aws-lambdas) … backend
-
-### Libraries
-
-- [Kommons Libs](libs/kommons-libs) … existing or new [Kommons][kommons] libraries
-
-### Web applications
-
-- [Playground app](apps/playground-app) … prototyping-optimized web application
-- [Test app](apps/test-app) … minimal [Fritz2][fritz2] web application
-- [Web app](apps/web-app) … Hello! web application
-
-The Gradle project at the root of this repository is an umbrella project
-that includes all other projects as [included builds][gradle-include-build].
+**Hello!** is the personalized homepage for [hello.bkahlert.com][hello-web].
 
 ## Screenshots
 
@@ -39,9 +16,35 @@ that includes all other projects as [included builds][gradle-include-build].
 ![Widgets](docs/screenshots/widgets.png)
 ![Edit](docs/screenshots/edit.png)
 
-## Cheat sheet
 
-### Re-build everything
+## Development
+
+### Project structure
+
+The Gradle project at the root of this repository is an umbrella project.  
+It includes the following projects as [included builds][gradle-include-build] 
+(based on [Build organization](https://docs.gradle.org/current/samples/index.html#build_organization)):
+
+#### Infrastructure
+- [build-logic](build-logic) … custom build logic 
+- [platforms](platforms) … dependency management
+
+#### Libraries
+- [libs/kommons-libs](libs/kommons-libs) … library modules that might potentially be extracted to [Kommons][kommons] 
+- [libs/hello-libs](libs/hello-libs) … library modules that are specific to this project
+
+#### Backend
+- [aws-cdk](aws-cdk) … [AWS CDK][aws-cdk] module to automatically deploy to [Amazon Web Services][aws]
+- [aws-lambdas](aws-lambdas) … [AWS Lambda][aws-lambda] modules
+
+#### Web applications
+- [apps/playground-app](apps/playground-app) … application for prototyping
+- [apps/test-app](apps/test-app) … minimal [Fritz2][fritz2] application
+- [apps/web-app](apps/web-app) … Hello! web application
+
+### Cheat sheet
+
+#### Re-build everything
 
 Gradle's `base` plugin is applied to every included build
 and the umbrella project.
@@ -59,7 +62,7 @@ try:
 ./fix-issues
 ```
 
-### Update Gradle wrapper
+#### Update Gradle wrapper
 
 As this is a composite build, all Gradle wrappers should be updated.
 
@@ -89,6 +92,12 @@ Thanks again for your support, it's much appreciated! :pray:
 MIT. See [LICENSE](LICENSE) for more details.
 
 ## References
+
+[aws]: https://aws.amazon.com (Amazon Web Services)
+
+[aws-cdk]: https://aws.amazon.com/cdk (AWS Cloud Development Kit)
+
+[aws-lambda]: https://aws.amazon.com/lambda (AWS Lambda)
 
 [gradle-include-build]: https://docs.gradle.org/current/userguide/composite_builds.html (Gradle—Composing builds)
 
