@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 STACK=minimal-base
-ARTIFACT_BUCKET=$(cat bucket-name.txt)
+ARTIFACT_BUCKET=$(<bucket-name.txt)
 
 ../../gradlew :minimal-base:shadowJar
 

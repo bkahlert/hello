@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 export JAVA_HOME='/Users/bkahlert/Library/Java/JavaVirtualMachines/liberica-11.0.19'
 
