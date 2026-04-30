@@ -1,7 +1,6 @@
 package com.bkahlert.hello.xterm
 
 import com.bkahlert.kommons.js.ConsoleLogger
-import js.core.jso
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +8,7 @@ import kotlinx.coroutines.flow.callbackFlow
 
 /** The dimensions of the terminal. */
 public val Terminal.dimensions: ITerminalDimensions
-    get() = jso {
+    get() = js("{}").unsafeCast<ITerminalDimensions>().apply {
         this.cols = this@dimensions.cols
         this.rows = this@dimensions.rows
     }
