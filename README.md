@@ -48,8 +48,8 @@ It includes the following projects as [included builds][gradle-include-build]
 
 Gradle's `base` plugin is applied to every included build
 and the umbrella project.
-Therefor the tasks `assemble`, `build`, `clean`, and `check`
-work as expect—also in the umbrella project.
+Therefore the tasks `assemble`, `build`, `clean`, and `check`
+work as expected—also in the umbrella project.
 
 ```shell
 ./gradlew clean build
@@ -72,7 +72,7 @@ This can lead to problems if the two Gradle versions make use of a different
 Kotlin DSL.
 
 ```shell
-./gradle-deep wrapper --gradle-version 8.0-rc-1 
+./gradle-deep wrapper --gradle-version 8.2.1 
 ```
 
 > 💡`gradle-deep` can be found at the root of this repo. It invokes `gradle`
