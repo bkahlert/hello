@@ -1,12 +1,20 @@
 package com.bkahlert.kommons.dom
 
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.onFailure
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.dom.addClass
 import kotlinx.dom.hasClass
 import kotlinx.dom.removeClass
+import org.w3c.dom.DOMRectReadOnly
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import org.w3c.dom.ElementCreationOptions
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.MutationObserver
+import org.w3c.dom.MutationObserverInit
+import org.w3c.dom.MutationRecord
 
 /**
  * A number in the range [0..1], that describes what percentage of the element's scroll height can be displayed.
@@ -18,6 +26,65 @@ public val Element.verticalScrollCoverageRatio: Double
 /** A number in the range [0..1], that describes to what percentage the element is scrolled to the bottom. */
 public val Element.verticalScrollProgress: Double
     get() = (scrollTop / (scrollHeight - clientHeight).toDouble()).coerceIn(0.0, 1.0)
+
+
+/** Flow of [MutationRecord], that emits every time DOM mutations take place. */
+public val Element.observedMutations: Flow<Array<MutationRecord>>
+    get() = observedMutations(MutationObserverInit())
+
+/** Flow of [MutationRecord], that emits every time any of the specified [mutations]. */
+public fun Element.observedMutations(mutations: MutationObserverInit): Flow<Array<MutationRecord>> =
+    callbackFlow {
+        val observer = MutationObserver { records, _ ->
+            trySend(records)
+                .onFailure { ex -> console.warn("Failed to observe mutations", records, ex) }
+        }
+
+        observer.observe(this@observedMutations, mutations)
+
+        awaitClose {
+            observer.disconnect()
+        }
+    }
+
+/** Flow of [ResizeObserverEntry], that emits every time the [Element] is resized. */
+public val Element.observedResizes: Flow<ResizeObserverEntry>
+    get() = callbackFlow {
+        val observer = ResizeObserver { entries, x ->
+            trySend(entries.first())
+                .onFailure { ex -> console.warn("Failed to observe resize", entries, ex) }
+        }
+
+        observer.observe(this@observedResizes)
+
+        awaitClose {
+            observer.disconnect()
+        }
+    }
+
+public external class ResizeObserver(callback: (entries: Array<ResizeObserverEntry>, observer: ResizeObserver) -> Unit) {
+    public fun disconnect()
+    public fun observe(target: Element, options: ResizeObserverOptions? = definedExternally)
+    public fun unobserve(target: Element)
+}
+
+public external interface ResizeObserverEntry {
+    public val borderBoxSize: Array<out ResizeObserverSize>;
+    public val contentBoxSize: Array<out ResizeObserverSize>;
+    public val contentRect: DOMRectReadOnly;
+    public val devicePixelContentBoxSize: Array<out ResizeObserverSize>;
+    public val target: Element;
+}
+
+public external interface ResizeObserverSize {
+    public val blockSize: Double
+    public val inlineSize: Double
+}
+
+public external interface ResizeObserverOptions {
+    /** "border-box" | "content-box" | "device-pixel-content-box" */
+    public val box: String?
+}
 
 
 /**
