@@ -2,7 +2,7 @@
 
 package com.bkahlert.hello.xterm
 
-import js.typedarrays.Uint8Array
+import org.khronos.webgl.Uint8Array
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.events.KeyboardEvent

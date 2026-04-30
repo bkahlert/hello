@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 STACK=minimal-base
 
@@ -16,7 +16,7 @@ aws cloudformation delete-stack \
 echo "Deleted $STACK stack."
 
 if [ -f bucket-name.txt ]; then
-  ARTIFACT_BUCKET=$(cat bucket-name.txt)
+  ARTIFACT_BUCKET=$(<bucket-name.txt)
   if [[ ! $ARTIFACT_BUCKET =~ minimal-base-artifacts-[a-z0-9]{16} ]]; then
     echo "Bucket was not created by this application. Skipping."
   else

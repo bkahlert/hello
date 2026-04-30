@@ -9,10 +9,10 @@ kotlin = "1.8.21"
 # https://central.sonatype.com/artifact/org.jetbrains.kotlin-wrappers/kotlin-wrappers-bom
 kotlin-wrappers = "1.0.0-pre.507"
 kotlinx-coroutines = "1.6.4"
-kotlinx-serialization = "1.5.0"
+kotlinx-serialization = "1.5.1"
 ktor = "2.2.3"
 openai-client = "3.2.5"
-testcontainers = "1.17.6"
+testcontainers = "1.19.6"
 
 [libraries]
 kommons-bom = { module = "com.bkahlert.kommons:kommons-bom", version.ref = "kommons" }

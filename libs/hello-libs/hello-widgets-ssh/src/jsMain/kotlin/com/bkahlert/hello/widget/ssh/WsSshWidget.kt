@@ -5,6 +5,7 @@ import com.bkahlert.hello.editor.UriLens
 import com.bkahlert.hello.font.FontFamilies
 import com.bkahlert.hello.fritz2.lens
 import com.bkahlert.hello.fritz2.orEmpty
+import com.bkahlert.hello.socketio.client.ManagerOptions
 import com.bkahlert.hello.socketio.client.io
 import com.bkahlert.hello.socketio.client.onConnect
 import com.bkahlert.hello.socketio.client.onDisconnect
@@ -17,7 +18,6 @@ import com.bkahlert.kommons.uri.toUriOrNull
 import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.Lens
 import dev.fritz2.core.Tag
-import js.core.jso
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonNames
@@ -41,10 +41,11 @@ public data class WsSshWidget(
         if (missing.isNotEmpty()) {
             renderConfigurationMissing(missing)
         } else {
-            val socket = io(server.toString(), jso {
+            val options = js("{}").unsafeCast<ManagerOptions>().apply {
                 path = "/ssh/socket.io"
                 // transports: ['websocket', 'polling'],
-            }).apply {
+            }
+            val socket = io(server.toString(), options).apply {
                 onConnect() handledBy {
                     emit(
                         "auth", json(

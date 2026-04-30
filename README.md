@@ -48,8 +48,8 @@ It includes the following projects as [included builds][gradle-include-build]
 
 Gradle's `base` plugin is applied to every included build
 and the umbrella project.
-Therefor the tasks `assemble`, `build`, `clean`, and `check`
-work as expect—also in the umbrella project.
+Therefore the tasks `assemble`, `build`, `clean`, and `check`
+work as expected—also in the umbrella project.
 
 ```shell
 ./gradlew clean build
@@ -72,7 +72,7 @@ This can lead to problems if the two Gradle versions make use of a different
 Kotlin DSL.
 
 ```shell
-./gradle-deep wrapper --gradle-version 8.0-rc-1 
+./gradle-deep wrapper --gradle-version 8.2.1 
 ```
 
 > 💡`gradle-deep` can be found at the root of this repo. It invokes `gradle`
@@ -98,6 +98,11 @@ MIT. See [LICENSE](LICENSE) for more details.
 [aws-cdk]: https://aws.amazon.com/cdk (AWS Cloud Development Kit)
 
 [aws-lambda]: https://aws.amazon.com/lambda (AWS Lambda)
+
+- [Kommons — Features for Kotlin™ You Didn't Know You Were Missing][kommons]
+- [Fritz2 — A Kotlin Web Framework][fritz2]
+- [hello.bkahlert.com][hello-web]
+- [Gradle—Composing builds][gradle-include-build]
 
 [gradle-include-build]: https://docs.gradle.org/current/userguide/composite_builds.html (Gradle—Composing builds)
 

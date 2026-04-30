@@ -14,7 +14,6 @@ import dev.fritz2.core.HtmlTag
 import dev.fritz2.core.RenderContext
 import dev.fritz2.core.Tag
 import dev.fritz2.core.handledBy
-import js.core.jso
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -28,7 +27,7 @@ public class SocketTerminal(
     public val socket: Socket,
     options: ITerminalOptions.() -> Unit,
 ) {
-    private val terminal = Terminal(jso<ITerminalOptions>(options))
+    private val terminal = Terminal(js("{}").unsafeCast<ITerminalOptions>().apply(options))
     private val terminalFitAddon = FitAddon().also { terminal.loadAddon(it) }
 
     private fun updateSize() {
