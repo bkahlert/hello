@@ -60,7 +60,7 @@ public val DefaultWidgets: List<Widget> by lazy {
 
 private object Bookmarks {
     val nyanCat = BookmarkTreeNode.Bookmark(
-        url = Uri("https://raw.githubusercontent.com/bkahlert/-/master/nyancat.svg"),
+        url = Uri("nyancat.svg"),
     )
     val rickAstley = BookmarkTreeNode.Bookmark(
         title = "Rick Astley",

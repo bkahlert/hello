@@ -25,3 +25,18 @@ kotlin {
         }
     }
 }
+
+// Merge `src/jsMain/resources` files of dependency klibs into this app's
+// processedResources, so library-provided static assets (e.g. images) are
+// served alongside index.html. Without this, only the app's own resources
+// reach the distribution.
+tasks.named<Copy>("jsProcessResources") {
+    val jsRuntimeClasspath = configurations.named("jsRuntimeClasspath")
+    inputs.files(jsRuntimeClasspath)
+    from({
+        jsRuntimeClasspath.get().filter { it.name.endsWith(".klib") }.map { zipTree(it) }
+    }) {
+        exclude("META-INF/**", "default/**", "package.json", "**/*.kotlin_module")
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
