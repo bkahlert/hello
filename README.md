@@ -99,6 +99,11 @@ MIT. See [LICENSE](LICENSE) for more details.
 
 [aws-lambda]: https://aws.amazon.com/lambda (AWS Lambda)
 
+- [Kommons — Features for Kotlin™ You Didn't Know You Were Missing][kommons]
+- [Fritz2 — A Kotlin Web Framework][fritz2]
+- [hello.bkahlert.com][hello-web]
+- [Gradle—Composing builds][gradle-include-build]
+
 [gradle-include-build]: https://docs.gradle.org/current/userguide/composite_builds.html (Gradle—Composing builds)
 
 [kommons]: https://github.com/bkahlert/kommons (Kommons — Features for Kotlin™ You Didn't Know You Were Missing)
