@@ -46,7 +46,7 @@ JAVA_HOME=/Users/bkahlert/Library/Java/JavaVirtualMachines/liberica-11.0.19 ./gr
 
 ```bash
 cd aws-cdk/app
-JAVA_HOME=…liberica-11.0.19 AWS_PAGER="" cdk diff --profile bkahlert@prod
+JAVA_HOME=…liberica-11.0.19 AWS_PAGER="" cdk diff --profile prod
 ```
 
 When the lambdas haven't actually changed, consider backing up the existing jars before rebuilding —
@@ -60,8 +60,14 @@ keys off `(account, region)`:
 
 | Stage | Account | Region | Profile |
 |---|---|---|---|
-| DEV | `382728805609` | `us-east-1` | `bkahlert@dev` |
-| PROD | `709387325224` | `eu-central-1` (+ `us-east-1` for the `Certificate` stack) | `bkahlert@prod` |
+| DEV | `382728805609` | `us-east-1` | `dev` |
+| PROD | `709387325224` | `eu-central-1` (+ `us-east-1` for the `Certificate` stack) | `prod` |
+
+Both accounts are members of AWS Organization `o-fjf5mvumfs` (prod is the management account).
+Authentication is via IAM Identity Center (`ssoins-69877e3b38e5ade8`, eu-central-1) federated against
+[auth.choam.de](../../choam.de/docs/apps/auth.choam.de.md) via SAML 2.0 — sign in with
+`aws sso login --profile prod` (or `dev`); the browser passkey flow refreshes short-lived tokens. No
+static IAM access keys live on disk for these accounts.
 
 The `Distribution` and `Certificate` stacks are split across regions because CloudFront ACM certs must
 live in `us-east-1`.
