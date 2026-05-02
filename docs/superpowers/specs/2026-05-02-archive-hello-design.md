@@ -55,8 +55,8 @@ cycle in a follow-up session.
   - `GET /playground` → 301 → `/playground/`.
   - `GET /playground/` → 200, playground-app.
 - App boots into authorized state with `JohnDoeInfo`; props persist to
-  `localStorage` across reload; QuickLink to `/playground` reaches the
-  playground app.
+  `localStorage` across reload; the Playground QuickLink reaches the
+  chatbot widget showcase at `/playground/#widgets/chatbot-widget`.
 
 ## Branch & commit strategy
 
@@ -186,7 +186,30 @@ reference at its source).
 - `git grep -E "com\.bkahlert\.aws|software\.amazon\.|aws\.sdk\."` matches
   only the **Archival cut surface** section in `CLAUDE.md`.
 
-## Commit 4 — Dockerfile, nginx.conf, build script
+## Commit 4 — Dockerfile, nginx.conf, build script, QuickLink deep-link
+
+### QuickLink fix
+
+`libs/hello-libs/hello-quick-links/src/jsMain/kotlin/com/bkahlert/hello/quicklink/QuickLinks.kt:219`
+currently has `url = Uri("/playground")`. Change to:
+
+```kotlin
+url = Uri("/playground/#widgets/chatbot-widget"),
+```
+
+Reason: the web-app's `WidgetRouter` handles hashes as
+`<widget-id>[/edit]` (single segment), so a bare `#widgets/chatbot-widget`
+hash would not navigate to a widget there. The two-segment
+`widgets/chatbot-widget` hash is a playground-app `PageRouter` path
+(parent page `widgets`, child page `chatbot-widget`). To deep-link from
+the web-app's QuickLink into the playground's chatbot showcase, the href
+needs both the path (`/playground/` — picked up by nginx, serves the
+playground app's `index.html`) and the hash (`#widgets/chatbot-widget` —
+deserialised by the playground's `PageRouter`).
+
+This change is folded into Commit 4 because it only starts working once
+the nginx config in this commit is serving the playground app at
+`/playground/`. In earlier commits the URL would be a dead link.
 
 ### Files added
 
@@ -279,8 +302,10 @@ Commit 3):
   - `curl -sI http://localhost:8080/playground/` → 200, `text/html`.
   - `curl -sI http://localhost:8080/web-app.js` → 200.
   - `curl -sI http://localhost:8080/playground/playground-app.js` → 200.
-- Browser visit: web-app boots authorized, QuickLink-to-`/playground`
-  works, playground app boots and renders nav.
+- Browser visit: web-app boots authorized; clicking the Playground
+  QuickLink lands on
+  `http://localhost:8080/playground/#widgets/chatbot-widget` showing the
+  chatbot widget showcase.
 
 ## Hard constraints
 
