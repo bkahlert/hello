@@ -121,7 +121,19 @@ public fun PomodoroStarter(
     }
     InlineDropdown(state) {
         Input(Hidden) { name("type");value(state.selectionString) }
-        Text { Text(state.selection?.duration?.format() ?: "") }
+        Text({
+            // Same shadow-DOM workaround as the avatar fix: Semantic UI's
+            // dropdown toggle uses `document.body.contains(e.target)`, which
+            // is false for elements inside the `<clickup-menu-v2>` shadow
+            // root, so a click on the duration text is silently ignored.
+            // Forward to the sibling caret which has its own delegated
+            // handler without that guard.
+            onClick { event ->
+                val el = event.nativeEvent.currentTarget as? org.w3c.dom.HTMLElement
+                (el?.parentElement?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
+            }
+            style { property("cursor", "pointer") }
+        }) { Text(state.selection?.duration?.format() ?: "") }
         Icon("dropdown")
         Menu {
             IconButton({
