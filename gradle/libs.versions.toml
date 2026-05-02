@@ -2,6 +2,8 @@
 # All other version can be found in /platforms
 
 [versions]
+# Gradle plugin; the compiler is configured in `com.bkahlert.compose-for-web-project.gradle.kts`
+compose = "1.4.0"
 kommons = "2.8.0"
 kotest = "5.5.4"
 kotlin = "1.8.21"
