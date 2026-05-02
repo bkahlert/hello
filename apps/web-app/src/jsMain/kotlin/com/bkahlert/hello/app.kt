@@ -122,13 +122,12 @@ fun Tag<Element>.propsControls(
         button(
             OutlineHeroIcons.x_circle,
             "Reset to defaults",
-            "Downloads your current settings and removes them from here.",
+            "Replaces current settings with showcase defaults",
             simple = true,
             inverted = true
         ).apply {
             className("border-red-500 border-2")
             clicks handledBy {
-                props.export(null)
                 props.update(emptyMap())
                 domNode.scrollTo(top = 0)
             }

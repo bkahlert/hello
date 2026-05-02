@@ -338,9 +338,9 @@ public fun <T> RenderContext.navigationBar(
                 opened,
                 "transition ease-out duration-100 origin-top",
                 "transform opacity-0 scale-95",
-                "transform opacity-100 scale-100",
+                "transform opacity-100 scale-110",
                 "transition ease-in duration-75 origin-top",
-                "transform opacity-100 scale-100",
+                "transform opacity-100 scale-110",
                 "transform opacity-0 scale-95",
             )
 
