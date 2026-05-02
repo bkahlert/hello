@@ -169,6 +169,15 @@ public fun SemanticElementScope<MenuElement>.MainItems(
     DropdownItem({ +"borderless" }) {
         Img(src = user.profilePicture.toString(), alt = "User ${user.username}") {
             classes("rounded", "avatar")
+            // Semantic UI's dropdown toggle relies on `document.body.contains(e.target)`,
+            // which is false inside the `<clickup-menu-v2>` shadow DOM, so a direct click
+            // on the avatar `<img>` is silently ignored. The delegated icon handler does
+            // not have that guard, so we forward the click to the sibling caret.
+            onClick { event ->
+                val img = event.nativeEvent.currentTarget as? org.w3c.dom.HTMLElement
+                (img?.parentElement?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
+            }
+            style { property("cursor", "pointer") }
         }
         Icon("dropdown")
         Menu {
