@@ -113,6 +113,10 @@ commit boundary.
   `python3 -m http.server` from
   `apps/web-app/build/distributions/`, boots into an authorized state showing
   `JohnDoeInfo`.
+- The sign-out button flips the UI to a logged-out state (after the standard
+  `DEMO_BASE_DELAY` pause); the sign-in button flips it back. No browser
+  redirects, no network calls. After page reload the app is authorized again
+  — fresh-resolve semantics, intentional for the archive demo.
 - Reload preserves widget props in `localStorage`.
 - Playground app: same check, served from
   `apps/playground-app/build/distributions/`.
