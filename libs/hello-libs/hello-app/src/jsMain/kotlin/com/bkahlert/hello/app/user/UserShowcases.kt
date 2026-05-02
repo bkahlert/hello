@@ -23,7 +23,7 @@ public object UserShowcases : SimplePage(
                 div("flex items-center justify-end p-4") { userDropdown(SessionStore(FakeSession.Unauthorized())) }
             }
             showcase("Authorized (without picture)", resizable = false) {
-                div("flex items-center justify-end p-4") { userDropdown(SessionStore(FakeSession.Authorized())) }
+                div("flex items-center justify-end p-4") { userDropdown(SessionStore(FakeSession.Authorized(TestUserInfo()))) }
             }
             showcase("Authorized (with username and picture)", resizable = false) {
                 div("flex items-center justify-end p-4") {
