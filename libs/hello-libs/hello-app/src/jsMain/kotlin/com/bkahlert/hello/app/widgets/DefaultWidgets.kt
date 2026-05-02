@@ -44,8 +44,6 @@ public val DefaultWidgets: List<Widget> by lazy {
                     BookmarkTreeNode.Folder(
                         title = "Nerd",
                         children = listOf(
-                            Bookmarks.nyanCat,
-                            Bookmarks.rickAstley,
                             Bookmarks.impossibleColor,
                             BookmarkTreeNode.Folder(
                                 title = "Unicode Fonts",
@@ -101,11 +99,6 @@ public val DefaultWidgets: List<Widget> by lazy {
                                         icon = Uri("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACCklEQVQ4jW2TwUtUYRTFf/e9GadSQ2FsWRASgWaCgSKSNmRtok1BRP4F/QFBi8BWLVslFQgRtGnRqkUoFEFEkhETFNbCMIsojDR1fOP35jst5s0wb/TAe9x3ud9559zvXqhBMpogYQBaYVArDDbmagjqkZmaCSApbqGXFnpTuRSBZD3F0oXuN3/2N4tI3mVEOZVLEZgpRGf3ujBsIggSyXkgn8RBmkAKet5F3WHrngIH2oZ4rJBJ1YrMDJGhQIaCGWq2QF+xdLv/o1seWJL6P7nNEwtb04XFxUOarP5JJYZVJlKZSCWGq44JkyfgyPy//PEFd2rga/yz73PlKgPKg7IAcowqZlkbeG3gFbMsx+jOLgPHPmxPd2ffX3vSNjhKO0fJcRIxToUATyUxHBLiMWZxvCDge+0WApl/SzYOaUMEOIQDfMpxNfZAjMdTwdOM86h9ffL3RZDJMaJtvmkTr028tlmSY2THoUasTj3q3JiaeVj7VomhhibWprHexEy98N58Fl/udMalIJs7Hd15eSZu+VG0fZfnVLJnCKyVOYmMGXHtXJ2ATNRVdtwwuBKa2pUJpuW6HoyNcRPHc3x9qHYbeRAywKK7r8bd/ddfVm89PVxfpjUmtMZEIn/3ZTJMgH79XZ2PytFsx/Vzi/W+GzmMXOoudlhIcDDoiNdta6aqKNlQTzEltgH/AY26/JBA2OfsAAAAAElFTkSuQmCC"),
                                     ),
                                     BookmarkTreeNode.Bookmark(
-                                        title = "(✌ﾟ∀ﾟ)☞",
-                                        url = Uri("https://lunicode.com/emoticons"),
-                                        icon = Uri("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAB4ElEQVQ4jV2SPWtUURCGn5nztXf37iYLMZJEJIgoASsLEf+ChbWQ1s4/4x+wsbMy/8BOrEUsJGFjiOCKuIlxP+499xyLm4Rdh+nmfWbeGUZCt0RNm6IWY1EDkBqamFMkNaTm2fP9gzevM1lCOUAtxolxWIcJS8CCWOempqlJkSaSk7GhwLqNvUez8wm+V52lejKNF1VqnCkLECED5Nymtk5+HX0Z3n9I6Kf5LFejXI3SfLa+95jQwxebdx9gDKqIKKIYiwu/T4+lGLAUZ+MfUqzhuj9PRqIOMdu7d1REUYfx4np0VoBbT1/QWZNQ4jpYh+r3b8eKKKoYhw343jJw+vE9nQG+i+ugDjWtJUEUNVgvNiwDdPriS3wX4zFWREH1qiiIoHYFsF1cB+PFtO3bCTlDXt+9d3m4FcBi/JUZgygilpxIzeTos5SbNNWyfvruFaD9jbC1jggqiNhMltQQK+p5rv5eq3M1uvTqd/PN/vV82/4Mscr1VObnwOHhIf9FrMixBST0h1j/ZP/lh4O3Uqwtxn/SxWRlkeGW7S5YnN/Y3hl//SShHGCc2IAr8F1CKb7AeIAUqee5mlJdUM1yPSPWxlqHCGTJGRI5EmvibLhzezY+oZpST4mLHCuaSG7+AdmRyK42tecFAAAAAElFTkSuQmCC"),
-                                    ),
-                                    BookmarkTreeNode.Bookmark(
                                         title = "10,000+ Japanese Emoticons, Kaomoji, Text Faces & Dongers",
                                         url = Uri("http://japaneseemoticons.me/all-japanese-emoticons/"),
                                         icon = Uri("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAACPUlEQVQ4jT2SO2tUURzEZ845d/fe3dWI+ECToE0kogaDEKKFCGKRoBaKsbKw0g8gdikFS0EULPQjaHwUURTEQhsRUkRFIhaym0ASs3nv457/WGx0qulmhvlxYfQCTCIogRAIiSQAARBIdERAQIC0ZUlBNFNIZDnoSAdAECSY4AAhQAAFUq2Weac0c0tLzDI1NpVHee/abZSKSDPIJAZ10iTrqmj0Yjh5yp48tl8/efZcGDim+rIqFXszielpFFNSjhAAazbCtevFsausVMLtW9jXzdlZyzKMjsT1dcUcdJ12ToAA73zr9aTVarFaU21O8wv68ln1ums1PYDFOhxIiXAAScRoyZUxt3OH81S7gWOHceOm6+ltPnig/v5kfFyiBBIOMJBotxxc6+Ure/tOHz9pcjIMDlpjMxk8gepv7NmN7m602gJDZzFCEKMfGma7FZ899V07XUjaMzMklJVcFNOUZgIcSVhUqex6evMP721t2R3stXrdvPPHB/P5RRYzK2daW5X3BJxINJq+r0+VbZia4tfpWJ1jltrEBLPM9x8KA0fii+esVlEoSOYAySdaXc4fPcTiInoOJJcuo1iwmR9u1y78qdv6BlZWZEaQYqAJhQTVmr5/49AwcmvfvcPlFe7dn9+/Fycm7OiAP3OaaSoZCc6PnKckEs6p0dDGBstlForYWIcZtm9Hs2HNpiuXIZAM/+FUjCwUXJpCkkWUSiCR5wwFnxShCAJAwD9+tyg2Q+dLCZ2rIMkICiDwF9z2NDJH1ChyAAAAAElFTkSuQmCC"),
@@ -128,18 +121,9 @@ public val DefaultWidgets: List<Widget> by lazy {
                         title = "Scrum",
                         children = listOf(
                             BookmarkTreeNode.Bookmark(
-                                title = "Typical Problems and Solutions",
-                                url = Uri("https://www.mountaingoatsoftware.com/blog/three-mistakes-scrum-masters-make-and-how-to-correct-them"),
-                                icon = Uri("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQ0lEQVQ4ja1RLVPDQBB9uzEokgOd5Aj8gFbWUYVtHZJKZB2WXwD8gqJRtagWBwqFY9ptim/qML1FpAllaJvh483czN67fW/e7QJ/BFU1WGsDdjoAUMsZvR6labd496oM9naDC0DfHXMbDjUiOjW+H8zm8/tvCay1NXZolfEUsvDQF5HMWht4C7SUtAcgc0x1ERFKoqjnmC9Z9Qr6KV5BRkqdhQdhp88FqYrheDppUhLFWvWNwghAsEqQUvsnBmtNGaBudV8JWZ4S3myePRrfEIDjbUJS6oymk3PfmAdS3RmlaX3fmKdyC0kUjwFYACDQncI1AAoBgJmaryLDdc5cFkydola4FwW9IXfrbxJ/Mcib9HaZICSgASBztH1GvHpxzF0AmUJPcoZuRETW6DbjMLRnSRTrcia/w0EYD46s3baV/8MHrFt2XvzfY6wAAAAASUVORK5CYII"),
-                            ),
-                            BookmarkTreeNode.Bookmark(
                                 title = "Nine Questions You Should Ask",
                                 url = Uri("https://www.mountaingoatsoftware.com/blog/nine-questions-scrum-masters-and-product-owners-should-be-asking"),
                                 icon = Uri("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQ0lEQVQ4ja1RLVPDQBB9uzEokgOd5Aj8gFbWUYVtHZJKZB2WXwD8gqJRtagWBwqFY9ptim/qML1FpAllaJvh483czN67fW/e7QJ/BFU1WGsDdjoAUMsZvR6labd496oM9naDC0DfHXMbDjUiOjW+H8zm8/tvCay1NXZolfEUsvDQF5HMWht4C7SUtAcgc0x1ERFKoqjnmC9Z9Qr6KV5BRkqdhQdhp88FqYrheDppUhLFWvWNwghAsEqQUvsnBmtNGaBudV8JWZ4S3myePRrfEIDjbUJS6oymk3PfmAdS3RmlaX3fmKdyC0kUjwFYACDQncI1AAoBgJmaryLDdc5cFkydola4FwW9IXfrbxJ/Mcib9HaZICSgASBztH1GvHpxzF0AmUJPcoZuRETW6DbjMLRnSRTrcia/w0EYD46s3baV/8MHrFt2XvzfY6wAAAAASUVORK5CYII"),
-                            ),
-                            BookmarkTreeNode.Bookmark(
-                                title = "Scrum Guide | Scrum Guides",
-                                url = Uri("https://scrumguides.org/scrum-guide.html"),
                             ),
                             BookmarkTreeNode.Bookmark(
                                 title = "Scrum Primer",
@@ -149,16 +133,6 @@ public val DefaultWidgets: List<Widget> by lazy {
                                 title = "Scrum Foundations eLearning Series Educational Videos",
                                 url = Uri("https://www.scrumalliance.org/learn-about-scrum/scrum-elearning-series"),
                                 icon = Uri("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABiUlEQVQ4jZ2SzStEURjGn/c9c2fGHUQmH83cGSRlY6esLNj4G7CyUsqCLGRzN2jm+igLKfIPWCjKf2DBwsZGUYikyAJ3LvNxXiu6U/c28qzOc973fc7vnA7BJ8klG4oc7xLicYG0liucr/furshGGSGK+I1H5mgF+hnytQaKJSMkswUzewrc7YYF/Oo919HnOdmxKiIb7ObTR5/r6Z6wOf5ZGBztLpYrZ/4i2dAgtf36ph9rEshmT8xdtQZqNoYRYOa6GIF6d5eyHf6GJ6ctIRudTWEB5Dc3dmc8mfAaozDaS6BFBk4BDIigW2uaVEr3mvMPB8EEALrs288YRbMlcL8SqieBqSArzDSnGMMCnqp5J8+xjguOVb5fT9cF1V0nc+h/qyqCt+VUSwXYB/OQNfvgBQWI6K3ih7oKDDAMzjFoT0SXwgiVEbmMJ/T+j6/6iQLZAejFbFEXYQHx1O194cZaCKvX1EcuM+LmrelAgr/o2eOT5pg+/9fphbXUoOdkJv417OatpaD9b+xZhEdtKGPJAAAAAElFTkSuQmCC"),
-                            ),
-                            BookmarkTreeNode.Bookmark(
-                                title = "Scrum Master - die Rolle im Detail",
-                                url = Uri("https://agile.coach/wissen/scrum-master-im-detail/"),
-                                icon = Uri("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAACh0lEQVQ4jW2ST0iTcRjHn+d5/2zz37ZyKk5BxUMYSIah8xIV2GVQNw2WWFA6AgM75CokOnYLiYg0awvt2jQKE9MgBU9jLIrcrPVGOMOYuU3n3vf3dHjFS34PD8/heZ7vw/N5kJlDoeDs6zADdHrP+XwXhRCIiIhwkORIJPJh/v3Ra/cVFPNj91pajjc1NQkhJEk6sIESibjLVblS1vDd2VhVVaVpGiLyfwIAM5FPnT4z8/aNe+4hstBS621tbUIIIjIjIgohAGB/SWTmrUxm9PEjJLrS5y8uKjIriAgAdnZ2rFarOX6vQdf1Z+Nj2mocAGsbGnsvXUZEIlpYWJicnCCikpLigYHrNTW1sVhsaiosqYr07eevhvNX7UdaIrPTiZWvHk/H8vLyyMiD/n5/V1f35ubf0dEnnZ1nNU0Lh1/R51i0o+/O3K5rvlB50j/85VM0t709PT3V09Pb3u6x2+0+n6+62r24+NFut1ssFrnsULnVYumwZ5FQVmSSlHQ6nctlnU6HEELXdSLq7r5QWlqaTqcBWDZ0/dhhtdFhlSUsJp4BQADzOESkqioANDc3A8DS0hIRyQzotmFiNVEoFP7o+lY2S0TMYNJIJpOFQkGSpLq6OiJiZpkId/P5lxMvNjY2WEBqbU1RFGZhmoRCz7e2MvH4yuDgDYfDKYSQhRA2m214+C4AGIbh9/fn83nEPZOhoVuKooyPP11f/11e7mJmMtkJIZhZCINZqKpqtVpzuaxJGgBSqbWyslJmRiQyDGP/sZhB13Vm9nq9wWAwkUgw8+zsu2g02tp6IpPJGIYhV1RU7DFHRES3uyafz7e3e5LJH4HATVmWFUUJBG47HA5VVerr6/8B4mBP/PzYzQoAAAAASUVORK5CYII"),
-                            ),
-                            BookmarkTreeNode.Bookmark(
-                                title = "Product Owner - die Scrum Rolle im Detail",
-                                url = Uri("https://agile.coach/wissen/product-owner-scrum-im-detail/"),
-                                icon = Uri("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAACh0lEQVQ4jW2ST0iTcRjHn+d5/2zz37ZyKk5BxUMYSIah8xIV2GVQNw2WWFA6AgM75CokOnYLiYg0awvt2jQKE9MgBU9jLIrcrPVGOMOYuU3n3vf3dHjFS34PD8/heZ7vw/N5kJlDoeDs6zADdHrP+XwXhRCIiIhwkORIJPJh/v3Ra/cVFPNj91pajjc1NQkhJEk6sIESibjLVblS1vDd2VhVVaVpGiLyfwIAM5FPnT4z8/aNe+4hstBS621tbUIIIjIjIgohAGB/SWTmrUxm9PEjJLrS5y8uKjIriAgAdnZ2rFarOX6vQdf1Z+Nj2mocAGsbGnsvXUZEIlpYWJicnCCikpLigYHrNTW1sVhsaiosqYr07eevhvNX7UdaIrPTiZWvHk/H8vLyyMiD/n5/V1f35ubf0dEnnZ1nNU0Lh1/R51i0o+/O3K5rvlB50j/85VM0t709PT3V09Pb3u6x2+0+n6+62r24+NFut1ssFrnsULnVYumwZ5FQVmSSlHQ6nctlnU6HEELXdSLq7r5QWlqaTqcBWDZ0/dhhtdFhlSUsJp4BQADzOESkqioANDc3A8DS0hIRyQzotmFiNVEoFP7o+lY2S0TMYNJIJpOFQkGSpLq6OiJiZpkId/P5lxMvNjY2WEBqbU1RFGZhmoRCz7e2MvH4yuDgDYfDKYSQhRA2m214+C4AGIbh9/fn83nEPZOhoVuKooyPP11f/11e7mJmMtkJIZhZCINZqKpqtVpzuaxJGgBSqbWyslJmRiQyDGP/sZhB13Vm9nq9wWAwkUgw8+zsu2g02tp6IpPJGIYhV1RU7DFHRES3uyafz7e3e5LJH4HATVmWFUUJBG47HA5VVerr6/8B4mBP/PzYzQoAAAAASUVORK5CYII"),
                             ),
                             BookmarkTreeNode.Bookmark(
                                 title = "Crossfunktionale Teams - Was sind die Vorteile?",
@@ -177,13 +151,6 @@ public val DefaultWidgets: List<Widget> by lazy {
                     BookmarkTreeNode.Bookmark(
                         title = "Der Teufelskreis von Qualität und Zeitdruck",
                         url = Uri("http://www.inf.fu-berlin.de/inst/ag-se/teaching/V-SWT-2018/49_Projektmanagement4.pdf"),
-                    ),
-                    BookmarkTreeNode.Bookmark(
-                        title = "GitHub",
-                        url = Uri("https://github.com/bkahlert"),
-                        icon = Uri(
-                            "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNiAwQzcuMTYgMCAwIDcuMTYgMCAxNkMwIDIzLjA4IDQuNTggMjkuMDYgMTAuOTQgMzEuMThDMTEuNzQgMzEuMzIgMTIuMDQgMzAuODQgMTIuMDQgMzAuNDJDMTIuMDQgMzAuMDQgMTIuMDIgMjguNzggMTIuMDIgMjcuNDRDOCAyOC4xOCA2Ljk2IDI2LjQ2IDYuNjQgMjUuNTZDNi40NiAyNS4xIDUuNjggMjMuNjggNSAyMy4zQzQuNDQgMjMgMy42NCAyMi4yNiA0Ljk4IDIyLjI0QzYuMjQgMjIuMjIgNy4xNCAyMy40IDcuNDQgMjMuODhDOC44OCAyNi4zIDExLjE4IDI1LjYyIDEyLjEgMjUuMkMxMi4yNCAyNC4xNiAxMi42NiAyMy40NiAxMy4xMiAyMy4wNkM5LjU2IDIyLjY2IDUuODQgMjEuMjggNS44NCAxNS4xNkM1Ljg0IDEzLjQyIDYuNDYgMTEuOTggNy40OCAxMC44NkM3LjMyIDEwLjQ2IDYuNzYgOC44MiA3LjY0IDYuNjJDNy42NCA2LjYyIDguOTggNi4yIDEyLjA0IDguMjZDMTMuMzIgNy45IDE0LjY4IDcuNzIgMTYuMDQgNy43MkMxNy40IDcuNzIgMTguNzYgNy45IDIwLjA0IDguMjZDMjMuMSA2LjE4IDI0LjQ0IDYuNjIgMjQuNDQgNi42MkMyNS4zMiA4LjgyIDI0Ljc2IDEwLjQ2IDI0LjYgMTAuODZDMjUuNjIgMTEuOTggMjYuMjQgMTMuNCAyNi4yNCAxNS4xNkMyNi4yNCAyMS4zIDIyLjUgMjIuNjYgMTguOTQgMjMuMDZDMTkuNTIgMjMuNTYgMjAuMDIgMjQuNTIgMjAuMDIgMjYuMDJDMjAuMDIgMjguMTYgMjAgMjkuODggMjAgMzAuNDJDMjAgMzAuODQgMjAuMyAzMS4zNCAyMS4xIDMxLjE4QzI3LjQyIDI5LjA2IDMyIDIzLjA2IDMyIDE2QzMyIDcuMTYgMjQuODQgMCAxNiAwVjBaIiBmaWxsPSIjMjQyOTJFIi8+Cjwvc3ZnPgoK"
-                        ),
                     ),
                 ) + QuickLinks.DefaultLinks,
             )
