@@ -2,7 +2,6 @@ plugins {
     id("com.bkahlert.kotlin-js-browser-application")
     id("com.bkahlert.fritz2-project")
     id("com.bkahlert.tailwindcss-project")
-    id("com.bkahlert.aws.app")
 }
 
 group = "$group.hello"
