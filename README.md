@@ -17,6 +17,44 @@
 ![Edit](docs/screenshots/edit.png)
 
 
+## Running the museum image
+
+The `museum` branch is a frozen, runtime-dependency-free showcase build of
+**Hello!** ([`docs/superpowers/specs/2026-05-02-museum-branch-and-ci-design.md`](docs/superpowers/specs/2026-05-02-museum-branch-and-ci-design.md)).
+A GitHub Actions workflow rebuilds the image on every push to that branch
+and publishes it to Docker Hub.
+
+```shell
+docker run --rm -p 8080:8080 bkahlert/hello:museum
+```
+
+Then open:
+
+- [http://localhost:8080/](http://localhost:8080/) — the web app
+- [http://localhost:8080/playground/](http://localhost:8080/playground/) — the playground
+
+### Tags
+
+| Tag | Mutability | Purpose |
+|---|---|---|
+| `bkahlert/hello:museum` | moving | latest museum build |
+| `bkahlert/hello:museum-<short-sha>` | immutable | per-commit pin |
+
+Multi-arch (`linux/amd64`, `linux/arm64`), with provenance + SBOM
+attestations. There is no `:latest`.
+
+### Building locally
+
+[`./build`](build) produces both Kotlin/JS distributions and tags
+`hello:museum` (no registry prefix). [`./smoke`](smoke) runs an image
+and verifies the five known routes:
+
+```shell
+./build && ./smoke
+./smoke bkahlert/hello:museum   # also works against a registry image
+```
+
+
 ## Development
 
 ### Project structure
