@@ -3,23 +3,19 @@ package com.bkahlert.hello.app
 import com.bkahlert.hello.app.env.Environment
 import com.bkahlert.hello.app.props.PropsDataSource
 import com.bkahlert.hello.app.props.PropsStore
-import com.bkahlert.hello.app.props.RemotePropsDataSource
 import com.bkahlert.hello.app.props.StoragePropsDataSource
+import com.bkahlert.hello.app.session.FakeSession
 import com.bkahlert.hello.app.session.SessionStore
 import com.bkahlert.hello.app.user.User
 import com.bkahlert.kommons.auth.Session
 import com.bkahlert.kommons.dom.ScopedStorage.Companion.scoped
 import com.bkahlert.kommons.dom.Storage
-import com.bkahlert.kommons.dom.uri
 import com.bkahlert.kommons.js.trace
 import com.bkahlert.kommons.md5
-import com.bkahlert.kommons.oauth.AuthorizationCodeFlowState
-import com.bkahlert.kommons.uri.resolve
 import dev.fritz2.core.Handler
 import dev.fritz2.core.Id
 import dev.fritz2.core.RootStore
 import kotlinx.browser.localStorage
-import kotlinx.browser.window
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.decodeFromString
@@ -30,19 +26,11 @@ import kotlinx.serialization.json.JsonElement
 public class AppStore(
     initialData: AppState = AppState.Loading,
     private val environmentProvider: suspend () -> Environment = { Environment.load() },
-    private val sessionResolver: suspend (Environment) -> (suspend () -> Session) = { environment ->
-        {
-            AuthorizationCodeFlowState.resolve(
-                openIDProviderUrl = window.location.uri.resolve(environment.search(label = "OpenID Provider URL", keySubstring = "PROVIDER_URL")),
-                clientId = environment.search(label = "Unable to find client ID", keySubstring = "CLIENT_ID"),
-            )
-        }
+    private val sessionResolver: suspend (Environment) -> (suspend () -> Session) = {
+        { FakeSession.Authorized() }
     },
-    private val propsProvider: suspend (Environment, Session) -> PropsDataSource = { environment, session ->
-        when (session) {
-            is Session.AuthorizedSession -> RemotePropsDataSource.from(environment, session)
-            else -> StoragePropsDataSource(localStorage)
-        }
+    private val propsProvider: suspend (Environment, Session) -> PropsDataSource = { _, _ ->
+        StoragePropsDataSource(localStorage)
     },
     id: String = Id.next(),
 ) : RootStore<AppState>(initialData, id) {
