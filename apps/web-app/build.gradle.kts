@@ -12,6 +12,7 @@ kotlin {
         jsMain {
             dependencies {
                 implementation("com.bkahlert.hello:hello-app")
+                implementation("com.bkahlert.hello:clickup")
                 implementation(npm("encrypt-storage", "^2.12")) { because("localStorage encryption for offline props copy") }
             }
         }
