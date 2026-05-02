@@ -24,7 +24,9 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: liberica
-          java-version: '11'
+          # Pin to 11.0.19 — newer 11.x point releases break Gradle 8.2.1
+          # (see CLAUDE.md "Build prerequisites").
+          java-version: '11.0.19'
 
       - uses: gradle/actions/setup-gradle@v3
 
