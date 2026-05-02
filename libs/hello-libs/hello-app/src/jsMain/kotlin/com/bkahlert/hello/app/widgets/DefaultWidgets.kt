@@ -23,18 +23,18 @@ public val DefaultWidgets: List<Widget> by lazy {
             )
         )
         add(
+            WebsiteWidget(
+                id = "playground",
+                title = QuickLinks.DefaultLinks.first().title,
+                src = QuickLinks.DefaultLinks.first().url,
+                aspectRatio = AspectRatio.stretch,
+            )
+        )
+        add(
             VideoWidget(
                 id = "rick-astley",
                 title = "Rick Astley",
                 src = Uri("https://www.youtube.com/embed/dQw4w9WgXcQ"),
-            )
-        )
-        add(
-            WebsiteWidget(
-                id = "sbk-lks",
-                title = QuickLinks.DefaultLinks.last().title,
-                src = QuickLinks.DefaultLinks.last().url,
-                aspectRatio = AspectRatio.stretch,
             )
         )
         add(

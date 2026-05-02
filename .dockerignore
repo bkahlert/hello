@@ -1,0 +1,7 @@
+# Keep the build context small. The Dockerfile only needs the two dist
+# directories and the nginx.conf alongside the Dockerfile itself.
+
+**
+!nginx.conf
+!apps/web-app/build/distributions/**
+!apps/playground-app/build/distributions/**

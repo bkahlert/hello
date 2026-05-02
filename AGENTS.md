@@ -24,6 +24,12 @@ extracts non-metadata files from every `.klib` on the `jsRuntimeClasspath` into 
 so library-provided assets (e.g. [nyancat.svg](libs/hello-libs/hello-app/src/jsMain/resources/nyancat.svg))
 reach the bundle. Reference them as relative URLs (`Uri("nyancat.svg")`).
 
+## Building & running
+
+`./build` builds both apps and the Docker image. Run with
+`docker run --rm -p 8080:8080 hello-archive:latest`. Web-app at
+`/`, playground-app at `/playground/`.
+
 ## Archival cut surface
 
 Reference for the in-progress work to remove AWS, remove auth, and re-introduce ClickUp as a mocked widget. Keep this section in sync as the work proceeds; delete it once archival is complete.
