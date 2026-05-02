@@ -295,9 +295,9 @@ public class Widgets(
                 )
             ) {
                 fun iconButton(icon: Uri, caption: String, customize: HtmlTag<HTMLButtonElement>.() -> Unit = {}) =
-                    button("w-8 h-8 relative overflow-hidden text-default dark:text-invert enabled:hover:bg group/button transition") {
+                    button("w-8 h-8 grid place-items-center overflow-hidden text-default dark:text-invert enabled:hover:bg group/button transition") {
                         type("button")
-                        icon("absolute inset-1 scale-75 group-hover/button:scale-100", icon)
+                        icon("w-6 h-6 scale-75 group-hover/button:scale-100", icon)
                         title(caption)
                         customize()
                     }
