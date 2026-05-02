@@ -72,9 +72,9 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 `wget` is busybox-builtin in `nginx:alpine` (no install layer). `--spider` is HEAD-only. `--start-period=5s` covers nginx startup before retry budget counts.
 
-- [ ] **Step 2: Retag the image in `./build`**
+- [ ] **Step 2: Retag the image in `./build` and add podman-compat detect**
 
-Edit [`build`](../../../build) — change three lines:
+Edit [`build`](../../../build):
 
 ```diff
 -# build — produce both Kotlin/JS distributions and the hello-archive
@@ -83,10 +83,29 @@ Edit [`build`](../../../build) — change three lines:
 +#         Docker image.
 ```
 
+Replace the single `docker build` line with a podman-detecting block:
+
 ```diff
 -docker build -t hello-archive:latest .
-+docker build -t hello:museum .
++build_args=()
++if [[ $(docker version 2>/dev/null) == *"Podman Engine"* ]]; then
++    build_args+=(--format=docker)
++fi
++docker build "${build_args[@]}" -t hello:museum .
 ```
+
+Why: podman builds OCI-format images by default; OCI doesn't carry
+`HEALTHCHECK`, so podman would silently strip it (with a warning)
+unless we pass `--format=docker`. Real Docker doesn't accept `--format`,
+so the flag must be conditional.
+
+The bash-glob match is deliberate. `docker version | grep -qF 'Podman
+Engine'` would be cleaner-looking but breaks under `set -o pipefail`:
+`grep -q` exits early on match, sends `SIGPIPE` to `docker version`,
+pipefail propagates the 141 — the `if` condition then reads false even
+though the substring is present.
+
+Then update the help text:
 
 ```diff
 -printf '\n%s✔%s Built hello-archive:latest\n\n' "$green" "$reset"
@@ -133,23 +152,18 @@ trap cleanup EXIT
 printf '%s⚙%s Starting %s as %s\n' "$yellow" "$reset" "$image" "$container"
 docker run -d --name "$container" -p 8080:8080 "$image" >/dev/null
 
-printf '%s⚙%s Waiting for HEALTHCHECK to report healthy\n' "$yellow" "$reset"
-health=starting
-for _ in $(seq 1 60); do
-    health=$(docker inspect --format='{{.State.Health.Status}}' "$container" 2>/dev/null || echo none)
-    case $health in
-        healthy)   break ;;
-        none)      printf '%s✘%s container has no HEALTHCHECK\n' "$red" "$reset" >&2; exit 1 ;;
-        unhealthy) printf '%s✘%s HEALTHCHECK reports unhealthy\n' "$red" "$reset" >&2
-                   docker logs "$container" >&2
-                   exit 1 ;;
-    esac
+printf '%s⚙%s Waiting for HTTP / to respond\n' "$yellow" "$reset"
+ready=false
+for _ in $(seq 1 30); do
+    if curl -fsI http://localhost:8080/ >/dev/null 2>&1; then
+        ready=true
+        break
+    fi
     sleep 1
 done
 
-if [[ $health != healthy ]]; then
-    printf '%s✘%s timed out waiting for healthy (last status: %s)\n' \
-        "$red" "$reset" "$health" >&2
+if [[ $ready != true ]]; then
+    printf '%s✘%s timed out waiting for HTTP / to respond\n' "$red" "$reset" >&2
     docker logs "$container" >&2
     exit 1
 fi
@@ -231,7 +245,7 @@ Three coordinated changes to the local image flow:
 - ./build now tags hello:museum to match the CI naming
   (bkahlert/hello:museum); the local tag carries no registry prefix so
   it's unambiguously a local-only build.
-- New ./smoke script runs an image, waits on HEALTHCHECK, and curls the
+- New ./smoke script runs an image, polls HTTP readiness, and curls the
   five known routes (/, /playground, /playground/, /web-app.js,
   /playground/playground-app.js). Used both locally and from CI.
 
@@ -552,7 +566,7 @@ No PRs, no further pushes. The deferred ClickUp resurrection (see the **Archival
 - `.github/workflows/build.yml` → Task 2, Step 1.
 - Image `bkahlert/hello:museum` + `bkahlert/hello:museum-<short-sha>`, no `:latest` → Task 2, metadata-action `tags:` block; verified in Task 5, Step 4.
 - Two-step build (amd64 smoke → multi-arch push) → Task 2, Step 1 (build-push-action × 2).
-- Smoke uses HEALTHCHECK as readiness gate → `./smoke` content in Task 1, Step 3 (`docker inspect Health.Status` poll).
+- Smoke verifies image readiness → `./smoke` polls `curl http://localhost:8080/` until 200 (Task 1, Step 3). HEALTHCHECK still ships in the image for orchestrators, but smoke does not gate on it (podman doesn't auto-run healthchecks without systemd; URL polling is uniform across runtimes).
 - Caching: `setup-gradle` + `type=gha` buildx → Task 2, Step 1.
 - `DOCKER_USERNAME` / `DOCKER_TOKEN` already exist → Task 2 commit message, Task 5 verification.
 - Triggers: push to `museum` + workflow_dispatch, no `tags: ['v*']` → Task 2, Step 1.
@@ -567,6 +581,6 @@ No spec requirement left unmapped.
 **3. Type / API consistency:**
 - Image tags `bkahlert/hello:museum` and `bkahlert/hello:museum-<sha>` consistent across Task 2 metadata-action, Task 5 verification, and spec.
 - Local tag `hello:museum` used identically in Task 1 (`./build`), Task 1 (`./smoke` default), and Task 2 (`hello:museum-smoke` for CI's local-only smoke build).
-- HEALTHCHECK contract: `./smoke` polls `State.Health.Status` until `healthy` — depends on Dockerfile's HEALTHCHECK existing (Task 1, Step 1). The script's `none` branch handles the failure mode where someone runs `./smoke` against an image without HEALTHCHECK.
+- Smoke readiness contract: poll `curl http://localhost:8080/` until 200, 30 s timeout. Independent of HEALTHCHECK (podman doesn't auto-run it without systemd integration).
 - Five-URL smoke list identical between `./smoke` (Task 1) and the spec's success-criteria list.
 - Branch name `museum` consistent across `on.push.branches` (Task 2), `git branch -m` (Task 3), `git push -u origin museum` (Task 4), `gh run` queries (Task 5).

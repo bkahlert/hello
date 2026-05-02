@@ -116,24 +116,38 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 `--spider` is HEAD-only (no body download). `--start-period=5s` covers
 nginx startup so initial failures don't count toward the retry budget.
 
-## `./build` script — tag rename
+## `./build` script — tag rename + podman compat
 
-In [build](../../../build), change the docker tag and the help text:
+In [build](../../../build), two changes:
 
-```diff
-- docker build -t hello-archive:latest .
-+ docker build -t hello:museum .
-```
+1. Tag `hello:museum` instead of `hello-archive:latest`; update the
+   trailing `Run:` / `Open:` help text. Local and CI image names are now
+   identical (`hello:museum`); only the registry prefix differs
+   (`bkahlert/` for the pushed copies).
 
-```diff
-- ✓ Built hello-archive:latest
-- Run:   docker run --rm -p 8080:8080 hello-archive:latest
-+ ✓ Built hello:museum
-+ Run:   docker run --rm -p 8080:8080 hello:museum
-```
+2. Detect podman and pass `--format=docker` so `HEALTHCHECK` survives.
+   Podman builds OCI-format images by default; the OCI image spec
+   doesn't carry `HEALTHCHECK`, so podman strips it with a warning. The
+   `--format=docker` flag switches to the Docker v2 schema which does.
+   Real Docker's `docker build` doesn't accept `--format`, so the flag
+   must only be passed when running under podman:
 
-Local and CI image names are now identical (`hello:museum`); only the
-registry prefix differs (`bkahlert/` for the pushed copies).
+   ```bash
+   build_args=()
+   if [[ $(docker version 2>/dev/null) == *"Podman Engine"* ]]; then
+       build_args+=(--format=docker)
+   fi
+   docker build "${build_args[@]}" -t hello:museum .
+   ```
+
+   The bash-glob match is intentional. `docker version | grep -qF
+   'Podman Engine'` would be a natural fit but interacts badly with
+   `set -o pipefail`: `grep -q` exits at first match, sends `SIGPIPE`
+   to `docker version`, pipefail propagates the 141 exit — the `if`
+   condition then evaluates false even though the substring is present.
+
+CI runs real Docker via `docker/build-push-action`, so the workflow
+itself is unaffected.
 
 ## `./smoke` script
 
@@ -147,9 +161,12 @@ New executable at repo root, sibling to [build](../../../build). Shape:
 Behavior:
 
 1. `docker run -d --name <unique> -p 8080:8080 <image>`.
-2. Poll `docker inspect --format='{{.State.Health.Status}}'` until
-   `healthy` or 60 s timeout (in which case dump container logs and
-   fail).
+2. Poll `curl -fsI http://localhost:8080/` until 200 or a 30 s timeout
+   (in which case dump container logs and fail). The image's `HEALTHCHECK`
+   is intentionally **not** used as the readiness gate — podman doesn't
+   auto-run healthchecks without systemd integration, so a status-based
+   gate would never resolve there. URL polling tests the same property
+   (HTTP serving) and is uniform across runtimes.
 3. `curl -sI` each of the five URLs from the success-criteria list,
    assert the expected first line of the response.
 4. Cleanup: `docker stop` (which `docker run --rm` would not do

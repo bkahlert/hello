@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+#
+# smoke — run a hello:museum image and verify the five known routes.
+#
+# Usage:
+#   ./smoke               # verify the local hello:museum image
+#   ./smoke <image>       # verify any image, e.g. bkahlert/hello:museum
+#
+# Prerequisites:
+#   - docker daemon running
+#   - host port 8080 free
+
+set -euo pipefail
+
+green=$(tput setaf 2 2>/dev/null || true)
+red=$(tput setaf 1 2>/dev/null || true)
+yellow=$(tput setaf 3 2>/dev/null || true)
+reset=$(tput sgr0 2>/dev/null || true)
+
+image=${1:-hello:museum}
+container=museum-smoke-$$
+
+# shellcheck disable=SC2329  # invoked via trap
+cleanup() {
+    docker stop "$container" >/dev/null 2>&1 || true
+    docker rm   "$container" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+printf '%s⚙%s Starting %s as %s\n' "$yellow" "$reset" "$image" "$container"
+docker run -d --name "$container" -p 8080:8080 "$image" >/dev/null
+
+printf '%s⚙%s Waiting for HTTP / to respond\n' "$yellow" "$reset"
+ready=false
+for _ in $(seq 1 30); do
+    if curl -fsI http://localhost:8080/ >/dev/null 2>&1; then
+        ready=true
+        break
+    fi
+    sleep 1
+done
+
+if [[ $ready != true ]]; then
+    printf '%s✘%s timed out waiting for HTTP / to respond\n' "$red" "$reset" >&2
+    docker logs "$container" >&2
+    exit 1
+fi
+
+fail=0
+check() {
+    local url=$1 want=$2 got
+    got=$(curl -sI "$url" | head -1 | tr -d '\r')
+    if [[ $got == *"$want"* ]]; then
+        printf '%s✔%s %-58s %s\n' "$green" "$reset" "$url" "$got"
+    else
+        printf '%s✘%s %-58s %s (expected %s)\n' "$red" "$reset" "$url" "$got" "$want"
+        fail=1
+    fi
+}
+
+check http://localhost:8080/                              "200"
+check http://localhost:8080/playground                    "301"
+check http://localhost:8080/playground/                   "200"
+check http://localhost:8080/web-app.js                    "200"
+check http://localhost:8080/playground/playground-app.js  "200"
+
+if [[ $fail -eq 0 ]]; then
+    printf '\n%s✔%s smoke passed\n' "$green" "$reset"
+else
+    printf '\n%s✘%s smoke failed\n' "$red" "$reset" >&2
+fi
+
+exit $fail
