@@ -38,10 +38,10 @@ jobs:
       # Larger Kotlin daemon stack avoids a StackOverflowError compiling
       # hello-icon under memory pressure.
       - name: Build web-app distribution
-        run: ./gradlew :web-app:jsBrowserDistribution -Dkotlin.daemon.jvmargs="-Xmx2g -Xss16m"
+        run: ./gradlew :web-app:jsBrowserDistribution -Pkotlin.daemon.jvmargs="-Xmx2g -Xss16m"
 
       - name: Build playground-app distribution
-        run: ./gradlew :playground-app:jsBrowserDistribution -Dkotlin.daemon.jvmargs="-Xmx2g -Xss16m"
+        run: ./gradlew :playground-app:jsBrowserDistribution -Pkotlin.daemon.jvmargs="-Xmx2g -Xss16m"
 
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
