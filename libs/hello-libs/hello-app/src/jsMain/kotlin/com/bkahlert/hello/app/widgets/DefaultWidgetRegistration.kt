@@ -51,7 +51,7 @@ public val DefaultWidgetRegistration: WidgetRegistration by lazy {
         register<WsSshWidget>(
             "ws-ssh",
             title = "SSH",
-            description = """Connect to a SSH server via a <a href="https://github.com/bkahlert/ws-ssh">WS-SSH proxy</a>.""",
+            description = """Connect to a SSH server via a WS-SSH proxy.""",
             icon = SolidHeroIcons.command_line,
         )
     }
