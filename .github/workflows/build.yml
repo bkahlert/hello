@@ -30,11 +30,18 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v3
 
-      - name: Build Kotlin/JS distributions
-        # --no-parallel: composite-build + parallel kotlinNpmInstall corrupts
-        # ~/.cache/yarn/v6 (zero-byte tarballs, sha1 mismatches). Local builds
-        # are fine because the cache is warm; CI hits a cold cache and races.
-        run: ./gradlew :web-app:jsBrowserDistribution :playground-app:jsBrowserDistribution --no-parallel
+      # Two gradle invocations on purpose, not one. Composite-build spawns
+      # separate daemons per includeBuild and Kotlin Gradle plugin's worker
+      # pool can run web-app/playground-app's kotlinNpmInstall concurrently
+      # in cold-cache CI, corrupting ~/.cache/yarn/v6 (zero-byte tarballs,
+      # sha1 mismatches). Splitting forces yarn fully serial across daemons.
+      # Larger Kotlin daemon stack avoids a StackOverflowError compiling
+      # hello-icon under memory pressure.
+      - name: Build web-app distribution
+        run: ./gradlew :web-app:jsBrowserDistribution -Dkotlin.daemon.jvmargs="-Xmx2g -Xss16m"
+
+      - name: Build playground-app distribution
+        run: ./gradlew :playground-app:jsBrowserDistribution -Dkotlin.daemon.jvmargs="-Xmx2g -Xss16m"
 
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
