@@ -1,6 +1,7 @@
 package com.bkahlert.hello.app.session
 
 import com.bkahlert.hello.app.session.MockPluginConfig.Companion.findResponse
+import com.bkahlert.hello.icon.assets.Images.JohnDoeWithBackground
 import com.bkahlert.hello.showcase.DEMO_BASE_DELAY
 import com.bkahlert.kommons.auth.JsonWebTokenPayload.IdTokenPayload
 import com.bkahlert.kommons.auth.OpenIDStandardClaims
@@ -180,4 +181,6 @@ public fun TestUserInfo(
 public val IdTokenPayload.Companion.JohnDoeInfo: UserInfo
     get() = TestUserInfo(
         subjectIdentifier = randomString(),
-    )
+    ) {
+        put(OpenIDStandardClaims.PICTURE_CLAIM_NAME, JsonPrimitive(JohnDoeWithBackground.toString()))
+    }
