@@ -90,7 +90,7 @@ fun main() {
                             .render { it?.render(this) }
                     }
                 }
-                div("flex-1 flex items-center") {
+                div("hidden md:flex flex-1 items-center") {
                     clickUpMenu()
                 }
                 div("flex-0") {
