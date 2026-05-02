@@ -16,6 +16,7 @@ import com.bkahlert.hello.app.user.userDropdown
 import com.bkahlert.hello.bookmark.BookmarksWidgetShowcases
 import com.bkahlert.hello.button.button
 import com.bkahlert.hello.chatbot.ChatbotWidgetShowcases
+import com.bkahlert.hello.clickup.ClickUpWidgetShowcases
 import com.bkahlert.hello.components.diagnostics
 import com.bkahlert.hello.components.loader
 import com.bkahlert.hello.components.navigationbar.navigationBar
@@ -75,6 +76,7 @@ fun main() {
                 WidgetShowcases,
                 BookmarksWidgetShowcases,
                 ChatbotWidgetShowcases,
+                ClickUpWidgetShowcases,
             ),
         ),
         Fritz2DemoPage(pages, "page"),
