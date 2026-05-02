@@ -82,8 +82,8 @@ public object ClickUpComponent : WebComponent<HTMLDivElement>() {
         ).forEach { shadowRoot.appendStyle(it) }
         val customCss = shadowRoot.appendStyle("")
         css.render { customCss.textContent = it }
-        shadowRoot.appendScript("https://unpkg.com/jquery@3.6.4/dist/jquery.min.js").track {
-            shadowRoot.appendScript("https://unpkg.com/semantic-ui@2.5.0/dist/semantic.min.js").track {
+        shadowRoot.appendScript("clickup/jquery.min.js").track {
+            shadowRoot.appendScript("clickup/semantic.min.js").track {
                 connectedCallback(root)
             }
         }
