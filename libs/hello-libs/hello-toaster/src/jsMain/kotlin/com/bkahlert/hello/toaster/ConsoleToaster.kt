@@ -18,10 +18,10 @@ import kotlin.time.Duration.Companion.seconds
  */
 public open class ConsoleToaster(
     vararg consoleFns: Pair<String, Duration> = arrayOf(
-        "error" to 1.days,
-        "warn" to 1.hours,
-        "info" to 10.seconds,
-        "log" to 10.seconds,
+        "error" to 15.seconds,
+        "warn" to 5.hours,
+        "info" to 3.seconds,
+        "log" to 3.seconds,
     ),
     parse: ConsoleMessageParser = DebugConsoleMessageParser(),
     render: ConsoleMessageRenderer = DefaultConsoleMessageRenderer(),
