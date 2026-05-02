@@ -35,7 +35,6 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
 import com.bkahlert.kommons.dom.open
 import com.bkahlert.kommons.time.Now
-import com.bkahlert.semanticui.collection.AnchorItem
 import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
 import com.bkahlert.semanticui.collection.MenuElement
@@ -49,8 +48,6 @@ import com.bkahlert.semanticui.custom.color
 import com.bkahlert.semanticui.custom.textOverflow
 import com.bkahlert.semanticui.element.Icon
 import com.bkahlert.semanticui.module.DropdownItem
-import kotlinx.browser.window
-import org.jetbrains.compose.web.attributes.ATarget.Blank
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexWrap
@@ -73,7 +70,6 @@ import org.jetbrains.compose.web.css.marginLeft
 import org.jetbrains.compose.web.css.marginRight
 import org.jetbrains.compose.web.css.minWidth
 import org.jetbrains.compose.web.css.padding
-import org.jetbrains.compose.web.css.paddingRight
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.style
 import org.jetbrains.compose.web.css.whiteSpace
@@ -330,27 +326,6 @@ public fun SemanticElementScope<MenuElement>.ActivityItems(
     Menu({ classes("meta", "right") }) {
         if (selectedActivity != null) {
             MetaItems(selectedActivity.meta.reversed())
-
-            selectedActivity.url?.also { url ->
-                AnchorItem(url.toString(), {
-                    style { paddingRight(.6.em) }
-                    onClick {
-                        @Suppress("SpellCheckingInspection")
-                        val features = "popup=1,innerWidth=900,innerHeight=1200,top=400"
-                        window.open(url, "ClickUp-task", features)
-
-                        // can't put this in an else case as it's not even safe to assume
-                        // that one gets a window reference in case of success
-                        it.preventDefault()
-                        it.stopPropagation()
-                    }
-                    attr("target", Blank.targetStr)
-                }) {
-                    Icon("external", "alternate") {
-                        title("Open on ClickUp")
-                    }
-                }
-            }
         }
     }
 }
