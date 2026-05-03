@@ -34,6 +34,7 @@ import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succee
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioning
 import com.bkahlert.kommons.dom.open
+import com.bkahlert.kommons.js.console
 import com.bkahlert.kommons.time.Now
 import com.bkahlert.semanticui.collection.LinkItem
 import com.bkahlert.semanticui.collection.Menu
@@ -370,7 +371,7 @@ public fun ClickUpMenu(
         }
 
         is Succeeded -> {
-            console.info("ClickUp menu in state ${state::class.simpleName}")
+            console.debug("ClickUp menu in state ${state::class.simpleName}")
             ClickUpMenu(viewModel, state)
         }
     }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.bkahlert.hello.clickup.model.TaskListID
+import com.bkahlert.kommons.js.console
 import com.bkahlert.kommons.quoted
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.custom.textOverflow
@@ -65,10 +66,10 @@ public fun rememberActivityDropdownState(
     groups: List<ActivityGroup> = emptyList(),
     selection: Activity<*>? = null,
     onSelect: (old: Activity<*>?, new: Activity<*>?) -> Unit = { old, new ->
-        console.log("selection changed from $old to $new")
+        console.debug("selection changed from $old to $new")
     },
     onCreate: (TaskListID, String?) -> Unit = { taskListId, name ->
-        console.log("task added to $taskListId with name ${name?.quoted}")
+        console.debug("task added to $taskListId with name ${name?.quoted}")
     },
     settings: SemanticModuleSettingsBuilder<SemanticDropdownSettings> = {},
 ): ActivityDropdownState {
@@ -124,7 +125,7 @@ public fun ActivityDropdown(
                 .asDynamic().dropdown("show")
         }
     }) {
-        Input(Hidden) { name("activity");value(state.selectionString) }
+        Input(Hidden) { name("activity"); value(state.selectionString) }
         Text({
             style {
                 maxWidth(100.percent)
