@@ -58,11 +58,14 @@ check() {
     fi
 }
 
-check http://localhost:8080/                              "200"
-check http://localhost:8080/playground                    "301"
-check http://localhost:8080/playground/                   "200"
-check http://localhost:8080/web-app.js                    "200"
-check http://localhost:8080/playground/playground-app.js  "200"
+check http://localhost:8080/                                          "200"
+check http://localhost:8080/playground                               "301"
+check http://localhost:8080/playground/                              "200"
+check http://localhost:8080/web-app.js                               "200"
+check http://localhost:8080/playground/playground-app.js             "200"
+check http://localhost:8080/v1-semantic-compose-alpha                "301"
+check http://localhost:8080/v1-semantic-compose-alpha/               "200"
+check http://localhost:8080/v1-semantic-compose-alpha/hello.js       "200"
 
 if [[ $fail -eq 0 ]]; then
     printf '\n%s✔%s smoke passed\n' "$green" "$reset"
