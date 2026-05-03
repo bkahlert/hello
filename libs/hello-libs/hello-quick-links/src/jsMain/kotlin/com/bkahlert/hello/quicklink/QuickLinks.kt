@@ -6,6 +6,7 @@ import com.bkahlert.hello.bookmark.formatTitle
 import com.bkahlert.hello.bookmark.iconOrDefault
 import com.bkahlert.hello.editor.move
 import com.bkahlert.hello.fritz2.SyncStore
+import com.bkahlert.hello.icon.heroicons.OutlineHeroIcons
 import com.bkahlert.hello.icon.heroicons.SolidHeroIcons
 import com.bkahlert.hello.icon.icon
 import com.bkahlert.hello.modal.modal
@@ -202,21 +203,19 @@ public class QuickLinks(
         public val DefaultLinks: List<BookmarkTreeNode.Bookmark> = listOf(
             BookmarkTreeNode.Bookmark(
                 title = "Playground",
-                url = Uri("/playground/#hello/headless-ui"),
-                icon = Uri("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAtNCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0ic2l6ZS02Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMC41IDMuNzk4djUuMDJhMyAzIDAgMCAxLS44NzkgMi4xMjFsLTIuMzc3IDIuMzc3YTkuODQ1IDkuODQ1IDAgMCAxIDUuMDkxIDEuMDEzIDguMzE1IDguMzE1IDAgMCAwIDUuNzEzLjYzNmwuMjg1LS4wNzEtMy45NTQtMy45NTVhMyAzIDAgMCAxLS44NzktMi4xMjF2LTUuMDJhMjMuNjE0IDIzLjYxNCAwIDAgMC0zIDBabTQuNS4xMzhhLjc1Ljc1IDAgMCAwIC4wOTMtMS40OTVBMjQuODM3IDI0LjgzNyAwIDAgMCAxMiAyLjI1YTI1LjA0OCAyNS4wNDggMCAwIDAtMy4wOTMuMTkxQS43NS43NSAwIDAgMCA5IDMuOTM2djQuODgyYTEuNSAxLjUgMCAwIDEtLjQ0IDEuMDZsLTYuMjkzIDYuMjk0Yy0xLjYyIDEuNjIxLS45MDMgNC40NzUgMS40NzEgNC44OCAyLjY4Ni40NiA1LjQ0Ny42OTggOC4yNjIuNjk4IDIuODE2IDAgNS41NzYtLjIzOSA4LjI2Mi0uNjk3IDIuMzczLS40MDYgMy4wOTItMy4yNiAxLjQ3LTQuODgxTDE1LjQ0IDkuODc5QTEuNSAxLjUgMCAwIDEgMTUgOC44MThWMy45MzZaIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIC8+PC9zdmc+"),
+                url = Uri("playground/#hello/headless-ui"),
+                icon = SolidHeroIcons.beaker,
+            ),
+            BookmarkTreeNode.Bookmark(
+                title = "v1 (SemanticUI + jetpack Compose UI alpha)",
+                url = Uri("v1-semantic-compose-alpha/#debug"),
+                icon = OutlineHeroIcons.beaker,
             ),
             BookmarkTreeNode.Bookmark(
                 title = "GitHub",
                 url = Uri("https://github.com/bkahlert"),
                 icon = Uri(
-                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNiAwQzcuMTYgMCAwIDcuMTYgMCAxNkMwIDIzLjA4IDQuNTggMjkuMDYgMTAuOTQgMzEuMThDMTEuNzQgMzEuMzIgMTIuMDQgMzAuODQgMTIuMDQgMzAuNDJDMTIuMDQgMzAuMDQgMTIuMDIgMjguNzggMTIuMDIgMjcuNDRDOCAyOC4xOCA2Ljk2IDI2LjQ2IDYuNjQgMjUuNTZDNi40NiAyNS4xIDUuNjggMjMuNjggNSAyMy4zQzQuNDQgMjMgMy42NCAyMi4yNiA0Ljk4IDIyLjI0QzYuMjQgMjIuMjIgNy4xNCAyMy40IDcuNDQgMjMuODhDOC44OCAyNi4zIDExLjE4IDI1LjYyIDEyLjEgMjUuMkMxMi4yNCAyNC4xNiAxMi42NiAyMy40NiAxMy4xMiAyMy4wNkM5LjU2IDIyLjY2IDUuODQgMjEuMjggNS44NCAxNS4xNkM1Ljg0IDEzLjQyIDYuNDYgMTEuOTggNy40OCAxMC44NkM3LjMyIDEwLjQ2IDYuNzYgOC44MiA3LjY0IDYuNjJDNy42NCA2LjYyIDguOTggNi4yIDEyLjA0IDguMjZDMTMuMzIgNy45IDE0LjY4IDcuNzIgMTYuMDQgNy43MkMxNy40IDcuNzIgMTguNzYgNy45IDIwLjA0IDguMjZDMjMuMSA2LjE4IDI0LjQ0IDYuNjIgMjQuNDQgNi42MkMyNS4zMiA4LjgyIDI0Ljc2IDEwLjQ2IDI0LjYgMTAuODZDMjUuNjIgMTEuOTggMjYuMjQgMTMuNCAyNi4yNCAxNS4xNkMyNi4yNCAyMS4zIDIyLjUgMjIuNjYgMTguOTQgMjMuMDZDMTkuNTIgMjMuNTYgMjAuMDIgMjQuNTIgMjAuMDIgMjYuMDJDMjAuMDIgMjguMTYgMjAgMjkuODggMjAgMzAuNDJDMjAgMzAuODQgMjAuMyAzMS4zNCAyMS4xIDMxLjE4QzI3LjQyIDI5LjA2IDMyIDIzLjA2IDMyIDE2QzMyIDcuMTYgMjQuODQgMCAxNiAwVjBaIiBmaWxsPSIjMjQyOTJFIi8+Cjwvc3ZnPgoK"
-                ),
-            ),
-            BookmarkTreeNode.Bookmark(
-                title = "Dr. Björn Kahlert – UX Specialist / Certified Scrum Master / Visual Faciliator / Software Developer",
-                url = Uri("https://bkahlert.com"),
-                icon = Uri(
-                    "data:image/svg+xml;charset=UTF-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZyBzdHlsZT0iaXNvbGF0aW9uOmlzb2xhdGUiPjxnIHN0eWxlPSJtaXgtYmxlbmQtbW9kZTptdWx0aXBseSI+PHBhdGggZD0iTTcsMTRhMy45MywzLjkzLDAsMCwxLDQuMjEtNEg0OC40Qzc4LDEwLDkwLjksMjEsOTAuMjMsMzkuNTQsOTAsNDYsODYsNTIsNzgsNTdjLTEuODIsMS4yMS01LDQsLjYzLDcuOTEsMTIsOC4zNiwxNS4xNiwxNi4yNywxNS4xNiwyNC40LDAsMjAuMjUtMTIuNjMsMjkuNjktNDMuMjgsMjkuNjlIMTEuMkE0LjIsNC4yLDAsMCwxLDcsMTE0LjhaTTUyLjM1LDU0QzYwLjIsNTQsNjcsNDkuNiw2Nyw0MmMwLTcuODMtNy4wOS0xMi0xNS44NC0xMmgtMTRBNC4yLDQuMiwwLDAsMCwzMywzNC4yVjQ5LjhBNC4yLDQuMiwwLDAsMCwzNy4yLDU0Wm0tLjQxLDQ2QzY4LjIyLDEwMCw3MCw5NC40Miw3MCw4N2E3LjQsNy40LDAsMCwwLS4yLTIuMzJDNjguNjQsODIuODQsNjUuMTcsNzcuODIsNjQsNzZhMy43NywzLjc3LDAsMCwwLTMuMTUtMkgzNy4yQTQuMiw0LjIsMCwwLDAsMzMsNzguMlY5NS44YTQuMiw0LjIsMCwwLDAsNC4yLDQuMloiIHN0eWxlPSJmaWxsOiNjMjFmNzMiLz48L2c+PHBhdGggZD0iTTQ2LDExOWwtMjEuMTEsMGMtMy4yMS4wNy4xMS0uMDYtNC44OSwwVjEwSDQ2VjQ0LjY3Yy40MywzLjkxLDUuMzEsNS41OCw3LjYxLDIuNDhMODMuNjcsMTEuNjNDODUsOS45Miw4Ni42MywxMCw4Ny44OSwxMGgyMi44OWMzLjI5LDAsNS4xOCwyLjgxLDMuMjEsNS41TDg0LDUyLjY4QzgzLjA4LDU0LDgyLDU2LDg0LDU5bDM3LjEyLDU1LjA4YzEuNDIsMi43Mi44OCw0Ljk0LTMuNTQsNC45Mkg5NWMtMiwwLTIsMC0zLjUyLTIuMDZMNjQuMDgsNzYuMTlDNjMsNzQsNjAsNzMsNTcuNDUsNzUuNTdMNDcsODguMzFBNC4xNCw0LjE0LDAsMCwwLDQ2LDkwLjk0QzQ2LDk3LDQ2LDExOCw0NiwxMTkiIHN0eWxlPSJmaWxsOiMyY2FjZTM7bWl4LWJsZW5kLW1vZGU6bXVsdGlwbHkiLz48L2c+PC9zdmc+"
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE2IDBDNy4xNiAwIDAgNy4xNiAwIDE2QzAgMjMuMDggNC41OCAyOS4wNiAxMC45NCAzMS4xOEMxMS43NCAzMS4zMiAxMi4wNCAzMC44NCAxMi4wNCAzMC40MkMxMi4wNCAzMC4wNCAxMi4wMiAyOC43OCAxMi4wMiAyNy40NEM4IDI4LjE4IDYuOTYgMjYuNDYgNi42NCAyNS41NkM2LjQ2IDI1LjEgNS42OCAyMy42OCA1IDIzLjNDNC40NCAyMyAzLjY0IDIyLjI2IDQuOTggMjIuMjRDNi4yNCAyMi4yMiA3LjE0IDIzLjQgNy40NCAyMy44OEM4Ljg4IDI2LjMgMTEuMTggMjUuNjIgMTIuMSAyNS4yQzEyLjI0IDI0LjE2IDEyLjY2IDIzLjQ2IDEzLjEyIDIzLjA2QzkuNTYgMjIuNjYgNS44NCAyMS4yOCA1Ljg0IDE1LjE2QzUuODQgMTMuNDIgNi40NiAxMS45OCA3LjQ4IDEwLjg2QzcuMzIgMTAuNDYgNi43NiA4LjgyIDcuNjQgNi42MkM3LjY0IDYuNjIgOC45OCA2LjIgMTIuMDQgOC4yNkMxMy4zMiA3LjkgMTQuNjggNy43MiAxNi4wNCA3LjcyQzE3LjQgNy43MiAxOC43NiA3LjkgMjAuMDQgOC4yNkMyMy4xIDYuMTggMjQuNDQgNi42MiAyNC40NCA2LjYyQzI1LjMyIDguODIgMjQuNzYgMTAuNDYgMjQuNiAxMC44NkMyNS42MiAxMS45OCAyNi4yNCAxMy40IDI2LjI0IDE1LjE2QzI2LjI0IDIxLjMgMjIuNSAyMi42NiAxOC45NCAyMy4wNkMxOS41MiAyMy41NiAyMC4wMiAyNC41MiAyMC4wMiAyNi4wMkMyMC4wMiAyOC4xNiAyMCAyOS44OCAyMCAzMC40MkMyMCAzMC44NCAyMC4zIDMxLjM0IDIxLjEgMzEuMThDMjcuNDIgMjkuMDYgMzIgMjMuMDYgMzIgMTZDMzIgNy4xNiAyNC44NCAwIDE2IDBWMFoiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjwvc3ZnPg=="
                 ),
             ),
         )
