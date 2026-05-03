@@ -11,6 +11,7 @@ kotlin {
         jsMain {
             dependencies {
                 implementation("com.bkahlert.hello:hello-app")
+                implementation("com.bkahlert.hello:clickup")
             }
         }
 

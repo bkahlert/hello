@@ -9,6 +9,7 @@ import com.bkahlert.hello.app.props.propsView
 import com.bkahlert.hello.app.session
 import com.bkahlert.hello.app.session.sessionView
 import com.bkahlert.hello.app.user.userDropdown
+import com.bkahlert.hello.clickup.clickUpMenu
 import com.bkahlert.hello.components.diagnostics
 import com.bkahlert.hello.components.loader
 import com.bkahlert.hello.fritz2.scrollTo
@@ -81,13 +82,16 @@ fun main() {
                         alt("Hello!")
                     }
                 }
-                div("flex-1 flex gap-8 items-center justify-center") {
+                div("flex-0 flex items-center") {
                     div("flex-0") {
                         appStore.props
                             .map { it?.mapByKeyOrDefault("quick-links", QuickLinks.DefaultLinks) }
                             .map { it?.let(::QuickLinks) }
                             .render { it?.render(this) }
                     }
+                }
+                div("hidden md:flex flex-1 items-center") {
+                    clickUpMenu()
                 }
                 div("flex-0") {
                     appStore.session.combine(appStore.props) { a, b -> a to b }.render { (s, p) ->

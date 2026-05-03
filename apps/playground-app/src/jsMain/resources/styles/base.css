@@ -110,7 +110,7 @@
     grid-template-rows: 1fr minmax(1px, 100%); }
   .widget .widget-controls { @apply flex items-center justify-between m-3 text-default dark:text-invert font-medium; }
 
-  @media (max-width: theme('screens.lg')) and (orientation: landscape) {
+  @media (max-height: 500px) and (orientation: landscape) {
     .app { --nav-height: 0px; --app-item-height: 100svh; }
     .app-header { display: none; }
     .app-item, .widget { padding: max(var(--sat), 1rem) max(var(--sar), 1rem) max(var(--sab), 1rem) max(var(--sal), 1rem); }

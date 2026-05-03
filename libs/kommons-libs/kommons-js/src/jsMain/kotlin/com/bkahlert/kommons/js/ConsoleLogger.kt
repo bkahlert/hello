@@ -12,11 +12,11 @@ public class ConsoleLogger(
     /** The name of this logger. */
     public val name: String,
 ) {
-    init {
-        if (localStorage.getItem("debug") == null) {
-            localStorage.setItem("debug", "hello:*")
-        }
-    }
+//    init {
+//        if (localStorage.getItem("debug") == null) {
+//            localStorage.setItem("debug", "hello:*")
+//        }
+//    }
 
     private val namespace = name.replace('.', ':')
 

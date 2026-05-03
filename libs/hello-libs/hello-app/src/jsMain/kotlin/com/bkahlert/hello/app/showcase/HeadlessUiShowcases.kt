@@ -236,16 +236,16 @@ public object HeadlessUiShowcases : SimplePage(
                 )
             )
 
-            showcase("Auto", resizable = false) {
+            showcase("Auto", resizable = false, overflowVisible = true) {
                 div("p-4 text-center") { navItem(navItem, selection) }
             }
-            showcase("Left", resizable = false) {
+            showcase("Left", resizable = false, overflowVisible = true) {
                 div("p-4 text-left") { navItem(navItem, selection, placement = Placement.bottomStart) }
             }
-            showcase("Center", resizable = false) {
+            showcase("Center", resizable = false, overflowVisible = true) {
                 div("p-4 text-center") { navItem(navItem, selection, placement = Placement.bottom) }
             }
-            showcase("Right", resizable = false) {
+            showcase("Right", resizable = false, overflowVisible = true) {
                 div("p-4 text-right") { navItem(navItem, selection, placement = Placement.bottomEnd) }
             }
         }
@@ -282,10 +282,10 @@ public object HeadlessUiShowcases : SimplePage(
                 Item("Baz", HeroIcons::document_magnifying_glass, disabled = true),
             )
 
-            showcase("xx-large", resizable = false, classes = "col-span-full w-full max-w-screen-2xl") {
+            showcase("xx-large", resizable = false, classes = "col-span-full w-full max-w-screen-2xl", overflowVisible = true) {
                 navigationBar(navItems.map { ItemNavItem(it) }, selection)
             }
-            showcase("small", resizable = false, classes = "col-span-full w-full max-w-screen-sm") {
+            showcase("small", resizable = false, classes = "col-span-full w-full max-w-screen-sm", overflowVisible = true) {
                 navigationBar(navItems.map { ItemNavItem(it) }, selection)
             }
         }

@@ -250,7 +250,7 @@ public inline fun <reified P1 : Any, R> grouping2(
 ): R {
     val args = js("arguments")
     val argsList = buildList { for (i in 0 until args.length as Int) add(args[i]) }
-    console.log("ARGS", args, js("Array.from(arguments)"), argsList)
+    console.debug("ARGS", args, js("Array.from(arguments)"), argsList)
     return console.grouping(
         type = P1::class,
         operation = operation.name,
