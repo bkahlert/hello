@@ -114,8 +114,9 @@ public object HeadlessUiShowcases : SimplePage(
                     span("text-magic-fast [animation-delay:-1s]") { +"․" }
                     span("text-magic-fast [animation-delay:-2s]") { +"*" }
                     span("text-magic-fast [animation-delay:-3s]") { +"･" }
-                    span("text-magic-fast [animation-delay:-4s]") { +"｡" }
-                    span("text-magic-fast [animation-delay:-5s]") { +"ﾟ" }
+                    span("text-magic-fast [animation-delay:-4s]") { +"˙" }
+                    span("text-magic-fast [animation-delay:-5s]") { +"\u200C\u0323" } // ZWNJ + combining dot below
+                    span("text-magic-fast [animation-delay:-6s]") { +"˚" }
                 }
             }
         }
