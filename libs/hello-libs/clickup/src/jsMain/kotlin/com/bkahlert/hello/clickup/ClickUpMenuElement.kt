@@ -5,12 +5,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.bkahlert.hello.clickup.client.ClickUpHttpClient
 import com.bkahlert.hello.clickup.client.ClickUpHttpClientConfigurer
+import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
 import com.bkahlert.hello.clickup.view.ClickUpTestClientConfigurer
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenu
+import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState
 import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disabled
+import com.bkahlert.hello.clickup.viewmodel.ClickUpMenuState.Transitioned.Succeeded.Disconnected
 import com.bkahlert.hello.clickup.viewmodel.ClickUpStyleSheet
 import com.bkahlert.hello.clickup.viewmodel.fixtures.rememberClickUpMenuTestViewModel
 import com.bkahlert.hello.clickup.viewmodel.fixtures.toFullyLoaded
+import com.bkahlert.hello.clickup.viewmodel.fixtures.toPartiallyLoaded
+import com.bkahlert.hello.clickup.viewmodel.fixtures.toTeamSelecting
 import com.bkahlert.hello.clickup.viewmodel.rememberClickUpMenuViewModel
 import com.bkahlert.hello.fritz2.custom
 import com.bkahlert.hello.fritz2.register
@@ -39,23 +44,41 @@ import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.ShadowRoot
 import org.w3c.dom.events.EventListener
 
+/**
+ * Maps a [demoState] string (set via the `demo-state` attribute on `<clickup-menu-v2>`)
+ * to a [ClickUpMenuState] from the fixtures module. Unknown or empty values fall back
+ * to the default fully-loaded state without a running pomodoro.
+ */
+private fun ClickUpTestClient.demoStateOrDefault(demoState: String): ClickUpMenuState = when (demoState) {
+    "disabled" -> Disabled
+    "disconnected" -> Disconnected
+    "team-selecting" -> toTeamSelecting()
+    "partially-loaded" -> toPartiallyLoaded(runningTimeEntry = null)
+    "fully-loaded-running" -> toFullyLoaded()
+    "fully-loaded" -> toFullyLoaded(runningTimeEntry = null)
+    else -> toFullyLoaded(runningTimeEntry = null)
+}
+
 private val clickUpMenu by lazy {
     document.head().appendStyle(FontStyles)
-    ClickUpComponent.register("clickup-menu-v2", "props", "css")
+    ClickUpComponent.register("clickup-menu-v2", "props", "css", "demo-state")
     custom<Tag<HTMLDivElement>>("clickup-menu-v2")
 }
 
 public fun RenderContext.clickUpMenu(
     clickUpProps: ClickUpProps? = null,
     css: String? = null,
+    demoState: String? = null,
 ): Tag<HTMLDivElement> = clickUpMenu(this, null, null, {}) {
     attr("props", clickUpProps?.let { LenientJson.encodeToString(ClickUpProps.serializer(), it) }?.encodeBase64())
     attr("css", css ?: "")
+    if (demoState != null) attr("demo-state", demoState)
 }
 
 public object ClickUpComponent : WebComponent<HTMLDivElement>() {
     private val props: Flow<String> = attributeChanges("props")
     private val css: Flow<String> = attributeChanges("css")
+    private val demoState: Flow<String> = attributeChanges("demo-state")
     private val clickUpProps: Flow<ClickUpProps?> = props
         .map { it.takeUnless { it.isBlank() } }
         .map { it?.decodeBase64String() }
@@ -130,10 +153,11 @@ public object ClickUpComponent : WebComponent<HTMLDivElement>() {
 
         composition = renderComposable(root) {
             val clickUpProps by clickUpProps.collectAsState(null)
+            val demoState by demoState.collectAsState("")
             Style(ClickUpStyleSheet)
             when (clickUpProps) {
                 null -> {
-                    ClickUpMenu(rememberClickUpMenuTestViewModel { toFullyLoaded(runningTimeEntry = null) })
+                    ClickUpMenu(rememberClickUpMenuTestViewModel { demoStateOrDefault(demoState) })
                 }
 
                 else -> {
@@ -150,7 +174,7 @@ public object ClickUpComponent : WebComponent<HTMLDivElement>() {
                             },
                         )
                     } else {
-                        ClickUpMenu(rememberClickUpMenuTestViewModel { toFullyLoaded(runningTimeEntry = null) })
+                        ClickUpMenu(rememberClickUpMenuTestViewModel { demoStateOrDefault(demoState) })
                     }
                 }
             }
