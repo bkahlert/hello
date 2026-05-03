@@ -145,11 +145,5 @@ public val DefaultWidgets: List<Widget> by lazy {
             src = QuickLinks.DefaultLinks.first().url,
             aspectRatio = AspectRatio.stretch,
         ),
-        WebsiteWidget(
-            id = "v1-semantic-compose-alpha",
-            title = QuickLinks.DefaultLinks.drop(1).first().title,
-            src = QuickLinks.DefaultLinks.drop(1).first().url,
-            aspectRatio = AspectRatio.stretch,
-        ),
     )
 }
