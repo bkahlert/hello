@@ -54,26 +54,36 @@ public class PomodoroTimerStateImpl(
 
     override val status: Status get() = pomodoro.status
 
-    override val remaining: MutableStateFlow<Duration> = MutableStateFlow(pomodoro.duration - timeEntry.passed)
+    override val remaining: MutableStateFlow<Duration> =
+        MutableStateFlow((pomodoro.duration - timeEntry.passed).coerceAtLeast(Duration.ZERO))
 
     // TODO only allow aborting; onStop/Complete needs to be handled outside of timer view
     private val logging = false
 
     init {
         if (logging) console.debug("PomodoroTimerStateImpl: launching coroutine")
-        externalScope.launch(defaultDispatcher) { // TODO use intervalFlow
-            while (pomodoro.duration - timeEntry.passed >= 0.5.seconds) {
-                if (logging) console.debug(
-                    "PomodoroTimerStateImpl: launched coroutine",
-                    "pomodoro: ", pomodoro.duration.toMomentString(),
-                    "passed: ", timeEntry.passed.toMomentString(),
-                    "remaining: ", (pomodoro.duration - timeEntry.passed).toMomentString(),
-                )
-                remaining.update { pomodoro.duration - timeEntry.passed }
-                delay(500.milliseconds)
-            }
+        // Only run a countdown — and fire onStop on completion — when the timer actually
+        // has time left at construction time. Without this guard, a fresh instance built
+        // after the time entry has already elapsed (e.g. during a Transitioning recompose
+        // that follows the natural completion) would fire onStop again, triggering another
+        // state transition, another recompose, another fresh instance, … — an infinite loop
+        // that also drives the displayed remaining time below zero.
+        if (pomodoro.duration - timeEntry.passed >= 0.5.seconds) {
+            externalScope.launch(defaultDispatcher) { // TODO use intervalFlow
+                while (pomodoro.duration - timeEntry.passed >= 0.5.seconds) {
+                    if (logging) console.debug(
+                        "PomodoroTimerStateImpl: launched coroutine",
+                        "pomodoro: ", pomodoro.duration.toMomentString(),
+                        "passed: ", timeEntry.passed.toMomentString(),
+                        "remaining: ", (pomodoro.duration - timeEntry.passed).toMomentString(),
+                    )
+                    remaining.update { (pomodoro.duration - timeEntry.passed).coerceAtLeast(Duration.ZERO) }
+                    delay(500.milliseconds)
+                }
 
-            onStop(listOf(Completed.tag))
+                remaining.update { Duration.ZERO }
+                onStop(listOf(Completed.tag))
+            }
         }
     }
 }
