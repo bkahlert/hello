@@ -3,6 +3,10 @@
 This file captures project-specific context that isn't obvious from reading the code.
 For general guidance see the global `~/.config/agents/AGENTS.md`.
 
+## Branch strategy
+
+`museum` is the active development branch. All feature branches start from `museum`, and all PRs target `museum`. `main` is frozen — never branch from it, never open a PR against it, and never merge `museum` back into it.
+
 ## Build prerequisites
 
 - **JDK 11** (Liberica 11.0.19). Newer JDKs break Gradle 8.2.1 with a cryptic `What went wrong: 25.0.2`-style error.
