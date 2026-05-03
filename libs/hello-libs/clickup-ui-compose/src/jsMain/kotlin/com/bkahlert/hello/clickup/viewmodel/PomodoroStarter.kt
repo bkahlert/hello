@@ -133,7 +133,15 @@ public fun PomodoroStarter(
         // is false for elements inside the `<clickup-menu-v2>` shadow
         // root, so direct clicks are silently ignored. Forward to the
         // child caret which has its own delegated handler without that guard.
+        // Skip when the click is on the caret itself (SUI already toggles) or
+        // inside the open menu panel (those clicks should select / dismiss).
+        // Anchor `.menu` to the dropdown subtree so the surrounding toolbar
+        // `.ui.menu` (which contains this dropdown) doesn't suppress legit
+        // wrapper clicks.
         onClick { event ->
+            val target = event.nativeEvent.target as? org.w3c.dom.Element ?: return@onClick
+            if (target.asDynamic().closest(".dropdown.icon") != null) return@onClick
+            if (target.asDynamic().closest(".dropdown > .menu") != null) return@onClick
             val el = event.nativeEvent.currentTarget as? org.w3c.dom.HTMLElement
             (el?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
         }

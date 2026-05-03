@@ -168,7 +168,15 @@ public fun SemanticElementScope<MenuElement>.MainItems(
         // padding gaps not covered by the avatar img or caret) opens the dropdown.
         // Same shadow-DOM workaround as below — forward to the sibling caret which
         // has its own delegated handler without the `body.contains` guard.
+        // Skip when the click is on the caret itself (SUI already toggles) or
+        // inside the open menu panel (those clicks should select / dismiss).
+        // The dropdown's own panel uses `.menu.transition`; an outer toolbar
+        // `.ui.menu` (which the avatar sits inside) is NOT a dropdown panel,
+        // so anchor the .menu check to the dropdown subtree only.
         onClick { event ->
+            val target = event.nativeEvent.target as? org.w3c.dom.Element ?: return@onClick
+            if (target.asDynamic().closest(".dropdown.icon") != null) return@onClick
+            if (target.asDynamic().closest(".dropdown > .menu") != null) return@onClick
             val item = event.nativeEvent.currentTarget as? org.w3c.dom.HTMLElement
             (item?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
         }

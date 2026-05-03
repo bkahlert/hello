@@ -110,7 +110,15 @@ public fun ActivityDropdown(
         // which is false for elements inside the `<clickup-menu-v2>` shadow root.
         // This dropdown has no caret child to forward to, so trigger the
         // already-initialized SUI dropdown instance directly via its jQuery API.
+        // Skip when the click is on the caret itself (SUI already toggles) or
+        // inside the open menu panel (those clicks should select / dismiss).
+        // Anchor `.menu` to the dropdown subtree so the surrounding toolbar
+        // `.ui.menu` (which contains this dropdown) doesn't suppress legit
+        // wrapper clicks.
         onClick { event ->
+            val target = event.nativeEvent.target as? org.w3c.dom.Element ?: return@onClick
+            if (target.asDynamic().closest(".dropdown.icon") != null) return@onClick
+            if (target.asDynamic().closest(".dropdown > .menu") != null) return@onClick
             val el = event.nativeEvent.currentTarget as? HTMLElement ?: return@onClick
             com.bkahlert.semanticui.module.SemanticUI.jQuery<HTMLElement>(el)
                 .asDynamic().dropdown("show")
