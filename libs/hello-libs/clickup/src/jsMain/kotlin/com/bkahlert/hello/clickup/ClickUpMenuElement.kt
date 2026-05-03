@@ -1,8 +1,6 @@
 package com.bkahlert.hello.clickup
 
 import androidx.compose.runtime.Composition
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import com.bkahlert.hello.clickup.client.ClickUpHttpClient
 import com.bkahlert.hello.clickup.client.ClickUpHttpClientConfigurer
 import com.bkahlert.hello.clickup.model.fixtures.ClickUpTestClient
@@ -34,15 +32,12 @@ import io.ktor.util.encodeBase64
 import kotlinx.browser.document
 import kotlinx.browser.localStorage
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.dom.appendText
 import org.jetbrains.compose.web.css.Style
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.HTMLScriptElement
 import org.w3c.dom.ShadowRoot
-import org.w3c.dom.events.EventListener
 
 /**
  * Maps a [demoState] string (set via the `demo-state` attribute on `<clickup-menu-v2>`)
@@ -76,24 +71,38 @@ public fun RenderContext.clickUpMenu(
 }
 
 public object ClickUpComponent : WebComponent<HTMLDivElement>() {
-    private val props: Flow<String> = attributeChanges("props")
+    // Note: `attributeChanges` emits across every <clickup-menu-v2> instance
+    // sharing this singleton, so we only use it for the `css` runtime-update
+    // path (where same-value emissions across instances are harmless). The
+    // `props` and `demo-state` attributes are read per-element in init().
     private val css: Flow<String> = attributeChanges("css")
-    private val demoState: Flow<String> = attributeChanges("demo-state")
-    private val clickUpProps: Flow<ClickUpProps?> = props
-        .map { it.takeUnless { it.isBlank() } }
-        .map { it?.decodeBase64String() }
-        .map { it?.let { LenientJson.decodeFromString(ClickUpProps.serializer(), it) } }
 
-    private lateinit var root: HTMLDivElement
-    private var composition: Composition? = null
+    /**
+     * Per-element state. Kotlin's `object` declaration is a true singleton even
+     * when fritz2's JS wrapper does `new _component()`, so any field on the
+     * component class would be shared across every `<clickup-menu-v2>` element
+     * on the page. The state is stashed directly on the host element via a
+     * hidden JS property; a Kotlin `MutableMap<HTMLElement, _>` was tried but
+     * Kotlin/JS map keys collide for fresh DOM nodes (all 6 elements ended up
+     * sharing one map slot), so we use the element's own JS object as storage.
+     */
+    private class InstanceState(
+        val element: HTMLElement,
+        val root: HTMLDivElement,
+        var composition: Composition? = null,
+    )
 
-    private val loadingScripts = mutableListOf<HTMLScriptElement>()
-    private fun HTMLScriptElement.track(callback: () -> Unit) = also {
-        loadingScripts.add(it)
-        addEventListener("load", EventListener { _ ->
-            loadingScripts.remove(it)
-            callback()
-        })
+    private const val INSTANCE_STATE_KEY = "__clickUpComponentState"
+
+    private fun stateFor(element: HTMLElement): InstanceState? =
+        element.asDynamic()[INSTANCE_STATE_KEY].unsafeCast<InstanceState?>()
+
+    private fun setStateFor(element: HTMLElement, state: InstanceState) {
+        element.asDynamic()[INSTANCE_STATE_KEY] = state
+    }
+
+    private fun clearStateFor(element: HTMLElement) {
+        element.asDynamic()[INSTANCE_STATE_KEY] = null
     }
 
     override fun RenderContext.init(element: HTMLElement, shadowRoot: ShadowRoot): HtmlTag<HTMLDivElement> {
@@ -105,18 +114,57 @@ public object ClickUpComponent : WebComponent<HTMLDivElement>() {
         ).forEach { shadowRoot.appendStyle(it) }
         val customCss = shadowRoot.appendStyle("")
         css.render { customCss.textContent = it }
-        shadowRoot.appendScript("clickup/jquery.min.js").track {
-            shadowRoot.appendScript("clickup/semantic.min.js").track {
-                connectedCallback(root)
-            }
+        val rootTag = div {}
+        val state = InstanceState(element = element, root = rootTag.domNode)
+        setStateFor(element, state)
+
+        // Load jQuery and Semantic UI once globally and let every subsequent
+        // instance reuse them — the second `<script src="...">` element pointing
+        // at an already-cached resource often fires no `load` event in some
+        // browsers, especially across multiple shadow roots, so we cannot rely
+        // on per-instance script load chains. Instead the first instance loads
+        // the scripts and broadcasts via a global Promise that any later
+        // instance can `then(...)` on synchronously.
+        scriptsReady().then {
+            connectedCallback(element)
         }
-        return div {}
-            .also { root = it.domNode }
+        return rootTag
+    }
+
+    /** Browser-global cache of the jQuery + Semantic UI load promise. */
+    private var scriptsReadyPromise: dynamic = null
+    private fun scriptsReady(): dynamic {
+        if (scriptsReadyPromise == null) {
+            scriptsReadyPromise = js(
+                """
+                new Promise(function(resolve) {
+                    var jq = document.createElement('script');
+                    jq.src = 'clickup/jquery.min.js';
+                    jq.onload = function() {
+                        var su = document.createElement('script');
+                        su.src = 'clickup/semantic.min.js';
+                        su.onload = function() { resolve(); };
+                        document.head.appendChild(su);
+                    };
+                    document.head.appendChild(jq);
+                })
+                """
+            )
+        }
+        return scriptsReadyPromise
     }
 
     override fun connectedCallback(element: HTMLElement) {
-        if (loadingScripts.isNotEmpty()) return
-        root.appendScript(null) {
+        val state = stateFor(element) ?: return
+        // Idempotency: connectedCallback is invoked once by the browser when
+        // the element is inserted (which happens before our scripts have
+        // finished loading) and once again from `scriptsReady().then`. The
+        // first call has no jQuery on `window` yet, so bail out; the second
+        // call (after `scriptsReady` resolves) actually mounts the composition.
+        // We also bail if we already mounted (defensive against a third call).
+        if (state.composition != null) return
+        if (js("typeof window.jQuery === 'undefined'") as Boolean) return
+        state.root.appendScript(null) {
             appendText(
                 """
                     window.jQuery = window.jQuery || jQuery;
@@ -151,17 +199,27 @@ public object ClickUpComponent : WebComponent<HTMLDivElement>() {
             }
         }
 
-        composition = renderComposable(root) {
-            val clickUpProps by clickUpProps.collectAsState(null)
-            val demoState by demoState.collectAsState("")
+        // Read props/demoState directly from the element's attributes rather than
+        // from the shared `attributeChanges` Flow — that Flow emits for every
+        // instance of the component, so when multiple `<clickup-menu-v2>` elements
+        // exist on a page, each composition would receive every other instance's
+        // attribute values and the last one wins. Reading per-element captures
+        // this instance's own configuration.
+        val rawProps = element.getAttribute("props").orEmpty()
+        val rawDemoState = element.getAttribute("demo-state").orEmpty()
+        val resolvedProps: ClickUpProps? = rawProps.takeUnless { it.isBlank() }
+            ?.decodeBase64String()
+            ?.let { LenientJson.decodeFromString(ClickUpProps.serializer(), it) }
+
+        state.composition = renderComposable(state.root) {
             Style(ClickUpStyleSheet)
-            when (clickUpProps) {
+            when (resolvedProps) {
                 null -> {
-                    ClickUpMenu(rememberClickUpMenuTestViewModel { demoStateOrDefault(demoState) })
+                    ClickUpMenu(rememberClickUpMenuTestViewModel { demoStateOrDefault(rawDemoState) })
                 }
 
                 else -> {
-                    val apiToken = clickUpProps?.apiToken
+                    val apiToken = resolvedProps.apiToken
                     if (apiToken != null) {
                         ClickUpMenu(
                             rememberClickUpMenuViewModel(
@@ -174,7 +232,7 @@ public object ClickUpComponent : WebComponent<HTMLDivElement>() {
                             },
                         )
                     } else {
-                        ClickUpMenu(rememberClickUpMenuTestViewModel { demoStateOrDefault(demoState) })
+                        ClickUpMenu(rememberClickUpMenuTestViewModel { demoStateOrDefault(rawDemoState) })
                     }
                 }
             }
@@ -182,6 +240,7 @@ public object ClickUpComponent : WebComponent<HTMLDivElement>() {
     }
 
     override fun disconnectedCallback(element: HTMLElement) {
-        composition?.dispose()
+        stateFor(element)?.composition?.dispose()
+        clearStateFor(element)
     }
 }
