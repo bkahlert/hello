@@ -5,3 +5,4 @@
 !nginx.conf
 !apps/web-app/build/distributions/**
 !apps/playground-app/build/distributions/**
+!apps/v1-semantic-compose-alpha/**

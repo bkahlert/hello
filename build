@@ -37,5 +37,6 @@ docker build "${build_args[@]}" -t hello:museum .
 
 printf '\n%s✔%s Built hello:museum\n\n' "$green" "$reset"
 printf 'Run:   docker run --rm -p 8080:8080 hello:museum\n'
-printf 'Open:  http://localhost:8080/             (web-app)\n'
-printf '       http://localhost:8080/playground/  (playground)\n'
+printf 'Open:  http://localhost:8080/                          (web-app)\n'
+printf '       http://localhost:8080/playground/              (playground)\n'
+printf '       http://localhost:8080/v1-semantic-compose-alpha/  (v1 semantic+compose alpha)\n'
