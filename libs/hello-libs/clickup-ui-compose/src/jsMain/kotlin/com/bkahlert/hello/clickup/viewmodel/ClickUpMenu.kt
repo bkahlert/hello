@@ -350,7 +350,7 @@ public fun ClickUpMenu(
 
     when (val state = viewModel.state.collectAsState().value) {
         is Transitioning -> {
-            console.info("ClickUp menu is ${state::class.simpleName}")
+            console.debug("ClickUp menu is ${state::class.simpleName}")
             ClickUpMenu(viewModel, state.previousState, loadingState = LoadingState.On)
         }
 

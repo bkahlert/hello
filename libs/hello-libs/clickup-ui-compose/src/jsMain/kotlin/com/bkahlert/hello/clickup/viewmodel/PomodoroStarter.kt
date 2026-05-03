@@ -10,6 +10,7 @@ import com.bkahlert.hello.clickup.Pomodoro.Companion.format
 import com.bkahlert.hello.clickup.Pomodoro.Type
 import com.bkahlert.hello.clickup.model.Tag
 import com.bkahlert.hello.clickup.model.TaskID
+import com.bkahlert.kommons.js.console
 import com.bkahlert.kommons.time.toMomentString
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.custom.data
@@ -76,12 +77,12 @@ public fun rememberPomodoroStarterState(
     vararg types: Type = Type.values(),
     selected: (Type) -> Boolean = { it == Type.Default },
     onSelect: (old: Type?, new: Type?) -> Unit = { old, new ->
-        console.log("selection changed from $old to $new")
+        console.debug("selection changed from $old to $new")
     },
     onStart: (TaskID?, List<Tag>, billable: Boolean) -> Unit = { id, tags, bill ->
-        console.log("started ${if (bill) "billable " else ""}$id with $tags")
+        console.debug("started ${if (bill) "billable " else ""}$id with $tags")
     },
-    onCloseTask: (() -> Unit)? = { console.log("close task") },
+    onCloseTask: (() -> Unit)? = { console.debug("close task") },
     debug: Boolean = false,
 ): PomodoroStarterState {
     val selection = types.firstOrNull(selected)
@@ -146,7 +147,7 @@ public fun PomodoroStarter(
             (el?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
         }
     }) {
-        Input(Hidden) { name("type");value(state.selectionString) }
+        Input(Hidden) { name("type"); value(state.selectionString) }
         Text({
             style { property("cursor", "pointer") }
         }) { Text(state.selection?.duration?.format() ?: "") }

@@ -3,6 +3,7 @@ package com.bkahlert.hello.clickup.view
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.Pomodoro
 import com.bkahlert.hello.clickup.view.Activity.RunningTaskActivity
+import com.bkahlert.kommons.js.console
 import com.bkahlert.kommons.time.toMomentString
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.element.BasicButton
@@ -18,8 +19,8 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 public fun AlreadyRunningActivityModal(
     runningTaskActivity: RunningTaskActivity,
-    onContinue: () -> Unit = { console.log("onContinue()") },
-    onAbort: () -> Unit = { console.log("onAbort()") },
+    onContinue: () -> Unit = { console.debug("onContinue()") },
+    onAbort: () -> Unit = { console.debug("onAbort()") },
 ) {
 
     val icon = arrayOf("red", "stop", "circle")
@@ -29,7 +30,7 @@ public fun AlreadyRunningActivityModal(
         +"small"
         settings {
             onApprove = { onContinue(); true }
-            onDeny = { onAbort();true }
+            onDeny = { onAbort(); true }
             closable = false
         }
     }) {

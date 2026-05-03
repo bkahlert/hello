@@ -2,6 +2,7 @@ package com.bkahlert.hello.clickup.view
 
 import androidx.compose.runtime.Composable
 import com.bkahlert.hello.clickup.model.ClickUpClient
+import com.bkahlert.kommons.js.console
 import com.bkahlert.semanticui.core.S
 import com.bkahlert.semanticui.custom.Options
 import com.bkahlert.semanticui.element.BasicButton
@@ -21,7 +22,7 @@ public fun ConfigurationModal(
         +"small"
         settings {
             onApprove = {
-                console.log("approved", it)
+                console.debug("approved", it)
                 true
             }
             onDeny = {
