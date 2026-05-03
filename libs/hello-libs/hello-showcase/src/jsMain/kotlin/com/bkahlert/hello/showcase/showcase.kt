@@ -98,7 +98,7 @@ public fun RenderContext.showcase(
             }
         }
 
-        disclosurePanel("overflow-y-auto") {
+        disclosurePanel("overflow-visible") {
             transition(
                 opened,
                 "transition duration-100 ease-out",
