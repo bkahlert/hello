@@ -37,20 +37,24 @@ public object HeadlessUiShowcases : SimplePage(
     icon = HeadlessUiIcons.headless_ui,
     content = {
 
-        showcases("Custom") {
-            showcase("box-prose") {
-                proseBox {
-                    loremIpsumHeader()
-                    loremIpsumParagraph()
+        showcases("Glass", OutlineHeroIcons.stop) {
+            fun RenderContext.glassShowcase(classes: String) {
+                showcase(classes) {
+                    div("relative") {
+                        placeholder()
+                        div("absolute top-1/2 left-1/2 -mt-8 -ml-8") {
+                            div("animate-[spin_2s_3]") {
+                                icon("w-16 h-16 animate-[pulse_3s_2]", SolidHeroIcons.stop)
+                            }
+                        }
+                        div(classes("absolute inset-0 right-1/2", classes)) { }
+                    }
                 }
             }
-
-            showcase("pointer:") {
-                div("flex flex-col items-center justify-center gap-4") {
-                    button("pointer-coarse:opacity-30", SolidHeroIcons.cursor_arrow_rays, "Click me")
-                    button("pointer-fine:opacity-30", SolidHeroIcons.finger_print, "Tap me")
-                }
-            }
+            glassShowcase("bg-glass")
+            glassShowcase("bg-glass bg-glass-invert")
+            glassShowcase("bg-glass bg-amber-500/25")
+            glassShowcase("bg-glass bg-glass-invert bg-amber-500/25")
         }
 
         hr { }
@@ -87,29 +91,20 @@ public object HeadlessUiShowcases : SimplePage(
 
         hr { }
 
-        showcases("Glass", OutlineHeroIcons.stop) {
-            fun RenderContext.glassShowcase(classes: String) {
-                showcase(classes) {
-                    div("relative") {
-                        placeholder()
-                        div("absolute top-1/2 left-1/2 -mt-8 -ml-8") {
-                            div("animate-[spin_2s_3]") {
-                                icon("w-16 h-16 animate-[pulse_3s_2]", SolidHeroIcons.stop)
-                            }
-                        }
-                        div(classes("absolute inset-0 right-1/2", classes)) { }
-                    }
+        showcases("Custom") {
+            showcase("box-prose") {
+                proseBox {
+                    loremIpsumHeader()
+                    loremIpsumParagraph()
                 }
             }
-            glassShowcase("bg-glass")
-            glassShowcase("bg-glass bg-glass-invert")
-            glassShowcase("bg-glass bg-amber-500/25")
-            glassShowcase("bg-glass bg-glass-invert bg-amber-500/25")
-        }
 
-        hr { }
-
-        showcases("Magic", OutlineHeroIcons.sparkles) {
+            showcase("pointer:") {
+                div("flex flex-col items-center justify-center gap-4") {
+                    button("pointer-coarse:opacity-30", SolidHeroIcons.cursor_arrow_rays, "Click me")
+                    button("pointer-fine:opacity-30", SolidHeroIcons.finger_print, "Tap me")
+                }
+            }
 
             showcase("text-magic") {
                 div("text-3xl") {
@@ -121,7 +116,6 @@ public object HeadlessUiShowcases : SimplePage(
                     span("text-magic-fast [animation-delay:-3s]") { +"･" }
                     span("text-magic-fast [animation-delay:-4s]") { +"｡" }
                     span("text-magic-fast [animation-delay:-5s]") { +"ﾟ" }
-                    span("text-magic font-serif italic") { +"magic" }
                 }
             }
         }
