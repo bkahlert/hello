@@ -47,6 +47,7 @@ public fun RenderContext.showcase(
     warning: String? = null,
     classes: String? = null,
     resetDuration: Duration = .5.seconds,
+    overflowVisible: Boolean = false,
     content: ContentBuilder<HTMLDivElement>? = null,
 ) {
     val resetStore = object : RootStore<Boolean>(false) {
@@ -98,7 +99,7 @@ public fun RenderContext.showcase(
             }
         }
 
-        disclosurePanel("overflow-visible") {
+        disclosurePanel(if (overflowVisible) "overflow-visible" else "overflow-y-auto") {
             transition(
                 opened,
                 "transition duration-100 ease-out",

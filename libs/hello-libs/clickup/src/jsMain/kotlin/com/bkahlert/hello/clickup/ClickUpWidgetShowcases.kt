@@ -18,7 +18,7 @@ public object ClickUpWidgetShowcases : SimplePage(
         // attribute below — the fixtures support fully-loaded, fully-loaded-running,
         // partially-loaded, team-selecting, disconnected, and disabled.
         showcases("ClickUp Menu") {
-            showcase("Fully-loaded with running pomodoro") {
+            showcase("Fully-loaded with running pomodoro", overflowVisible = true) {
                 clickUpMenu(demoState = "fully-loaded-running")
             }
         }
