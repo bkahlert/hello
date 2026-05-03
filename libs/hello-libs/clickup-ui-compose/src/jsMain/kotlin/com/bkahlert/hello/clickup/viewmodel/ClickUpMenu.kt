@@ -162,17 +162,20 @@ public fun SemanticElementScope<MenuElement>.MainItems(
     onSignOut: () -> Unit = {},
 ) {
 
-    DropdownItem({ +"borderless" }) {
+    DropdownItem({
+        +"borderless"
+        // Whole-area click: any click inside the avatar button rectangle (including
+        // padding gaps not covered by the avatar img or caret) opens the dropdown.
+        // Same shadow-DOM workaround as below — forward to the sibling caret which
+        // has its own delegated handler without the `body.contains` guard.
+        onClick { event ->
+            val item = event.nativeEvent.currentTarget as? org.w3c.dom.HTMLElement
+            (item?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
+        }
+        style { property("cursor", "pointer") }
+    }) {
         Img(src = user.profilePicture.toString(), alt = "User ${user.username}") {
             classes("rounded", "avatar")
-            // Semantic UI's dropdown toggle relies on `document.body.contains(e.target)`,
-            // which is false inside the `<clickup-menu-v2>` shadow DOM, so a direct click
-            // on the avatar `<img>` is silently ignored. The delegated icon handler does
-            // not have that guard, so we forward the click to the sibling caret.
-            onClick { event ->
-                val img = event.nativeEvent.currentTarget as? org.w3c.dom.HTMLElement
-                (img?.parentElement?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
-            }
             style { property("cursor", "pointer") }
         }
         Icon("dropdown")

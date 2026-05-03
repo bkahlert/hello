@@ -101,6 +101,19 @@ public fun ActivityDropdown(
         style {
             flex(1, 1)
             minWidth("0") // https://css-tricks.com/flexbox-truncated-text/
+            property("cursor", "pointer")
+        }
+        // Whole-area click: any click inside the task button rectangle (padding,
+        // text, gaps) opens the dropdown.
+        // Same shadow-DOM workaround as the avatar and pomodoro fixes:
+        // Semantic UI's dropdown toggle uses `document.body.contains(e.target)`,
+        // which is false for elements inside the `<clickup-menu-v2>` shadow root.
+        // This dropdown has no caret child to forward to, so trigger the
+        // already-initialized SUI dropdown instance directly via its jQuery API.
+        onClick { event ->
+            val el = event.nativeEvent.currentTarget as? HTMLElement ?: return@onClick
+            com.bkahlert.semanticui.module.SemanticUI.jQuery<HTMLElement>(el)
+                .asDynamic().dropdown("show")
         }
     }) {
         Input(Hidden) { name("activity");value(state.selectionString) }
@@ -110,17 +123,6 @@ public fun ActivityDropdown(
                 textOverflow()
                 lineHeight(1.1.em)
                 property("cursor", "pointer")
-            }
-            // Same shadow-DOM workaround as the avatar and pomodoro fixes:
-            // Semantic UI's dropdown toggle uses `document.body.contains(e.target)`,
-            // which is false for elements inside the `<clickup-menu-v2>` shadow root.
-            // This dropdown has no caret child to forward to, so trigger the
-            // already-initialized SUI dropdown instance directly via its jQuery API.
-            onClick { event ->
-                val el = event.nativeEvent.currentTarget as? HTMLElement
-                val parent = el?.parentElement ?: return@onClick
-                com.bkahlert.semanticui.module.SemanticUI.jQuery(parent)
-                    .asDynamic().dropdown("show")
             }
         }) {
             when (val task = state.selection) {

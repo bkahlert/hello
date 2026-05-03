@@ -112,26 +112,34 @@ public fun PomodoroStarter(
             state.onStart()
         }
         onClick {
+            // The play icon is the start trigger. Stop propagation so the click
+            // does not bubble up to the surrounding LinkItem, where a sibling
+            // handler opens the duration dropdown for any other click in the
+            // pomodoro button area.
             it.preventDefault()
+            it.stopPropagation()
             state.onStart()
         }
     }) {
         Icon("green", "play")
         if (state.billable) Icon("green", "dollar") { classes("bottom", "right", "corner") }
     }
-    InlineDropdown(state) {
+    InlineDropdown(state, {
+        style { property("cursor", "pointer") }
+        // Whole-area click: any click inside the duration button rectangle
+        // (text, caret, padding) opens the dropdown.
+        // Same shadow-DOM workaround as the avatar fix: Semantic UI's
+        // dropdown toggle uses `document.body.contains(e.target)`, which
+        // is false for elements inside the `<clickup-menu-v2>` shadow
+        // root, so direct clicks are silently ignored. Forward to the
+        // child caret which has its own delegated handler without that guard.
+        onClick { event ->
+            val el = event.nativeEvent.currentTarget as? org.w3c.dom.HTMLElement
+            (el?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
+        }
+    }) {
         Input(Hidden) { name("type");value(state.selectionString) }
         Text({
-            // Same shadow-DOM workaround as the avatar fix: Semantic UI's
-            // dropdown toggle uses `document.body.contains(e.target)`, which
-            // is false for elements inside the `<clickup-menu-v2>` shadow
-            // root, so a click on the duration text is silently ignored.
-            // Forward to the sibling caret which has its own delegated
-            // handler without that guard.
-            onClick { event ->
-                val el = event.nativeEvent.currentTarget as? org.w3c.dom.HTMLElement
-                (el?.parentElement?.querySelector(":scope > i.dropdown.icon") as? org.w3c.dom.HTMLElement)?.click()
-            }
             style { property("cursor", "pointer") }
         }) { Text(state.selection?.duration?.format() ?: "") }
         Icon("dropdown")
